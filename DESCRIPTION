@@ -1,0 +1,10 @@
+Package: HTSanalyzeR2
+Type: Package
+Title: What the Package Does (Title Case)
+Version: 0.1.0
+Author: Xin Wang <xinwang2hms@gmail.com>
+Maintainer: Xin Wang <xinwang2hms@gmail.com>
+Description: This package provides classes and methods for gene set over-representation, enrichment and network analyses on high-throughput screens.
+License: Artistic-2.0
+LazyData: TRUE
+RoxygenNote: 5.0.1
