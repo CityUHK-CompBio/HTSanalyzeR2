@@ -4,7 +4,22 @@ Title: What the Package Does (Title Case)
 Version: 0.1.0
 Author: Xin Wang <xinwang2hms@gmail.com>
 Maintainer: Xin Wang <xinwang2hms@gmail.com>
-Description: This package provides classes and methods for gene set over-representation, enrichment and network analyses on high-throughput screens.
+Description: This package provides classes and methods for gene set over-
+    representation, enrichment and network analyses on high-throughput screens.
 License: Artistic-2.0
 LazyData: TRUE
 RoxygenNote: 5.0.1
+LinkingTo: Rcpp
+Imports:
+    Rcpp,
+    cellHTS2
+Collate:
+    'classUnion.R'
+    'GSCAClass.R'
+    'GeneSetsLoader.R'
+    'HTSanalyzeR2.R'
+    'analyze.R'
+    'aparaCheck.R'
+    'proprecess.R'
+    'summary.R'
+    'zzz.R'

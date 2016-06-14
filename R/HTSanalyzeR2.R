@@ -31,4 +31,8 @@
 #'
 #' @docType package
 #' @name HTSanalyzeR2
+#'
+#' @useDynLib HTSanalyzeR2
+#' @importFrom Rcpp sourceCpp
 NULL
+
