@@ -1,6 +1,6 @@
 #' Load the gene set
 #'
-#' tmp method for loading gene sets
+#' temporary function for loading gene sets
 #'
 #' @return a list of genesets
 #' @export

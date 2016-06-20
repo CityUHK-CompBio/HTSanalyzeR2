@@ -9,17 +9,23 @@ Description: This package provides classes and methods for gene set over-
 License: Artistic-2.0
 LazyData: TRUE
 RoxygenNote: 5.0.1
-LinkingTo: Rcpp
 Imports:
+    cellHTS2,
     Rcpp,
-    cellHTS2
+    doParallel,
+    foreach
 Collate:
-    'classUnion.R'
-    'GSCAClass.R'
-    'GeneSetsLoader.R'
     'HTSanalyzeR2.R'
-    'analyze.R'
-    'aparaCheck.R'
-    'proprecess.R'
-    'summary.R'
+    'RcppExports.R'
+    'backup.R'
+    'class_union.R'
+    'gsca_class.R'
+    'gsca_analyze.R'
+    'gsca_analyze2.R'
+    'gsca_preprocess.R'
+    'gsca_report.R'
+    'gsca_summarize.R'
+    'load_genesets.R'
+    'util_aparaCheck.R'
     'zzz.R'
+LinkingTo: Rcpp
