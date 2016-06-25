@@ -10,6 +10,6 @@ loadGeneSet()
 a list of genesets
 }
 \description{
-tmp method for loading gene sets
+temporary function for loading gene sets
 }
 

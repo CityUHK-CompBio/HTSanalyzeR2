@@ -1,6 +1,6 @@
 
 ## summarize & default show
-setGeneric("summarize", function(object, what, ...)
+setGeneric("summarize", function(object, what = "ALL", ...)
   standardGeneric("summarize"), package = "HTSanalyzeR2")
 
 #' @include gsca_class.R

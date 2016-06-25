@@ -25,6 +25,7 @@ Collate:
     'gsca_preprocess.R'
     'gsca_report.R'
     'gsca_summarize.R'
+    'gsca_view.R'
     'load_genesets.R'
     'util_aparaCheck.R'
     'zzz.R'

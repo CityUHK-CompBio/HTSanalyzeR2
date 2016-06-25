@@ -16,7 +16,7 @@ setMethod("analyze",
                      exponent = 1
                    ),
                    verbose = TRUE,
-                   doGSOA = FALSE,
+                   doGSOA = TRUE,
                    doGSEA = TRUE) {
             paraCheck(name = "doGSOA", para = doGSOA)
             paraCheck(name = "doGSEA", para = doGSEA)

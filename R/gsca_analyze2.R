@@ -126,12 +126,10 @@ analyzeGeneSetCollections2 <-
     ##filter 'istOfGeneSetCollections' by 'minGeneSetSize'
     maxOverlap <- 0
     for (i in seq_along(listOfGeneSetCollections)) {
-      gs.size <- vapply(listOfGeneSetCollections[[i]], function(x)
-        length(intersect(x, names(geneList))), integer(1))
+      gs.size <- vapply(listOfGeneSetCollections[[i]], function(x) length(intersect(x, names(geneList))), integer(1))
       maxOverlap <- max(max(gs.size), maxOverlap)
       discarded <- sum(gs.size < minGeneSetSize)
-      listOfGeneSetCollections[[i]] <-
-        listOfGeneSetCollections[[i]][gs.size >= minGeneSetSize]
+      listOfGeneSetCollections[[i]] <- listOfGeneSetCollections[[i]][gs.size >= minGeneSetSize]
 
       ##output information about filtering of gene set collections
       if (verbose && discarded > 0)
@@ -164,65 +162,45 @@ analyzeGeneSetCollections2 <-
         )
       )
     }
-    result.names <- names(listOfGeneSetCollections)
 
     ######################
     ###Hypergeometric test
     ######################
     if (doGSOA) {
-      HGTresults <- list()
-      cat("-Performing hypergeometric analysis ...\n")
-
-      for (i in 1:length(listOfGeneSetCollections)) {
-        if (verbose) {
-          cat("--For", names(listOfGeneSetCollections)[i], "\n")
-        }
-        if (length(listOfGeneSetCollections[[i]]) > 0)
-          HGTresults[[i]] <- multiHyperGeoTest2(
-            listOfGeneSetCollections[[i]],
-            universe = names(geneList),
-            hits = hits,
-            minGeneSetSize = minGeneSetSize,
-            pAdjustMethod = pAdjustMethod,
-            verbose = verbose
-          )
-        else {
-          HGTresults[[i]] <- matrix(NA, nrow = 0, ncol = 7)
-          colnames(HGTresults[[i]]) <- c(
-            "Universe Size",
-            "Gene Set Size",
-            "Total Hits",
-            "Expected Hits",
-            "Observed Hits",
-            "Pvalue",
-            "Adjusted.Pvalue"
-          )
-        }
-      }
-      pvals <- NULL
-      ##loop combines pvalues from all gene set collections' results
-      ##into one vector for multiple hypothesis testing pvalue adjustement
-      sapply(1:numGeneSetCollections, function(i) {
-        if (nrow(HGTresults[[i]]) > 0) {
-          pv <- HGTresults[[i]][, "Pvalue"]
-          names(pv) <- rownames(HGTresults[[i]])
-          pvals <<- c(pvals, pv)
-        }
-      })
-      ##Adjustment of pvalues
-      HGTpvals <- p.adjust(pvals, method = pAdjustMethod)
-      sapply(1:numGeneSetCollections, function(i) {
-        if (nrow(HGTresults[[i]]) > 0) {
-          ind <- match(rownames(HGTresults[[i]]), names(HGTpvals))
-          Adjusted.Pvalue <- HGTpvals[ind]
-          #HGTresults[[i]]<-cbind(HGTresults[[i]],Adjusted.Pvalue)
-          HGTresults[[i]][, "Adjusted.Pvalue"] <<- Adjusted.Pvalue
-        }
-      })
-
-      names(HGTresults) <- result.names
+      HGTresults <- calcHyperGeo(
+        listOfGeneSetCollections,
+        geneList,
+        hits,
+        minGeneSetSize,
+        pAdjustMethod,
+        verbose
+      )
       cat("-Hypergeometric analysis complete\n\n")
+    } else {
+      HGTresults = NULL
+    }
 
+
+    ######################
+    ###GSEA
+    ######################
+    if (doGSEA) {
+      GSEA.results.list <-
+        calcGSEA(
+          listOfGeneSetCollections,
+          geneList,
+          exponent,
+          nPermutations,
+          minGeneSetSize,
+          pAdjustMethod,
+          verbose
+        )
+      cat("-Gene set enrichment analysis complete \n")
+    } else {
+      GSEA.results.list = NULL
+    }
+
+    if (doGSOA && doGSEA) {
       ##identify gene set collections with hypergeometric test
       ##pvalues < pValueCutoff
       sign.hgt <- lapply(HGTresults, function(x) {
@@ -247,30 +225,7 @@ analyzeGeneSetCollections2 <-
           return(x)
         }
       })
-    } else {
-      HGTresults = NULL
-    }
 
-
-    ######################
-    ###GSEA
-    ######################
-    if (doGSEA) {
-      GSEA.results.list <-
-        calcGSEA(
-          listOfGeneSetCollections,
-          geneList,
-          exponent,
-          nPermutations,
-          minGeneSetSize,
-          pAdjustMethod,
-          verbose
-        )
-    } else {
-      GSEA.results.list = NULL
-    }
-
-    if (doGSOA && doGSEA) {
       ##identify gene set collections with GSEA pvalues < pValueCutoff
       sign.gsea <- lapply(GSEA.results.list, function(x) {
         if (nrow(x) > 0) {
@@ -320,14 +275,12 @@ analyzeGeneSetCollections2 <-
         colnames(overlap.adj[[i]]) <<-
           c("HyperGeo.Adj.Pvalue", "GSEA.Adj.Pvalue")
       })
-      names(overlap) <- result.names
-      names(overlap.adj) <- result.names
+      names(overlap) <- names(listOfGeneSetCollections)
+      names(overlap.adj) <- names(listOfGeneSetCollections)
     } else {
       overlap = NULL
       overlap.adj = NULL
     }
-
-    cat("-Gene set enrichment analysis complete \n")
 
     final.results <- list(
       "HyperGeo.results" = HGTresults,
@@ -339,84 +292,60 @@ analyzeGeneSetCollections2 <-
   }
 
 
+calcHyperGeo <- function (listOfGeneSetCollections,
+                          geneList,
+                          hits,
+                          minGeneSetSize = 15,
+                          pAdjustMethod = "BH",
+                          verbose = TRUE) {
+  if (verbose) {
+    cat("-Performing hypergeometric analysis ...\n")
+  }
 
+  combinedGeneSets <-
+    unlist(listOfGeneSetCollections,
+           recursive = FALSE,
+           use.names = FALSE)
+  names(combinedGeneSets) <-
+    unlist(lapply(listOfGeneSetCollections, names), use.names = F)
 
+  universe = names(geneList)
+  overlappedSize <-
+    sapply(combinedGeneSets, function(geneSet)
+      sum(geneSet %in% universe))
 
-
-
-
-
-##This function performs hypergeometric tests for over-representation
-##of hits, on a list of gene sets. This function applies the
-##hyperGeoTest function to an entire list of gene sets and returns a
-##data frame.
-
-multiHyperGeoTest2 <- function(collectionOfGeneSets,
-                               universe,
-                               hits,
-                               minGeneSetSize = 15,
-                               pAdjustMethod = "BH",
-                               verbose = TRUE) {
-  ##check arguments
-  paraCheck("gsc", collectionOfGeneSets)
-  paraCheck("universe", universe)
-  paraCheck("hits", hits)
-  paraCheck("minGeneSetSize", minGeneSetSize)
-  paraCheck("pAdjustMethod", pAdjustMethod)
-  paraCheck("verbose", verbose)
-  l.GeneSet <- length(collectionOfGeneSets)
-  geneset.size <-
-    unlist(lapply(lapply(collectionOfGeneSets, intersect, y = universe), length))
-  if (all(geneset.size < minGeneSetSize))
+  if (all(overlappedSize < minGeneSetSize)) {
     stop(
       paste(
-        "The largest number of overlapped genes of gene ",
-        "sets with universe is: ",
-        max(geneset.size),
+        "The largest number of overlapped genes of gene sets with universe is: ",
+        max(overlappedSize),
         ", which is < ",
         minGeneSetSize,
         "!\n",
         sep = ""
       )
     )
-  geneset.filtered <- which(geneset.size >= minGeneSetSize)
-  ##if verbose, create a progress bar to monitor computation progress
-  if (verbose)
-    pb <- txtProgressBar(style = 3)
-  results <- t(sapply(geneset.filtered,
-                      function(i) {
-                        if (verbose)
-                          setTxtProgressBar(pb, i / l.GeneSet)
-                        hyperGeoTest2(collectionOfGeneSets[i], universe, hits)
-                      }))
-  if (verbose)
-    close(pb)
-  if (length(results) > 0) {
-    ##results <- t(as.data.frame(results))
-    ##rownames(results) <- names(collectionOfGeneSets)
-    ##remove gene sets with genes < minGeneSetSize in the geneList
-    ##Adjust pvalues
-    adjPvals <-
-      p.adjust(results[, "Pvalue"], method = pAdjustMethod)
-    results <- cbind(results, adjPvals)
-    colnames(results)[ncol(results)] <- "Adjusted.Pvalue"
-    results <-
-      results[order(results[, "Adjusted.Pvalue"]), , drop = FALSE]
-  } else {
-    reuslts <- matrix(NA, nrow = 0, ncol = 7)
-    colnames(results) <- c(
-      "Universe Size",
-      "Gene Set Size",
-      "Total Hits",
-      "Expected Hits",
-      "Observed Hits",
-      "Pvalue",
-      "Adjusted.Pvalue"
-    )
   }
+
+  res <-
+    sapply(combinedGeneSets[overlappedSize >= minGeneSetSize], calcHGTScore, universe, hits)
+  res <- t(res)
+  res[, "Adjusted.Pvalue"] <-
+    p.adjust(res[, "Pvalue"], method = pAdjustMethod)
+
+  results <- list()
+  #Extract results dataframe for each gene set collection and orders them by adjusted p-value
+  sapply(seq_along(listOfGeneSetCollections), function(i) {
+    extracted <-
+      res[rownames(res) %in% names(listOfGeneSetCollections[[i]]), , drop = FALSE]
+    extracted <-
+      extracted[order(extracted[, "Adjusted.Pvalue"]), , drop = FALSE]
+    results[[i]] <<- extracted
+  })
+
+  names(results) <- names(listOfGeneSetCollections)
   return(results)
 }
-
 
 ##This function takes in a single gene set (GeneSet), a vector
 ##(GeneList) of gene symbols for all tested genes, a vector of "hits"
@@ -426,25 +355,19 @@ multiHyperGeoTest2 <- function(collectionOfGeneSets,
 ##this gene set), the total number of hits, the number of hits expected
 ##to occur in the gene set, the actual hits observed in the gene set,
 ##and the pvalue from a hypergeometric test.
-
-hyperGeoTest2 <- function(geneSet, universe, hits) {
-  ##number of genes in universe
-  N <- length(universe)
-  ##remove genes from gene set that are not in universe
-  geneSet <- intersect(geneSet[[1]], universe)
-  ##size of gene set
-  m <- length(geneSet)
-  Nm <- N - m
-  ##hits in gene set
+## calculate the hypergeometric Test Score for one set
+calcHGTScore <- function(geneSet, universe, hits) {
+  geneSet <- intersect(geneSet, universe)
   overlap <- intersect(geneSet, hits)
-  ##number of hits in gene set
+
+  N <- length(universe)
+  m <- length(geneSet)
   k <- length(overlap)
   n <- length(hits)
-  HGTresults <- phyper(k - 1, m, Nm, n, lower.tail = F)
   ex <- (n / N) * m
-  if (m == 0)
-    HGTresults <- NA
-  hyp.vec <- c(N, m, n, ex, k, HGTresults)
+  HGTresult <-
+    ifelse(m == 0, NA, stats::phyper(k - 1, m, N - m, n, lower.tail = F))
+  hyp.vec <- c(N, m, n, ex, k, HGTresult, NA)
   names(hyp.vec) <-
     c(
       "Universe Size",
@@ -452,10 +375,12 @@ hyperGeoTest2 <- function(geneSet, universe, hits) {
       "Total Hits",
       "Expected Hits",
       "Observed Hits",
-      "Pvalue"
+      "Pvalue",
+      "Adjusted.Pvalue"
     )
   return(hyp.vec)
 }
+
 
 calcGSEA <-
   function(listOfGeneSetCollections,
@@ -486,28 +411,35 @@ calcGSEA <-
     ##tag the gene sets that can be used in the analysis, i.e. those
     ##that are smaller than the size of the gene list and that have more
     ##than 'minGeneSetSize' elements that can be found in the geneList
-    nGeneSets <- length(combinedGeneSets)
-    tagGeneSets <- rep(FALSE, nGeneSets)
-    tagGeneSets[which(sapply(combinedGeneSets, length) < length(geneList))] <- TRUE
-    tagGeneSets[which(sapply(lapply(combinedGeneSets, intersect, y = listNames), length) < minGeneSetSize)] <- FALSE
+    tagGeneSets <- sapply(combinedGeneSets, function(geneSet)
+      length(geneSet) < length(geneList) &&
+        sum(geneSet %in% listNames) >= minGeneSetSize)
     combinedGeneSets <- combinedGeneSets[tagGeneSets]
 
-    overlaps <- sapply(combinedGeneSets, function(geneSet) sum(listNames %in% geneSet))
-    gScores <- sapply(combinedGeneSets, function(geneSet) calcGScoreCPP(listNames %in% geneSet, geneList))
+    overlaps <-
+      sapply(combinedGeneSets, function(geneSet)
+        sum(listNames %in% geneSet))
+    gScores <-
+      sapply(combinedGeneSets, function(geneSet)
+        calcGScoreCPP(listNames %in% geneSet, geneList))
     groups <- split(gScores, overlaps)
     overlaps2 <- as.integer(names(groups))
 
-    permScores <- foreach(idx = seq_along(overlaps2), .combine = rbind) %dopar% {
+    permScores <-
+      foreach(idx = seq_along(overlaps2), .combine = rbind) %dopar% {
         overlap <- overlaps2[idx]
-        hits <- rep(c(TRUE, FALSE), c(overlap, length(geneList) - overlap))
+        hits <-
+          rep(c(TRUE, FALSE), c(overlap, length(geneList) - overlap))
         perm <- sapply(1:nPermutations, function(x) {
           calcGScoreCPP(sample(hits), geneList)
         })
         perm
       }
+
     rownames(permScores) <- names(groups)
 
-    res <- foreach(idx = seq_along(groups), .combine = cbind) %dopar% {
+    res <-
+      foreach(idx = seq_along(groups), .combine = cbind) %dopar% {
         overlap <- overlaps2[idx]
         ## observedScore, Pvalue, Adjusted.Pvalue, FDR, overlap
         values <- sapply(groups[[idx]], function(gScore) {
@@ -519,11 +451,21 @@ calcGSEA <-
         })
       }
 
+
+
     res <- t(res)
-    colnames(res) <- c("Observed.score", "Pvalue", "Adjusted.Pvalue", "FDR", "overlap")
-    res[, "Adjusted.Pvalue"] <- p.adjust(res[, "Pvalue"], method = pAdjustMethod)
-    res[, "FDR"] <- calcFDR(res[, "Observed.score"], res[, "overlap"], permScores)
-    res <- res[, c("Observed.score", "Pvalue", "Adjusted.Pvalue", "FDR")]
+    colnames(res) <-
+      c("Observed.score",
+        "Pvalue",
+        "Adjusted.Pvalue",
+        "FDR",
+        "overlap")
+    res[, "Adjusted.Pvalue"] <-
+      p.adjust(res[, "Pvalue"], method = pAdjustMethod)
+    res[, "FDR"] <-
+      calcFDR(res[, "Observed.score"], res[, "overlap"], permScores)
+    res <-
+      res[, c("Observed.score", "Pvalue", "Adjusted.Pvalue", "FDR")]
 
     results <- list()
     #Extract results dataframe for each gene set collection and orders them by adjusted p-value
@@ -554,7 +496,8 @@ calcFDR <- function(gScores, overlaps, permScores) {
     permScores[i, pos] <<- permScores[i, pos] / PosAvg
     permScores[i, neg] <<- permScores[i, neg] / NegAvg
 
-    gScores[i] <<- ifelse((gScores[i] < 0), (gScores[i] / NegAvg), (gScores[i] / PosAvg))
+    gScores[i] <<-
+      ifelse((gScores[i] < 0), (gScores[i] / NegAvg), (gScores[i] / PosAvg))
   })
 
   negtot <- sum(permScores <= 0)
@@ -572,7 +515,8 @@ calcFDR <- function(gScores, overlaps, permScores) {
     }
   })
 
-  FDRgeneset[FDRgeneset > 1] <- 1;
+  FDRgeneset[FDRgeneset > 1] <- 1
+
   names(FDRgeneset) <- names(gScores)
   return(FDRgeneset)
 }
@@ -596,4 +540,3 @@ calcGScore <- function(hits, geneList, exponent = 1) {
   }
   ES
 }
-
