@@ -36,6 +36,7 @@ setMethod("preprocess", signature = "GSCA",
               genelist[which((!is.na(genelist)) &
                                (names(genelist) != "")
                              & (!is.na(names(genelist))))]
+
             #genes with valid values
             object@summary$gl[, "valid"] <- length(genelist)
             if (length(genelist) == 0)
@@ -45,18 +46,17 @@ setMethod("preprocess", signature = "GSCA",
               cat("--Removing duplicated genes ...\n")
             genelist <-
               duplicateRemover(geneList = genelist, method = duplicateRemoverMethod)
+
             #genes after removing duplicates
             object@summary$gl[, "duplicate removed"] <-
               length(genelist)
-
-            hits <-
-              object@hits[object@hits != "" & !is.na(object@hits)]
+            hits <- object@hits[object@hits != "" & !is.na(object@hits)]
             if (length(hits) == 0)
               stop("Input 'hits' contains no useful data!\n")
             hits <- unique(hits)
-            match.ind <- match(hits, names(genelist))
-
-            hits.vec <- genelist[match.ind[!is.na(match.ind)]]
+            # match.ind <- match(hits, names(genelist))
+            # hits.vec <- genelist[match.ind[!is.na(match.ind)]]
+            hits.vec <- genelist[names(genelist) %in% hits]
             if (length(hits.vec) == 0)
               stop("Hits and geneList have no overlaps!\n")
 
@@ -81,6 +81,7 @@ setMethod("preprocess", signature = "GSCA",
                 verbose = verbose
               )
             }
+
             #genes after annotation conversion
             object@summary$gl[, "converted to entrez"] <-
               length(genelist)
@@ -88,11 +89,9 @@ setMethod("preprocess", signature = "GSCA",
             if (verbose)
               cat("--Ordering Gene List decreasingly ...\n")
             if (!orderAbsValue)
-              genelist <-
-              genelist[order(genelist, decreasing = TRUE)]
+              genelist <- genelist[order(genelist, decreasing = TRUE)]
             else
-              genelist <-
-              abs(genelist)[order(abs(genelist), decreasing = TRUE)]
+              genelist <- abs(genelist)[order(abs(genelist), decreasing = TRUE)]
             hits <- names(hits.vec)
             #hits after preprocessed
             object@summary$hits[, "preprocessed"] <- length(hits)
@@ -106,37 +105,36 @@ setMethod("preprocess", signature = "GSCA",
           })
 
 
-##This function gets rid of the duplicates in a gene list.
+#' This function gets rid of the duplicates in a gene list.
+#' @export
 duplicateRemover <- function(geneList, method = "max") {
   ##check arguments
   paraCheck("genelist", geneList)
   paraCheck("duplicateRemoverMethod", method)
+
   ##Get the unique names and create a vector that will store the
   ##processed values corresponding to those names
   geneList.names <- names(geneList)
   datanames <- unique(geneList.names)
-  data.processed <- rep(0, length(datanames))
-  names(data.processed) <- datanames
-  data.processed2 <- data.processed
-  l.data.processed <- length(data.processed)
+
   ##If the absolute value of the min is bigger than the absolute
   ##value of the max, then it is the min that is kept
   if (method == "max") {
     data.processed <- sapply(datanames,
-                             function(i) {
-                               this.range <- range(geneList[which(geneList.names == i)])
+                             function(name) {
+                               this.range <- range(geneList[geneList.names == name])
                                this.range[which.max(abs(this.range))]
                              })
   } else if (method == "min") {
     data.processed <- sapply(datanames,
-                             function(i) {
-                               this.range <- range(geneList[which(geneList.names == i)])
+                             function(name) {
+                               this.range <- range(geneList[which(geneList.names == name)])
                                this.range[which.min(abs(this.range))]
                              })
   } else if (method == "average") {
     data.processed <- sapply(datanames,
-                             function(i) {
-                               mean(geneList[which(geneList.names == i)])
+                             function(name) {
+                               mean(geneList[geneList.names == name])
                              })
   } else if (method == "fc.avg") {
     neg.fcs <- which(geneList < 1)
@@ -144,8 +142,8 @@ duplicateRemover <- function(geneList, method = "max") {
     #convert from fold change to ratio
     geneListRatios[neg.fcs] <- abs(1 / geneList[neg.fcs])
     #average the values across replicates
-    data.processed <- sapply(datanames, function(i) {
-      mean(geneListRatios[which(geneList.names == i)])
+    data.processed <- sapply(datanames, function(name) {
+      mean(geneListRatios[geneList.names == name])
     })
     #convert back to fold change
     neg.fcs <- which(data.processed < 1)
@@ -155,10 +153,8 @@ duplicateRemover <- function(geneList, method = "max") {
 }
 
 
-
-
-
-
+#' Convert between different types of gene identifiers
+#' @export
 annotationConvertor <- function(geneList,
                                 species = "Dm",
                                 initialIDs = "Entrez.gene",
@@ -167,7 +163,6 @@ annotationConvertor <- function(geneList,
                                 verbose = TRUE) {
   ##check arguments
   paraCheck("genelist.general", geneList)
-
   paraCheck("keepMultipleMappings", keepMultipleMappings)
   paraCheck("verbose", verbose)
 
@@ -234,11 +229,7 @@ annotationConvertor <- function(geneList,
       verbose = verbose
     )
   }
-  ##	}
-  ##	else {
-  ##		geneListEntrez<-geneList
-  ##		names(geneListEntrez)<-names(geneList)
-  ##	}
+
   return(geneListEntrez)
 }
 
@@ -456,8 +447,7 @@ drosoAnnotationConvertor <-
       ##Create a list with an element for each name in the geneList,
       ##containing a vector of identifiers of the type finalIDs mapped
       ##to that name in the geneList
-      list.new.names <-
-        AnnotationDbi::mget(names(geneList), fromto, ifnotfound = NA)
+      list.new.names <- AnnotationDbi::mget(names(geneList), fromto, ifnotfound = NA)
       ##Create a vector that will hold the new names, and a vector
       ##that will tag the names that were mapped to multiple identifiers
       n.new.names <- length(list.new.names)

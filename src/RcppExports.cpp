@@ -6,14 +6,15 @@
 using namespace Rcpp;
 
 // calcGScoreCPP
-double calcGScoreCPP(IntegerVector Set, NumericVector Eso);
-RcppExport SEXP HTSanalyzeR2_calcGScoreCPP(SEXP SetSEXP, SEXP EsoSEXP) {
+double calcGScoreCPP(IntegerVector Set, NumericVector Eso, double exponent);
+RcppExport SEXP HTSanalyzeR2_calcGScoreCPP(SEXP SetSEXP, SEXP EsoSEXP, SEXP exponentSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< IntegerVector >::type Set(SetSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type Eso(EsoSEXP);
-    __result = Rcpp::wrap(calcGScoreCPP(Set, Eso));
+    Rcpp::traits::input_parameter< double >::type exponent(exponentSEXP);
+    __result = Rcpp::wrap(calcGScoreCPP(Set, Eso, exponent));
     return __result;
 END_RCPP
 }

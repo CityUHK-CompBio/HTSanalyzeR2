@@ -77,9 +77,10 @@ setMethod("initialize",
 
 
 GSCA <- function(listOfGeneSetCollections, geneList, hits) {
-  # paraCheck(name = "gscs", para = listOfGeneSetCollections)
-  # paraCheck(name = "genelist", para = geneList)
-  # paraCheck(name = "hits", para = hits)
+  paraCheck(name = "gscs", para = listOfGeneSetCollections)
+  paraCheck(name = "genelist", para = geneList)
+  paraCheck(name = "hits", para = hits)
+
   object <- new(
     Class = "GSCA",
     listOfGeneSetCollections = listOfGeneSetCollections,

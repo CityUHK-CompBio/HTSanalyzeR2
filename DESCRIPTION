@@ -13,7 +13,8 @@ Imports:
     cellHTS2,
     Rcpp,
     doParallel,
-    foreach
+    foreach,
+    AnnotationDbi
 Collate:
     'HTSanalyzeR2.R'
     'RcppExports.R'
@@ -23,6 +24,7 @@ Collate:
     'gsca_analyze.R'
     'gsca_analyze2.R'
     'gsca_preprocess.R'
+    'gsca_preprocess2.R'
     'gsca_report.R'
     'gsca_summarize.R'
     'gsca_view.R'

@@ -2,7 +2,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-double calcGScoreCPP(IntegerVector Set, NumericVector Eso) {
+double calcGScoreCPP(IntegerVector Set, NumericVector Eso, double exponent) {
   std::vector<int> sset=Rcpp::as< std::vector<int> >(Set);
   std::vector<double> eso=Rcpp::as< std::vector<double> >(Eso);
 
@@ -14,7 +14,8 @@ double calcGScoreCPP(IntegerVector Set, NumericVector Eso) {
 
   for(int j=0;j<N;j++) {
     if(sset[j]) {
-      nr += (eso[j] > 0 ? eso[j] : -eso[j]);
+      // nr += (eso[j] > 0 ? eso[j] : -eso[j]);
+      nr += std::pow((eso[j] > 0 ? eso[j] : -eso[j]), exponent);
     }
   }
 
@@ -25,7 +26,8 @@ double calcGScoreCPP(IntegerVector Set, NumericVector Eso) {
   double smax=0; double smin=0; double cs=0;
   for(int j=0;j<N;j++) {
     if(sset[j]) {
-      cs += (eso[j] > 0 ? eso[j] : -eso[j]) / nr;
+      // cs += (eso[j] > 0 ? eso[j] : -eso[j]) / nr;
+      cs += std::pow((eso[j] > 0 ? eso[j] : -eso[j]), exponent) / nr;
     } else {
       cs += n;
     }
