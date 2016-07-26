@@ -14,7 +14,8 @@ Imports:
     Rcpp,
     doParallel,
     foreach,
-    AnnotationDbi
+    AnnotationDbi,
+    stringr
 Collate:
     'HTSanalyzeR2.R'
     'RcppExports.R'
