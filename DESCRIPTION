@@ -17,7 +17,8 @@ Imports:
     AnnotationDbi,
     stringr,
     networkD3,
-    igraph
+    igraph,
+    GSEABase
 Collate:
     'HTSanalyzeR2.R'
     'RcppExports.R'

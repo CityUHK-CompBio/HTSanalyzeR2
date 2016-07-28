@@ -82,7 +82,7 @@ appendGOTerm <- function(df) {
   data.frame(Gene.Set.Term = goterms, df, stringsAsFactors = FALSE)
 }
 
-#' @import KEGGREST stringr
+#' @import KEGGREST
 appendKEGGTerm<-function(df) {
   mappings <- KEGGREST::keggList("pathway")
   names(mappings) <- stringr::str_sub(names(mappings), -5)

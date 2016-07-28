@@ -3,7 +3,6 @@
 #the elements of the gene sets represented by Entrez Gene IDs.
 #
 #' @export
-#' @import GSEABase
 MSigDBGeneSets<- function(index = 1) {
   gmt_file <- system.file("data", "msigdb.v5.1.entrez.gmt", package = "HTSanalyzeR2")
 
@@ -23,7 +22,7 @@ MSigDBGeneSets<- function(index = 1) {
 #the elements of the gene sets represented by Entrez Gene IDs.
 #
 #' @export
-#' @import KEGGREST stringr
+#' @import KEGGREST
 KeggGeneSets <- function(species = "Dm") {
   # paraCheck("species", species)
   species <- switch(
