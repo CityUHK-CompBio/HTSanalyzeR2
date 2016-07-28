@@ -165,7 +165,6 @@ setMethod(
 
 
 #' @export
-#' @import networkD3
 plotD3Graph <- function(g) {
   em_nodes <- igraph::as_data_frame(g, "vertices")
   em_links <- igraph::as_data_frame(g, "edge")
@@ -182,7 +181,7 @@ plotD3Graph <- function(g) {
                Nodesize = 'size', radiusCalculation = "Math.sqrt(d.nodesize)+6",
                linkDistance = JS("function(d){return d.value * 10}"),
                charge = -600,
-               Group = "color", opacity = 1, legend = TRUE, bounded = FALSE,
+               Group = "color", opacity = 1, legend = TRUE, bounded = TRUE,
                fontSize = 16, opacityNoHover = 0.7)
 }
 

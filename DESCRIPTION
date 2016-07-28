@@ -18,7 +18,9 @@ Imports:
     stringr,
     networkD3,
     igraph,
-    GSEABase
+    GSEABase,
+    dygraphs,
+    BioNet
 Collate:
     'HTSanalyzeR2.R'
     'RcppExports.R'
@@ -35,6 +37,13 @@ Collate:
     'gsca_summarize.R'
     'gsca_view.R'
     'load_genesets.R'
+    'nwa_class.R'
+    'nwa_analyze.R'
+    'nwa_preprocess.R'
+    'nwa_report.R'
+    'nwa_summarize.R'
+    'nwa_view.R'
+    'stat_test.R'
     'util_aparaCheck.R'
     'zzz.R'
 LinkingTo: Rcpp
