@@ -15,7 +15,9 @@ Imports:
     doParallel,
     foreach,
     AnnotationDbi,
-    stringr
+    stringr,
+    networkD3,
+    igraph
 Collate:
     'HTSanalyzeR2.R'
     'RcppExports.R'
@@ -24,6 +26,8 @@ Collate:
     'gsca_class.R'
     'gsca_analyze.R'
     'gsca_analyze2.R'
+    'gsca_enrichmap.R'
+    'gsca_enrichmap_view2.R'
     'gsca_preprocess.R'
     'gsca_preprocess2.R'
     'gsca_report.R'
