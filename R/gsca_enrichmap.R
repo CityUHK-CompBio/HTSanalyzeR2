@@ -45,9 +45,9 @@ setMethod(
                  if (gsc %in% names(object@listOfGeneSetCollections)) {
                    if ("Gene.Set.Term" %in% colnames(result[[rs]][[gsc]])) {
                      warning(paste(
-                         "--Gene Set terms already exsit in gene set collection ", gsc,
-                         " of ", names(result)[rs],
-                         ", and will be overwritten by new gene set terms!\n", sep = ""))
+                       "--Gene Set terms already exsit in gene set collection ", gsc,
+                       " of ", names(result)[rs],
+                       ", and will be overwritten by new gene set terms!\n", sep = ""))
 
                      result[[rs]][[gsc]] <- result[[rs]][[gsc]][, setdiff(colnames(result[[rs]][[gsc]]), "Gene.Set.Term"), drop = FALSE]
                    }
@@ -63,7 +63,7 @@ setMethod(
                        result[[rs]][[gsc]] <<- data.frame(Gene.Set.Term = "--", result[[rs]][[gsc]], stringsAsFactors = FALSE)
                    }
 
-                   } #if
+                 } #if
                }) # sapply function
       } # if
     } # for
@@ -120,6 +120,7 @@ setMethod(
 )
 
 #' @export
+#' @importFrom igraph V graph.adjacency
 setMethod(
   "viewEnrichMap",
   "GSCA",
@@ -198,17 +199,17 @@ setMethod(
       g<-graph.adjacency(adjmatrix=map.mat, mode="undirected", weighted=NULL, diag=FALSE)
     }
     ##add an user-defined attribute 'geneNum' to igraph
-    V(g)$geneSetSize<-map.diag
-    if(length(V(g))>=2) {
+    igraph::V(g)$geneSetSize<-map.diag
+    if(length(igraph::V(g))>=2) {
       ### "Node size" controlled by the "size of gene set"
       v.max.size<-18
       v.min.size<-4
       if(max(map.diag)!=min(map.diag))
-        V(g)$size<-v.min.size+(v.max.size-v.min.size)*(map.diag-min(map.diag))/(max(map.diag)-min(map.diag))
+        igraph::V(g)$size<-v.min.size+(v.max.size-v.min.size)*(map.diag-min(map.diag))/(max(map.diag)-min(map.diag))
       else
-        V(g)$size<-6
-    } else if(length(V(g))==1) {
-      V(g)$size<-4
+        igraph::V(g)$size<-6
+    } else if(length(igraph::V(g))==1) {
+      igraph::V(g)$size<-4
     }
     p.vec<-tempdf[,"Adjusted.Pvalue"]
     p.cutoff.vec<-c(0, 10^c(-3, -2.5), 0.01, 10^(-1.5), 0.05, 10^(-c(1.0, 0.5, 0)))
@@ -222,31 +223,31 @@ setMethod(
 
       blueCols<-colorRampPalette(colors = c("blue", "white"))
       blueVec<-blueCols(length(p.cutoff.vec))
-      V(g)$color<-""
+      igraph::V(g)$color<-""
       if(length(posids)>0)
-        V(g)$color[posids]<-redVec[as.integer(cut(x=p.vec[posids],breaks=c(-1,p.cutoff.vec), labels=1:(length(p.cutoff.vec))))]
+        igraph::V(g)$color[posids]<-redVec[as.integer(cut(x=p.vec[posids],breaks=c(-1,p.cutoff.vec), labels=1:(length(p.cutoff.vec))))]
       if(length(negids)>0)
-        V(g)$color[negids]<-blueVec[as.integer(cut(x=p.vec[negids],breaks=c(-1,p.cutoff.vec), labels=1:(length(p.cutoff.vec))))]
+        igraph::V(g)$color[negids]<-blueVec[as.integer(cut(x=p.vec[negids],breaks=c(-1,p.cutoff.vec), labels=1:(length(p.cutoff.vec))))]
     } else if(resultName=="HyperGeo.results") {
       redCols<-colorRampPalette(colors = c("red", "white"))
       redVec<-redCols(length(p.cutoff.vec))
-      V(g)$color<-redVec[as.integer(cut(x=p.vec,breaks=c(-1,p.cutoff.vec), labels=1:(length(p.cutoff.vec))))]
+      igraph::V(g)$color<-redVec[as.integer(cut(x=p.vec,breaks=c(-1,p.cutoff.vec), labels=1:(length(p.cutoff.vec))))]
     }
     ##labels attributes
     graphLabelWrapper<-function(x, width=32) {paste(strwrap(x,width=width),collapse="\n")}
     if(gsNameType=="id") {
-      V(g)$label<-as.character(tempdf[,"gsID"])
+      igraph::V(g)$label<-as.character(tempdf[,"gsID"])
     } else if(gsNameType=="term") {
       templabels<-as.character(tempdf[,"Gene.Set.Term"])
-      V(g)$label<-sapply(templabels, graphLabelWrapper)
+      igraph::V(g)$label<-sapply(templabels, graphLabelWrapper)
     }
 
-    V(g)$label.dist<-0.4
-    V(g)$label.cex<-0.75
-    V(g)$label.font<-3
-    V(g)$label.color<-"black"
+    igraph::V(g)$label.dist<-0.4
+    igraph::V(g)$label.cex<-0.75
+    igraph::V(g)$label.font<-3
+    igraph::V(g)$label.color<-"black"
     ### "Node color" controlled by the "adjusted pvalue"
-    if(length(V(g))>=2)
+    if(length(igraph::V(g))>=2)
       E(g)$color<-grey(0.7)
     if(displayEdgeLabel) {
       edgeWeights<-round(E(g)$weight*100)
@@ -256,7 +257,7 @@ setMethod(
     ### "Edge thickness" controlled by the "size of overlapped genes" between two gene sets
     edge.max.w<-14
     edge.min.w<-1
-    if(length(V(g))>=2) {
+    if(length(igraph::V(g))>=2) {
       edgeWeightVec<-round(edge.min.w+(edge.max.w-edge.min.w)*(E(g)$weight))
       E(g)$width<-edgeWeightVec
     }
