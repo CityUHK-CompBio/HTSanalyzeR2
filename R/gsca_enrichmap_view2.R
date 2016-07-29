@@ -67,7 +67,7 @@ setMethod(
     V(g)$geneSetSize<-map.diag
     if(length(V(g))>=2) {
       ### "Node size" controlled by the "size of gene set"
-      s.max <- 40
+      s.max <- 20
       s.min <- 6
       V(g)$size <- s.min + (s.max - s.min)*(map.diag-min(map.diag))/(max(map.diag)-min(map.diag))
     } else if(length(V(g))==1) {
@@ -87,10 +87,6 @@ setMethod(
       V(g)$color[negids] <- (p.vec[negids]) * 50 / (val.range[2] - val.range[1])
       val.range <- range(p.vec[posids])
       V(g)$color[posids] <- (p.vec[posids]) * 50 / (val.range[2] - val.range[1]) + 50
-
-      ## Should 0 be in the middle
-      # val.range <- range(p.vec)
-      # V(g)$color <- (p.vec) * 50 / (val.range[2] - val.range[1]) + 50
     } else if(resultName=="HyperGeo.results") {
       val.range <- range(p.vec)
       V(g)$color <- (p.vec) * 50 / (val.range[2] - val.range[1])
@@ -126,11 +122,17 @@ setMethod(
 
 
 #' @export
-plotD3Graph <- function(g, link_dist = 50, charge = -600, colorDomain = c(0,50,100), colorRange = c('#FFFFDD', '#3E9583', '#1F2D86')) {
+plotD3Graph <- function(g, link_dist = 50, charge = -600, colorDomain = NULL, colorRange = NULL) {
   em_nodes <- igraph::as_data_frame(g, "vertices")
   em_links <- igraph::as_data_frame(g, "edge")
 
   # linkDistance = JS("function(d){return d.value * 10}")
+
+  if(is.null(colorRange)) {
+    colorRange = c('#67001f', '#b2182b', '#d6604d', '#f4a582', '#fddbc7', '#dddddd', '#d1e5f0', '#92c5de', '#4393c3', '#2166ac', '#053061')
+    colorDomain = seq(from = 0, to = 100, by = 10)
+  }
+
   scale <- paste("d3.scale.linear().domain([",
                  paste(colorDomain, collapse = ","), "]).range(['",
                  paste(colorRange, collapse = "','"),"'])", sep="")
@@ -139,7 +141,7 @@ plotD3Graph <- function(g, link_dist = 50, charge = -600, colorDomain = c(0,50,1
   networkD3::forceNetwork(Links = em_links, Nodes = em_nodes, Source = "source",
                Target = "target", Value = "width", NodeID = "label",
                colourScale = networkD3::JS(scale),
-               Nodesize = 'size', radiusCalculation = "Math.sqrt(d.nodesize)+6",
+               Nodesize = 'size', radiusCalculation = "d.nodesize",
                linkDistance = link_dist, charge = charge,
                Group = "color", opacity = 1, legend = FALSE, bounded = TRUE,
                fontSize = 16, opacityNoHover = 0.7)
