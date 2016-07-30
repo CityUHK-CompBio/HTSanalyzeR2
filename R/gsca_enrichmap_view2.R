@@ -143,7 +143,7 @@ plotD3Graph <- function(g, link_dist = 50, charge = -600, colorDomain = NULL, co
                colourScale = networkD3::JS(scale),
                Nodesize = 'size', radiusCalculation = "d.nodesize",
                linkDistance = link_dist, charge = charge,
-               Group = "color", opacity = 1, legend = FALSE, bounded = TRUE,
+               Group = "color", opacity = 1, legend = FALSE, bounded = F,
                fontSize = 16, opacityNoHover = 0.7)
 }
 

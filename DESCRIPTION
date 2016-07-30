@@ -20,7 +20,9 @@ Imports:
     igraph,
     GSEABase,
     dygraphs,
-    BioNet
+    BioNet,
+    DT,
+    shiny
 Collate:
     'HTSanalyzeR2.R'
     'RcppExports.R'
