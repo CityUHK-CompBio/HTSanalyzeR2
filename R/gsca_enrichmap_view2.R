@@ -1,5 +1,6 @@
-if(!isGeneric("generateEnrichMap"))
+if(!isGeneric("generateEnrichMap")){
   setGeneric("generateEnrichMap",function(object,...) standardGeneric("generateEnrichMap"), package="HTSanalyzeR2")
+}
 
 #' @export
 #' @importFrom igraph V graph.adjacency
@@ -129,7 +130,8 @@ plotD3Graph <- function(g, link_dist = 50, charge = -600, colorDomain = NULL, co
   # linkDistance = JS("function(d){return d.value * 10}")
 
   if(is.null(colorRange)) {
-    colorRange = c('#67001f', '#b2182b', '#d6604d', '#f4a582', '#fddbc7', '#dddddd', '#d1e5f0', '#92c5de', '#4393c3', '#2166ac', '#053061')
+    colorRange = c('#67001f', '#b2182b', '#d6604d', '#f4a582', '#fddbc7', '#dddddd',
+                   '#d1e5f0', '#92c5de', '#4393c3', '#2166ac', '#053061')
     colorDomain = seq(from = 0, to = 100, by = 10)
   }
 

@@ -29,6 +29,10 @@ setMethod(
       if(!all(goGSCs %in% gsc.names))
         stop("Wrong gene set collection names specified in 'goGSCs'!\n")
     }
+    if(!is.null(msigdbGSCs)) {
+      if(!all(msigdbGSCs %in% gsc.names))
+        stop("Wrong gene set collection names specified in 'msigdbGSCs'!\n")
+    }
 
     result <- object@result
 
@@ -73,30 +77,30 @@ setMethod(
   }
 )
 
-
-#' @import AnnotationDbi
+#' @importFrom AnnotationDbi Term
 appendGOTerm <- function(df) {
-  goterms <- AnnotationDbi::Term(rownames(df))
+  goterms <- AnnotationDbi::Term(row.names(df))
   goterms[which(is.na(goterms))] <- "NA"
-  names(goterms)[which(is.na(names(goterms)))] <- rownames(df)[which(is.na(names(goterms)))]
+  names(goterms)[which(is.na(names(goterms)))] <- row.names(df)[which(is.na(names(goterms)))]
   data.frame(Gene.Set.Term = goterms, df, stringsAsFactors = FALSE)
 }
 
-#' @import KEGGREST
+#' @importFrom KEGGREST keggList
+#' @importFrom stringr str_sub
 appendKEGGTerm<-function(df) {
   mappings <- KEGGREST::keggList("pathway")
   names(mappings) <- stringr::str_sub(names(mappings), -5)
-  keggnames <- stringr::str_sub(rownames(df), -5)
+  keggnames <- stringr::str_sub(row.names(df), -5)
   keggterms <- mappings[keggnames]
   keggterms[which(is.na(keggterms))]<-"NA"
-  names(keggterms)[which(is.na(names(keggterms)))]<-rownames(df)[which(is.na(names(keggterms)))]
+  names(keggterms)[which(is.na(names(keggterms)))]<-row.names(df)[which(is.na(names(keggterms)))]
   newdf<-data.frame(Gene.Set.Term=keggterms, df, stringsAsFactors=FALSE)
-  rownames(newdf)<-rownames(df)
+  row.names(newdf)<-row.names(df)
   return(newdf)
 }
 
 appendMSigDBTerm <- function(df) {
-  data.frame(Gene.Set.Term = "--", df, stringsAsFactors = FALSE)
+  data.frame(Gene.Set.Term = row.names(df), df, stringsAsFactors = FALSE)
 }
 
 ##plot GSEA for GSCA
