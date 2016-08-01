@@ -75,7 +75,7 @@ setMethod("initialize",
             .Object
           })
 
-
+#' @export
 GSCA <- function(listOfGeneSetCollections, geneList, hits) {
   paraCheck(name = "gscs", para = listOfGeneSetCollections)
   paraCheck(name = "genelist", para = geneList)
@@ -87,7 +87,4 @@ GSCA <- function(listOfGeneSetCollections, geneList, hits) {
     geneList = geneList,
     hits = hits
   )
-  object
 }
-
-

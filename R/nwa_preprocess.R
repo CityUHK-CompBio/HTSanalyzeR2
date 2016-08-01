@@ -99,13 +99,13 @@ setMethod(
 )
 
 
-
-
 ##build interactome
 #' @export
+#' @importFrom BioNet makeNetwork
+#' @importFrom igraph vcount ecount
 setMethod(
   "interactome",
-  "NWA",
+  signature = "NWA",
   function(object, interactionMatrix = NULL, species,
            link = "http://thebiogrid.org/downloads/archives/Release%20Archive/BIOGRID-3.4.138/BIOGRID-ORGANISM-3.4.138.tab2.zip",
            reportDir = "HTSanalyzerReport", genetic = FALSE, verbose = TRUE) {
@@ -147,19 +147,21 @@ setMethod(
     if(!genetic)
       InteractionsData <- InteractionsData[
         which(InteractionsData[, "InteractionType"] != "genetic"), ]
-    ##Make a graphNEL object from the data
+    ##Make a igraph object from the data
     object@interactome <- makeNetwork(
       source = InteractionsData[, "InteractorA"],
       target = InteractionsData[, "InteractorB"],
-      edgemode = "undirected")
+      edgemode = "undirected",
+      format = "igraph")
     ##update graph info in summary
-    object@summary$db[, "node No"] <- numNodes(object@interactome)
-    object@summary$db[, "edge No"] <- numEdges(object@interactome)
+    object@summary$db[, "node No"] <- igraph::vcount(object@interactome)
+    object@summary$db[, "edge No"] <- igraph::ecount(object@interactome)
 
     cat("-Interactome created! \n\n")
     object
   }
 )
+
 
 ##This functions downloads the data from the Biogrid, puts it in the
 ##user-specified folder and extracts the interactions data for a given
@@ -174,8 +176,8 @@ biogridDataDownload <- function(link, species = "Dm", dataDirectory = ".",
   paraCheck("species", species)
   paraCheck("dataDirectory", dataDirectory)
   paraCheck("verbose",verbose)
-  bionet.species <- c("Drosophila_melanogaster", "Homo_sapiens",
-                      "Rattus_norvegicus", "Mus_musculus", "Caenorhabditis_elegans")
+
+  bionet.species <- c("Drosophila_melanogaster", "Homo_sapiens", "Rattus_norvegicus", "Mus_musculus", "Caenorhabditis_elegans")
   names(bionet.species) <- c("Dm", "Hs", "Rn", "Mm", "Ce")
   #download the data from the BioGRID and put the compressed file
   ##into directory, then unzip the file
@@ -183,10 +185,8 @@ biogridDataDownload <- function(link, species = "Dm", dataDirectory = ".",
     cat("--Downloading BioGRID interactome dataset ...\n")
   if(!file.exists(dataDirectory))
     dir.create(dataDirectory)
-  download.file(url = link, destfile = file.path(dataDirectory,
-                                                 "Biogrid-all-org"), quiet=TRUE)
-  unzip(zipfile = file.path(dataDirectory, "Biogrid-all-org"),
-        exdir = dataDirectory)
+  download.file(url = link, destfile = file.path(dataDirectory, "Biogrid-all-org"), quiet=TRUE)
+  unzip(zipfile = file.path(dataDirectory, "Biogrid-all-org"), exdir = dataDirectory)
   #the data directory now contains one tab delimited file for each
   #species in the biogrid data the next few lines find and read the
   #file that contains the data for the species that we want to use

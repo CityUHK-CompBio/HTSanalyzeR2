@@ -1,7 +1,6 @@
 ## summarize & default show
 if (!isGeneric("analyze")) {
-  setGeneric("analyze", function(object, ...)
-    standardGeneric("analyze"), package = "HTSanalyzeR2")
+  setGeneric("analyze", function(object, ...) standardGeneric("analyze"), package = "HTSanalyzeR2")
 }
 
 #' @include gsca_class.R
