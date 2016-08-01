@@ -59,6 +59,7 @@ setMethod("analyze",
 ##This function finds subnetworks enriched for genes with significant
 ##phenotypes.
 #' @export
+#' @importFrom BioNet fitBumModel scoreNodes runFastHeinz
 networkAnalysis <-
   function(pvalues,
            graph,

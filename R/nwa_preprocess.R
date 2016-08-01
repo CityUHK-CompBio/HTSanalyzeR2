@@ -2,27 +2,29 @@ if (!isGeneric("preprocess")) {
   setGeneric("preprocess", function(object, ...)
     standardGeneric("preprocess"), package = "HTSanalyzeR2")
 }
-
 if (!isGeneric("interactome")) {
   setGeneric("interactome", function(object, ...)
     standardGeneric("interactome"), package = "HTSanalyzeR2")
 }
-
 
 ##pre-processing
 #' @export
 #' @include gsca_class.R
 setMethod(
   "preprocess",
-  "NWA",
-  function(object, species = "Dm", duplicateRemoverMethod = "max",
-           initialIDs = "FlybaseCG", keepMultipleMappings = TRUE,
+  signature = "NWA",
+  function(object,
+           species = "Dm",
+           duplicateRemoverMethod = "max",
+           initialIDs = "FLYBASECG",
+           keepMultipleMappings = TRUE,
            verbose = TRUE) {
+
     ##check input arguments
-    paraCheck(name = "species", para = species)
+    # paraCheck(name = "species", para = species)
     ##Check that the method argument is correctly specified
     paraCheck(name = "duplicateRemoverMethod", para = duplicateRemoverMethod)
-    paraCheck(name = "initialIDs", para = initialIDs)
+    # paraCheck(name = "initialIDs", para = initialIDs)
     paraCheck(name = "keepMultipleMappings", para = keepMultipleMappings)
     paraCheck(name = "verbose", para = verbose)
 
@@ -48,34 +50,34 @@ setMethod(
     }
     ##2.duplicate remover
     if(verbose) cat("--Removing duplicated genes ...\n")
-    pvalues <- duplicateRemover(geneList = pvalues,
+    pvalues <- duplicateRemover2(geneList = pvalues,
                                 method = duplicateRemoverMethod)
     ##p-values after removing duplicates
     object@summary$input[1, "duplicate removed"] <- length(pvalues)
 
     if(!is.null(phenotypes)) {
-      phenotypes <- duplicateRemover(geneList = phenotypes,
+      phenotypes <- duplicateRemover2(geneList = phenotypes,
                                      method = duplicateRemoverMethod)
       ##phenotypes after removing duplicates
       object@summary$input[2, "duplicate removed"] <- length(phenotypes)
     }
     ##3.convert annotations in pvalues
-    if(initialIDs != "Entrez.gene") {
+    if(initialIDs != "ENTREZID") {
       if(verbose) cat("--Converting annotations ...\n")
-      pvalues <- annotationConvertor(
+      pvalues <- annotationConvertor2(
         geneList = pvalues,
         species = species,
         initialIDs = initialIDs,
-        finalIDs = "Entrez.gene",
+        finalIDs = "ENTREZID",
         keepMultipleMappings = keepMultipleMappings,
         verbose = verbose
       )
       if(!is.null(phenotypes)) {
-        phenotypes <- annotationConvertor(
+        phenotypes <- annotationConvertor2(
           geneList = phenotypes,
           species = species,
           initialIDs = initialIDs,
-          finalIDs = "Entrez.gene",
+          finalIDs = "ENTREZID",
           keepMultipleMappings = keepMultipleMappings,
           verbose = verbose
         )
@@ -168,7 +170,7 @@ biogridDataDownload <- function(link, species = "Dm", dataDirectory = ".",
   if(!missing(link) && !is.null(link))
     paraCheck("link", link)
   else
-    link <- "http://thebiogrid.org/downloads/archives/Release%20Archive/BIOGRID-3.1.89/BIOGRID-ORGANISM-3.1.89.tab2.zip"
+    link <- "http://thebiogrid.org/downloads/archives/Release%20Archive/BIOGRID-3.4.138/BIOGRID-ORGANISM-3.4.138.tab2.zip"
   paraCheck("species", species)
   paraCheck("dataDirectory", dataDirectory)
   paraCheck("verbose",verbose)

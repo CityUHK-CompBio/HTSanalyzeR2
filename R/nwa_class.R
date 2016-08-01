@@ -1,6 +1,6 @@
 ##class NWA (NetWork Analyses)
 ##definition of class NWA
-#' @include class_union.R
+#' @include class_union.R utils.R
 setClass(
   "NWA",
   representation(
@@ -41,26 +41,19 @@ setMethod("initialize",
             .Object@interactome <- interactome
 
             ##set up summary framework
-            sum.info.input <- matrix(NA, 2, 5)
-            colnames(sum.info.input) <- c("input",
-                                          "valid",
-                                          "duplicate removed",
-                                          "converted to entrez",
-                                          "in interactome")
-            rownames(sum.info.input) <- c("p-values", "phenotypes")
+            sum.info.input <- geneMatrix(rowNames = c("p-values", "phenotypes"),
+                                         colNames = c("input", "valid",
+                                           "duplicate removed",
+                                           "converted to entrez",
+                                           "in interactome"))
+            sum.info.db <- geneMatrix(rowNames = c("Interaction dataset"),
+                                      colNames = c("name", "species", "genetic",
+                                                                "node No", "edge No"))
+            sum.info.para <- geneMatrix(rowNames = c("Parameter"),
+                                        colNames = c("FDR"))
 
-            sum.info.db <- matrix(NA, 1, 5)
-            colnames(sum.info.db) <- c("name", "species", "genetic",
-                                       "node No", "edge No")
-            rownames(sum.info.db) <- "Interaction dataset"
-
-            sum.info.para <- matrix(NA, 1, 1)
-            colnames(sum.info.para) <- "FDR"
-            rownames(sum.info.para) <- "Parameter"
-
-            sum.info.results <- matrix(NA, 1, 2)
-            colnames(sum.info.results) <- c("node No", "edge No")
-            rownames(sum.info.results) <- "Subnetwork"
+            sum.info.results <- geneMatrix(rowNames = c("Subnetwork"),
+                                           colNames = c("node No", "edge No") )
 
             .Object@summary <- list(
               input = sum.info.input,
@@ -80,6 +73,5 @@ setMethod("initialize",
             }
 
             .Object@preprocessed <- FALSE
-
             .Object
           })

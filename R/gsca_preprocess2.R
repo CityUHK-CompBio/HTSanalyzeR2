@@ -61,7 +61,7 @@ setMethod("preprocess2", signature = "GSCA",
               stop("Hits and geneList have no overlaps!\n")
 
             ##annotation convertor
-            if (initialIDs != "Entrez.gene") {
+            if (initialIDs != "ENTREZID") {
               if (verbose)
                 cat("--Converting annotations ...\n")
               genelist <- annotationConvertor2(
