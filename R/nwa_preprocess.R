@@ -50,13 +50,13 @@ setMethod(
     }
     ##2.duplicate remover
     if(verbose) cat("--Removing duplicated genes ...\n")
-    pvalues <- duplicateRemover2(geneList = pvalues,
+    pvalues <- duplicateRemover(geneList = pvalues,
                                 method = duplicateRemoverMethod)
     ##p-values after removing duplicates
     object@summary$input[1, "duplicate removed"] <- length(pvalues)
 
     if(!is.null(phenotypes)) {
-      phenotypes <- duplicateRemover2(geneList = phenotypes,
+      phenotypes <- duplicateRemover(geneList = phenotypes,
                                      method = duplicateRemoverMethod)
       ##phenotypes after removing duplicates
       object@summary$input[2, "duplicate removed"] <- length(phenotypes)
@@ -64,7 +64,7 @@ setMethod(
     ##3.convert annotations in pvalues
     if(initialIDs != "ENTREZID") {
       if(verbose) cat("--Converting annotations ...\n")
-      pvalues <- annotationConvertor2(
+      pvalues <- annotationConvertor(
         geneList = pvalues,
         species = species,
         initialIDs = initialIDs,
@@ -73,7 +73,7 @@ setMethod(
         verbose = verbose
       )
       if(!is.null(phenotypes)) {
-        phenotypes <- annotationConvertor2(
+        phenotypes <- annotationConvertor(
           geneList = phenotypes,
           species = species,
           initialIDs = initialIDs,

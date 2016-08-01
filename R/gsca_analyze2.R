@@ -1,10 +1,12 @@
 ## summarize & default show
-setGeneric("analyze2", function(object, ...)
-  standardGeneric("analyze2"), package = "HTSanalyzeR2")
+if (!isGeneric("analyze")) {
+  setGeneric("analyze", function(object, ...)
+    standardGeneric("analyze"), package = "HTSanalyzeR2")
+}
 
 #' @include gsca_class.R
-#' @export analyze2
-setMethod("analyze2",
+#' @export
+setMethod("analyze",
           "GSCA",
           function(object,
                    para = list(

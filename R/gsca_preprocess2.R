@@ -1,12 +1,12 @@
 ## summarize & default show
-if (!isGeneric("preprocess2")) {
-  setGeneric("preprocess2", function(object, ...)
-    standardGeneric("preprocess2"), package = "HTSanalyzeR2")
+if (!isGeneric("preprocess")) {
+  setGeneric("preprocess", function(object, ...)
+    standardGeneric("preprocess"), package = "HTSanalyzeR2")
 }
 
 #' @export
 #' @include gsca_class.R
-setMethod("preprocess2", signature = "GSCA",
+setMethod("preprocess", signature = "GSCA",
           function(object,
                    species = "Dm",
                    initialIDs = "FLYBASECG",
@@ -45,7 +45,7 @@ setMethod("preprocess2", signature = "GSCA",
             if (verbose)
               cat("--Removing duplicated genes ...\n")
             genelist <-
-              duplicateRemover2(geneList = genelist, method = duplicateRemoverMethod)
+              duplicateRemover(geneList = genelist, method = duplicateRemoverMethod)
 
             #genes after removing duplicates
             object@summary$gl[, "duplicate removed"] <-
@@ -64,7 +64,7 @@ setMethod("preprocess2", signature = "GSCA",
             if (initialIDs != "ENTREZID") {
               if (verbose)
                 cat("--Converting annotations ...\n")
-              genelist <- annotationConvertor2(
+              genelist <- annotationConvertor(
                 geneList = genelist,
                 species = species,
                 initialIDs = initialIDs,
@@ -72,7 +72,7 @@ setMethod("preprocess2", signature = "GSCA",
                 keepMultipleMappings = keepMultipleMappings,
                 verbose = verbose
               )
-              hits.vec <- annotationConvertor2(
+              hits.vec <- annotationConvertor(
                 geneList = hits.vec,
                 species = species,
                 initialIDs = initialIDs,
@@ -107,7 +107,7 @@ setMethod("preprocess2", signature = "GSCA",
 
 #' This function gets rid of the duplicates in a gene list.
 #' @export
-duplicateRemover2 <- function(geneList, method = "max") {
+duplicateRemover <- function(geneList, method = "max") {
   ##check arguments
   paraCheck("genelist", geneList)
   paraCheck("duplicateRemoverMethod", method)
@@ -156,7 +156,7 @@ duplicateRemover2 <- function(geneList, method = "max") {
 #' Convert between different types of gene identifiers
 #' @export
 #' @import AnnotationDbi
-annotationConvertor2 <- function(geneList,
+annotationConvertor <- function(geneList,
                                 species = "Dm",
                                 initialIDs = "ENTREZID",
                                 finalIDs = "ENTREZID",
