@@ -6,6 +6,10 @@ if (!isGeneric("plotSubNet")) {
   setGeneric("plotSubNet", function(object, ...)
     standardGeneric("plotSubNet"), package = "HTSanalyzeR2")
 }
+if (!isGeneric("extractSubNet")) {
+  setGeneric("extractSubNet", function(object, ...)
+    standardGeneric("extractSubNet"), package = "HTSanalyzeR2")
+}
 
 ##view subnetwork
 setMethod("viewSubNet",
@@ -138,3 +142,31 @@ setMethod("plotSubNet",
                         phenotypeVector = object@phenotypes)
             dev.off()
           })
+
+
+## generate the igraph object for "plotD3Graph"
+#' @importFrom igraph V E as_data_frame
+#' @export
+setMethod("extractSubNet",
+          signature = "NWA",
+          function(object) {
+            g <- object@result$subnw
+            if(is.null(g)) {
+              stop("No subnet detected.")
+            }
+
+            val.range = range(V(g)$score)
+            V(g)$color = (V(g)$score - val.range[1]) * 100 / (val.range[2] - val.range[1])
+            V(g)$label = unlist(anw@result$labels[V(g)$name])
+            V(g)$size = 6
+            E(g)$width = 2
+
+            em_nodes <- igraph::as_data_frame(g, "vertices")
+            em_links <- igraph::as_data_frame(g, "edge")
+            idx <- 0:(nrow(em_nodes) - 1)
+            names(idx) <- row.names(em_nodes)
+            E(g)$source <- idx[em_links[, "from"]]
+            E(g)$target <- idx[em_links[, "to"]]
+            g
+          })
+
