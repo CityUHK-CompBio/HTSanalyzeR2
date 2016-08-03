@@ -79,7 +79,8 @@ setMethod(
 
 #' @importFrom AnnotationDbi Term
 appendGOTerm <- function(df) {
-  goterms <- AnnotationDbi::Term(row.names(df))
+  require(GO.db)
+  goterms <- AnnotationDbi::mapIds(GO.db, keys=row.names(df), keytype = "GOID", column = "TERM")
   goterms[which(is.na(goterms))] <- "NA"
   names(goterms)[which(is.na(names(goterms)))] <- row.names(df)[which(is.na(names(goterms)))]
   data.frame(Gene.Set.Term = goterms, df, stringsAsFactors = FALSE)
