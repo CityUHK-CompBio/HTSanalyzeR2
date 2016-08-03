@@ -34,6 +34,5 @@
 #'
 #' @useDynLib HTSanalyzeR2
 #' @importFrom Rcpp sourceCpp
-#' @importClassesFrom graph graphNEL
 NULL
 

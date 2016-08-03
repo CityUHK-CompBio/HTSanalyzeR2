@@ -4,8 +4,8 @@
 \alias{annotationConvertor}
 \title{Convert between different types of gene identifiers}
 \usage{
-annotationConvertor(geneList, species = "Dm", initialIDs = "Entrez.gene",
-  finalIDs = "Entrez.gene", keepMultipleMappings = TRUE, verbose = TRUE)
+annotationConvertor(geneList, species = "Dm", initialIDs = "ENTREZID",
+  finalIDs = "ENTREZID", keepMultipleMappings = TRUE, verbose = TRUE)
 }
 \description{
 Convert between different types of gene identifiers

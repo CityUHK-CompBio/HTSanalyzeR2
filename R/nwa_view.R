@@ -6,6 +6,10 @@ if (!isGeneric("plotSubNet")) {
   setGeneric("plotSubNet", function(object, ...)
     standardGeneric("plotSubNet"), package = "HTSanalyzeR2")
 }
+if (!isGeneric("extractSubNet")) {
+  setGeneric("extractSubNet", function(object, ...)
+    standardGeneric("extractSubNet"), package = "HTSanalyzeR2")
+}
 
 ##view subnetwork
 setMethod("viewSubNet",
@@ -18,8 +22,9 @@ setMethod("viewSubNet",
 ##This function takes in a subnetwork module resulted from function
 ##networkAnalysis, a vector of labels for nodes in the module and a
 ##phenotype vector (optional) and generate a figure stored to
-##'filepath' with the name 'filename'.
-
+## "filepath" with the name "filename".
+#' @importFrom igraph vertex_attr vcount
+#' @importFrom BioNet plotModule
 networkPlot <- function(nwAnalysisOutput, phenotypeVector = NULL) {
   ##check arguments
   if (!is.list(nwAnalysisOutput) ||
@@ -27,31 +32,31 @@ networkPlot <- function(nwAnalysisOutput, phenotypeVector = NULL) {
     stop("'nwAnalysisOutput' should contain a subnetwork module!\n")
   subnw <- nwAnalysisOutput$subnw
   labels <- nwAnalysisOutput$labels
-  if (!is(subnw, "graphNEL"))
+  if (!is(subnw, "igraph"))
     stop("The module in 'nwAnalysisOutput' should be an object ",
-         "of class 'graphNEL'!\n")
+         "of class 'igraph'!\n")
   ##If no phenotype vector is specified, then we can just plot the module
   if (is.null(phenotypeVector)) {
     ##png("EnrichedSubNw.png", width = 900, height = 900)
-    plotModule(subnw, labels = labels)
+    BioNet::plotModule(subnw, labels = labels)
     ##dev.off()
   } else {
     paraCheck("phenotypes", phenotypeVector)
-    ##'diff.expr' holds the phenotype for the nodes of the sub-network
-    diff.expr <- phenotypeVector[nodes(subnw)]
-    names(diff.expr) <- nodes(subnw)
-    ##'present' contains the information of wether a node has an
+    ## "diff.expr" holds the phenotype for the nodes of the sub-network
+    diff.expr <- phenotypeVector[vertex_attr(subnw, "name")]
+    names(diff.expr) <- vertex_attr(subnw, "name")
+    ## "present" contains the information of wether a node has an
     ##associated phenotype (1) or not (-1), will be used to give a
     ##different shape to the nodes of the network
-    present <- rep(1, length(nodes(subnw)))
+    present <- rep(1, vcount(subnw))
     present[which(is.na(diff.expr))] <- -1
     ##replaces all phenotypes of non-phenotyped nodes by a zero
     diff.expr[which(is.na(diff.expr))] <- 0
-    names(present) <- nodes(subnw)
+    names(present) <- vertex_attr(subnw, "name")
     ##Plot the module
-    if (length(nodes(subnw)) == 1) {
+    if (vcount(subnw) == 1) {
       ##png(file.path(filepath, filename), width = 900, height = 900)
-      plotModule(subnw,
+      BioNet::plotModule(subnw,
                  labels = labels,
                  scores = present,
                  diff.expr = diff.expr)
@@ -87,7 +92,7 @@ networkPlot <- function(nwAnalysisOutput, phenotypeVector = NULL) {
       colMatrix <- cbind(colboundary[order(colboundary)],
                          colScale[order(colboundary)])
       ##png(file.path(filepath, filename), width = 900, height = 900)
-      plotModule(subnw,
+      BioNet::plotModule(subnw,
                  labels = labels,
                  scores = present,
                  diff.expr = diff.expr)
@@ -137,3 +142,31 @@ setMethod("plotSubNet",
                         phenotypeVector = object@phenotypes)
             dev.off()
           })
+
+
+## generate the igraph object for "plotD3Graph"
+#' @importFrom igraph V E as_data_frame
+#' @export
+setMethod("extractSubNet",
+          signature = "NWA",
+          function(object) {
+            g <- object@result$subnw
+            if(is.null(g)) {
+              stop("No subnet detected.")
+            }
+
+            val.range = range(V(g)$score)
+            V(g)$color = (V(g)$score - val.range[1]) * 100 / (val.range[2] - val.range[1])
+            V(g)$label = unlist(anw@result$labels[V(g)$name])
+            V(g)$size = 6
+            E(g)$width = 2
+
+            em_nodes <- igraph::as_data_frame(g, "vertices")
+            em_links <- igraph::as_data_frame(g, "edge")
+            idx <- 0:(nrow(em_nodes) - 1)
+            names(idx) <- row.names(em_nodes)
+            E(g)$source <- idx[em_links[, "from"]]
+            E(g)$target <- idx[em_links[, "to"]]
+            g
+          })
+

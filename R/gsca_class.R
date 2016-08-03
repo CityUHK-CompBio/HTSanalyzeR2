@@ -1,4 +1,4 @@
-#' @include class_union.R
+#' @include class_union.R utils.R
 setClass(
   Class = "GSCA",
   slots = c(
@@ -31,26 +31,26 @@ setMethod("initialize",
             .Object@geneList <- geneList
             .Object@hits <- hits
             # gene set collections
-            .Object@summary$gsc <- .geneMatrix(
+            .Object@summary$gsc <- geneMatrix(
               rowNames = names(listOfGeneSetCollections),
               colNames = c("input", "above min size")
             )
             # gene list
-            .Object@summary$gl <- .geneMatrix(
+            .Object@summary$gl <- geneMatrix(
               rowNames = c("Gene List"),
               colNames = c("input", "valid", "duplicate removed", "converted to entrez")
             )
             # hits
             .Object@summary$hits <-
-              .geneMatrix(rowNames = c("Hits"),
+              geneMatrix(rowNames = c("Hits"),
                           colNames = c("input", "preprocessed"))
             # parameters
             .Object@summary$para <- list(
-              hypergeo = .geneMatrix(
+              hypergeo = geneMatrix(
                 rowNames = "HyperGeo Test",
                 colNames =  c("minGeneSetSize", "pValueCutoff", "pAdjustMethod")
               ),
-              gsea = .geneMatrix(
+              gsea = geneMatrix(
                 rowNames = "GSEA",
                 colNames =  c(
                   "minGeneSetSize",
@@ -62,7 +62,7 @@ setMethod("initialize",
               )
             )
             # results
-            .Object@summary$results <- .geneMatrix(
+            .Object@summary$results <- geneMatrix(
               rowNames = c("HyperGeo", "GSEA", "Both"),
               colNames =  names(listOfGeneSetCollections)
             )
@@ -75,7 +75,7 @@ setMethod("initialize",
             .Object
           })
 
-
+#' @export
 GSCA <- function(listOfGeneSetCollections, geneList, hits) {
   paraCheck(name = "gscs", para = listOfGeneSetCollections)
   paraCheck(name = "genelist", para = geneList)
@@ -87,16 +87,4 @@ GSCA <- function(listOfGeneSetCollections, geneList, hits) {
     geneList = geneList,
     hits = hits
   )
-  object
-}
-
-.geneMatrix <- function(rowNames, colNames) {
-  mat <-
-    matrix(
-      NA,
-      nrow =  length(rowNames),
-      ncol = length(colNames),
-      dimnames = list(rowNames, colNames)
-    )
-  mat
 }
