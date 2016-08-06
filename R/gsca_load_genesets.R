@@ -19,7 +19,7 @@ MSigDBGeneSets<- function(collection = "h") {
   ## ...
   # MSigDB <- list("h.db" = h.db, ..., "c7.db" = c7.db)
 
-  MSigDB <- base::get("MSigDB", envir = as.environment("package:HTSanalyzeR2"))
+  #MSigDB <- base::get("MSigDB", envir = as.environment("package:HTSanalyzeR2"))
   gene.sets <- MSigDB[[paste(collection, ".db", sep = "")]]
   return(gene.sets)
 }
