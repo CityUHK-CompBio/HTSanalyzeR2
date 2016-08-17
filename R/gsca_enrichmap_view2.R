@@ -85,12 +85,14 @@ setMethod(
 
       V(g)$color<-""
       val.range <- range(p.vec[negids])
-      V(g)$color[negids] <- (p.vec[negids]) * 50 / (val.range[2] - val.range[1])
+      V(g)$color[negids] <- ifelse((val.range[2] - val.range[1]) ==0, 0, (p.vec[negids]) * 50 / (val.range[2] - val.range[1]))
       val.range <- range(p.vec[posids])
-      V(g)$color[posids] <- (p.vec[posids]) * 50 / (val.range[2] - val.range[1]) + 50
+      V(g)$color[posids] <- ifelse((val.range[2] - val.range[1]) ==0, 50, (p.vec[posids]) * 50 / (val.range[2] - val.range[1]) + 50)
+
+
     } else if(resultName=="HyperGeo.results") {
       val.range <- range(p.vec)
-      V(g)$color <- (p.vec) * 50 / (val.range[2] - val.range[1])
+      V(g)$color <- ifelse((val.range[2] - val.range[1]) ==0, 0, (p.vec) * 50 / (val.range[2] - val.range[1]))
     }
 
     ##labels attributes
@@ -145,8 +147,8 @@ plotD3Graph <- function(g, link_dist = 50, charge = -600, colorDomain = NULL, co
                colourScale = networkD3::JS(scale),
                Nodesize = 'size', radiusCalculation = "d.nodesize",
                linkDistance = link_dist, charge = charge,
-               Group = "color", opacity = 1, legend = FALSE, bounded = F,
-               fontSize = 16, opacityNoHover = 0.7)
+               Group = "color", opacity = 1, legend = FALSE, bounded = T,
+               fontSize = 12, opacityNoHover = 0.7)
 }
 
 

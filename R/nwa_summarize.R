@@ -39,6 +39,8 @@ setMethod("summarize",
               cat("-Subnetwork identified: \n")
               print(object@summary$result, quote = FALSE)
               cat("\n")
+
+
             }
           })
 

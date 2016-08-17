@@ -157,7 +157,7 @@ setMethod("extractSubNet",
 
             val.range = range(V(g)$score)
             V(g)$color = (V(g)$score - val.range[1]) * 100 / (val.range[2] - val.range[1])
-            V(g)$label = unlist(anw@result$labels[V(g)$name])
+            V(g)$label = unlist(nwa@result$labels[V(g)$name])
             V(g)$size = 6
             E(g)$width = 2
 

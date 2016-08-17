@@ -363,3 +363,22 @@
 #'
 #'
 #'
+#'
+#'calcGScore <- function(hits, geneList, exponent = 1) {
+# nh <- sum(hits)
+# N <- length(geneList)
+# ES <- 0
+# runningES <- rep(0, N)
+# if (nh) {
+#   tmp <- rep(0, N)
+#   NR = sum(abs(geneList[hits]) ^ exponent)
+#   tmp[hits] <- (abs(geneList[hits]) ^ exponent) / NR
+#   tmp[!hits] <- -1 / (N - nh)
+#   runningES <- cumsum(tmp)
+#
+#   ESmax <- max(runningES)
+#   ESmin <- min(runningES)
+#   ES <- ifelse(abs(ESmin) > abs(ESmax), ESmin, ESmax)
+# }
+# ES
+# }

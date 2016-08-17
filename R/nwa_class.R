@@ -5,8 +5,10 @@ setClass(
   "NWA",
   representation(
     pvalues = "numeric",
-    phenotypes = "numeric_Or_integer_Or_NULL",
-    interactome = "igraph_Or_NULL",
+    # phenotypes = "numeric_Or_integer_Or_NULL",
+    # interactome = "igraph_Or_NULL",
+    phenotypes = "numeric",
+    interactome = "igraph",
     fdr = "numeric",
     result = "list",
     summary = "list",

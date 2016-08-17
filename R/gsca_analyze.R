@@ -43,7 +43,7 @@ setMethod("analyze",
             ##    do analysis
             #######################
             object@result <-
-              analyzeGeneSetCollections2(
+              analyzeGeneSetCollections(
                 listOfGeneSetCollections = object@listOfGeneSetCollections,
                 geneList = object@geneList,
                 hits = object@hits,
@@ -89,7 +89,7 @@ setMethod("analyze",
 ##(names only) and returns the results of hypergeometric and gene set
 ##enrichment analysis for all of the gene set collections (with multiple
 ##hypothesis testing correction).
-analyzeGeneSetCollections2 <-
+analyzeGeneSetCollections <-
   function(listOfGeneSetCollections,
            geneList,
            hits,
@@ -435,7 +435,10 @@ calcGSEA <-
         perm <- sapply(1:nPermutations, function(x) {
           calcGScoreCPP(sample(hits), geneList, exponent)
         })
+
         perm
+        ## add pseudo count to avoid zero p-value
+        # c(-Inf, perm, Inf)
       }
 
     rownames(permScores) <- names(groups)
@@ -453,7 +456,7 @@ calcGSEA <-
           #   ifelse(gScore > 0,
           #          mean(permScores[idx,] > gScore),
           #          mean(permScores[idx,] < gScore))
-          c(gScore, pVal, NA, NA, overlap)
+          c(gScore, pVal, NA, overlap)
         })
       }
 
@@ -464,14 +467,13 @@ calcGSEA <-
       c("Observed.score",
         "Pvalue",
         "Adjusted.Pvalue",
-        "FDR",
         "overlap")
+
     res[, "Adjusted.Pvalue"] <-
       p.adjust(res[, "Pvalue"], method = pAdjustMethod)
-    res[, "FDR"] <-
-      calcFDR(res[, "Observed.score"], res[, "overlap"], permScores)
+
     res <-
-      res[, c("Observed.score", "Pvalue", "Adjusted.Pvalue", "FDR")]
+      res[, c("Observed.score", "Pvalue", "Adjusted.Pvalue")]
 
     results <- list()
     #Extract results dataframe for each gene set collection and orders them by adjusted p-value
@@ -488,61 +490,3 @@ calcGSEA <-
   }
 
 
-calcFDR <- function(gScores, overlaps, permScores) {
-  permScores <- permScores[as.character(overlaps),]
-  ldataScores <- length(gScores)
-  FDRgeneset = rep(0, ldataScores)
-
-  sapply(1:ldataScores, function(i) {
-    pos <- which(permScores[i,] >= 0)
-    neg <- which(permScores[i,] <= 0)
-    PosAvg <- abs(mean(permScores[i, pos]))
-    NegAvg <- abs(mean(permScores[i, neg]))
-
-    permScores[i, pos] <<- permScores[i, pos] / PosAvg
-    permScores[i, neg] <<- permScores[i, neg] / NegAvg
-
-    gScores[i] <<-
-      ifelse((gScores[i] < 0), (gScores[i] / NegAvg), (gScores[i] / PosAvg))
-  })
-
-  negtot <- sum(permScores <= 0)
-  postot <- sum(permScores >= 0)
-
-  sapply(1:ldataScores, function(i) {
-    if (is.na(gScores[i])) {
-      FDRgeneset[i] <<- 1
-    } else if (gScores[i] < 0) {
-      FDRgeneset[i] <<-
-        (sum(permScores <= gScores[i]) / negtot) / (sum(gScores <= gScores[i]) / sum(gScores <= 0))
-    } else {
-      FDRgeneset[i] <<-
-        (sum(permScores >= gScores[i]) / postot) / (sum(gScores >= gScores[i]) / sum(gScores >= 0))
-    }
-  })
-
-  FDRgeneset[FDRgeneset > 1] <- 1
-
-  names(FDRgeneset) <- names(gScores)
-  return(FDRgeneset)
-}
-
-
-calcGScore <- function(hits, geneList, exponent = 1) {
-  nh <- sum(hits)
-  N <- length(geneList)
-  ES <- 0
-  runningES <- rep(0, N)
-  if (nh) {
-    tmp <- rep(0, N)
-    NR = sum(abs(geneList[hits]) ^ exponent)
-    tmp[hits] <- (abs(geneList[hits]) ^ exponent) / NR
-    tmp[!hits] <- -1 / (N - nh)
-    runningES <- cumsum(tmp)
-
-    ESmax <- max(runningES)
-    ESmin <- min(runningES)
-    ES <- ifelse(abs(ESmin) > abs(ESmax), ESmin, ESmax)
-  }
-  ES
-}
