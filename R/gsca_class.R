@@ -75,6 +75,16 @@ setMethod("initialize",
             .Object
           })
 
+
+#' An S4 class for Gene Set Collection Analyses on high-throughput screens
+#'
+#' @slot listOfGeneSetCollections A list of gene set collections (a 'gene
+#' set collection' is a list of gene sets).
+#' @slot geneList A numeric or integer vector of phenotypes named by gene
+#' identifiers.
+#' @slot hits A character vector of the gene identifiers (used as hits in
+#' the hypergeometric tests).
+#'
 #' @export
 GSCA <- function(listOfGeneSetCollections, geneList, hits) {
   paraCheck(name = "gscs", para = listOfGeneSetCollections)

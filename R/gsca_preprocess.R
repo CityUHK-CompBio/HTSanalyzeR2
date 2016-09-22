@@ -4,6 +4,33 @@ if (!isGeneric("preprocess")) {
     standardGeneric("preprocess"), package = "HTSanalyzeR2")
 }
 
+#' A preprocessing method for objects of class GSCA
+#'
+#' When implemented as the S4 method for objects of class GSCA, this
+#' function filters out invalid data, removes duplicated genes,
+#' converts annotations to Entrez identifiers, etc.
+#'
+#'
+#' @param object A GSCA object.
+#' @param species A single character value specifying the species
+#' for which the data should be read.
+#' @param initialIDs A single character value specifying the type of
+#' initial identifiers for input geneList
+#' @param keepMultipleMappings A single logical value. If TRUE, the
+#' function keeps the entries with multiple mappings (first mapping
+#' is kept). If FALSE, the entries with multiple mappings will be discarded.
+#'
+#' @param duplicateRemoverMethod A single character value specifying
+#' the method to remove the duplicates. See duplicateRemover for details.
+#' @param orderAbsValue A single logical value indicating whether the
+#' values should be converted to absolute values and then ordered (if
+#' TRUE), or ordered as they are (if FALSE).
+#' @param verbose A single logical value specifying to display detailed
+#' messages (when verbose=TRUE) or not (when verbose=FALSE)
+#'
+#'
+#' @seealso duplicateRemover annotationConvertor
+#'
 #' @export
 #' @include gsca_class.R
 setMethod("preprocess", signature = "GSCA",
@@ -105,7 +132,32 @@ setMethod("preprocess", signature = "GSCA",
           })
 
 
-#' This function gets rid of the duplicates in a gene list.
+#' Remove duplicates in a named vector of phenotypes
+#'
+#' This function gets rid of the duplicates in a vector of phenotypes
+#' with gene identifiers as names. It is used to prepare the named vector
+#' of phenotypes for the over-representation and enrichment analysis.
+#'
+#' @param geneList A single named numeric or integer vector with gene
+#' identifiers as names
+#' @param method A single character value specifying the method to remove
+#' the duplicates (should the minimum, maximum or average observation for
+#' a same construct be kept). The current version provides "min" (minimum),
+#' "max" (maximum), "average" and "fc.avg" (fold change average).
+#' The minimum and maximum should be understood in terms of absolute values
+#' (i.e. min/max effect, no matter the sign). The fold change average method
+#' converts the fold changes to ratios, averages them and converts the average
+#' back to a fold change
+#'
+#' @return A named vector of phenotypes with duplicates removed
+#'
+#' @seealso preprocess
+#'
+#' @examples
+#' x<-c(5,1,3,-2,6)
+#' names(x)<-c("gene1","gene3","gene7","gene3","gene4")
+#' xprocessed<-duplicateRemover(geneList=x,method="max")
+#'
 #' @export
 duplicateRemover <- function(geneList, method = "max") {
   ##check arguments
@@ -152,10 +204,33 @@ duplicateRemover <- function(geneList, method = "max") {
   data.processed
 }
 
-
 #' Convert between different types of gene identifiers
+#'
+#' This function converts an initial data vector named by non-entrez
+#' ids to the same vector but with entrez ids, and vice versa. Genes
+#' for which no mapping were found will be removed. This function can
+#' also take a matrix, with gene identifiers as row names.
+#'
+#' @param geneList A named integer or numeric vector, or a matrix with
+#' rows named by gene identifiers
+#' @param species A single character value specifying the species for
+#' which the data should be read.
+#' @param initialIDs A single character value specifying the type of
+#' initial identifiers for input geneList.
+#' @param finalIDs A single character value specifying the type of
+#' final identifiers for input geneList.
+#' @param keepMultipleMappings A single logical value. If TRUE, the
+#' function keeps the entries with multiple mappings (first mapping
+#' is kept). If FALSE, the entries with multiple mappings will be discarded.
+#' @param verbose A single logical value specifying to display detailed
+#' messages (when verbose=TRUE) or not (when verbose=FALSE)
+#'
+#' @return The same data vector/matrix but with names/row names converted.
+#'
+#' @examples
+#'
 #' @export
-#' @import AnnotationDbi
+#' @importFrom AnnotationDbi mapIds
 annotationConvertor <- function(geneList,
                                 species = "Dm",
                                 initialIDs = "ENTREZID",
@@ -166,10 +241,6 @@ annotationConvertor <- function(geneList,
   paraCheck("genelist.general", geneList)
   paraCheck("keepMultipleMappings", keepMultipleMappings)
   paraCheck("verbose", verbose)
-
-  ##convert annotations if initialIDs are not Entrez
-  ##	if(initialIDs != "Entrez.gene") {
-  ##check species
   paraCheck(name = "species", para = species)
   # paraCheck("initialIDs", initialIDs)
   # paraCheck("finalIDs", finalIDs)

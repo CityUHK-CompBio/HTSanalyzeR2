@@ -7,7 +7,36 @@
 annotationConvertor(geneList, species = "Dm", initialIDs = "ENTREZID",
   finalIDs = "ENTREZID", keepMultipleMappings = TRUE, verbose = TRUE)
 }
+\arguments{
+\item{geneList}{A named integer or numeric vector, or a matrix with
+rows named by gene identifiers}
+
+\item{species}{A single character value specifying the species for
+which the data should be read.}
+
+\item{initialIDs}{A single character value specifying the type of
+initial identifiers for input geneList.}
+
+\item{finalIDs}{A single character value specifying the type of
+final identifiers for input geneList.}
+
+\item{keepMultipleMappings}{A single logical value. If TRUE, the
+function keeps the entries with multiple mappings (first mapping
+is kept). If FALSE, the entries with multiple mappings will be discarded.}
+
+\item{verbose}{A single logical value specifying to display detailed
+messages (when verbose=TRUE) or not (when verbose=FALSE)}
+}
+\value{
+The same data vector/matrix but with names/row names converted.
+}
 \description{
-Convert between different types of gene identifiers
+This function converts an initial data vector named by non-entrez
+ids to the same vector but with entrez ids, and vice versa. Genes
+for which no mapping were found will be removed. This function can
+also take a matrix, with gene identifiers as row names.
+}
+\examples{
+
 }
 
