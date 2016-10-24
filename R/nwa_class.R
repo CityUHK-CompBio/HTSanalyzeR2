@@ -7,8 +7,8 @@ setClass(
     pvalues = "numeric",
     # phenotypes = "numeric_Or_integer_Or_NULL",
     # interactome = "igraph_Or_NULL",
-    phenotypes = "numeric",
-    interactome = "igraph",
+    phenotypes = "numeric_or_integer",
+    interactome = "igraph_or_logical",
     fdr = "numeric",
     result = "list",
     summary = "list",
@@ -16,8 +16,8 @@ setClass(
   ),
   prototype = list(
     pvalues = numeric(),
-    phenotypes = NULL,
-    interactome = NULL,
+    phenotypes = as.numeric(NA),
+    interactome = NA,
     fdr = 0.001,
     result = list(),
     summary = list(),
@@ -31,14 +31,14 @@ setMethod("initialize",
           signature = "NWA",
           function(.Object,
                    pvalues,
-                   phenotypes = NULL,
-                   interactome = NULL) {
+                   phenotypes = NA,
+                   interactome = NA) {
             ##check input arguments
             paraCheck(name = "pvalues", para = pvalues)
-            if (!is.null(phenotypes))
-              paraCheck(name = "phenotypes", para = phenotypes)
-            # if (!is.null(interactome))
-              # paraCheck(name = "interactome", para = interactome)
+            # if (!is.na(phenotypes))
+            #   paraCheck(name = "phenotypes", para = phenotypes)
+            # if (!is.na(interactome))
+            #   paraCheck(name = "interactome", para = interactome)
             .Object@pvalues <- pvalues
             .Object@phenotypes <- phenotypes
             .Object@interactome <- interactome
@@ -78,7 +78,7 @@ setMethod("initialize",
               length(phenotypes)
 
             .Object@summary$db[1, "name"] <- "Unknown"
-            if (!is.null(interactome)) {
+            if (!is.na(interactome)) {
               .Object@summary$db[1, "node No"] <- igraph::vcount(interactome)
               .Object@summary$db[1, "edge No"] <- igraph::ecount(interactome)
             }
@@ -88,7 +88,7 @@ setMethod("initialize",
           })
 
 #' @export
-NWA <- function(pvalues, phenotypes = NULL, interactome = NULL) {
+NWA <- function(pvalues, phenotypes = as.numeric(NA), interactome = NA) {
   # paraCheck(name = "", para = pvalues)
   # paraCheck(name = "", para = phenotypes)
   # paraCheck(name = "", para = interactome)

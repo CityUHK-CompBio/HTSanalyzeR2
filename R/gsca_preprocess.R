@@ -230,7 +230,7 @@ duplicateRemover <- function(geneList, method = "max") {
 #' @examples
 #'
 #' @export
-#' @importFrom AnnotationDbi mapIds
+#' @importFrom AnnotationDbi mapIds columns
 annotationConvertor <- function(geneList,
                                 species = "Dm",
                                 initialIDs = "ENTREZID",

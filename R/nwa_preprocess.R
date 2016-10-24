@@ -170,6 +170,8 @@ setMethod(
 ##This functions downloads the data from the Biogrid, puts it in the
 ##user-specified folder and extracts the interactions data for a given
 ##species.
+#' @importFrom data.table fread
+
 biogridDataDownload <- function(link, species = "Hs", dataDirectory = ".", force = FALSE,
                                 verbose = TRUE) {
   #check arguments
@@ -206,7 +208,7 @@ biogridDataDownload <- function(link, species = "Hs", dataDirectory = ".", force
   #file that contains the data for the species that we want to use
   listfiles <- list.files(dataDirectory)
 
-  biogridSpecies <- data.table::fread(file.path(dataDirectory, grep(bionet.species[species], listfiles, value = TRUE)), header = T, skip=0, data.table = F)
+  biogridSpecies <- fread(file.path(dataDirectory, grep(bionet.species[species], listfiles, value = TRUE)), header = T, skip=0, data.table = F)
 
   #Extract the relevant columns from the tab-delimited file that was read
   source <- as.character(biogridSpecies[, "Entrez Gene Interactor A"])

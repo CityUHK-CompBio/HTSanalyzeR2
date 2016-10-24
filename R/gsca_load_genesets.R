@@ -143,7 +143,8 @@ KeggGeneSets <- function(species = "Dm") {
 #' DM_GO_CC<-GOGeneSets(species="Dm",ontologies=c("CC"))
 #'
 #' @export
-#' @importFrom AnnotationDbi GOID Ontology
+#' @importFrom AnnotationDbi GOID Ontology as.list
+
 GOGeneSets <- function(species = "Dm", ontologies = c("MF")) {
   ##check arguments
   # paraCheck("species", species)

@@ -8,6 +8,7 @@ if (!isGeneric("analyze")) {
 #' @export
 #' @include nwa_class.R
 #' @importFrom igraph vertex_attr vcount ecount
+#' @importFrom AnnotationDbi as.list
 setMethod("analyze",
           signature = "NWA",
           function(object,
