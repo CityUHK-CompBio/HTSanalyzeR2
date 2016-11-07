@@ -1,0 +1,16 @@
+### Summary
+
+Interaction dataset:
+
+- Database: `r nwa@summary$db[, "name"]`
+- Species: `r nwa@summary$db[, "species"]`
+- Node Number: `r nwa@summary$db[, "node No"]`
+- Edge Number: `r nwa@summary$db[, "edge No"]`
+
+FDR for score calculation: `r nwa@summary$para[, "FDR"]`
+
+
+Subnetwork identified:
+
+- Node Number: `r length(V(nwa@result$subnw))`
+- Edge Number: `r length(E(nwa@result$subnw))`

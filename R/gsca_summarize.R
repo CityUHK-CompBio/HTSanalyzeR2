@@ -53,7 +53,8 @@ setMethod("summarize", signature = "GSCA",
           })
 
 
-##select top significant gene sets
+## select top significant gene sets
+## return empty set if no suitable item
 #' @include gsca_class.R
 #' @export
 setMethod("getTopGeneSets",
@@ -80,8 +81,9 @@ setMethod("getTopGeneSets",
               paraCheck(name = "ntop", para = ntop)
             paraCheck(name = "allSig", para = allSig)
 
-            if ((is.null(ntop) && !allSig) || (!is.null(ntop) && allSig))
+            if(is.null(ntop) && !allSig)
               stop("Either specify 'ntop' or set 'allSig' to be TRUE!\n")
+
             filenames <- list()
             for (gsc in gscs) {
               all.gs.names <- rownames(object@result[[resultName]][[gsc]])
@@ -90,9 +92,16 @@ setMethod("getTopGeneSets",
                 gs.names <-
                   all.gs.names[object@result[[resultName]][[gsc]][, "Adjusted.Pvalue"] < object@para$pValueCutoff]
               } else {
-                if (ntop > nrow(object@result[[resultName]][[gsc]]))
-                  stop("'ntop' is larger than the number of gene sets in specified gene set collection!\n")
-                gs.names <- all.gs.names[1:ntop]
+                if (ntop > nrow(object@result[[resultName]][[gsc]])) {
+                  # stop("'ntop' is larger than the number of gene sets in specified gene set collection!\n")
+                  warning("'ntop' is larger than the number of gene sets in specified gene set collection!\n")
+                  ntop <- nrow(object@result[[resultName]][[gsc]])
+                }
+                if (ntop > 0)
+                  gs.names <- all.gs.names[1:ntop]
+                else
+                  gs.names <- character(0)
+                # gs.names <- all.gs.names[1:ntop]
               }
               filenames[[gsc]] <-
                 unlist(lapply(

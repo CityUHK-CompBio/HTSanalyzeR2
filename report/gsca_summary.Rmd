@@ -1,0 +1,10 @@
+### Summary
+
+The enrichment analysis was performed using the phenotype vector including `r gsca@summary$gl[, "input"]` genes and `r gsca@summary$gl[, "converted to entrez"]` genes used after filtering.
+
+
+This analysis was performed using the gene set collection(s):
+`r generateGSCSummary(gsca)`
+
+The following methods were used:
+`r generateMethodsSummary(gsca)`
