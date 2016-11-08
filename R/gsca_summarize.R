@@ -1,6 +1,3 @@
-
-
-## summarize & default show
 setGeneric("summarize", function(object, what = "ALL", ...)
   standardGeneric("summarize"), package = "HTSanalyzeR2")
 setGeneric("getTopGeneSets", function(object,
@@ -10,11 +7,29 @@ setGeneric("getTopGeneSets", function(object,
                                       allSig = FALSE)
   standardGeneric("getTopGeneSets"), package = "HTSanalyzeR2")
 
+
+#' Print summary information for an object of class GSCA or NWA
+#'
+#' This is a generic function.
+#' When implemented as the S4 method for objects of class GSCA or NWA, this
+#' function prints a summary of information about the slots of these classes.
+#'
+#' @describeIn  summarize For an object of class GSCA, the key words are 'GSC'
+#' (the slot 'listOfGeneSetCollections'), 'GeneList' (the slot 'geneList'),
+#' 'Hits' (the slot 'hits'), 'Para' (the slot 'para'), 'Result' (the slot
+#' 'result') and 'ALL' (all slots).
+#'
+#' @param object an object. When this function is implemented as the S4 method
+#' of class GSCA or NWA, this argument is an object of class GSCA or NWA.
+#' @param what a single character value or a character vector of key words
+#' specifying what to print (see details below).
+#'
 #' @include gsca_class.R
 #' @export
 setMethod("summarize", signature = "GSCA",
           function(object, what = "ALL") {
-            # paraCheck("what.gsca",what)
+
+            paraCheck("Summarize", "GSCAwhat", what)
             ##what can be "GSC" (gene set collection), "GeneList", "Hits", "Para", "Result"
             if (any(c("ALL", "GSC") %in% what)) {
               cat("\n")
@@ -53,12 +68,33 @@ setMethod("summarize", signature = "GSCA",
           })
 
 
-## select top significant gene sets
-## return empty set if no suitable item
+#' Select top significant gene sets from GSEA results
+#'
+#' This is a generic function.
+#' This function selects top significant gene sets from GSEA results for
+#' user-specified gene collections. If 'ntop' is given, then top 'ntop'
+#' significant gene sets in gene set collections 'gscs' will be selected
+#' and their names will be returned. If 'allSig=TRUE', then all significant
+#' (adjusted p-value < 'pValueCutoff' see help("analyze")) gene sets will
+#' be selected and their names will be returned.
+#'
+#' @rdname getTopGeneSets
+#'
+#' @param object an object. When this function is implemented as the S4 method
+#' of class GSCA, this argument is an object of class GSCA.
+#' @param resultName a single character value: 'HyperGeo.results' or
+#' 'GSEA.results'
+#' @param gscs a character vector specifying the names of gene set collections
+#' from which the top significant gene sets will be selected
+#' @param ntop a single integer or numeric value specifying to select how many
+#' gene sets of top significance.
+#' @param allSig a single logical value. If 'TRUE', all significant gene sets
+#' (GSEA adjusted p-value < 'pValueCutoff' of slot 'para') will be selected;
+#' otherwise, only top 'ntop' gene sets will be selected.
+#'
 #' @include gsca_class.R
 #' @export
-setMethod("getTopGeneSets",
-          "GSCA",
+setMethod("getTopGeneSets", signature = "GSCA",
           function(object,
                    resultName,
                    gscs,
@@ -67,8 +103,8 @@ setMethod("getTopGeneSets",
             ##check arguments
             if (missing(gscs))
               stop("Please specify the name(s) of Gene Set Collections in 'gscs'! \n")
-            paraCheck(name = "gscs.names", para = gscs)
-            paraCheck(name = "resultName", para = resultName)
+            paraCheck("Summarize", "gscsNames", gscs)
+            paraCheck("Summarize", "resultName", resultName)
 
             if (!(resultName %in% names(object@result)))
               stop("Please input 'HyperGeo.results' or 'GSEA.results'!\n")
@@ -78,8 +114,8 @@ setMethod("getTopGeneSets",
             if (!all(gscs %in% gsc.names))
               stop("Wrong Gene Set Collection name(s) in 'gscs'! \n")
             if (!is.null(ntop))
-              paraCheck(name = "ntop", para = ntop)
-            paraCheck(name = "allSig", para = allSig)
+              paraCheck("Summarize", "ntop", ntop)
+            paraCheck("Summarize", "allSig", allSig)
 
             if(is.null(ntop) && !allSig)
               stop("Either specify 'ntop' or set 'allSig' to be TRUE!\n")
@@ -101,7 +137,6 @@ setMethod("getTopGeneSets",
                   gs.names <- all.gs.names[1:ntop]
                 else
                   gs.names <- character(0)
-                # gs.names <- all.gs.names[1:ntop]
               }
               filenames[[gsc]] <-
                 unlist(lapply(

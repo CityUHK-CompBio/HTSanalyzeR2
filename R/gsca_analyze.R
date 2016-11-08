@@ -3,6 +3,42 @@ if (!isGeneric("analyze")) {
   setGeneric("analyze", function(object, ...) standardGeneric("analyze"), package = "HTSanalyzeR2")
 }
 
+#' Gene Set Collection Analysis or NetWork Analysis
+#'
+#' This is a generic function.
+#'
+#' @describeIn analyze The function will store the results from function
+#' analyzeGeneSetCollections in slot result, and update information about
+#' these results to slot summary of class GSCA.
+#'
+#' @param object an object. When this function is implemented as the S4
+#' method of class 'GSCA' or 'NWA', this argument is an object of class
+#' 'GSCA' or 'NWA'.
+#' @param para a list of parameters for GSEA and hypergeometric tests.
+#' @param para$pValueCutoff
+#' a single numeric value specifying the cutoff for p-values considered
+#' significant
+#' @param para$pAdjustMethod
+#' a single character value specifying the p-value adjustment method to be used
+#' (see 'p.adjust' for details)
+#' @param para$nPermutations
+#' a single integer or numeric value specifying the number of permutations for
+#' deriving p-values in GSEA
+#' @param para$minGeneSetSize
+#' a single integer or numeric value specifying the minimum number of elements
+#' in a gene set that must map to elements of the gene universe. Gene sets with
+#' fewer than this number are removed from both hypergeometric analysis and GSEA.
+#' @param para$exponent
+#' a single integer or numeric value used in weighting phenotypes in GSEA.
+#' @param verbose a single logical value specifying to display detailed messages
+#'  (when verbose=TRUE) or not (when verbose=FALSE)
+#' @param doGSOA a single logical value specifying to perform gene set
+#' overrepresentation analysis (when doGSOA=TRUE) or not (when doGSOA=FALSE)
+#' @param doGSEA a single logical value specifying to perform gene set
+#' enrichment analysis (when doGSEA=TRUE) or not (when doGSEA=FALSE)
+#'
+#' @return In the end, this function will return an updated object of
+#' class GSCA or NWA.
 #' @include gsca_class.R
 #' @export
 setMethod("analyze",
@@ -18,12 +54,15 @@ setMethod("analyze",
                    verbose = TRUE,
                    doGSOA = TRUE,
                    doGSEA = TRUE) {
-            paraCheck(name = "doGSOA", para = doGSOA)
-            paraCheck(name = "doGSEA", para = doGSEA)
+
+            paraCheck("General", "verbose", verbose)
+            paraCheck("Analyze", "doGSOA", doGSOA)
+            paraCheck("Analyze", "doGSEA", doGSEA)
+            paraCheck("Analyze", "GSCAPara", para)
             if ((!doGSOA) && (!doGSEA))
               stop("Please set doGSOA (hypergeometric tests) and/or doGSEA (GSEA) to TURE!\n")
-            paraCheck(name = "verbose", para = verbose)
-            # object@para <- paraCheck(name = "gsca.para", para = para)
+
+
             object@para <- para
 
             object@summary$para$hypergeo[1, ] <- c(
@@ -39,9 +78,7 @@ setMethod("analyze",
               object@para$exponent
             )
 
-            #######################
-            ##    do analysis
-            #######################
+            ## do analysis
             object@result <-
               analyzeGeneSetCollections(
                 listOfGeneSetCollections = object@listOfGeneSetCollections,
@@ -57,7 +94,7 @@ setMethod("analyze",
                 doGSEA = doGSEA
               )
 
-            ##update summary information
+            ## update summary information
             cols <- colnames(object@summary$results)
             object@summary$results[1:3, ] <- NA
             if (doGSOA) {
@@ -101,38 +138,32 @@ analyzeGeneSetCollections <-
            verbose = TRUE,
            doGSOA = TRUE,
            doGSEA = TRUE) {
-    ##check arguments
+    ## check arguments
     if ((!doGSOA) && (!doGSEA))
       stop(
         "Please choose to perform hypergeometric tests and/or GSEA by specifying 'doGSOA' and 'doGSEA'!\n"
       )
     if (doGSOA || doGSEA) {
-      paraCheck("gscs", listOfGeneSetCollections)
-      paraCheck("genelist", geneList)
-      paraCheck("pAdjustMethod", pAdjustMethod)
-      paraCheck("pValueCutoff", pValueCutoff)
-      paraCheck("minGeneSetSize", minGeneSetSize)
-      paraCheck("verbose", verbose)
+      paraCheck("GSCAClass", "gscs", listOfGeneSetCollections)
+      paraCheck("GSCAClass", "genelist", geneList)
     }
     if (doGSOA) {
-      paraCheck("hits", hits)
-    }
-    if (doGSEA) {
-      paraCheck("nPermutations", nPermutations)
-      paraCheck("exponent", exponent)
+      paraCheck("Analyze", "hits", hits)
     }
 
     numGeneSetCollections <- length(listOfGeneSetCollections)
 
-    ##filter 'istOfGeneSetCollections' by 'minGeneSetSize'
+    ## filter 'istOfGeneSetCollections' by 'minGeneSetSize'
     maxOverlap <- 0
     for (i in seq_along(listOfGeneSetCollections)) {
-      gs.size <- vapply(listOfGeneSetCollections[[i]], function(x) length(intersect(x, names(geneList))), integer(1))
+      gs.size <- vapply(listOfGeneSetCollections[[i]],
+                        function(x) length(intersect(x, names(geneList))), integer(1))
       maxOverlap <- max(max(gs.size), maxOverlap)
       discarded <- sum(gs.size < minGeneSetSize)
-      listOfGeneSetCollections[[i]] <- listOfGeneSetCollections[[i]][gs.size >= minGeneSetSize]
+      listOfGeneSetCollections[[i]] <-
+        listOfGeneSetCollections[[i]][gs.size >= minGeneSetSize]
 
-      ##output information about filtering of gene set collections
+      ## output information about filtering of gene set collections
       if (verbose && discarded > 0)
         cat(
           paste(
@@ -149,7 +180,7 @@ analyzeGeneSetCollections <-
         )
     }
 
-    ##stop when no gene set passes the size requirement
+    ## stop when no gene set passes the size requirement
     if (sum(sapply(listOfGeneSetCollections, length)) == 0) {
       stop(
         paste(
@@ -164,9 +195,7 @@ analyzeGeneSetCollections <-
       )
     }
 
-    ######################
-    ###Hypergeometric test
-    ######################
+    ## Hypergeometric test
     if (doGSOA) {
       HGTresults <- calcHyperGeo(
         listOfGeneSetCollections,
@@ -182,9 +211,7 @@ analyzeGeneSetCollections <-
     }
 
 
-    ######################
-    ###GSEA
-    ######################
+    ## GSEA
     if (doGSEA) {
       GSEA.results.list <-
         calcGSEA(
@@ -202,8 +229,8 @@ analyzeGeneSetCollections <-
     }
 
     if (doGSOA && doGSEA) {
-      ##identify gene set collections with hypergeometric test
-      ##pvalues < pValueCutoff
+      ## identify gene set collections with hypergeometric test
+      ## pvalues < pValueCutoff
       sign.hgt <- lapply(HGTresults, function(x) {
         if (nrow(x) > 0) {
           a <- which(x[, "Pvalue"] < pValueCutoff)
@@ -214,8 +241,8 @@ analyzeGeneSetCollections <-
           return(x)
         }
       })
-      ##identify gene set collections with hypergeometric test adjusted
-      ##pvalues < pValueCutoff
+      ## identify gene set collections with hypergeometric test adjusted
+      ## pvalues < pValueCutoff
       sign.hgt.adj <- lapply(HGTresults, function(x) {
         if (nrow(x) > 0) {
           a <- which(x[, "Adjusted.Pvalue"] < pValueCutoff)
@@ -227,7 +254,7 @@ analyzeGeneSetCollections <-
         }
       })
 
-      ##identify gene set collections with GSEA pvalues < pValueCutoff
+      ## identify gene set collections with GSEA pvalues < pValueCutoff
       sign.gsea <- lapply(GSEA.results.list, function(x) {
         if (nrow(x) > 0) {
           a <- which(x[, "Pvalue"] < pValueCutoff)
@@ -238,7 +265,7 @@ analyzeGeneSetCollections <-
           return(x)
         }
       })
-      ##identify gene set collections with adjusted GSEA pvalues < pValueCutoff
+      ## identify gene set collections with adjusted GSEA pvalues < pValueCutoff
       sign.gsea.adj <- lapply(GSEA.results.list, function(x) {
         if (nrow(x) > 0) {
           a <- which(x[, "Adjusted.Pvalue"] <= pValueCutoff)
@@ -252,8 +279,8 @@ analyzeGeneSetCollections <-
 
       overlap <- list()
       overlap.adj <- list()
-      ##identify gene set collections with significant pvalues and/or
-      ##adjusted pvalues from both GSEA and hypergeometric testing
+      ## identify gene set collections with significant pvalues and/or
+      # adjusted pvalues from both GSEA and hypergeometric testing
       sapply(1:numGeneSetCollections, function(i) {
         a1 <- intersect(rownames(sign.gsea[[i]]),
                         rownames(sign.hgt[[i]]))
@@ -335,7 +362,8 @@ calcHyperGeo <- function (listOfGeneSetCollections,
     p.adjust(res[, "Pvalue"], method = pAdjustMethod)
 
   results <- list()
-  #Extract results dataframe for each gene set collection and orders them by adjusted p-value
+  ## Extract results dataframe for each gene set collection and orders them
+  # by adjusted p-value
   sapply(seq_along(listOfGeneSetCollections), function(i) {
     extracted <-
       res[rownames(res) %in% names(listOfGeneSetCollections[[i]]), , drop = FALSE]
@@ -403,16 +431,15 @@ calcGSEA <-
     groupInfo <-
       rep(names(listOfGeneSetCollections),
           lapply(listOfGeneSetCollections, length))
-    # gli <- split(cobinedGeneSets, groupInfo)
 
     if (verbose) {
       cat("-Performing gene set enrichment analysis ...", "\n")
       cat("--Calculating the permutations ...", "\n")
     }
 
-    ##tag the gene sets that can be used in the analysis, i.e. those
-    ##that are smaller than the size of the gene list and that have more
-    ##than 'minGeneSetSize' elements that can be found in the geneList
+    ## tag the gene sets that can be used in the analysis, i.e. those
+    # that are smaller than the size of the gene list and that have more
+    # than 'minGeneSetSize' elements that can be found in the geneList
     tagGeneSets <- sapply(combinedGeneSets, function(geneSet)
       length(geneSet) < length(geneList) &&
         sum(geneSet %in% listNames) >= minGeneSetSize)
@@ -476,7 +503,8 @@ calcGSEA <-
       res[, c("Observed.score", "Pvalue", "Adjusted.Pvalue")]
 
     results <- list()
-    #Extract results dataframe for each gene set collection and orders them by adjusted p-value
+    ## Extract results dataframe for each gene set collection and orders them
+    # by adjusted p-value
     sapply(seq_along(listOfGeneSetCollections), function(i) {
       GSEA.res.mat <-
         res[rownames(res) %in% names(listOfGeneSetCollections[[i]]), , drop = FALSE]

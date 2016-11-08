@@ -7,7 +7,9 @@
 KeggGeneSets(species = "Dm")
 }
 \arguments{
-\item{species}{A single character value specifying a choice of species}
+\item{species}{A single character value specifying a choice of species,
+such as "Dm" ("Drosophila_melanogaster"), "Hs" ("Homo_sapiens"),
+"Rn" ("Rattus_norvegicus") or "Mm" ("Mus_musculus").}
 }
 \value{
 A list of gene sets, with names as KEGG pathway IDs. Each gene

@@ -20,12 +20,12 @@ setMethod(
     gsc.names<-names(object@listOfGeneSetCollections)
 
     if(!is.null(keggGSCs)) {
-      paraCheck(name = "keggGSCs", para = keggGSCs)
+      paraCheck.old(name = "keggGSCs", para = keggGSCs)
       if(!all(keggGSCs %in% gsc.names))
         stop("Wrong gene set collection names specified in 'keggGSCs'!\n")
     }
     if(!is.null(goGSCs)) {
-      paraCheck(name = "goGSCs", para = goGSCs)
+      paraCheck.old(name = "goGSCs", para = goGSCs)
       if(!all(goGSCs %in% gsc.names))
         stop("Wrong gene set collection names specified in 'goGSCs'!\n")
     }
@@ -112,9 +112,9 @@ setMethod(
   function(object, resultName="GSEA.results", gscs, ntop=NULL, allSig=TRUE, gsNameType="id", displayEdgeLabel=TRUE,
            layout="layout.fruchterman.reingold", filepath=".", filename="test.png",output="png", ...) {
     ##check arguments
-    paraCheck(name="filepath", para=filepath)
-    paraCheck(name="output", para=output)
-    paraCheck(name="filename", para=filename)
+    paraCheck.old(name="filepath", para=filepath)
+    paraCheck.old(name="output", para=output)
+    paraCheck.old(name="filename", para=filename)
     if(output == "pdf" )
       pdf(file.path(filepath, filename), ...=...)
     if(output == "png" )
@@ -134,9 +134,9 @@ setMethod(
     ##check arguments
     if(missing(gscs))
       stop("Please specify the name(s) of Gene Set Collections in 'gscs'! \n")
-    paraCheck(name="gscs.names",para=gscs)
+    paraCheck.old(name="gscs.names",para=gscs)
     ##resultName<-"GSEA.results"
-    paraCheck(name="resultName",para=resultName)
+    paraCheck.old(name="resultName",para=resultName)
     if(!(resultName %in% names(object@result)))
       stop("No results found in object!\n")
     if(is.null(object@result[[resultName]]))
@@ -145,14 +145,14 @@ setMethod(
     if(!all(gscs %in% gsc.names))
       stop("Wrong Gene Set Collection name(s) in 'gscs'! \n")
     if(!is.null(ntop))
-      paraCheck(name="ntop",para=ntop)
-    paraCheck(name="allSig",para=allSig)
+      paraCheck.old(name="ntop",para=ntop)
+    paraCheck.old(name="allSig",para=allSig)
     if((is.null(ntop) && !allSig)||(!is.null(ntop) && allSig))
       stop("Either specify 'ntop' or set 'allSig' to be TRUE!\n")
-    paraCheck(name="gsNameType", gsNameType)
-    paraCheck(name="displayEdgeLabel", displayEdgeLabel)
-    paraCheck("layout", layout)
-    paraCheck(name="plot",para=plot)
+    paraCheck.old(name="gsNameType", gsNameType)
+    paraCheck.old(name="displayEdgeLabel", displayEdgeLabel)
+    paraCheck.old("layout", layout)
+    paraCheck.old(name="plot",para=plot)
     ##get top gene sets
     topGS<-getTopGeneSets(object, resultName, gscs, ntop, allSig)
     if(sum(unlist(lapply(topGS, length)))==0)
@@ -238,7 +238,7 @@ setMethod(
       redVec<-redCols(length(p.cutoff.vec))
       igraph::V(g)$color<-redVec[as.integer(cut(x=p.vec,breaks=c(-1,p.cutoff.vec), labels=1:(length(p.cutoff.vec))))]
     }
-    ##labels attributes
+    ## labels attributes
     graphLabelWrapper<-function(x, width=32) {paste(strwrap(x,width=width),collapse="\n")}
     if(gsNameType=="id") {
       igraph::V(g)$label<-as.character(tempdf[,"gsID"])

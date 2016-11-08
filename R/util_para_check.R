@@ -1,5 +1,5 @@
 ##This is the central function for argument checking
-paraCheck <- function(name, para) {
+paraCheck.old <- function(name, para) {
 	if(name=="normCellHTSobject") {
 		if(!is(para,"cellHTS"))
 			stop("The argument 'cellHTSobject/normCellHTSobject' should be a cellHTS object")

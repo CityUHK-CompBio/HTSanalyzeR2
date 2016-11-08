@@ -11,8 +11,22 @@
 #' users can build their own analysis pipeline for their own data set based on
 #' this package.
 #'
-#' @section Section:
-#' Content for Section ...
+#' @section Details:
+#' The most important classes in this package are 'GSCA' (Gene Set Collection
+#' Analyses) and 'NWA' (NetWork Analyses). As an example, a pipeline (see function
+#' 'HTSanalyzeR4cellHTS2') is developed in this package for cellHTS2 screen
+#' analyses. Based on these two classes and other functions, users can design
+#' their own pipelines specifically for their own data sets.
+#'
+#' Full help on classes and associated functions is available from within class
+#' help pages.
+#'
+#' Introductory information on the use of classes and pipeline are available in
+#' the vignette, type openVignette().
+#'
+#' A full listing of documented topics is available in HTML view by typing
+#' help.start() and selecting the HTSanalyzeR package from the Packages menu
+#' or via library(help="HTSanalyzeR2").
 #'
 #' @references Subramanian, A., Tamayo, P., Mootha, V. K., Mukherjee, S., Ebert,
 #'   B. L., Gillette, M. A., Paulovich, A., Pomeroy, S. L., Golub, T. R.,

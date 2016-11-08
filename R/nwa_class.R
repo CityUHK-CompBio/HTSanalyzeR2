@@ -34,11 +34,11 @@ setMethod("initialize",
                    phenotypes = NA,
                    interactome = NA) {
             ##check input arguments
-            paraCheck(name = "pvalues", para = pvalues)
+            paraCheck.old(name = "pvalues", para = pvalues)
             # if (!is.na(phenotypes))
-            #   paraCheck(name = "phenotypes", para = phenotypes)
+            #   paraCheck.old(name = "phenotypes", para = phenotypes)
             # if (!is.na(interactome))
-            #   paraCheck(name = "interactome", para = interactome)
+            #   paraCheck.old(name = "interactome", para = interactome)
             .Object@pvalues <- pvalues
             .Object@phenotypes <- phenotypes
             .Object@interactome <- interactome
@@ -89,9 +89,9 @@ setMethod("initialize",
 
 #' @export
 NWA <- function(pvalues, phenotypes = as.numeric(NA), interactome = NA) {
-  # paraCheck(name = "", para = pvalues)
-  # paraCheck(name = "", para = phenotypes)
-  # paraCheck(name = "", para = interactome)
+  # paraCheck.old(name = "", para = pvalues)
+  # paraCheck.old(name = "", para = phenotypes)
+  # paraCheck.old(name = "", para = interactome)
 
   object <- new(
     Class = "NWA",

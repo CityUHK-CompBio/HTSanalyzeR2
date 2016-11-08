@@ -1,15 +1,16 @@
-## summarize & default show
 if (!isGeneric("preprocess")) {
   setGeneric("preprocess", function(object, ...)
     standardGeneric("preprocess"), package = "HTSanalyzeR2")
 }
 
-#' A preprocessing method for objects of class GSCA
+#' A preprocessing method for objects of class GSCA or NWA
 #'
-#' When implemented as the S4 method for objects of class GSCA, this
-#' function filters out invalid data, removes duplicated genes,
+#' This is a generic function.
+#' When implemented as the S4 method for objects of class GSCA or NWA,
+#' this function filters out invalid data, removes duplicated genes,
 #' converts annotations to Entrez identifiers, etc.
 #'
+#' @rdname preprocess
 #'
 #' @param object A GSCA object.
 #' @param species A single character value specifying the species
@@ -28,7 +29,6 @@ if (!isGeneric("preprocess")) {
 #' @param verbose A single logical value specifying to display detailed
 #' messages (when verbose=TRUE) or not (when verbose=FALSE)
 #'
-#'
 #' @seealso duplicateRemover annotationConvertor
 #'
 #' @export
@@ -41,22 +41,20 @@ setMethod("preprocess", signature = "GSCA",
                    duplicateRemoverMethod = "max",
                    orderAbsValue = FALSE,
                    verbose = TRUE) {
-            #######################
-            ##check input arguments
-            #######################
-            # paraCheck(name = "species", para = species)
-            # paraCheck(name = "initialIDs", para = initialIDs)
-            paraCheck(name = "keepMultipleMappings", para = keepMultipleMappings)
-            paraCheck(name = "duplicateRemoverMethod", para = duplicateRemoverMethod)
-            paraCheck(name = "orderAbsValue", para = orderAbsValue)
-            paraCheck(name = "verbose", para = verbose)
-            #######################
-            ##   preprocessing
-            #######################
+
+            paraCheck("General", "species", species)
+            paraCheck("General", "verbose", verbose)
+            paraCheck("PreProcess", "orderAbsValue", orderAbsValue)
+            paraCheck("PreProcess", "duplicateRemoverMethod", duplicateRemoverMethod)
+            paraCheck("Annotataion", "initialIDs", initialIDs)
+            paraCheck("Annotataion", "keepMultipleMappings", keepMultipleMappings)
+
+
+            ## preprocessing
             cat("-Preprocessing for input gene list and hit list ...\n")
 
             genelist <- object@geneList
-            ##remove NA in geneList
+            ## remove NA in geneList
             if (verbose)
               cat("--Removing genes without values in geneList ...\n")
             genelist <-
@@ -64,30 +62,29 @@ setMethod("preprocess", signature = "GSCA",
                                (names(genelist) != "")
                              & (!is.na(names(genelist))))]
 
-            #genes with valid values
+            ## genes with valid values
             object@summary$gl[, "valid"] <- length(genelist)
             if (length(genelist) == 0)
               stop("Input 'geneList' contains no useful data!\n")
-            ##duplicate remover
+
+            ## duplicate remover
             if (verbose)
               cat("--Removing duplicated genes ...\n")
             genelist <-
               duplicateRemover(geneList = genelist, method = duplicateRemoverMethod)
 
-            #genes after removing duplicates
+            ## genes after removing duplicates
             object@summary$gl[, "duplicate removed"] <-
               length(genelist)
             hits <- object@hits[object@hits != "" & !is.na(object@hits)]
             if (length(hits) == 0)
               stop("Input 'hits' contains no useful data!\n")
             hits <- unique(hits)
-            # match.ind <- match(hits, names(genelist))
-            # hits.vec <- genelist[match.ind[!is.na(match.ind)]]
             hits.vec <- genelist[names(genelist) %in% hits]
             if (length(hits.vec) == 0)
               stop("Hits and geneList have no overlaps!\n")
 
-            ##annotation convertor
+            ## annotation convertor
             if (initialIDs != "ENTREZID") {
               if (verbose)
                 cat("--Converting annotations ...\n")
@@ -109,7 +106,7 @@ setMethod("preprocess", signature = "GSCA",
               )
             }
 
-            #genes after annotation conversion
+            ## genes after annotation conversion
             object@summary$gl[, "converted to entrez"] <-
               length(genelist)
 
@@ -120,9 +117,11 @@ setMethod("preprocess", signature = "GSCA",
             else
               genelist <- abs(genelist)[order(abs(genelist), decreasing = TRUE)]
             hits <- names(hits.vec)
-            #hits after preprocessed
+
+            ## hits after preprocessed
             object@summary$hits[, "preprocessed"] <- length(hits)
-            ##update genelist and hits, and return object
+
+            ## update genelist and hits, and return object
             object@geneList <- genelist
             object@hits <- hits
             object@preprocessed <- TRUE
@@ -155,22 +154,21 @@ setMethod("preprocess", signature = "GSCA",
 #'
 #' @examples
 #' x<-c(5,1,3,-2,6)
-#' names(x)<-c("gene1","gene3","gene7","gene3","gene4")
-#' xprocessed<-duplicateRemover(geneList=x,method="max")
+#' names(x)<-c("gene1", "gene3", "gene7", "gene3", "gene4")
+#' xprocessed<-duplicateRemover(geneList=x, method="max")
 #'
 #' @export
 duplicateRemover <- function(geneList, method = "max") {
-  ##check arguments
-  paraCheck("genelist", geneList)
-  paraCheck("duplicateRemoverMethod", method)
+  paraCheck("GSCAClass", "genelist", geneList)
+  paraCheck("PreProcess", "duplicateRemoverMethod", method)
 
-  ##Get the unique names and create a vector that will store the
-  ##processed values corresponding to those names
+  ## Get the unique names and create a vector that will store the
+  ## processed values corresponding to those names
   geneList.names <- names(geneList)
   datanames <- unique(geneList.names)
 
-  ##If the absolute value of the min is bigger than the absolute
-  ##value of the max, then it is the min that is kept
+  ## If the absolute value of the min is bigger than the absolute
+  ## value of the max, then it is the min that is kept
   if (method == "max") {
     data.processed <- sapply(datanames,
                              function(name) {
@@ -211,6 +209,8 @@ duplicateRemover <- function(geneList, method = "max") {
 #' for which no mapping were found will be removed. This function can
 #' also take a matrix, with gene identifiers as row names.
 #'
+#' @usage annotationConvertor(geneList, species="Dm", initialIDs="FLYBASE",
+#' finalIDs="Entrez.gene", keepMultipleMappings=TRUE, verbose=TRUE)
 #' @param geneList A named integer or numeric vector, or a matrix with
 #' rows named by gene identifiers
 #' @param species A single character value specifying the species for
@@ -228,6 +228,17 @@ duplicateRemover <- function(geneList, method = "max") {
 #' @return The same data vector/matrix but with names/row names converted.
 #'
 #' @examples
+#' library(org.Dm.eg.db)
+#' ##example 1: convert a named vector
+#' x<-runif(10)
+#' names(x)<-names(as.list(org.Dm.egSYMBOL2EG))[1:10]
+#' xEntrez<-annotationConvertor(geneList=x, species="Dm", initialIDs="SYMBOL",
+#' finalIDs="ENTREZID")
+#' ##example 2: convert a data matrix with row names as gene ids
+#' x<-cbind(runif(10),runif(10))
+#' rownames(x)<-names(as.list(org.Dm.egSYMBOL2EG))[1:10]
+#' xEntrez<-annotationConvertor(geneList=x, species="Dm", initialIDs="SYMBOL",
+#' finalIDs="ENTREZID")
 #'
 #' @export
 #' @importFrom AnnotationDbi mapIds columns
@@ -237,22 +248,23 @@ annotationConvertor <- function(geneList,
                                 finalIDs = "ENTREZID",
                                 keepMultipleMappings = TRUE,
                                 verbose = TRUE) {
-  ##check arguments
-  paraCheck("genelist.general", geneList)
-  paraCheck("keepMultipleMappings", keepMultipleMappings)
-  paraCheck("verbose", verbose)
-  paraCheck(name = "species", para = species)
-  # paraCheck("initialIDs", initialIDs)
-  # paraCheck("finalIDs", finalIDs)
+
+  paraCheck("General", "species", species)
+  paraCheck("Annotataion", "geneList", geneList)
+  paraCheck("Annotataion", "initialIDs", initialIDs)
+  paraCheck("Annotataion", "finalIDs", finalIDs)
+  paraCheck("Annotataion", "keepMultipleMappings", keepMultipleMappings)
+  paraCheck("General", "verbose", verbose)
 
   annopc <- paste("org", species, "eg", "db", sep = ".")
-  if(!(annopc %in% rownames(installed.packages()))) {
+  if (!(annopc %in% rownames(installed.packages()))) {
     stop(paste(
       'Please install library ',
       annopc,
       ' before running this function!',
       sep = ""
-    ))}
+    ))
+  }
 
   annodb <- tryCatch(
     getFromNamespace(annopc, annopc),
@@ -264,10 +276,13 @@ annotationConvertor <- function(geneList,
       paste(
         "Please provide a valid type of identifiers for the ",
         "'initialIDs' parameters ",
-        "(see keytypes(", annopc ,"))\n",
+        "(see keytypes(",
+        annopc ,
+        "))\n",
         sep = ""
       )
-    )}
+    )
+  }
 
   dealMulti <- ifelse(keepMultipleMappings, "first", "filter")
   geneListEntrez <- geneList
@@ -275,7 +290,13 @@ annotationConvertor <- function(geneList,
   ##if a named vector
   if (!is.matrix(geneList)) {
     namesMapping <-
-      AnnotationDbi::mapIds(annodb, keys = names(geneList), keytype = initialIDs, column = finalIDs, multiVals = dealMulti)
+      AnnotationDbi::mapIds(
+        annodb,
+        keys = names(geneList),
+        keytype = initialIDs,
+        column = finalIDs,
+        multiVals = dealMulti
+      )
     names(geneListEntrez) <- namesMapping[names(geneList)]
     geneListEntrez <- geneListEntrez[!is.na(names(geneListEntrez))]
     if (verbose) {
@@ -283,27 +304,33 @@ annotationConvertor <- function(geneList,
         "--",
         paste((length(geneList) - length(geneListEntrez)),
               " genes (out of ",
-              length(geneList) ,
+              length(geneList),
               ") could not be mapped to any identifier, ",
-              "and were removed from the data. \n"
-        )
-      )}
+              "and were removed from the data. \n", sep = "")
+      )
+    }
   } else {
     namesMapping <-
-      AnnotationDbi::mapIds(annodb, keys = rownames(geneList), keytype = initialIDs, column = finalIDs, multiVals = dealMulti)
+      AnnotationDbi::mapIds(
+        annodb,
+        keys = rownames(geneList),
+        keytype = initialIDs,
+        column = finalIDs,
+        multiVals = dealMulti
+      )
     rownames(geneListEntrez) <- namesMapping[rownames(geneList)]
-    geneListEntrez <- geneListEntrez[!is.na(rownames(geneListEntrez))]
+    geneListEntrez <- geneListEntrez[!is.na(rownames(geneListEntrez)), ]
     if (verbose) {
       cat(
         "--",
         paste((nrow(geneList) - nrow(geneListEntrez)),
               " genes (out of ",
-              nrow(geneList) ,
+              nrow(geneList),
               ") could not be mapped to any identifier, ",
-              "and were removed from the data. \n"
-        )
-      )}
+              "and were removed from the data. \n", sep = "")
+      )
+    }
   }
 
-  return(geneListEntrez)
+  geneListEntrez
 }

@@ -7,7 +7,8 @@
 GSCA(listOfGeneSetCollections, geneList, hits)
 }
 \description{
-An S4 class for Gene Set Collection Analyses on high-throughput screens
+This S4 class includes a series of methods to do gene set enrichment analysis
+and hypergeometric tests for high-throughput screens.
 }
 \section{Slots}{
 
@@ -20,5 +21,20 @@ identifiers.}
 
 \item{\code{hits}}{A character vector of the gene identifiers (used as hits in
 the hypergeometric tests).}
+
+\item{\code{para}}{a list of parameters for hypergeometric tests and GSEA. These
+parameters are pValueCutoff, pAdjustMethod, nPermutations, minGeneSetSize
+and exponent.}
+
+\item{\code{result}}{a list of results.}
+
+\item{\code{summary}}{a list of summary information for listOfGeneSetCollections,
+geneList, hits, para, and result.}
+
+\item{\code{preprocessed}}{a single logical value specifying whether or not the
+input data has been preprocessed.}
 }}
+\seealso{
+preprocess, analyze, appendGSTerms, summarize, report
+}
 

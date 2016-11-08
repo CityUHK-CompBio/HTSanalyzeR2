@@ -5,6 +5,10 @@
 #' the elements of the gene sets represented by Entrez Gene IDs.
 #'
 #' @param collection A single character value specifying a choice of collection.
+#' It should be one of the following character strings: 'h'(hallmark gene sets),
+#' 'c1'(positional gene sets), 'c2'(curated gene sets), 'c3'(motif gene sets),
+#' 'c4'(computational gene sets), 'c5'(GO gene sets), 'c6'(oncogenic signatures),
+#' 'c7'(immunologic signatures)
 #'
 #' @return Return A list of gene sets.
 #'
@@ -14,26 +18,13 @@
 #' H_MSig <- MSigDBGeneSets(collection = "h")
 #'
 #' @export
-MSigDBGeneSets<- function(collection = "h") {
-  if(!(collection %in% c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7"))) {
-    stop(paste("'collection' does not match any of the names recognized by this function,",
-         "please provide one of the following character strings:",
-         "'h'(hallmark gene sets), 'c1'(positional gene sets),",
-         "'c2'(curated gene sets), 'c3'(motif gene sets),",
-         "'c4'(computational gene sets), 'c5'(GO gene sets),",
-         "'c6'(oncogenic signatures), 'c7'(immunologic signatures)", sep = " "))
-  }
+MSigDBGeneSets <- function(collection = "h") {
+  paraCheck("LoadGeneSets", "collection", collection)
 
-  # gmt_file <- system.file("data", "h.all.v5.1.entrez.gmt", package = "HTSanalyzeR2")
-  # msig <- GSEABase::getGmt(gmt_file, geneIdType=GSEABase::EntrezIdentifier())
-  # h.db <- GSEABase::geneIds(msig)
-  ## ...
-  # MSigDB <- list("h.db" = h.db, ..., "c7.db" = c7.db)
-
-  #MSigDB <- base::get("MSigDB", envir = as.environment("package:HTSanalyzeR2"))
   gene.sets <- MSigDB[[paste(collection, ".db", sep = "")]]
   return(gene.sets)
 }
+
 
 
 #' Create a list of gene sets based on KEGG pathways terms
@@ -42,7 +33,9 @@ MSigDBGeneSets<- function(collection = "h") {
 #' It is species-specific, and returns a list of gene sets, each of which
 #' is a character vector of Entrez gene identifiers.
 #'
-#' @param species A single character value specifying a choice of species
+#' @param species A single character value specifying a choice of species,
+#' such as "Dm" ("Drosophila_melanogaster"), "Hs" ("Homo_sapiens"),
+#' "Rn" ("Rattus_norvegicus") or "Mm" ("Mus_musculus").
 #'
 #' @return A list of gene sets, with names as KEGG pathway IDs. Each gene
 #' set is a character vector of Entrez gene identifiers.
@@ -60,7 +53,7 @@ MSigDBGeneSets<- function(collection = "h") {
 #' @importFrom KEGGREST keggLink keggConv
 #' @importFrom stringr str_replace
 KeggGeneSets <- function(species = "Dm") {
-  # paraCheck("species", species)
+  paraCheck("LoadGeneSets", "species", species)
   species <- switch(
     species,
     "Ag" = "aga",
@@ -126,8 +119,7 @@ KeggGeneSets <- function(species = "Dm") {
 #' "Rn" ("Rattus_norvegicus") or "Mm" ("Mus_musculus").
 #'
 #' @param ontologies A single character value or a character vector
-#' specifying an ontology or multiple ontologies. The current version
-#' provides the following choices: "BP", "CC" and "MF"
+#' specifying an ontology or multiple ontologies.
 #'
 #' @return A list of gene sets, with names as GO IDs. Each gene set is
 #' a character vector of Entrez identifiers.
@@ -146,9 +138,8 @@ KeggGeneSets <- function(species = "Dm") {
 #' @importFrom AnnotationDbi GOID Ontology as.list
 
 GOGeneSets <- function(species = "Dm", ontologies = c("MF")) {
-  ##check arguments
-  # paraCheck("species", species)
-  # paraCheck("ontologies", ontologies)
+  paraCheck("LoadGeneSets", "species", species)
+  paraCheck("LoadGeneSets", "ontologies", ontologies)
 
   err_func <- function(library) {
     func <- function(e) {
@@ -173,11 +164,11 @@ GOGeneSets <- function(species = "Dm", ontologies = c("MF")) {
 
   all.go.id <- GOID(GOTERM)
   names(all.go.id) <- NULL
-  ##all GO types
+  ## all GO types
   all.go.ontology <- Ontology(GOTERM)
-  ##GO terms of species 'species'
+  ## GO terms of species 'species'
   this.go.list <- as.list(ThisGO)
-  ##find unique genes of each GO term
+  ## find unique genes of each GO term
   this.go.list <- lapply(this.go.list, unique)
 
   this.go.id <- names(this.go.list)
@@ -185,14 +176,13 @@ GOGeneSets <- function(species = "Dm", ontologies = c("MF")) {
          function(s)
            names(this.go.list[[s]]) <<- NULL)
 
-  ##tag all GO terms of types in 'ontologies'
+  ## tag all GO terms of types in 'ontologies'
   this.go.ontology.tag <- rep(FALSE, length(this.go.id))
-  this.go.ontology.id <- unlist(
-    sapply(seq_along(ontologies),
-           function(n) {
-             match.id <- match(this.go.id, all.go.id)
-             which(all.go.ontology[match.id] == ontologies[n])
-           }))
+  this.go.ontology.id <- unlist(sapply(seq_along(ontologies),
+                           function(n) {
+                             match.id <- match(this.go.id, all.go.id)
+                             which(all.go.ontology[match.id] == ontologies[n])
+                           }))
 
   this.go.ontology.tag[this.go.ontology.id] <- TRUE
   this.go.list <- this.go.list[which(this.go.ontology.tag)]

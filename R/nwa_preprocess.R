@@ -7,7 +7,8 @@ if (!isGeneric("interactome")) {
     standardGeneric("interactome"), package = "HTSanalyzeR2")
 }
 
-##pre-processing
+
+#' @rdname preprocess
 #' @export
 #' @include gsca_class.R
 setMethod(
@@ -21,12 +22,12 @@ setMethod(
            verbose = TRUE) {
 
     ##check input arguments
-    # paraCheck(name = "species", para = species)
+    # paraCheck.old(name = "species", para = species)
     ##Check that the method argument is correctly specified
-    paraCheck(name = "duplicateRemoverMethod", para = duplicateRemoverMethod)
-    # paraCheck(name = "initialIDs", para = initialIDs)
-    paraCheck(name = "keepMultipleMappings", para = keepMultipleMappings)
-    paraCheck(name = "verbose", para = verbose)
+    paraCheck.old(name = "duplicateRemoverMethod", para = duplicateRemoverMethod)
+    # paraCheck.old(name = "initialIDs", para = initialIDs)
+    paraCheck.old(name = "keepMultipleMappings", para = keepMultipleMappings)
+    paraCheck.old(name = "verbose", para = verbose)
 
     cat("-Preprocessing for input p-values and phenotypes ...\n")
     pvalues <- object@pvalues
@@ -115,12 +116,12 @@ setMethod(
       stop("You should either input 'interactionMatrix' or ",
            "specifiy 'species' to download biogrid dataset!\n")
     if(!missing(species)) {
-      paraCheck(name = "species", para = species)
+      paraCheck.old(name = "species", para = species)
       object@summary$db[, "species"] <- species
     }
-    paraCheck(name = "genetic", para = genetic)
-    paraCheck(name = "verbose", para = verbose)
-    paraCheck(name = "reportDir", para = reportDir)
+    paraCheck.old(name = "genetic", para = genetic)
+    paraCheck.old(name = "verbose", para = verbose)
+    paraCheck.old(name = "reportDir", para = reportDir)
 
     object@summary$db[, "genetic"] <- genetic
 
@@ -128,12 +129,11 @@ setMethod(
     ##download the data from the BioGRID, if no data matrix is
     ##specified by the argument 'interactionMatrix'
     if(is.null(interactionMatrix)) {
-      paraCheck(name = "link", para = link)
+      paraCheck.old(name = "link", para = link)
       ##create folders for biogrid date downloading
       biogridDataDir = file.path(reportDir, "Data")
       if(!file.exists(reportDir))
         dir.create(reportDir)
-
 
       InteractionsData <- biogridDataDownload(link = link,
                                               species = species, dataDirectory = biogridDataDir,
@@ -142,7 +142,7 @@ setMethod(
 
       object@summary$db[1, "name"] <- "Biogrid"
     } else {
-      paraCheck(name = "interactionMatrix", para = interactionMatrix)
+      paraCheck.old(name = "interactionMatrix", para = interactionMatrix)
       InteractionsData <- interactionMatrix
       object@summary$db[1, "name"] <- "User-input"
     }
@@ -171,17 +171,16 @@ setMethod(
 ##user-specified folder and extracts the interactions data for a given
 ##species.
 #' @importFrom data.table fread
-
 biogridDataDownload <- function(link, species = "Hs", dataDirectory = ".", force = FALSE,
                                 verbose = TRUE) {
   #check arguments
   if(!missing(link) && !is.null(link))
-    paraCheck("link", link)
+    paraCheck.old("link", link)
   else
     link <- "http://thebiogrid.org/downloads/archives/Release%20Archive/BIOGRID-3.4.138/BIOGRID-ORGANISM-3.4.138.tab2.zip"
-  paraCheck("species", species)
-  paraCheck("dataDirectory", dataDirectory)
-  paraCheck("verbose",verbose)
+  paraCheck.old("species", species)
+  paraCheck.old("dataDirectory", dataDirectory)
+  paraCheck.old("verbose",verbose)
 
   ## need to add more
   bionet.species <- c("Drosophila_melanogaster", "Homo_sapiens", "Rattus_norvegicus", "Mus_musculus", "Caenorhabditis_elegans")

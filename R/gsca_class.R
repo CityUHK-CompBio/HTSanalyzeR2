@@ -38,12 +38,13 @@ setMethod("initialize",
             # gene list
             .Object@summary$gl <- geneMatrix(
               rowNames = c("Gene List"),
-              colNames = c("input", "valid", "duplicate removed", "converted to entrez")
+              colNames = c("input", "valid", "duplicate removed",
+                           "converted to entrez")
             )
             # hits
             .Object@summary$hits <-
               geneMatrix(rowNames = c("Hits"),
-                          colNames = c("input", "preprocessed"))
+                         colNames = c("input", "preprocessed"))
             # parameters
             .Object@summary$para <- list(
               hypergeo = geneMatrix(
@@ -78,18 +79,32 @@ setMethod("initialize",
 
 #' An S4 class for Gene Set Collection Analyses on high-throughput screens
 #'
+#' This S4 class includes a series of methods to do gene set enrichment analysis
+#' and hypergeometric tests for high-throughput screens.
+#'
 #' @slot listOfGeneSetCollections A list of gene set collections (a 'gene
 #' set collection' is a list of gene sets).
 #' @slot geneList A numeric or integer vector of phenotypes named by gene
 #' identifiers.
 #' @slot hits A character vector of the gene identifiers (used as hits in
 #' the hypergeometric tests).
+#' @slot para a list of parameters for hypergeometric tests and GSEA. These
+#' parameters are pValueCutoff, pAdjustMethod, nPermutations, minGeneSetSize
+#' and exponent.
+#' @slot result a list of results.
+#'
+#' @slot summary a list of summary information for listOfGeneSetCollections,
+#'  geneList, hits, para, and result.
+#' @slot preprocessed a single logical value specifying whether or not the
+#' input data has been preprocessed.
+#'
+#' @seealso preprocess, analyze, appendGSTerms, summarize, report
 #'
 #' @export
 GSCA <- function(listOfGeneSetCollections, geneList, hits) {
-  paraCheck(name = "gscs", para = listOfGeneSetCollections)
-  paraCheck(name = "genelist", para = geneList)
-  paraCheck(name = "hits", para = hits)
+  paraCheck("GSCAClass", "gscs", listOfGeneSetCollections)
+  paraCheck("GSCAClass", "genelist", geneList)
+  paraCheck("GSCAClass", "hits", hits)
 
   object <- new(
     Class = "GSCA",

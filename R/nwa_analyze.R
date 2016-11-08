@@ -5,8 +5,20 @@ if (!isGeneric("analyze")) {
 }
 
 ##analysis
+
+#' @describeIn analyze The function will store the subnetwork module identified
+#' by BioNet (if species is given, labels of nodes will also be mapped from
+#' Entrez IDs to gene symbols), and update information about these results to
+#' slot summary of class NWA.
+#'
+#' @param species
+#' a single character value specifying the species for which the data should be read.
+#' @param fdr
+#' a single numeric value specifying the false discovery for the scoring of nodes
+#' (see BioNet::scoreNodes and Dittrich et al., 2008 for details)
+#'
 #' @export
-#' @include nwa_class.R
+#' @include nwa_class.R gsca_preprocess.R
 #' @importFrom igraph vertex_attr vcount ecount
 #' @importFrom AnnotationDbi as.list
 setMethod("analyze",
@@ -16,8 +28,8 @@ setMethod("analyze",
                    species,
                    verbose = TRUE) {
             ##check input arguments
-            # paraCheck(name = "interactome", para = object@interactome)
-            paraCheck(name = "fdr", para = fdr)
+            # paraCheck.old(name = "interactome", para = object@interactome)
+            paraCheck.old(name = "fdr", para = fdr)
             object@fdr <- fdr
             object@summary$input[1, "in interactome"] <-
               length(intersect(names(object@pvalues), vertex_attr(object@interactome, "name")))
@@ -44,7 +56,7 @@ setMethod("analyze",
             ##the symbol identifiers will be mapped and given to the
             ##user (more readable than Entrez.gene IDs)
             if (!missing(species)) {
-              paraCheck(name = "species", para = species)
+              paraCheck.old(name = "species", para = species)
               anno.db.species <- paste("org", species, "eg", "db", sep = ".")
               if (!(paste("package:", anno.db.species, sep = "") %in% search()))
                 library(anno.db.species, character.only = TRUE)
@@ -71,10 +83,10 @@ networkAnalysis <-
            fdr = 0.001,
            verbose = TRUE) {
     ##check arguments
-    paraCheck("pvalues", pvalues)
-    # paraCheck("interactome", graph)
-    paraCheck("fdr", fdr)
-    paraCheck("verbose", verbose)
+    paraCheck.old("pvalues", pvalues)
+    # paraCheck.old("interactome", graph)
+    paraCheck.old("fdr", fdr)
+    paraCheck.old("verbose", verbose)
     cat("-Performing network analysis ... \n")
     ##store the name of the nodes of the igraph object for which we
     ##have p-value information

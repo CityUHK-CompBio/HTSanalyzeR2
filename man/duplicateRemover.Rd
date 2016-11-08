@@ -29,8 +29,8 @@ of phenotypes for the over-representation and enrichment analysis.
 }
 \examples{
 x<-c(5,1,3,-2,6)
-names(x)<-c("gene1","gene3","gene7","gene3","gene4")
-xprocessed<-duplicateRemover(geneList=x,method="max")
+names(x)<-c("gene1", "gene3", "gene7", "gene3", "gene4")
+xprocessed<-duplicateRemover(geneList=x, method="max")
 
 }
 \seealso{

@@ -4,8 +4,8 @@
 \alias{annotationConvertor}
 \title{Convert between different types of gene identifiers}
 \usage{
-annotationConvertor(geneList, species = "Dm", initialIDs = "ENTREZID",
-  finalIDs = "ENTREZID", keepMultipleMappings = TRUE, verbose = TRUE)
+annotationConvertor(geneList, species="Dm", initialIDs="FLYBASE",
+finalIDs="Entrez.gene", keepMultipleMappings=TRUE, verbose=TRUE)
 }
 \arguments{
 \item{geneList}{A named integer or numeric vector, or a matrix with
@@ -37,6 +37,17 @@ for which no mapping were found will be removed. This function can
 also take a matrix, with gene identifiers as row names.
 }
 \examples{
+library(org.Dm.eg.db)
+##example 1: convert a named vector
+x<-runif(10)
+names(x)<-names(as.list(org.Dm.egSYMBOL2EG))[1:10]
+xEntrez<-annotationConvertor(geneList=x, species="Dm", initialIDs="SYMBOL",
+finalIDs="ENTREZID")
+##example 2: convert a data matrix with row names as gene ids
+x<-cbind(runif(10),runif(10))
+rownames(x)<-names(as.list(org.Dm.egSYMBOL2EG))[1:10]
+xEntrez<-annotationConvertor(geneList=x, species="Dm", initialIDs="SYMBOL",
+finalIDs="ENTREZID")
 
 }
 

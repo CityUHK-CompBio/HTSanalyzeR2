@@ -4,12 +4,15 @@ if (!isGeneric("summarize")) {
 }
 
 
-##print summary information on screen
+#' @describeIn summarize For an object of class NWA, the key words include 'Pval'
+#' (the slot 'pvalue'), 'Phenotype' (the slot 'phenotype'), 'Interactome' (the
+#' slot 'interactome'), 'Para' (the slot 'fdr'), 'Result' (the slot 'result')
+#' and 'ALL' (all slots).
+#'
 #' @export
-setMethod("summarize",
-          "NWA",
+setMethod("summarize", signature = "NWA",
           function(object, what = "ALL") {
-            paraCheck(name = "what.nwa", para = what)
+            paraCheck("Summarize", "NWAwhat", what)
             if (any(c("ALL", "Pval") %in% what)) {
               cat("\n")
               cat("-p-values: \n")
