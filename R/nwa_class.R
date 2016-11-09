@@ -1,12 +1,8 @@
-##class NWA (NetWork Analyses)
-##definition of class NWA
 #' @include class_union.R utils.R
 setClass(
-  "NWA",
+  Class = "NWA",
   representation(
     pvalues = "numeric",
-    # phenotypes = "numeric_Or_integer_Or_NULL",
-    # interactome = "igraph_Or_NULL",
     phenotypes = "numeric_or_integer",
     interactome = "igraph_or_logical",
     fdr = "numeric",
@@ -25,7 +21,6 @@ setClass(
   )
 )
 
-##initialization method
 #' @importFrom igraph vcount ecount
 setMethod("initialize",
           signature = "NWA",
@@ -87,6 +82,24 @@ setMethod("initialize",
             .Object
           })
 
+#' An S4 class for NetWork Analysis on high-throughput screens
+#'
+#' This class includes a series of methods to do network analysis for
+#' high-throughput screens.
+#'
+#' @slot pvalues a numeric vector of p-values.
+#' @slot phenotypes a numeric or integer vector of phenotypes.
+#' @slot interactome an object of class graphNEL.
+#' @slot fdr one parameter for BioNet to score nodes in the interactome.
+#' @slot result a list consisting of subnetwork module identified by BioNet
+#' and a vector of labels for nodes of the subnetwork module.
+#' @slot summary a list of summary information for p-values, phenotypes,
+#' interactome and result.
+#' @slot preprocessed a logical value specifying whether or not input data
+#' has been preprocessed.
+#'
+#' @seealso preprocess analyze summarize interactome report
+#'
 #' @export
 NWA <- function(pvalues, phenotypes = as.numeric(NA), interactome = NA) {
   # paraCheck.old(name = "", para = pvalues)

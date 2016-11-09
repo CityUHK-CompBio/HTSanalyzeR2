@@ -42,16 +42,10 @@ setMethod("summarize", signature = "NWA",
               cat("-Subnetwork identified: \n")
               print(object@summary$result, quote = FALSE)
               cat("\n")
-
-
             }
           })
 
-##show summary information on screen
-#' @export
-setMethod("show",
-          "NWA",
-          function(object) {
-            cat("A NWA (Network Analysis) object:\n")
-            summarize(object, what = c("Pval", "Phenotype", "Interactome", "Para"))
-          })
+setMethod("show", signature = "NWA", function(object) {
+  cat("A NWA (Network Analysis) object:\n")
+  summarize(object, what = c("Pval", "Phenotype", "Interactome", "Para"))
+})
