@@ -51,6 +51,21 @@ paraCheck <- function(group, paraName, para) {
            }
          },
 
+         NWAClass = {
+           if(paraName == "pvalues") {
+             if(!is.numeric(para) || length(para) == 0 || is.null(names(para)))
+               stop("'pvalues' should be a named numeric vector with length > 0!\n")
+           }
+           if(paraName == "phenotypes") {
+             if(!(is.numeric(para) || is.integer(para)) || length(para) == 0 || is.null(names(para)))
+               stop("'phenotypes/phenotypeVector' should be a named numeric vector with length > 0!\n")
+           }
+           if(paraName == "interactome") {
+             if(!is(para,"igraph") || igraph::vcount(para) == 0 || igraph::ecount(para) == 0)
+              	stop("Input 'interactome/graph' should be a igraph object with node and edge No > 0!\n")
+           }
+         },
+
          PreProcess = {
            if (paraName == "duplicateRemoverMethod" &&
                (!is.character(para) || length(para) != 1 ||
@@ -58,11 +73,29 @@ paraCheck <- function(group, paraName, para) {
              stop(paste("'duplicateRemoverMethod' should be only one of the following character strings:",
                         "'max', 'min', 'average', 'fc.avg(fold change average)'"))
            }
-           if(paraName == "orderAbsValue" &&
+           if (paraName == "orderAbsValue" &&
               !is.logical(para) || length(para) != 1) {
              stop("'orderAbsValue' should be a logical value!\n")
            }
-
+           if (paraName == "genetic") {
+             if(!is.logical(para) || length(para)!=1)
+               stop("'genetic' should be a logical value!\n")
+           }
+           if (paraName == "link") {
+             if(!is.character(para) || length(para)!=1)
+               stop("'link' should be a character!\n")
+           }
+           if (paraName == "interactionMatrix") {
+             #If a data matrix is specified, check that it contains the right columns
+             if(!is.matrix(para))
+               stop("'interactionMatrix' should be a matrix")
+             if(!all(c("InteractionType","InteractorA","InteractorB") %in% colnames(para)))
+               stop("'interactionMatrix' should contain the following named columns: 'InteractionType','InteractorA','InteractorB'")
+           }
+           if (paraName == "dataDirectory") {
+             if(!is.character(para) || length(para)!=1)
+               stop("'dataDirectory' should be a character!\n")
+           }
 
          },
 
@@ -93,18 +126,26 @@ paraCheck <- function(group, paraName, para) {
          },
 
          Analyze = {
-           if(paraName == "doGSOA" || paraName == "doGSEA") {
+           if (paraName == "doGSOA" || paraName == "doGSEA") {
              if(length(para) != 1 || !is.logical(para))
                stop("'doGSOA' and 'doGSEA' should be a single logical value!\n ")
            }
-           if(paraName == "GSCAPara") {
+           if (paraName == "GSCAPara") {
              checkGSCAPara(para)
            }
-           if(paraName =="hits" &&
+           if (paraName =="hits" &&
              (!is.character(para) || length(para)==0)) {
                stop("'hits' should be a character vector with length > 0!\n")
            }
-
+           if (paraName == "fdr") {
+             if(!is.numeric(para) || para>1)
+               stop("'fdr' should be <=1 ! \n")
+           }
+           if (paraName == "exponent") {
+             if(!(is.integer(para) || is.numeric(para)) ||
+                length(para) != 1 || para < 1)
+               stop("'exponent' should be an integer or numeric value >= 1!\n")
+           }
          },
 
          Summarize = {
@@ -118,7 +159,6 @@ paraCheck <- function(group, paraName, para) {
                                  "Result")) || !is.character(para))
                stop("Wrong what input! Please input \"ALL\"(all summary information), \"GSC\"(gene set collection), \"GeneList\", \"Hits\", \"Para\"(parameters for analysis) and \"Result\"\n")
            }
-
            if(paraName == "ntop") {
              if(!(is.integer(para) || is.numeric(para)) || length(para)!=1 || para<=0)
                stop("'ntop' should be a integer or numeric value >0 ! \n")
@@ -136,7 +176,124 @@ paraCheck <- function(group, paraName, para) {
                stop("'resultName' should be a character!\n")
            }
          },
-
+         Report = {
+           if (paraName == "filepath" &&
+               (!is.character(para) || length(para) != 1)) {
+             stop("'filepath' should be a character!\n")
+           }
+           if (paraName == "filename" &&
+               (!is.character(para) || length(para) != 1)) {
+             stop("'filename' should be a character!\n")
+           }
+           if (paraName == "output" &&
+               (!is.character(para) || length(para) != 1) ||
+               !all(para %in% c("png","pdf"))) {
+             stop("'output' should be 'png' or 'pdf'!\n")
+           }
+           if (paraName == "resultName") {
+             if(!is.character(para) || length(para)!=1)
+               stop("'resultName' should be a character!\n")
+           }
+           if (paraName =="gsNameType") {
+             if(!is.character(para) || length(para)!=1 ||
+                !(para%in% c("id","term","none")))
+               stop("'gsNameType' should be a single character value: 'id', 'term' or 'none'!\n")
+           }
+           if (paraName =="displayEdgeLabel") {
+             if(!is.logical(para) || length(para)!=1)
+               stop("'displayEdgeLabel' should be a logical value!\n")
+           }
+           if (paraName =="layout") {
+             if(!is.character(para) || length(para)!=1 ||
+                !(para %in% c("layout.fruchterman.reingold", "layout.spring",
+                              "layout.circle", "layout.kamada.kawai")))
+               stop("'layout' must be one of 'layout.fruchterman.reingold', 'layout.spring', 'layout.circle' and 'layout.kamada.kawai'!\n")
+           }
+           if (paraName == "plot" &&
+               (!is.logical(para) || length(para) != 1)) {
+                 stop("'plot' should be a logical value!\n")
+           }
+           if (paraName == "keggGSCs") {
+             if(!is.character(para) || length(para) == 0)
+               stop("'keggGSCs' should be a character!\n")
+           }
+           if (paraName == "goGSCs") {
+             if(!is.character(para) || length(para) == 0)
+               stop("'goGSCs' should be a character!\n")
+           }
+           if (paraName == "msigdbGSCs") {
+             if(!is.character(para) || length(para) == 0)
+               stop("'msigdbGSCs' should be a character!\n")
+           }
+           if (paraName == "msigdbGSCs") {
+             if(!is.character(para) || length(para) == 0)
+               stop("'msigdbGSCs' should be a character!\n")
+           }
+           if (paraName == "reportDir") {
+             if(!is.character(para) || length(para) != 1)
+               stop("'reportDir' should be a character!\n")
+           }
+           if (paraName == "gs.single") {
+             if (!is.character(para) || length(para) !=1 ||
+                 is.na(para) || para == "")
+               stop("'geneSet/GeneSet' should be single character!\n")
+           }
+           if (paraName == "gsc.name") {
+             if (!is.character(para) || length(para)!=1)
+               stop("'gsc' should be a single character! \n")
+           }
+           if (paraName == "gs") {
+             if (!is.character(para) || length(para)==0 ||
+                 any(is.na(para)) || any(para == ""))
+               stop("'geneSet/GeneSet' should be a character vector with length > 0, without NA or empty names!\n")
+           }
+           if (paraName == "gs.single") {
+             if (!is.character(para) || length(para) != 1 ||
+                 is.na(para) || para == "")
+               stop("'geneSet/GeneSet' should be single character!\n")
+           }
+           if (paraName == "gscs.names") {
+             if (!is.character(para) || length(para)==0)
+               stop("'gscs' should be a character! \n")
+           }
+           if (paraName == "gseaScore.mode") {
+             if (!is.character(para) || length(para)!=1 || !(para %in% c("graph", "score"))) {
+               stop("'mode' should be 'graph' or 'score'!\n")
+             }
+           }
+         },
+         StatTest = {
+           if (paraName == "normCellHTSobject") {
+             if (!is(para,"cellHTS"))
+               stop("The argument 'cellHTSobject/normCellHTSobject' should be a cellHTS object")
+             if (!state(para)["configured"])
+               stop("The cellHTS object should be configured to perform the statistical tests")
+             if (!state(para)["normalized"])
+               warning("Your cellHTS object has not been normalized, this could impact the results of these tests", immediate.=TRUE)
+             if (state(para)["scored"])
+               stop("This cellHTS object has been scored; the statistical analysis should be performed on the normalized signal intensities", immediate.=TRUE)
+             if (!state(para)["annotated"])
+               stop("This cellHTS object has not been annotated",immediate.=TRUE)
+           }
+           if (paraName == "annotationColumn") {
+             if (!is.character(para) || length(para) != 1 )
+               stop("'annotationColumn' should be a character value!\n")
+           }
+           if (paraName == "nwStatsControls") {
+             if (!is.character(para) || length(para) != 1)
+               stop("'controls/nwStatsControls' should be a character value!\n ")
+           }
+           if (paraName == "nwStatsAlternative") {
+             if (!is.character(para) || length(para) != 1
+                   || !(para %in% c("two.sided", "less", "greater")))
+               stop("'alternative/nwStatsAlternative' should be one in 'two.sided','less' and 'greater'!\n ")
+           }
+           if (paraName == "nwStatsTests") {
+             if (!is.character(para) || length(para) == 0 ||
+                 !(para %in% c("T-test","MannWhitney","RankProduct")))
+               stop("'tests/nwStatsTests' should be one or more in 'T-test', 'MannWhitney' and 'RankProduct'!\n ")
+           }
+         },
          General = {
            if (paraName == "verbose" &&
                (!is.logical(para) || length(para) != 1))

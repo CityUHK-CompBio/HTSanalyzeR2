@@ -25,8 +25,9 @@ setMethod("analyze",
                    species,
                    verbose = TRUE) {
             ## check input arguments
-            # paraCheck.old(name = "interactome", para = object@interactome)
-            paraCheck.old(name = "fdr", para = fdr)
+            paraCheck("Analyze", "fdr", fdr)
+            paraCheck("NWAClass", "interactome", object@interactome)
+
             object@fdr <- fdr
             object@summary$input[1, "in interactome"] <-
               length(intersect(names(object@pvalues),
@@ -55,7 +56,7 @@ setMethod("analyze",
             # the symbol identifiers will be mapped and given to the
             # user (more readable than Entrez.gene IDs)
             if (!missing(species)) {
-              paraCheck.old(name = "species", para = species)
+              paraCheck("General", "species", species)
               anno.db.species <- paste("org", species, "eg", "db", sep = ".")
               if (!(paste("package:", anno.db.species, sep = "") %in% search()))
                 library(anno.db.species, character.only = TRUE)
@@ -97,15 +98,18 @@ networkAnalysis <-
            fdr = 0.001,
            verbose = TRUE) {
     ##check arguments
-    paraCheck.old("pvalues", pvalues)
-    # paraCheck.old("interactome", graph)
-    paraCheck.old("fdr", fdr)
-    paraCheck.old("verbose", verbose)
+    paraCheck("NWAClass", "pvalues", pvalues)
+    paraCheck("NWAClass", "interactome", graph)
+    paraCheck("Analyze", "fdr", fdr)
+    paraCheck("General", "verbose", verbose)
+
     cat("-Performing network analysis ... \n")
-    ##store the name of the nodes of the igraph object for which we
-    ##have p-value information
+
+    ## store the name of the nodes of the igraph object for which we
+    #  have p-value information
     scoredNodes <- intersect(names(pvalues), vertex_attr(graph, "name"))
-    ##check that there are nodes associated with a p-value
+
+    ## check that there are nodes associated with a p-value
     if (length(scoredNodes) == 0)
       stop(
         "The rownames of your pvalueMatrix do not match to any ",
@@ -124,17 +128,17 @@ networkAnalysis <-
         ),
         "\n"
       )
-    ##Get the pvalue information for the nodes of the igraph object
-    ##only, and fit a bum model on these N.B. the fitting of the bum
-    ##model will produce a diagnostic plot on the screen, to check the
-    ##fitting
+    ## Get the pvalue information for the nodes of the igraph object
+    #  only, and fit a bum model on these N.B. the fitting of the bum
+    #  model will produce a diagnostic plot on the screen, to check the
+    #  fitting
     dataForNw <- pvalues[scoredNodes]
     fb <- fitBumModel(dataForNw)
-    ##Score the nodes of the network
-    ##The nodes without pvalues will get a NA value instead of a score
+    ## Score the nodes of the network
+    #  The nodes without pvalues will get a NA value instead of a score
     scores <- scoreNodes(graph, fb = fb, fdr = fdr)
     ## Compute the mean score, and set the score of all non-scored nodes
-    ## (NAs) to this mean
+    #  (NAs) to this mean
     meanscore <- mean(scores, na.rm = TRUE)
     scoreswMean <- scores
     scoreswMean[which(is.na(scores))] <- meanscore

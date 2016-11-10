@@ -28,17 +28,18 @@ setMethod("initialize",
                    pvalues,
                    phenotypes = NA,
                    interactome = NA) {
-            ##check input arguments
-            paraCheck.old(name = "pvalues", para = pvalues)
-            # if (!is.na(phenotypes))
-            #   paraCheck.old(name = "phenotypes", para = phenotypes)
-            # if (!is.na(interactome))
-            #   paraCheck.old(name = "interactome", para = interactome)
+            ## check input arguments
+            paraCheck("NWAClass", "pvalues", pvalues)
+            if (!is.na(phenotypes))
+              paraCheck("NWAClass", "phenotypes", phenotypes)
+            if (!is.na(interactome))
+              paraCheck("NWAClass", "interactome", interactome)
+
             .Object@pvalues <- pvalues
             .Object@phenotypes <- phenotypes
             .Object@interactome <- interactome
 
-            ##set up summary framework
+            ## set up summary framework
             sum.info.input <-
               geneMatrix(
                 rowNames = c("p-values", "phenotypes"),
@@ -52,12 +53,10 @@ setMethod("initialize",
               )
             sum.info.db <- geneMatrix(
               rowNames = c("Interaction dataset"),
-              colNames = c("name", "species", "genetic",
-                           "node No", "edge No")
+              colNames = c("name", "species", "genetic", "node No", "edge No")
             )
             sum.info.para <- geneMatrix(rowNames = c("Parameter"),
                                         colNames = c("FDR"))
-
             sum.info.results <- geneMatrix(rowNames = c("Subnetwork"),
                                            colNames = c("node No", "edge No"))
 
@@ -67,12 +66,11 @@ setMethod("initialize",
               para = sum.info.para,
               results = sum.info.results
             )
-            ##initialization of summary
+            ## initialization of summary
             .Object@summary$input["p-values", "input"] <- length(pvalues)
-            .Object@summary$input["phenotypes", "input"] <-
-              length(phenotypes)
-
+            .Object@summary$input["phenotypes", "input"] <- length(phenotypes)
             .Object@summary$db[1, "name"] <- "Unknown"
+
             if (!is.na(interactome)) {
               .Object@summary$db[1, "node No"] <- igraph::vcount(interactome)
               .Object@summary$db[1, "edge No"] <- igraph::ecount(interactome)
@@ -89,7 +87,7 @@ setMethod("initialize",
 #'
 #' @slot pvalues a numeric vector of p-values.
 #' @slot phenotypes a numeric or integer vector of phenotypes.
-#' @slot interactome an object of class graphNEL.
+#' @slot interactome an object of class igraph.
 #' @slot fdr one parameter for BioNet to score nodes in the interactome.
 #' @slot result a list consisting of subnetwork module identified by BioNet
 #' and a vector of labels for nodes of the subnetwork module.
@@ -102,9 +100,9 @@ setMethod("initialize",
 #'
 #' @export
 NWA <- function(pvalues, phenotypes = as.numeric(NA), interactome = NA) {
-  # paraCheck.old(name = "", para = pvalues)
-  # paraCheck.old(name = "", para = phenotypes)
-  # paraCheck.old(name = "", para = interactome)
+  paraCheck("NWAClass", "pvalues", pvalues)
+  paraCheck("NWAClass", "phenotypes", phenotypes)
+  paraCheck("NWAClass", "interactome", interactome)
 
   object <- new(
     Class = "NWA",

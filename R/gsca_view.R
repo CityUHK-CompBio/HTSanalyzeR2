@@ -11,8 +11,8 @@ setMethod(
   "GSCA",
   function(object, gscName, gsName) {
     ##check argument
-    paraCheck.old("gs.single", gsName)
-    paraCheck.old("gsc.name", gscName)
+    paraCheck("Report", "gs.single", gsName)
+    paraCheck("Report", "gsc.name", gscName)
     if(!("GSEA.results" %in% names(object@result)))
       stop("GSEA not performed!\n")
     gs.all<-lapply(object@result[["GSEA.results"]][1:length(object@listOfGeneSetCollections)], rownames)
@@ -38,12 +38,12 @@ setMethod(
   "GSCA",
   function(object, gscs, ntop=NULL, allSig=FALSE, filepath=".", output="png", ...) {
     ##check arguments
-    paraCheck.old(name="filepath", para=filepath)
-    paraCheck.old(name="output", para=output)
-    paraCheck.old("allSig", allSig)
+    paraCheck("Report", "filepath", filepath)
+    paraCheck("Report", "output", output)
+    paraCheck("Summarize", "allSig", allSig)
     if(!is.null(ntop))
-      paraCheck.old("ntop", ntop)
-    paraCheck.old("gscs.names", gscs)
+      paraCheck("Summarize", "ntop", ntop)
+    paraCheck("Report", "gscs.names", gscs)
     filenames<-getTopGeneSets(object, "GSEA.results", gscs, ntop, allSig)
     for(gsc in gscs) {
       ##plot for all gs.names
@@ -62,10 +62,10 @@ setMethod(
 
 gseaPlots <- function(runningScore, enrichmentScore, positions, geneList) {
   ##check arguments
-  paraCheck.old("genelist",geneList)
-  ##paraCheck.old("output",output)
-  ##paraCheck.old("filepath",filepath)
-  ##paraCheck.old("filename",filename)
+  paraCheck("GSCAClass", "genelist", geneList)
+  paraCheck("Report", "filepath", filepath)
+  paraCheck("Report", "filename", filename)
+  paraCheck("Report", "output", output)
   ##check that the 'runningScore' is a vector of length=length of geneList
   if(!is.numeric(runningScore) || length(runningScore)==0)
     stop("'runningScore' should be a numerical vector!\n")
@@ -126,10 +126,10 @@ makeGSEAplots <- function(geneList, geneSet, exponent, filepath,
 ##This function computes enrichment scores for GSEA, running score and
 ##position of hits for a gene set.
 gseaScores <- function(geneList, geneSet, exponent=1, mode="score") {
-  paraCheck.old("genelist", geneList)
-  paraCheck.old("exponent", exponent)
-  paraCheck.old("gs", geneSet)
-  paraCheck.old("gseaScore.mode", mode)
+  paraCheck("GSCAClass", "genelist", geneList)
+  paraCheck("Analyze", "exponent", exponent)
+  paraCheck("Report", "gs", geneSet)
+  paraCheck("Report", "gseaScore.mode", mode)
   geneSet<-intersect(names(geneList), geneSet)
 
   nh <- length(geneSet)

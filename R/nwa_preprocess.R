@@ -11,9 +11,7 @@ if (!isGeneric("interactome")) {
 #' @rdname preprocess
 #' @export
 #' @include gsca_class.R
-setMethod(
-  "preprocess",
-  signature = "NWA",
+setMethod("preprocess", signature = "NWA",
   function(object,
            species = "Dm",
            duplicateRemoverMethod = "max",
@@ -21,48 +19,50 @@ setMethod(
            keepMultipleMappings = TRUE,
            verbose = TRUE) {
 
-    ##check input arguments
-    # paraCheck.old(name = "species", para = species)
-    ##Check that the method argument is correctly specified
-    paraCheck.old(name = "duplicateRemoverMethod", para = duplicateRemoverMethod)
-    # paraCheck.old(name = "initialIDs", para = initialIDs)
-    paraCheck.old(name = "keepMultipleMappings", para = keepMultipleMappings)
-    paraCheck.old(name = "verbose", para = verbose)
+    ## check input arguments
+    paraCheck("General", "verbose", verbose)
+    paraCheck("LoadGeneSets", "species", species)
+    paraCheck("Annotation", "initialIDs", initialIDs)
+    paraCheck("Annotation", "keepMultipleMappings", keepMultipleMappings)
+    paraCheck("PreProcess", "duplicateRemoverMethod", duplicateRemoverMethod)
 
     cat("-Preprocessing for input p-values and phenotypes ...\n")
     pvalues <- object@pvalues
     phenotypes <- object@phenotypes
-    ##1.remove NA
-    if(verbose)
-      cat("--Removing invalid p-values and phenotypes ...\n")
+
+    ## 1.remove NA
+    if(verbose) cat("--Removing invalid p-values and phenotypes ...\n")
     pvalues <- pvalues[which(!is.na(pvalues)
                              & names(pvalues) != "" & !is.na(names(pvalues)))]
-    ##valid p-values
+    ## valid p-values
     object@summary$input[1, "valid"] <- length(pvalues)
     if(length(pvalues) == 0)
       stop("Input 'pvalues' contains no useful data!\n")
     if(!is.null(phenotypes)) {
-      phenotypes <- phenotypes[which((!is.na(phenotypes)) &
-                                       (names(phenotypes) != "" & !is.na(names(phenotypes))))]
-      ##valid phenotypes
+      phenotypes <- phenotypes[which((!is.na(phenotypes)) &&
+                                       (names(phenotypes) != "" &&
+                                          !is.na(names(phenotypes))))]
+      ## valid phenotypes
       object@summary$input[2,"valid"] <- length(phenotypes)
       if(length(phenotypes) == 0)
         stop("Input 'phenotypes' contains no useful data!\n")
     }
-    ##2.duplicate remover
+
+    ## 2.duplicate remover
     if(verbose) cat("--Removing duplicated genes ...\n")
     pvalues <- duplicateRemover(geneList = pvalues,
                                 method = duplicateRemoverMethod)
-    ##p-values after removing duplicates
+    ## p-values after removing duplicates
     object@summary$input[1, "duplicate removed"] <- length(pvalues)
 
     if(!is.null(phenotypes)) {
       phenotypes <- duplicateRemover(geneList = phenotypes,
                                      method = duplicateRemoverMethod)
-      ##phenotypes after removing duplicates
+      ## phenotypes after removing duplicates
       object@summary$input[2, "duplicate removed"] <- length(phenotypes)
     }
-    ##3.convert annotations in pvalues
+
+    ## 3.convert annotations in pvalues
     if(initialIDs != "ENTREZID") {
       if(verbose) cat("--Converting annotations ...\n")
       pvalues <- annotationConvertor(
@@ -84,12 +84,13 @@ setMethod(
         )
       }
     }
-    ##p-values after annotation conversion
+    ## p-values after annotation conversion
     object@summary$input[1, "converted to entrez"] <- length(pvalues)
-    ##phenotypes after annotation conversion
+    ## phenotypes after annotation conversion
     if(!is.null(phenotypes))
       object@summary$input[2,"converted to entrez"] <- length(phenotypes)
-    ##5.update genelist and hits, and return object
+
+    ## 5.update genelist and hits, and return object
     object@pvalues <- pvalues
     object@phenotypes <- phenotypes
     object@preprocessed <- TRUE
@@ -135,27 +136,28 @@ setMethod(
            link = "http://thebiogrid.org/downloads/archives/Release%20Archive/BIOGRID-3.4.138/BIOGRID-ORGANISM-3.4.138.tab2.zip",
            reportDir = "HTSanalyzerReport", genetic = FALSE,
            force = FALSE, verbose = TRUE) {
-    ##check arguments
+    ## check arguments
     cat("-Creating interactome ...\n")
     if(missing(species) && is.null(interactionMatrix))
       stop("You should either input 'interactionMatrix' or ",
            "specifiy 'species' to download biogrid dataset!\n")
     if(!missing(species)) {
-      paraCheck.old(name = "species", para = species)
+      paraCheck("LoadGeneSets", "species", species)
       object@summary$db[, "species"] <- species
     }
-    paraCheck.old(name = "genetic", para = genetic)
-    paraCheck.old(name = "verbose", para = verbose)
-    paraCheck.old(name = "reportDir", para = reportDir)
+
+    paraCheck("PreProcess", "genetic", genetic)
+    paraCheck("General", "verbose", verbose)
+    paraCheck("Report", "reportDir", reportDir)
 
     object@summary$db[, "genetic"] <- genetic
 
-    ##4.make interactome
-    ##download the data from the BioGRID, if no data matrix is
-    ##specified by the argument 'interactionMatrix'
+    ## 4.make interactome
+    ## download the data from the BioGRID, if no data matrix is
+    #  specified by the argument 'interactionMatrix'
     if(is.null(interactionMatrix)) {
-      paraCheck.old(name = "link", para = link)
-      ##create folders for biogrid date downloading
+      paraCheck("PreProcess", "link", link)
+      ## create folders for biogrid date downloading
       biogridDataDir = file.path(reportDir, "Data")
       if(!file.exists(reportDir))
         dir.create(reportDir)
@@ -168,22 +170,22 @@ setMethod(
 
       object@summary$db[1, "name"] <- "Biogrid"
     } else {
-      paraCheck.old(name = "interactionMatrix", para = interactionMatrix)
+      paraCheck("PreProcess", "interactionMatrix", interactionMatrix)
       InteractionsData <- interactionMatrix
       object@summary$db[1, "name"] <- "User-input"
     }
-    ##If it is specified that genetic interactions should be
-    ##discarded, remove those rows
+    ## If it is specified that genetic interactions should be
+    #  discarded, remove those rows
     if(!genetic)
       InteractionsData <- InteractionsData[
         which(InteractionsData[, "InteractionType"] != "genetic"), ]
-    ##Make a igraph object from the data
+    ## Make a igraph object from the data
     object@interactome <- makeNetwork(
       source = InteractionsData[, "InteractorA"],
       target = InteractionsData[, "InteractorB"],
       edgemode = "undirected",
       format = "igraph")
-    ##update graph info in summary
+    ## update graph info in summary
     object@summary$db[, "node No"] <- igraph::vcount(object@interactome)
     object@summary$db[, "edge No"] <- igraph::ecount(object@interactome)
 
@@ -201,12 +203,12 @@ biogridDataDownload <- function(link, species = "Hs", dataDirectory = ".",
                                 force = FALSE, verbose = TRUE) {
   ## check arguments
   if(!missing(link) && !is.null(link))
-    paraCheck.old("link", link)
+    paraCheck("PreProcess", "link", link)
   else
     link <- "http://thebiogrid.org/downloads/archives/Release%20Archive/BIOGRID-3.4.138/BIOGRID-ORGANISM-3.4.138.tab2.zip"
-  paraCheck.old("species", species)
-  paraCheck.old("dataDirectory", dataDirectory)
-  paraCheck.old("verbose",verbose)
+  paraCheck("LoadGeneSets", "species", species)
+  paraCheck("PreProcess", "dataDirectory", dataDirectory)
+  paraCheck("General", "verbose", verbose)
 
   ## need to add more
   bionet.species <- c("Drosophila_melanogaster", "Homo_sapiens",
@@ -249,7 +251,8 @@ biogridDataDownload <- function(link, species = "Hs", dataDirectory = ".",
   ## Create a matrix from the data, and names its columns accordingly
   interactions <- cbind(source, target, interac.type)
   colnames(interactions) <- c("InteractorA", "InteractorB", "InteractionType")
-  return(interactions)
+
+  interactions
 }
 
 

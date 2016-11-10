@@ -17,7 +17,7 @@ high-throughput screens.
 
 \item{\code{phenotypes}}{a numeric or integer vector of phenotypes.}
 
-\item{\code{interactome}}{an object of class graphNEL.}
+\item{\code{interactome}}{an object of class igraph.}
 
 \item{\code{fdr}}{one parameter for BioNet to score nodes in the interactome.}
 

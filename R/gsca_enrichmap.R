@@ -1,42 +1,72 @@
 if(!isGeneric("appendGSTerms"))
-  setGeneric("appendGSTerms",function(object,...) standardGeneric("appendGSTerms"), package="HTSanalyzeR2")
+  setGeneric("appendGSTerms",function(object,...)
+    standardGeneric("appendGSTerms"), package="HTSanalyzeR2")
 if(!isGeneric("viewEnrichMap"))
-  setGeneric("viewEnrichMap",function(object,...) standardGeneric("viewEnrichMap"), package="HTSanalyzeR2")
+  setGeneric("viewEnrichMap",function(object,...)
+    standardGeneric("viewEnrichMap"), package="HTSanalyzeR2")
 if(!isGeneric("plotEnrichMap"))
-  setGeneric("plotEnrichMap",function(object,...) standardGeneric("plotEnrichMap"), package="HTSanalyzeR2")
+  setGeneric("plotEnrichMap",function(object,...)
+    standardGeneric("plotEnrichMap"), package="HTSanalyzeR2")
 
 
-##map gene set ids to terms, and insert terms to result data frames
-##and merge hyperGeo results and GSEA results together to create a integrated data frame
-##and search gene sets that are both significant in hyperGeo and GSEA analyses
+#' Append gene set terms to GSCA results
+#'
+#' This is a generic function.
+#' When implemented as the S4 method for objects of class GSCA, this function
+#' finds corresponding annotation terms for GO, KEGG and MSigDB gene sets and
+#' inserts a column named "Gene.Set.Term" to each data frame in the GSCA results.
+#'
+#' @rdname appendGSTerms
+#'
+#' @param object an object. When this function is implemented as the S4 method
+#' of class 'GSCA', this argument is an object of class 'GSCA'.
+#' @param keggGSCs a character vector of names of all KEGG gene set collections
+#' @param goGSCs a character vector of names of all GO gene set collections
+#' @param msigdbGSCs a character vector of names of all MSigDB gene set collections
+#'
+#' @return In the end, this function will return an updated object of class GSCA.
+#'
+#' @details This function makes the GSCA results more readable by appending a
+#' column of terms for KEGG and GO gene sets. To do this, the user needs to
+#' specify the names of the gene set collections based on GO, KEGG and MSigDB,
+#' respectively.
+#'
+#' For each GO gene set, the GO id will be mapped to corresponding GO term by
+#' the function mapIds of the package AnnotationDbi.
+#'
+#' For each KEGG gene set, the species code in the KEGG id will be trimmed off,
+#' and then mapped to its corresponding annotation term using the package KEGGREST
+#'
+#' For each MSigDB gene set, the corresponding annotation terms based on the
+#' built-in database in this package.
+#'
 #' @export
 setMethod(
-  "appendGSTerms", "GSCA",
+  "appendGSTerms", signature = "GSCA",
   function(object, keggGSCs=NULL, goGSCs=NULL, msigdbGSCs=NULL) {
-
     if(length(object@result)==0)
       stop("No results generated!\n")
 
     gsc.names<-names(object@listOfGeneSetCollections)
 
     if(!is.null(keggGSCs)) {
-      paraCheck.old(name = "keggGSCs", para = keggGSCs)
+      paraCheck("Record", "keggGSCs", keggGSCs)
       if(!all(keggGSCs %in% gsc.names))
         stop("Wrong gene set collection names specified in 'keggGSCs'!\n")
     }
     if(!is.null(goGSCs)) {
-      paraCheck.old(name = "goGSCs", para = goGSCs)
+      paraCheck("Record", "goGSCs", goGSCs)
       if(!all(goGSCs %in% gsc.names))
         stop("Wrong gene set collection names specified in 'goGSCs'!\n")
     }
     if(!is.null(msigdbGSCs)) {
+      paraCheck("Record", "msigdbGSCs", msigdbGSCs)
       if(!all(msigdbGSCs %in% gsc.names))
         stop("Wrong gene set collection names specified in 'msigdbGSCs'!\n")
     }
 
     result <- object@result
-
-    ##add gene set terms if possible
+    ## add gene set terms if possible
     for (rs in 1:length(result)) {
       if (names(result)[rs] %in% c(
         "HyperGeo.results",
@@ -45,30 +75,33 @@ setMethod(
         "Sig.adj.pvals.in.both"
       )) {
         sapply(names(result[[rs]]),
-               function(gsc) {
-                 if (gsc %in% names(object@listOfGeneSetCollections)) {
-                   if ("Gene.Set.Term" %in% colnames(result[[rs]][[gsc]])) {
-                     warning(paste(
-                       "--Gene Set terms already exsit in gene set collection ", gsc,
-                       " of ", names(result)[rs],
-                       ", and will be overwritten by new gene set terms!\n", sep = ""))
+         function(gsc) {
+           if (gsc %in% names(object@listOfGeneSetCollections)) {
+             if ("Gene.Set.Term" %in% colnames(result[[rs]][[gsc]])) {
+               warning(paste(
+                 "--Gene Set terms already exsit in gene set collection ", gsc,
+                 " of ", names(result)[rs],
+                 ", and will be overwritten by new gene set terms!\n", sep = ""))
 
-                     result[[rs]][[gsc]] <- result[[rs]][[gsc]][, setdiff(colnames(result[[rs]][[gsc]]), "Gene.Set.Term"), drop = FALSE]
-                   }
+               result[[rs]][[gsc]] <-
+                 result[[rs]][[gsc]][, setdiff(colnames(result[[rs]][[gsc]]),
+                                               "Gene.Set.Term"), drop = FALSE]
+             }
 
-                   if (nrow(result[[rs]][[gsc]]) >= 1) {
-                     if (gsc %in% keggGSCs)
-                       result[[rs]][[gsc]] <<- appendKEGGTerm(result[[rs]][[gsc]])
-                     else if (gsc %in% goGSCs)
-                       result[[rs]][[gsc]] <<- appendGOTerm(result[[rs]][[gsc]])
-                     else if (gsc %in% msigdbGSCs)
-                       result[[rs]][[gsc]] <<- appendMSigDBTerm(result[[rs]][[gsc]])
-                     else
-                       result[[rs]][[gsc]] <<- data.frame(Gene.Set.Term = "--", result[[rs]][[gsc]], stringsAsFactors = FALSE)
-                   }
-
-                 } #if
-               }) # sapply function
+             if (nrow(result[[rs]][[gsc]]) >= 1) {
+               if (gsc %in% keggGSCs)
+                 result[[rs]][[gsc]] <<- appendKEGGTerm(result[[rs]][[gsc]])
+               else if (gsc %in% goGSCs)
+                 result[[rs]][[gsc]] <<- appendGOTerm(result[[rs]][[gsc]])
+               else if (gsc %in% msigdbGSCs)
+                 result[[rs]][[gsc]] <<- appendMSigDBTerm(result[[rs]][[gsc]])
+               else
+                 result[[rs]][[gsc]] <<- data.frame(Gene.Set.Term = "--",
+                                                    result[[rs]][[gsc]],
+                                                    stringsAsFactors = FALSE)
+             }
+           } #if
+         }) # sapply function
       } # if
     } # for
 
@@ -77,14 +110,16 @@ setMethod(
   }
 )
 
-#' @importFrom AnnotationDbi Term
+#' @importFrom AnnotationDbi mapIds
 appendGOTerm <- function(df) {
   require(GO.db)
-  goterms <- AnnotationDbi::mapIds(GO.db, keys=row.names(df), keytype = "GOID", column = "TERM")
+  goterms <- mapIds(GO.db, keys=row.names(df), keytype = "GOID", column = "TERM")
   goterms[which(is.na(goterms))] <- "NA"
-  names(goterms)[which(is.na(names(goterms)))] <- row.names(df)[which(is.na(names(goterms)))]
+  names(goterms)[which(is.na(names(goterms)))] <-
+    row.names(df)[which(is.na(names(goterms)))]
   data.frame(Gene.Set.Term = goterms, df, stringsAsFactors = FALSE)
 }
+
 
 #' @importFrom KEGGREST keggList
 #' @importFrom stringr str_sub
@@ -93,33 +128,45 @@ appendKEGGTerm<-function(df) {
   names(mappings) <- stringr::str_sub(names(mappings), -5)
   keggnames <- stringr::str_sub(row.names(df), -5)
   keggterms <- mappings[keggnames]
-  keggterms[which(is.na(keggterms))]<-"NA"
-  names(keggterms)[which(is.na(names(keggterms)))]<-row.names(df)[which(is.na(names(keggterms)))]
-  newdf<-data.frame(Gene.Set.Term=keggterms, df, stringsAsFactors=FALSE)
-  row.names(newdf)<-row.names(df)
-  return(newdf)
+  keggterms[which(is.na(keggterms))] <- "NA"
+  names(keggterms)[which(is.na(names(keggterms)))] <-
+    row.names(df)[which(is.na(names(keggterms)))]
+  newdf <-
+    data.frame(Gene.Set.Term = keggterms, df, stringsAsFactors = FALSE)
+  row.names(newdf) <- row.names(df)
+  newdf
 }
 
 appendMSigDBTerm <- function(df) {
   data.frame(Gene.Set.Term = row.names(df), df, stringsAsFactors = FALSE)
 }
 
-##plot GSEA for GSCA
+
 #' @export
 setMethod(
-  "plotEnrichMap",
-  "GSCA",
-  function(object, resultName="GSEA.results", gscs, ntop=NULL, allSig=TRUE, gsNameType="id", displayEdgeLabel=TRUE,
-           layout="layout.fruchterman.reingold", filepath=".", filename="test.png",output="png", ...) {
-    ##check arguments
-    paraCheck.old(name="filepath", para=filepath)
-    paraCheck.old(name="output", para=output)
-    paraCheck.old(name="filename", para=filename)
+  "plotEnrichMap", signature = "GSCA",
+  function(object,
+           resultName = "GSEA.results",
+           gscs,
+           ntop = NULL,
+           allSig = TRUE,
+           gsNameType = "id",
+           displayEdgeLabel = TRUE,
+           layout = "layout.fruchterman.reingold",
+           filepath = ".",
+           filename = "test.png",
+           output = "png",
+           ...) {
+    paraCheck("Report", "filepath", filepath)
+    paraCheck("Report", "filename", filename)
+    paraCheck("Report", "output", output)
+
     if(output == "pdf" )
       pdf(file.path(filepath, filename), ...=...)
     if(output == "png" )
       png(file.path(filepath, filename), ...=...)
-    viewEnrichMap(object, resultName, gscs, ntop, allSig, gsNameType, displayEdgeLabel, layout)
+    viewEnrichMap(object, resultName, gscs, ntop, allSig,
+                  gsNameType, displayEdgeLabel, layout)
     dev.off()
   }
 )
@@ -127,16 +174,14 @@ setMethod(
 #' @export
 #' @importFrom igraph V graph.adjacency
 setMethod(
-  "viewEnrichMap",
-  "GSCA",
-  function(object, resultName="GSEA.results", gscs, ntop=NULL, allSig=TRUE, gsNameType="id", displayEdgeLabel=TRUE,
+  "viewEnrichMap", signature = "GSCA",
+  function(object, resultName="GSEA.results", gscs, ntop=NULL,
+           allSig=TRUE, gsNameType="id", displayEdgeLabel=TRUE,
            layout="layout.fruchterman.reingold", plot=TRUE) {
-    ##check arguments
     if(missing(gscs))
       stop("Please specify the name(s) of Gene Set Collections in 'gscs'! \n")
-    paraCheck.old(name="gscs.names",para=gscs)
-    ##resultName<-"GSEA.results"
-    paraCheck.old(name="resultName",para=resultName)
+    paraCheck("Summarize", "gscsNames", gscs)
+    paraCheck("Report", "resultName", resultName)
     if(!(resultName %in% names(object@result)))
       stop("No results found in object!\n")
     if(is.null(object@result[[resultName]]))
@@ -144,16 +189,19 @@ setMethod(
     gsc.names<-names(object@result[[resultName]])
     if(!all(gscs %in% gsc.names))
       stop("Wrong Gene Set Collection name(s) in 'gscs'! \n")
+
     if(!is.null(ntop))
-      paraCheck.old(name="ntop",para=ntop)
-    paraCheck.old(name="allSig",para=allSig)
+      paraCheck("Summarize", "ntop", ntop)
+    paraCheck("Summarize", "allSig", allSig)
     if((is.null(ntop) && !allSig)||(!is.null(ntop) && allSig))
       stop("Either specify 'ntop' or set 'allSig' to be TRUE!\n")
-    paraCheck.old(name="gsNameType", gsNameType)
-    paraCheck.old(name="displayEdgeLabel", displayEdgeLabel)
-    paraCheck.old("layout", layout)
-    paraCheck.old(name="plot",para=plot)
-    ##get top gene sets
+
+    paraCheck("Record", "plot", plot)
+    paraCheck("Record", "layout", layout)
+    paraCheck("Record", "gsNameType", gsNameType)
+    paraCheck("Record", "displayEdgeLabel", displayEdgeLabel)
+
+    ## get top gene sets
     topGS<-getTopGeneSets(object, resultName, gscs, ntop, allSig)
     if(sum(unlist(lapply(topGS, length)))==0)
       stop("No significant gene sets found!\n")
@@ -163,7 +211,7 @@ setMethod(
     junk<-sapply(1:length(topGS), function(i) {
       if(length(topGS[[i]])>0) {
         gsc.name<-names(topGS)[i]
-        ##compute overlapped genes between gene sets and universe
+        ## compute overlapped genes between gene sets and universe
         gsInUni[[i]]<<-list()
         gsInUni[[i]]<<-sapply(topGS[[i]], function(j) intersect(object@listOfGeneSetCollections[[gsc.name]][[j]], uniIDs),simplify=FALSE)
         names(gsInUni)[i]<<-gsc.name
@@ -171,11 +219,13 @@ setMethod(
         names(tempList)[i]<<-gsc.name
       }
     })
-    ##collapse to a data frame
+
+    ## collapse to a data frame
     tempdf<-do.call("rbind", lapply(tempList, data.frame, stringsAsFactors = FALSE))
     if(gsNameType=="term" && !("Gene.Set.Term" %in% colnames(tempdf)))
       stop("No gene set terms found in results!\n Please use the method 'appendGSTerms' or add a column named 'Gene.Set.Term' to the results!\n")
-    ##function to compute overlapped genes
+
+    ## function to compute overlapped genes
     map.mat<-matrix(0,nrow(tempdf),nrow(tempdf))
     diag(map.mat)<-1
     map.diag<-sapply(1:nrow(tempdf), function(i) length(gsInUni[[as.character(tempdf[i,"gscID"])]][[as.character(tempdf[i,"gsID"])]]))
@@ -191,22 +241,22 @@ setMethod(
       })
       rownames(map.mat)<-rownames(tempdf)
       colnames(map.mat)<-rownames(tempdf)
-      ##generate igraph from adjacency matrix
-      ### "Node name" controlled by the rownames of tempList
+      ## generate igraph from adjacency matrix
+      ## "Node name" controlled by the rownames of tempList
       g<-graph.adjacency(adjmatrix=map.mat, mode="undirected", weighted=TRUE, diag=TRUE)
       g<-igraph::simplify(g, remove.loops = TRUE)
     } else if(nrow(tempdf)==1) {
       diag(map.mat)<-0
       rownames(map.mat)<-rownames(tempdf)
       colnames(map.mat)<-rownames(tempdf)
-      ##generate igraph from adjacency matrix
-      ### "Node name" controlled by the rownames of tempList
+      ## generate igraph from adjacency matrix
+      ## "Node name" controlled by the rownames of tempList
       g<-graph.adjacency(adjmatrix=map.mat, mode="undirected", weighted=NULL, diag=FALSE)
     }
-    ##add an user-defined attribute 'geneNum' to igraph
+    ## add an user-defined attribute 'geneNum' to igraph
     igraph::V(g)$geneSetSize<-map.diag
     if(length(igraph::V(g))>=2) {
-      ### "Node size" controlled by the "size of gene set"
+      ## "Node size" controlled by the "size of gene set"
       v.max.size<-18
       v.min.size<-4
       if(max(map.diag)!=min(map.diag))
@@ -251,7 +301,8 @@ setMethod(
     igraph::V(g)$label.cex<-0.75
     igraph::V(g)$label.font<-3
     igraph::V(g)$label.color<-"black"
-    ### "Node color" controlled by the "adjusted pvalue"
+
+    ## "Node color" controlled by the "adjusted pvalue"
     if(length(igraph::V(g))>=2)
       E(g)$color<-grey(0.7)
     if(displayEdgeLabel) {
@@ -259,7 +310,7 @@ setMethod(
       edgeWeights[edgeWeights==0]<-""
       E(g)$label<-edgeWeights
     }
-    ### "Edge thickness" controlled by the "size of overlapped genes" between two gene sets
+    ## "Edge thickness" controlled by the "size of overlapped genes" between two gene sets
     edge.max.w<-14
     edge.min.w<-1
     if(length(igraph::V(g))>=2) {
@@ -267,11 +318,11 @@ setMethod(
       E(g)$width<-edgeWeightVec
     }
     if(plot) {
-      ##plot graph
+      ## plot graph
       plot(g,layout=eval(parse(text=layout)))
-      ##title
+      ## title
 
-      ##p-value color legend
+      ## p-value color legend
       if(resultName=="GSEA.results") {
         title(main=paste("Enrichment Map of GSEA on \n\"", lapply(list(gscs), paste, collapse=",")[[1]], "\"",sep=""))
         colVec<-c(redVec[1:(length(redVec)-1)],rev(blueVec))
@@ -286,15 +337,13 @@ setMethod(
 
       points(
         x = rep(-1.2, length(colVec)),
-        y = seq(0.5, (0.5-(0.05*length(colVec))),
-                length.out = length(colVec)),
+        y = seq(0.5, (0.5-(0.05*length(colVec))), length.out = length(colVec)),
         pch = 15, col = colVec
       )
 
       text(
         x = rep(-1.3, length(colVec)),
-        y = seq(0.5, (0.5-(0.05*length(colVec))),
-                length.out = length(colVec)),
+        y = seq(0.5, (0.5-(0.05*length(colVec))), length.out = length(colVec)),
         labels = p.cutoff.labels,
         cex = 0.8,
         adj=1

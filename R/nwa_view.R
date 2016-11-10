@@ -41,7 +41,7 @@ networkPlot <- function(nwAnalysisOutput, phenotypeVector = NULL) {
     BioNet::plotModule(subnw, labels = labels)
     ##dev.off()
   } else {
-    paraCheck.old("phenotypes", phenotypeVector)
+    paraCheck("NWAClass", "phenotypes", phenotypeVector)
     ## "diff.expr" holds the phenotype for the nodes of the sub-network
     diff.expr <- phenotypeVector[vertex_attr(subnw, "name")]
     names(diff.expr) <- vertex_attr(subnw, "name")
@@ -131,9 +131,9 @@ setMethod("plotSubNet",
             if (missing(filepath) || missing(filename))
               stop("Please specify 'filepath' and 'filename' ",
                    "to save network plot! \n")
-            paraCheck.old(name = "filepath", para = filepath)
-            paraCheck.old(name = "filename", para = filename)
-            paraCheck.old(name = "output", para = output)
+            paraCheck("Report", "filepath", filepath)
+            paraCheck("Report", "filename", filename)
+            paraCheck("Report", "output", output)
             if (output == "pdf")
               pdf(file.path(filepath, filename), ... = ...)
             if (output == "png")

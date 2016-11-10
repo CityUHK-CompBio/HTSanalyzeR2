@@ -47,6 +47,5 @@ Collate:
     'nwa_summarize.R'
     'nwa_view.R'
     'stat_test.R'
-    'util_para_check.R'
     'zzz.R'
 LinkingTo: Rcpp
