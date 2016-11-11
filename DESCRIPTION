@@ -17,7 +17,6 @@ Imports:
     foreach,
     AnnotationDbi,
     stringr,
-    networkD3,
     igraph,
     GSEABase,
     dygraphs,
@@ -30,6 +29,7 @@ Collate:
     'RcppExports.R'
     'backup.R'
     'class_union.R'
+    'd3view.R'
     'utils.R'
     'gsca_class.R'
     'gsca_analyze.R'

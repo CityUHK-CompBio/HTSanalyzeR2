@@ -2,7 +2,6 @@ library(shiny)
 library(DT)
 library(igraph)
 library(dplyr)
-library(networkD3)
 library(HTSanalyzeR2)
 
 ## the input data is a list, list(gsca = gsca, nwa = nwa)

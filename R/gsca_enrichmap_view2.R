@@ -142,9 +142,9 @@ plotD3Graph <- function(g, link_dist = 50, charge = -600, colorDomain = NULL, co
                  paste(colorRange, collapse = "','"),"'])", sep="")
 
   # Create graph with legend and varying radius and a bounded box
-  networkD3::forceNetwork(Links = em_links, Nodes = em_nodes, Source = "source",
+  forceNetwork(Links = em_links, Nodes = em_nodes, Source = "source",
                Target = "target", Value = "width", NodeID = "label",
-               colourScale = networkD3::JS(scale),
+               colourScale = JS(scale),
                Nodesize = 'size', radiusCalculation = "d.nodesize",
                linkDistance = link_dist, charge = charge,
                Group = "color", opacity = 1, legend = FALSE, bounded = T,
