@@ -1,0 +1,5 @@
+dependencies:
+  - name: d3v4
+    version: 3.4.0
+    src: "htmlwidgets/lib"
+    script: d3.js

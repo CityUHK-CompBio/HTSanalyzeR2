@@ -2,9 +2,9 @@ Package: HTSanalyzeR2
 Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.1.0.9000
-Author: Feng GAO <gaofeng21cn@gmail.com>, Xiupei MEI <xpmei2-c@my.cityu.edu.hk>,
+Author: Feng GAO <gaofeng21cn@gmail.com>, Xiupei MEI <meixiupei@gmail.com>
     Xin Wang <xinwang2hms@gmail.com>
-Maintainer: Feng GAO <gaofeng21cn@gmail.com>, Xiupei MEI <xpmei2-c@my.cityu.edu.hk>
+Maintainer: Feng GAO <gaofeng21cn@gmail.com>,  Xiupei MEI <meixiupei@gmail.com>
 Description: This package provides classes and methods for gene set over-
     representation, enrichment and network analyses on high-throughput screens.
 License: Artistic-2.0
@@ -29,11 +29,13 @@ Collate:
     'RcppExports.R'
     'backup.R'
     'class_union.R'
+    'd3plot.R'
     'd3view.R'
     'utils.R'
     'gsca_class.R'
     'gsca_analyze.R'
     'gsca_enrichmap.R'
+    'gsca_enrichmap2.R'
     'gsca_enrichmap_view2.R'
     'gsca_load_genesets.R'
     'gsca_preprocess.R'

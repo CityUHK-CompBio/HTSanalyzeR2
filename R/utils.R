@@ -186,8 +186,8 @@ paraCheck <- function(group, paraName, para) {
              stop("'filename' should be a character!\n")
            }
            if (paraName == "output" &&
-               (!is.character(para) || length(para) != 1) ||
-               !all(para %in% c("png","pdf"))) {
+               ((!is.character(para) || length(para) != 1) ||
+               !all(para %in% c("png","pdf")))) {
              stop("'output' should be 'png' or 'pdf'!\n")
            }
            if (paraName == "resultName") {

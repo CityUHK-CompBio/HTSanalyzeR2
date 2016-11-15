@@ -11,7 +11,47 @@ if (!isGeneric("extractSubNet")) {
     standardGeneric("extractSubNet"), package = "HTSanalyzeR2")
 }
 
+if (!isGeneric("viewSubNet2")) {
+  setGeneric("viewSubNet2", function(object, ...)
+    standardGeneric("viewSubNet2"), package = "HTSanalyzeR2")
+}
+
+#' @export
+#' @importFrom igraph as_data_frame
+setMethod("viewSubNet2", signature = "NWA",
+          function(object,
+                   options = list(charge = -200,
+                                  distance = 200)) {
+            g <- extractSubNet(object)
+
+            em_nodes <- as_data_frame(g, "vertices")
+            em_links <- as_data_frame(g, "edge")
+
+            ## TODO move to d3plot
+            em_nodes["size"] <- 8
+            em_links["label"] <- "lb"
+            em_links["weight"] <- 1
+
+            nMappings = c("name", "size", "score", "label", "label")
+            lMappings = c("from", "to", "label", "weight")
+            names(nMappings) = c("id", "size", "color", "label", "desc")
+            names(lMappings) = c("source", "target", "label", "weight")
+
+            # TODO the min, 0, max values
+            # if(min(em_nodes["color"] < 0 && max(em_nodes["color"] > 0) {
+            #   c
+            # }
+
+            colorDomain <- c(min(em_nodes["score"]), 0, max(em_nodes["score"]))
+            forceGraph(em_nodes, em_links, nMappings, lMappings,
+                       charge = options$charge, distance = options$distance,
+                       colorDomain = colorDomain
+            )
+          })
+
+
 ##view subnetwork
+#' @export
 setMethod("viewSubNet",
           "NWA",
           function(object) {
@@ -147,26 +187,28 @@ setMethod("plotSubNet",
 ## generate the igraph object for "plotD3Graph"
 #' @importFrom igraph V E as_data_frame
 #' @export
-setMethod("extractSubNet",
-          signature = "NWA",
+setMethod("extractSubNet", signature = "NWA",
           function(object) {
             g <- object@result$subnw
             if(is.null(g)) {
               stop("No subnet detected.")
             }
 
-            val.range = range(V(g)$score)
-            V(g)$color = (V(g)$score - val.range[1]) * 100 / (val.range[2] - val.range[1])
             V(g)$label = unlist(object@result$labels[V(g)$name])
-            V(g)$size = 6
-            E(g)$width = 2
 
-            em_nodes <- igraph::as_data_frame(g, "vertices")
-            em_links <- igraph::as_data_frame(g, "edge")
-            idx <- 0:(nrow(em_nodes) - 1)
-            names(idx) <- row.names(em_nodes)
-            E(g)$source <- idx[em_links[, "from"]]
-            E(g)$target <- idx[em_links[, "to"]]
+            # val.range = range(V(g)$score)
+            # V(g)$color = (V(g)$score - val.range[1]) * 100 / (val.range[2] - val.range[1])
+            # V(g)$label = unlist(object@result$labels[V(g)$name])
+            # V(g)$size = 6
+            # E(g)$width = 2
+            #
+            # em_nodes <- igraph::as_data_frame(g, "vertices")
+            # em_links <- igraph::as_data_frame(g, "edge")
+            # idx <- 0:(nrow(em_nodes) - 1)
+            # names(idx) <- row.names(em_nodes)
+            # E(g)$source <- idx[em_links[, "from"]]
+            # E(g)$target <- idx[em_links[, "to"]]
+
             g
           })
 
