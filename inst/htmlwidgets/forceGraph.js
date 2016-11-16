@@ -59,29 +59,33 @@ HTMLWidgets.widget({
         .data(links)
         .enter().append("line")
         .attr("stroke", "grey")
-        .attr("stroke-width", function(d) { return d.weight });
+        .attr("opacity", "0.6")
+        .attr("stroke-width", function(d) { return d.weight; });
 
     var node = svg.append("g")
         .attr("class", "nodes")
         .selectAll("circle")
         .data(nodes)
-        .enter().append("circle")
-        .attr("r", function(d) {return d.size})
-        .attr("fill", function(d) { return color(d.color)})
-        .on("click", clicked)
+        .enter().append("g")
+        .on("mouseover", mouseover)
+        .on("mouseout", mouseout)
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
             .on("end", dragended));
 
-    var label = svg.append("g")
-        .attr("class", "labels")
-        .selectAll("text")
-        .data(nodes)
-        .enter().append("text")
-        .attr("fill", function(d) { return color(d.color)})
-        .attr("x", function(d) {return d.size;})
-        .attr("y", function(d) {return d.size / 2;})
+    node.append("circle")
+        .on("click", clicked)
+        .attr("r", function(d) {return d.size;})
+        .attr("fill", function(d) { return color(d.color);})
+        .attr("stroke", "grey");
+
+    node.append("text")
+        .attr("fill", function(d) {return "black"})
+        .attr("dx", function(d) {return d.size + 1;})
+        .attr("dy", ".35em")
+        .style("font", "10px serif")
+        .style("opacity", "0.8")
         .text(function(d) {return d.label;});
 
     simulation
@@ -94,7 +98,8 @@ HTMLWidgets.widget({
         .distance(options.distance)
         .links(links);
 
-    simulation.alpha(1).restart();
+    // simulation.alpha(1).restart();
+    simulation.alphaTarget(0);
 
     function ticked() {
         link
@@ -103,10 +108,6 @@ HTMLWidgets.widget({
             .attr("x2", function(d) { return d.target.x; })
             .attr("y2", function(d) { return d.target.y; });
         node
-            .attr("cx", function(d) { return d.x; })
-            .attr("cy", function(d) { return d.y; });
-
-        label
             .attr("transform", function (d) {
                 return "translate(" + d.x + "," + d.y + ")"
             })
@@ -115,6 +116,7 @@ HTMLWidgets.widget({
     function clicked(d) {
         d.fixed = !d.fixed;
         dragended(d);
+        // console.log("clicked " + d.fixed);
     }
 
     function dragstarted(d) {
@@ -139,26 +141,52 @@ HTMLWidgets.widget({
         }
     }
 
+    function mouseover() {
+      d3.select(this).select("circle").transition()
+        .duration(300)
+        .attr("r", function(d){return d.size + 8;});
+      d3.select(this).select("text").transition()
+        .duration(300)
+        .attr("dx", function(d) {return d.size + 9;})
+        .style("font", "14px serif")
+        .style("opacity", 1);
+    }
 
-    var legendScale = d3.scaleLinear()
-        .domain(options.colorDomain)
-        .range([0, 100, 200]);
-
-    var axis = d3.axisRight(d3.scaleLinear()
-        .domain(options.colorDomain)
-        .range([0, 100, 200]))
-        .tickSize(10)
-        .tickFormat(d3.format("+.1f"));
-
-    var legend = svg.append("g")
-        .attr("class", "legend")
-        .attr("transform", "translate(" + (width - 80) + ", 50)");
+    function mouseout() {
+      d3.select(this).select("circle").transition()
+        .duration(500)
+        .attr("r", function(d){return d.size;});
+      d3.select(this).select("text").transition()
+        .duration(500)
+        .attr("dx", function(d) {return d.size + 1;})
+        .style("font", "10px serif")
+        .style("opacity", 0.8);
+    }
 
     function pair(array) {
         return array.slice(1).map(function (b, i) {
             return [array[i], b];
         });
     }
+
+    function remove(array, index, count) {
+        var arr = array.slice(0);
+        arr.splice(index, count);
+        return arr;
+    }
+
+    var legendScale = d3.scaleLinear()
+        .domain(remove(options.colorDomain, 1, 1))
+        .range([0, 200])
+        .nice();
+
+    var axis = d3.axisRight(legendScale)
+        .tickSize(10)
+        .tickFormat(d3.format("+.1f"));
+
+    var legend = svg.append("g")
+        .attr("class", "legend")
+        .attr("transform", "translate(" + (width - 80) + ", 50)");
 
     legend.selectAll("rect")
         .data(pair(legendScale.ticks(10)))
