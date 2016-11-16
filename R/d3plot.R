@@ -4,6 +4,7 @@ forceGraph <- function(nodes, links, nMappings, lMappings,
                        title = NULL, legendTitle = NULL,
                        charge = -200, distance = 200,
                        colorDomain = c(-1, 0, 1),
+                       legendDomain = c(-1, 1),
                        width = NULL, height = NULL) {
   # nMappings = c("term", "size", "value", "term", "term");
   # lMappings = c("from", "to", "label", "value");
@@ -16,7 +17,7 @@ forceGraph <- function(nodes, links, nMappings, lMappings,
   names(linksDF) = names(lMappings)
 
   nodesDF["size"] <- norm(nodesDF["size"], 6, 20)
-  linksDF["weight"] <- norm(linksDF["weight"], 2 , 8)
+  linksDF["weight"] <- norm(linksDF["weight"], 2 , 6)
 
   # create options
   # colorDomain must be three nums
