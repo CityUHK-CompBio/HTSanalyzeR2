@@ -27,10 +27,13 @@ HTMLWidgets.widget({
 
     d3.select(el).select("svg")
     .attr("width", width)
-    .attr("height", height); 
+    .attr("height", height);
 
     d3.select(el).select(".legend")
     .attr("transform", "translate(" + (parseInt(width) - 80) + ", 50)");
+
+    d3.select(el).select(".title")
+    .attr("transform", "translate(" + (parseInt(width) / 2) + ", 30)")
 
     simulation
     .force("center", d3.forceCenter(width / 2, height / 2))
@@ -82,7 +85,7 @@ HTMLWidgets.widget({
 
     node.append("text")
         .attr("fill", function(d) {return "black"})
-        .attr("dx", function(d) {return d.size + 1;})
+        .attr("dx", function(d) {return d.size + 2;})
         .attr("dy", ".35em")
         .style("font", "10px serif")
         .style("opacity", "0.8")
@@ -144,10 +147,10 @@ HTMLWidgets.widget({
     function mouseover() {
       d3.select(this).select("circle").transition()
         .duration(300)
-        .attr("r", function(d){return d.size + 8;});
+        .attr("r", function(d) {return d.size + 8;});
       d3.select(this).select("text").transition()
         .duration(300)
-        .attr("dx", function(d) {return d.size + 9;})
+        .attr("dx", function(d) {return d.size + 10;})
         .style("font", "14px serif")
         .style("opacity", 1);
     }
@@ -169,14 +172,8 @@ HTMLWidgets.widget({
         });
     }
 
-    function remove(array, index, count) {
-        var arr = array.slice(0);
-        arr.splice(index, count);
-        return arr;
-    }
-
     var legendScale = d3.scaleLinear()
-        .domain(remove(options.colorDomain, 1, 1))
+        .domain(options.legendDomain.reverse())
         .range([0, 200])
         .nice();
 
@@ -194,7 +191,7 @@ HTMLWidgets.widget({
         .attr("width", 8)
         .attr("y", function(d) { return legendScale(d[0]); })
         .attr("height", function(d) { return legendScale(d[1]) - legendScale(d[0]); })
-        .style("fill", function(d) { return color(d[0]); });
+        .style("fill", function(d) { return color(d[1]); });
 
     legend.call(axis)
         .append("text")
@@ -202,5 +199,14 @@ HTMLWidgets.widget({
         .attr("transform", "translate(0, -10)")
         .text(options.legendTitle);
 
+    var title = svg.append("g")
+        .attr("class", "title")
+        .attr("transform", "translate(" + (width / 2) + ", 30)")
+        .append("text")
+        .style("font", "20px")
+        .style("fill", "black")
+        .attr("text-anchor", "middle")
+        .attr("font-weight", "bold")
+        .text(options.title);
   }
 });

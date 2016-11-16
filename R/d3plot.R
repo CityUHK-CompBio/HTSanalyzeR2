@@ -3,29 +3,55 @@
 forceGraph <- function(nodes, links, nMappings, lMappings,
                        title = NULL, legendTitle = NULL,
                        charge = -200, distance = 200,
-                       colorDomain = c(-1, 0, 1),
-                       legendDomain = c(-1, 1),
                        width = NULL, height = NULL) {
-  # nMappings = c("term", "size", "value", "term", "term");
-  # lMappings = c("from", "to", "label", "value");
-  # names(nMappings) = c("id", "size", "color", "label", "desc");
-  # names(lMappings) = c("source", "target", "label", "weight");
 
-  nodesDF = nodes[nMappings]
-  linksDF = links[lMappings]
+  # nMappings: "id", "size", "color", "label", "desc"
+  # lMappings: "source", "target", "label", "weight"
+
+  node.size <- list(min = 6, max = 20, default = 8)
+  link.weight <- list(min = 1, max = 6, default = 2)
+  color.default <- 0.5
+  color.domain.default <- c(-1, 0, 1)
+
+  nodesDF = nodes[unlist(nMappings)]
+  linksDF = links[unlist(lMappings)]
   names(nodesDF) = names(nMappings)
   names(linksDF) = names(lMappings)
 
-  nodesDF["size"] <- norm(nodesDF["size"], 6, 20)
-  linksDF["weight"] <- norm(linksDF["weight"], 2 , 6)
+  if(is.null(nodesDF$size)){
+    nodesDF$size <- node.size$default
+  } else {
+    nodesDF$size <- norm(nodesDF$size, node.size$min, node.size$max, node.size$default)
+  }
+
+  if(is.null(nodesDF$color)) {
+    nodesDF$color <- color.default;
+  }
+
+  if(is.null(linksDF$weight)){
+    linksDF$weight <- link.weight$default
+  } else {
+    linksDF$weight <- norm(linksDF$weight, link.weight$min, link.weight$max, link.weight$default)
+  }
+
+  maxAbs <- max(abs(nodesDF$color))
+  if(maxAbs <= 1) {
+    colorDomain <- color.domain.default
+    legendDomain <- color.domain.default[-2]
+  } else {
+    colorDomain <- c(-maxAbs, 0, maxAbs)
+    ran <- range(nodesDF$color)
+    legendDomain <- if(ran[1] != ran[2]) ran else c(ran[1] - 1, ran[1] + 1)
+  }
 
   # create options
   # colorDomain must be three nums
-  options = list(title = "finalllllly",
-                 legendTitle = "Adjusted\np-values",
+  options = list(title = title,
                  charge = charge,
                  distance = distance,
-                 colorDomain = colorDomain)
+                 colorDomain = colorDomain,
+                 legendTitle = legendTitle,
+                 legendDomain = legendDomain)
 
   # create widget
   htmlwidgets::createWidget(
@@ -52,10 +78,10 @@ renderForceGraph <- function(expr, env = parent.frame(), quoted = FALSE) {
   shinyRenderWidget(expr, forceGraphOutput, env, quoted = TRUE)
 }
 
-norm <- function(df, minValue, maxValue) {
+norm <- function(df, minValue, maxValue, defaultValue) {
   # colnames(df) <- newName
   if(min(df) == max(df)) {
-    df <- ((minValue + maxValue) / 2)
+    df <- defaultValue
     return(df)
   }
   tmp <- (df - min(df)) / (max(df) - min(df))

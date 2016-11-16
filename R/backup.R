@@ -733,3 +733,387 @@
 #   }
 # }
 
+
+
+
+# if(!isGeneric("viewEnrichMap"))
+#   setGeneric("viewEnrichMap",function(object,...)
+#     standardGeneric("viewEnrichMap"), package="HTSanalyzeR2")
+# if(!isGeneric("plotEnrichMap"))
+#   setGeneric("plotEnrichMap",function(object,...)
+#     standardGeneric("plotEnrichMap"), package="HTSanalyzeR2")
+#
+#
+# #' @export
+# setMethod(
+#   "plotEnrichMap", signature = "GSCA",
+#   function(object,
+#            resultName = "GSEA.results",
+#            gscs,
+#            ntop = NULL,
+#            allSig = TRUE,
+#            gsNameType = "id",
+#            displayEdgeLabel = TRUE,
+#            layout = "layout.fruchterman.reingold",
+#            filepath = ".",
+#            filename = "test.png",
+#            output = "png",
+#            ...) {
+#     paraCheck("Report", "filepath", filepath)
+#     paraCheck("Report", "filename", filename)
+#     paraCheck("Report", "output", output)
+#
+#     if(output == "pdf" )
+#       pdf(file.path(filepath, filename), ...=...)
+#     if(output == "png" )
+#       png(file.path(filepath, filename), ...=...)
+#     viewEnrichMap(object, resultName, gscs, ntop, allSig,
+#                   gsNameType, displayEdgeLabel, layout)
+#     dev.off()
+#   }
+# )
+#
+# #' @export
+# #' @importFrom igraph V graph.adjacency
+# setMethod(
+#   "viewEnrichMap", signature = "GSCA",
+#   function(object, resultName="GSEA.results", gscs, ntop=NULL,
+#            allSig=TRUE, gsNameType="id", displayEdgeLabel=TRUE,
+#            layout="layout.fruchterman.reingold", plot=TRUE) {
+#     if(missing(gscs))
+#       stop("Please specify the name(s) of Gene Set Collections in 'gscs'! \n")
+#     paraCheck("Summarize", "gscsNames", gscs)
+#     paraCheck("Report", "resultName", resultName)
+#     if(!(resultName %in% names(object@result)))
+#       stop("No results found in object!\n")
+#     if(is.null(object@result[[resultName]]))
+#       stop("Please run Hypergeometric or GSEA analysis before using this function!\n")
+#     gsc.names<-names(object@result[[resultName]])
+#     if(!all(gscs %in% gsc.names))
+#       stop("Wrong Gene Set Collection name(s) in 'gscs'! \n")
+#
+#     if(!is.null(ntop))
+#       paraCheck("Summarize", "ntop", ntop)
+#     paraCheck("Summarize", "allSig", allSig)
+#     if((is.null(ntop) && !allSig)||(!is.null(ntop) && allSig))
+#       stop("Either specify 'ntop' or set 'allSig' to be TRUE!\n")
+#
+#     paraCheck("Record", "plot", plot)
+#     paraCheck("Record", "layout", layout)
+#     paraCheck("Record", "gsNameType", gsNameType)
+#     paraCheck("Record", "displayEdgeLabel", displayEdgeLabel)
+#
+#     ## get top gene sets
+#     topGS<-getTopGeneSets(object, resultName, gscs, ntop, allSig)
+#     if(sum(unlist(lapply(topGS, length)))==0)
+#       stop("No significant gene sets found!\n")
+#     gsInUni<-list()
+#     uniIDs<-names(object@geneList)
+#     tempList<-list()
+#     junk<-sapply(1:length(topGS), function(i) {
+#       if(length(topGS[[i]])>0) {
+#         gsc.name<-names(topGS)[i]
+#         ## compute overlapped genes between gene sets and universe
+#         gsInUni[[i]]<<-list()
+#         gsInUni[[i]]<<-sapply(topGS[[i]], function(j) intersect(object@listOfGeneSetCollections[[gsc.name]][[j]], uniIDs),simplify=FALSE)
+#         names(gsInUni)[i]<<-gsc.name
+#         tempList[[i]]<<-data.frame(gsID=topGS[[i]], gscID=gsc.name, object@result[[resultName]][[gsc.name]][topGS[[i]],,drop=FALSE])
+#         names(tempList)[i]<<-gsc.name
+#       }
+#     })
+#
+#     ## collapse to a data frame
+#     tempdf<-do.call("rbind", lapply(tempList, data.frame, stringsAsFactors = FALSE))
+#     if(gsNameType=="term" && !("Gene.Set.Term" %in% colnames(tempdf)))
+#       stop("No gene set terms found in results!\n Please use the method 'appendGSTerms' or add a column named 'Gene.Set.Term' to the results!\n")
+#
+#     ## function to compute overlapped genes
+#     map.mat<-matrix(0,nrow(tempdf),nrow(tempdf))
+#     diag(map.mat)<-1
+#     map.diag<-sapply(1:nrow(tempdf), function(i) length(gsInUni[[as.character(tempdf[i,"gscID"])]][[as.character(tempdf[i,"gsID"])]]))
+#     if(nrow(tempdf)>=2) {
+#       sapply(1:(nrow(tempdf)-1), function(i) {
+#         map.mat[i, (i+1):nrow(tempdf)]<<-sapply((i+1):nrow(tempdf), function(j) {
+#           length(intersect(gsInUni[[as.character(tempdf[i,"gscID"])]][[as.character(tempdf[i,"gsID"])]],
+#                            gsInUni[[as.character(tempdf[j,"gscID"])]][[as.character(tempdf[j,"gsID"])]]))/
+#             length(union(gsInUni[[as.character(tempdf[i,"gscID"])]][[as.character(tempdf[i,"gsID"])]],
+#                          gsInUni[[as.character(tempdf[j,"gscID"])]][[as.character(tempdf[j,"gsID"])]]))
+#         })
+#         map.mat[(i+1):nrow(tempdf),i]<<-map.mat[i, (i+1):nrow(tempdf)]
+#       })
+#       rownames(map.mat)<-rownames(tempdf)
+#       colnames(map.mat)<-rownames(tempdf)
+#       ## generate igraph from adjacency matrix
+#       ## "Node name" controlled by the rownames of tempList
+#       g<-graph.adjacency(adjmatrix=map.mat, mode="undirected", weighted=TRUE, diag=TRUE)
+#       g<-igraph::simplify(g, remove.loops = TRUE)
+#     } else if(nrow(tempdf)==1) {
+#       diag(map.mat)<-0
+#       rownames(map.mat)<-rownames(tempdf)
+#       colnames(map.mat)<-rownames(tempdf)
+#       ## generate igraph from adjacency matrix
+#       ## "Node name" controlled by the rownames of tempList
+#       g<-graph.adjacency(adjmatrix=map.mat, mode="undirected", weighted=NULL, diag=FALSE)
+#     }
+#     ## add an user-defined attribute 'geneNum' to igraph
+#     igraph::V(g)$geneSetSize<-map.diag
+#     if(length(igraph::V(g))>=2) {
+#       ## "Node size" controlled by the "size of gene set"
+#       v.max.size<-18
+#       v.min.size<-4
+#       if(max(map.diag)!=min(map.diag))
+#         igraph::V(g)$size<-v.min.size+(v.max.size-v.min.size)*(map.diag-min(map.diag))/(max(map.diag)-min(map.diag))
+#       else
+#         igraph::V(g)$size<-6
+#     } else if(length(igraph::V(g))==1) {
+#       igraph::V(g)$size<-4
+#     }
+#     p.vec<-tempdf[,"Adjusted.Pvalue"]
+#     p.cutoff.vec<-c(0, 10^c(-3, -2.5), 0.01, 10^(-1.5), 0.05, 10^(-c(1.0, 0.5, 0)))
+#
+#     if(resultName=="GSEA.results") {
+#       posids<-which(tempdf[,"Observed.score"]>=0)
+#       negids<-which(tempdf[,"Observed.score"]<=0)
+#
+#       redCols<-colorRampPalette(colors = c("red", "white"))
+#       redVec<-redCols(length(p.cutoff.vec))
+#
+#       blueCols<-colorRampPalette(colors = c("blue", "white"))
+#       blueVec<-blueCols(length(p.cutoff.vec))
+#       igraph::V(g)$color<-""
+#       if(length(posids)>0)
+#         igraph::V(g)$color[posids]<-redVec[as.integer(cut(x=p.vec[posids],breaks=c(-1,p.cutoff.vec), labels=1:(length(p.cutoff.vec))))]
+#       if(length(negids)>0)
+#         igraph::V(g)$color[negids]<-blueVec[as.integer(cut(x=p.vec[negids],breaks=c(-1,p.cutoff.vec), labels=1:(length(p.cutoff.vec))))]
+#     } else if(resultName=="HyperGeo.results") {
+#       redCols<-colorRampPalette(colors = c("red", "white"))
+#       redVec<-redCols(length(p.cutoff.vec))
+#       igraph::V(g)$color<-redVec[as.integer(cut(x=p.vec,breaks=c(-1,p.cutoff.vec), labels=1:(length(p.cutoff.vec))))]
+#     }
+#     ## labels attributes
+#     graphLabelWrapper<-function(x, width=32) {paste(strwrap(x,width=width),collapse="\n")}
+#     if(gsNameType=="id") {
+#       igraph::V(g)$label<-as.character(tempdf[,"gsID"])
+#     } else if(gsNameType=="term") {
+#       templabels<-as.character(tempdf[,"Gene.Set.Term"])
+#       igraph::V(g)$label<-sapply(templabels, graphLabelWrapper)
+#     }
+#
+#     igraph::V(g)$label.dist<-0.4
+#     igraph::V(g)$label.cex<-0.75
+#     igraph::V(g)$label.font<-3
+#     igraph::V(g)$label.color<-"black"
+#
+#     ## "Node color" controlled by the "adjusted pvalue"
+#     if(length(igraph::V(g))>=2)
+#       E(g)$color<-grey(0.7)
+#     if(displayEdgeLabel) {
+#       edgeWeights<-round(E(g)$weight*100)
+#       edgeWeights[edgeWeights==0]<-""
+#       E(g)$label<-edgeWeights
+#     }
+#     ## "Edge thickness" controlled by the "size of overlapped genes" between two gene sets
+#     edge.max.w<-14
+#     edge.min.w<-1
+#     if(length(igraph::V(g))>=2) {
+#       edgeWeightVec<-round(edge.min.w+(edge.max.w-edge.min.w)*(E(g)$weight))
+#       E(g)$width<-edgeWeightVec
+#     }
+#     if(plot) {
+#       ## plot graph
+#       plot(g,layout=eval(parse(text=layout)))
+#       ## title
+#
+#       ## p-value color legend
+#       if(resultName=="GSEA.results") {
+#         title(main=paste("Enrichment Map of GSEA on \n\"", lapply(list(gscs), paste, collapse=",")[[1]], "\"",sep=""))
+#         colVec<-c(redVec[1:(length(redVec)-1)],rev(blueVec))
+#         p.cutoff.labels<-rep("",length(colVec))
+#         p.cutoff.labels[c(1,4,6,9,12,14,17)]<-c(0,0.01,0.05,1,0.05,0.01,0)
+#       } else if(resultName=="HyperGeo.results") {
+#         title(main=paste("Enrichment Map of Hypergeometric tests on \n\"", lapply(list(gscs), paste, collapse=",")[[1]],"\"", sep=""))
+#         colVec<-redVec
+#         p.cutoff.labels<-rep("",length(colVec))
+#         p.cutoff.labels[c(1,4,6,9)]<-c(0,0.01,0.05,1)
+#       }
+#
+#       points(
+#         x = rep(-1.2, length(colVec)),
+#         y = seq(0.5, (0.5-(0.05*length(colVec))), length.out = length(colVec)),
+#         pch = 15, col = colVec
+#       )
+#
+#       text(
+#         x = rep(-1.3, length(colVec)),
+#         y = seq(0.5, (0.5-(0.05*length(colVec))), length.out = length(colVec)),
+#         labels = p.cutoff.labels,
+#         cex = 0.8,
+#         adj=1
+#       )
+#       text(
+#         x = -1.25,
+#         y = 0.7,
+#         labels = "Adjusted\np-values",
+#         cex=0.8,
+#         adj= 0.5,
+#         font=2
+#       )
+#     }
+#     return(g)
+#   }
+# )
+
+
+
+# if (!isGeneric("viewSubNet")) {
+#   setGeneric("viewSubNet", function(object, ...)
+#     standardGeneric("viewSubNet"), package = "HTSanalyzeR2")
+# }
+# if (!isGeneric("plotSubNet")) {
+#   setGeneric("plotSubNet", function(object, ...)
+#     standardGeneric("plotSubNet"), package = "HTSanalyzeR2")
+# }
+#
+# ##view subnetwork
+# #' @export
+# setMethod("viewSubNet",
+#           "NWA",
+#           function(object) {
+#             networkPlot(nwAnalysisOutput = object@result,
+#                         phenotypeVector = object@phenotypes)
+#           })
+#
+# ##This function takes in a subnetwork module resulted from function
+# ##networkAnalysis, a vector of labels for nodes in the module and a
+# ##phenotype vector (optional) and generate a figure stored to
+# ## "filepath" with the name "filename".
+# #' @importFrom igraph vertex_attr vcount
+# #' @importFrom BioNet plotModule
+# networkPlot <- function(nwAnalysisOutput, phenotypeVector = NULL) {
+#   ##check arguments
+#   if (!is.list(nwAnalysisOutput) ||
+#       !(c("subnw") %in% names(nwAnalysisOutput)))
+#     stop("'nwAnalysisOutput' should contain a subnetwork module!\n")
+#
+#   subnw <- nwAnalysisOutput$subnw
+#   labels <- nwAnalysisOutput$labels
+#
+#   if (!is(subnw, "igraph"))
+#     stop("The module in 'nwAnalysisOutput' should be an object ",
+#          "of class 'igraph'!\n")
+#
+#   ##If no phenotype vector is specified, then we can just plot the module
+#   if (is.null(phenotypeVector)) {
+#     ##png("EnrichedSubNw.png", width = 900, height = 900)
+#     BioNet::plotModule(subnw, labels = labels)
+#     ##dev.off()
+#   } else {
+#     paraCheck("NWAClass", "phenotypes", phenotypeVector)
+#     ## "diff.expr" holds the phenotype for the nodes of the sub-network
+#     diff.expr <- phenotypeVector[vertex_attr(subnw, "name")]
+#     names(diff.expr) <- vertex_attr(subnw, "name")
+#     ## "present" contains the information of wether a node has an
+#     ##associated phenotype (1) or not (-1), will be used to give a
+#     ##different shape to the nodes of the network
+#     present <- rep(1, vcount(subnw))
+#     present[which(is.na(diff.expr))] <- -1
+#     ##replaces all phenotypes of non-phenotyped nodes by a zero
+#     diff.expr[which(is.na(diff.expr))] <- 0
+#     names(present) <- vertex_attr(subnw, "name")
+#     ##Plot the module
+#
+#     if (vcount(subnw) == 1) {
+#       ##png(file.path(filepath, filename), width = 900, height = 900)
+#       BioNet::plotModule(subnw,
+#                          labels = labels,
+#                          scores = present,
+#                          diff.expr = diff.expr)
+#       ##dev.off()
+#     } else {
+#       Tcolors <- diff.expr
+#       Tcolors2 <- diff.expr
+#       if (max(abs(Tcolors)) < 5)
+#         Tcolors <- Tcolors * 5
+#       ## set red colors
+#       if (any(Tcolors > 0)) {
+#         maxRed <- max(ceiling(abs(Tcolors[which(Tcolors > 0)])))
+#         redCols <- colorRampPalette(colors = c("white", "red"))
+#         redVec <- redCols(maxRed)
+#         Tcolors2[which(Tcolors > 0)] <-
+#           redVec[ceiling(abs(Tcolors[which(Tcolors > 0)]))]
+#       }
+#       ##set the greens
+#       if (any(Tcolors < 0)) {
+#         maxGreen <- max(ceiling(abs(Tcolors[which(Tcolors < 0)])))
+#         greenCols <- colorRampPalette(colors = c("white", "green"))
+#         greenVec <- greenCols(maxGreen)
+#         Tcolors2[which(Tcolors < 0)] <-
+#           greenVec[ceiling(abs(Tcolors[which(Tcolors < 0)]))]
+#       }
+#       colScale <- unique(Tcolors2)
+#       colboundary <- rep(0, length(colScale))
+#       colboundary <- sapply(colScale, function(c) {
+#         values <- diff.expr[which(Tcolors2 == c)]
+#         values[which(abs(values) == max(abs(values)))[1]]
+#       })
+#
+#       colMatrix <- cbind(colboundary[order(colboundary)],
+#                          colScale[order(colboundary)])
+#       ##png(file.path(filepath, filename), width = 900, height = 900)
+#       BioNet::plotModule(subnw,
+#                          labels = labels,
+#                          scores = present,
+#                          diff.expr = diff.expr
+#       )
+#       points(
+#         x = rep(-1.2, length(unique(Tcolors2))),
+#         y = seq(1.2, (1.2 - (
+#           0.05 * length(colMatrix[, 2])
+#         )),
+#         length.out = length(colMatrix[, 2])),
+#         pch = 15,
+#         col = colMatrix[, 2]
+#       )
+#       text(
+#         x = rep(-1.1, length(unique(Tcolors2))),
+#         y = seq(1.2, (1.2 - (
+#           0.05 * length(colMatrix[, 2])
+#         )),
+#         length.out = length(colMatrix[, 2])),
+#         labels = signif(as.numeric(colMatrix[, 1]), digits = 2),
+#         cex = 0.8
+#       )
+#       ##dev.off()
+#     }
+#   }
+# }
+#
+#
+# ##plot subnetwork
+# setMethod("plotSubNet",
+#           "NWA",
+#           function(object,
+#                    filepath = ".",
+#                    filename = "test",
+#                    output = "png",
+#                    ...) {
+#             if (missing(filepath) || missing(filename))
+#               stop("Please specify 'filepath' and 'filename' ",
+#                    "to save network plot! \n")
+#             paraCheck("Report", "filepath", filepath)
+#             paraCheck("Report", "filename", filename)
+#             paraCheck("Report", "output", output)
+#             if (output == "pdf")
+#               pdf(file.path(filepath, filename), ... = ...)
+#             if (output == "png")
+#               png(file.path(filepath, filename), ... = ...)
+#             networkPlot(nwAnalysisOutput = object@result,
+#                         phenotypeVector = object@phenotypes)
+#             dev.off()
+#           })
+#
+#
+#
+
+
+

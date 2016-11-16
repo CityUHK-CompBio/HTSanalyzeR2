@@ -21,7 +21,6 @@ setMethod("extractEnrichMap", signature = "GSCA",
             if (length(unlist(topGS, recursive = FALSE)) == 0)
               stop("No significant gene sets found!\n")
 
-
             gsInUni <- list()
             tempList <- list()
 
@@ -98,7 +97,6 @@ setMethod("extractEnrichMap", signature = "GSCA",
                 )
             }
 
-
             ## add an user-defined attribute 'geneSetSize' to igraph
             ## "Node size" controlled by the "size of gene set"
             V(g)$geneSetSize <- map.diag
@@ -131,19 +129,27 @@ setMethod("viewEnrichMap2", signature = "GSCA",
                    options = list(charge = -200, distance = 200)
                    ) {
 
-            g <- extractEnrichMap(object, resultName, gscs, ntop, allSig,
-                                  gsNameType)
+            g <- extractEnrichMap(object, resultName, gscs, ntop, allSig, gsNameType)
 
             em_nodes <- as_data_frame(g, "vertices")
             em_links <- as_data_frame(g, "edge")
 
-            nMappings = c("name", "geneSetSize", "adjPvalue", "label", "label")
-            lMappings = c("from", "to", "weight", "weight")
-            names(nMappings) = c("id", "size", "color", "label", "desc")
-            names(lMappings) = c("source", "target", "label", "weight")
+            nMappings <- list(id = "name", size = "geneSetSize", color = "adjPvalue", label = "label")
+            lMappings <- list(source = "from",target = "to", weight = "weight")
+
+            title <- "Enrichment Map of"
+            if (resultName=="GSEA.results") {
+              title <- paste(title, "GSEA on", paste(gscs, collapse =", "))
+            } else if (resultName=="HyperGeo.results") {
+              title <- paste(title, "Hypergeometric tests on", paste(gscs, collapse =", "))
+            }
+            legendTitle = "Adjusted p-values"
 
             forceGraph(em_nodes, em_links, nMappings, lMappings,
-                       charge = options$charge, distance = options$distance
+                       title = title,
+                       legendTitle = legendTitle,
+                       charge = options$charge,
+                       distance = options$distance
                        )
           })
 
