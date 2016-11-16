@@ -6,14 +6,8 @@ library(HTSanalyzeR2)
 
 ## the input data is a list, list(gsca = gsca, nwa = nwa)
 results <- readRDS(file = "./results.RData")
-
-# gsca <- readRDS(file="./gsca.RData")
-# nwa <- readRDS(file="./nwa.RData")
-gsca <- results[["gsca"]]
-nwa <- results[["nwa"]]
-
-subnetwork <- NULL
-if(!is.null(nwa)) subnetwork = extractSubNet(nwa)
+gsca <- results$gsca
+nwa <- results$nwa
 
 ## write Summary
 generateGSCSummary <- function(gsca) {
@@ -206,20 +200,18 @@ server <- function(input, output, session) {
   })
 
   observeEvent(input$dist2, {
-    # output$subnetwork_output <- renderForceNetwork(plotD3Graph(subnetwork, link_dist = input$dist2, charge = input$charge2))
     options <- list(charge = input$charge2, distance = input$dist2)
-    output$subnetwork_output <- renderForceGraph(viewSubNet2(nwa, options = options))
+    output$subnetwork_output <- renderForceGraph(viewSubNet(nwa, options = options))
   })
   observeEvent(input$charge2, {
-    # output$subnetwork_output <- renderForceNetwork(plotD3Graph(subnetwork, link_dist = input$dist2, charge = input$charge2))
     options <- list(charge = input$charge2, distance = input$dist2)
-    output$subnetwork_output <- renderForceGraph(viewSubNet2(nwa, options = options))
+    output$subnetwork_output <- renderForceGraph(viewSubNet(nwa, options = options))
   })
 }
 
 updateNetwork <- function(gsca, input) {
   options <- list(charge = input$charge, distance = input$dist)
-  renderForceGraph(viewEnrichMap2(gsca, resultName=paste0(input$analysis2, ".results"),
+  renderForceGraph(viewEnrichMap(gsca, resultName=paste0(input$analysis2, ".results"),
                                   gscs = c(input$genesets2), allSig=F, ntop = 30, gsNameType=input$nodename,
                                   options = options))
 }

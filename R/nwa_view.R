@@ -2,9 +2,9 @@ if (!isGeneric("extractSubNet")) {
   setGeneric("extractSubNet", function(object, ...)
     standardGeneric("extractSubNet"), package = "HTSanalyzeR2")
 }
-if (!isGeneric("viewSubNet2")) {
-  setGeneric("viewSubNet2", function(object, ...)
-    standardGeneric("viewSubNet2"), package = "HTSanalyzeR2")
+if (!isGeneric("viewSubNet")) {
+  setGeneric("viewSubNet", function(object, ...)
+    standardGeneric("viewSubNet"), package = "HTSanalyzeR2")
 }
 
 ## generate the igraph object for "plotD3Graph"
@@ -31,7 +31,7 @@ setMethod("extractSubNet", signature = "NWA",
 
 #' @export
 #' @importFrom igraph as_data_frame
-setMethod("viewSubNet2", signature = "NWA",
+setMethod("viewSubNet", signature = "NWA",
           function(object,
                    options = list(charge = -200, distance = 200)) {
             g <- extractSubNet(object)

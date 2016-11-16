@@ -34,7 +34,6 @@ Collate:
     'gsca_class.R'
     'gsca_analyze.R'
     'gsca_enrichmap.R'
-    'gsca_enrichmap2.R'
     'gsca_load_genesets.R'
     'gsca_preprocess.R'
     'gsca_report.R'
@@ -45,7 +44,7 @@ Collate:
     'nwa_preprocess.R'
     'nwa_report.R'
     'nwa_summarize.R'
-    'nwa_view2.R'
+    'nwa_view.R'
     'stat_test.R'
     'zzz.R'
 LinkingTo: Rcpp
