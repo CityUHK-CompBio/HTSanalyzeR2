@@ -75,9 +75,10 @@ createPanel <- function(tab = "enrich_result") {
          enrich_result = tabPanel("Enrichment Results",
                                   sidebarLayout(
                                     sidebarPanel(
+                                      includeMarkdown("gsca_summary.md"),
                                       selectInput('analysis', 'Analysis', availableResults(gsca@summary$results, TRUE)),
                                       selectInput('genesets', 'Gene Sets Collection', c(availableResults(gsca@summary$results, FALSE), "ALL")),
-                                      includeMarkdown("gsca_summary.md")
+                                      style = "overflow-y:scroll; max-height:800px; position:relative;"
                                     ),
 
                                     # Show gsca results in the main panel
@@ -88,14 +89,14 @@ createPanel <- function(tab = "enrich_result") {
          enrich_map = tabPanel("Enrichment Map",
                                sidebarLayout(
                                  sidebarPanel(
+                                   includeMarkdown("gsca_summary.md"),
                                    selectInput('analysis2', 'Analysis', availableResults(gsca@summary$results, TRUE)[-3]),
                                    selectInput('genesets2', 'Gene Sets Collection', availableResults(gsca@summary$results, FALSE)),
                                    radioButtons("nodename", "Node name", c("ID"="id", "Term"="term")),
                                    sliderInput("dist", "Distance", 10, 300, value = 100, step = 10),
                                    sliderInput("charge", "Charge", -1000, -100, value = -600, step = 50),
-                                   includeMarkdown("gsca_summary.md")
+                                   style = "overflow-y:scroll; max-height:800px; position:relative;"
                                  ),
-
                                  # Show gsca results in the main panel
                                  mainPanel(
                                    forceGraphOutput("network_output", height = "800px")
@@ -104,9 +105,10 @@ createPanel <- function(tab = "enrich_result") {
          network = tabPanel("Network Analysis",
                             sidebarLayout(
                               sidebarPanel(
+                                includeMarkdown("nwa_summary.md"),
                                 sliderInput("dist2", "Distance", 10, 300, value = 70, step = 10),
                                 sliderInput("charge2", "Charge", -1000, -100, value = -300, step = 50),
-                                includeMarkdown("nwa_summary.md")
+                                style = "overflow-y:scroll; max-height:800px; position:relative;"
                               ),
 
                               # Show subnetwork results in the main panel
@@ -212,8 +214,8 @@ server <- function(input, output, session) {
 updateNetwork <- function(gsca, input) {
   options <- list(charge = input$charge, distance = input$dist)
   renderForceGraph(viewEnrichMap(gsca, resultName=paste0(input$analysis2, ".results"),
-                                  gscs = c(input$genesets2), allSig=F, ntop = 30, gsNameType=input$nodename,
-                                  options = options))
+                                 gscs = c(input$genesets2), allSig=F, ntop = 30, gsNameType=input$nodename,
+                                 options = options))
 }
 
 selectDT <- function(gsca, input) {

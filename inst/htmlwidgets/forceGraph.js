@@ -102,7 +102,7 @@ HTMLWidgets.widget({
         .links(links);
 
     // simulation.alpha(1).restart();
-    simulation.alphaTarget(0.3);
+    simulation.alphaTarget(0.3).restart();
 
     function ticked() {
         link
