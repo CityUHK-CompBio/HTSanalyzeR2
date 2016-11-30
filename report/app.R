@@ -111,7 +111,7 @@ createPanel <- function(tab = "enrich_result") {
                                 hr(),
 
                                 fluidRow(
-                                  selectInput("selection", label = h4("Node Sets"), choices = list("All" = 'all',"Set 1" = "set1","Selected" = 'selected'),selected = 1),
+                                  selectInput("selection", label = h4("Node Sets"), choices = list("All" = 'all',"Set 1" = "set1","Selection Mode" = 'selection'),selected = 1),
 
                                   h4("View Options"),
                                   fluidRow(
@@ -184,6 +184,11 @@ server <- function(input, output, session) {
   observeEvent(input$pause, {
     output$subnetwork_output <- updateForceGraph(list(pause = input$pause))
   })
+
+  observeEvent(input$selection, {
+    output$subnetwork_output <- updateForceGraph(list(selection = input$selection))
+  })
+
   observeEvent(input$shape, {
     output$subnetwork_output <- updateForceGraph(list(shape = input$shape, selection = input$selection))
   })
@@ -193,13 +198,14 @@ server <- function(input, output, session) {
   observeEvent(input$size, {
     output$subnetwork_output <- updateForceGraph(list(size = input$size, selection = input$selection))
   })
-
   observeEvent(input$charge2, {
     output$subnetwork_output <- updateForceGraph(list(charge = input$charge2))
   })
   observeEvent(input$dist2, {
     output$subnetwork_output <- updateForceGraph(list(distance = input$dist2))
   })
+
+
 
 
   ## response reconstruct

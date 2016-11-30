@@ -1,6 +1,7 @@
-HTMLWidgets.widget({
+HTMLWidgets.widget(globalObj = {
   name: "forceGraph",
   type: "output",
+  mode: "all",
 
   initialize: function(el, width, height) {
 
@@ -43,6 +44,16 @@ HTMLWidgets.widget({
   updateValue: function(el, x, simulation) {
     if('pause' in x) {
       x.pause ? simulation.stop() : simulation.restart()
+    }
+
+    if('selection' in x) {
+        //TODO, the set name can also be 'selected'
+        globalObj.mode = x.selection;
+        if(globalObj.mode != 'selection') {
+            d3.selectAll(".node-shape")
+            .attr("stroke", "grey")
+            .attr("selected", false);
+        }
     }
 
     if('shape' in x) {
@@ -196,9 +207,20 @@ HTMLWidgets.widget({
     }
 
     function clicked(d) {
-        d.fixed = !d.fixed;
+        if(globalObj.mode == "selection") {
+            var sel = d3.select(this);
+            if(JSON.parse(sel.attr("selected"))) {
+                d.fixed = false;
+                d3.select(this).attr("stroke", "grey").attr("selected", false);
+            } else {
+                d.fixed = true;
+                d3.select(this).attr("stroke", "red").attr("selected", true);
+            }
+        } else {
+            d.fixed = !d.fixed;
+        }
+
         dragended(d);
-        // console.log("clicked " + d.fixed);
     }
 
     function dragstarted(d) {
