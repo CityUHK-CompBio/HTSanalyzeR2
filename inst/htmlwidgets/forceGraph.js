@@ -40,7 +40,18 @@ HTMLWidgets.widget({
 
   },
 
+  updateValue: function(el, x, simulation) {
+    if('pause' in x) {
+      x.pause ? simulation.stop() : simulation.restart()
+    }
+  },
+
   renderValue: function(el, x, simulation) {
+    if(x.update) {
+        this.updateValue(el, x, simulation)
+        return
+    }
+
     var options = x.options;
     var nodes = HTMLWidgets.dataframeToD3(x.nodes);
     var links = HTMLWidgets.dataframeToD3(x.links);

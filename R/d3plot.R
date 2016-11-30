@@ -78,6 +78,16 @@ renderForceGraph <- function(expr, env = parent.frame(), quoted = FALSE) {
   shinyRenderWidget(expr, forceGraphOutput, env, quoted = TRUE)
 }
 
+
+#' @importFrom htmlwidgets shinyRenderWidget createWidget
+#' @export
+updateForceGraph <- function(options) {
+  x <- list(update = TRUE)
+  x <- c(x, options)
+  expr <- createWidget(name = "forceGraph", x = x, package = "HTSanalyzeR2")
+  renderForceGraph(expr, quoted = FALSE)
+}
+
 norm <- function(df, minValue, maxValue, defaultValue) {
   # colnames(df) <- newName
   if(min(df) == max(df)) {
