@@ -77,6 +77,7 @@ createPanel <- function(tab = "enrich_result") {
                                   sidebarLayout(
                                     sidebarPanel(
                                       includeMarkdown("gsca_summary.md"),
+                                      hr(),
                                       selectInput('analysis', 'Analysis', availableResults(gsca@summary$results, TRUE)),
                                       selectInput('genesets', 'Gene Sets Collection', c(availableResults(gsca@summary$results, FALSE), "ALL"))
                                     ),
@@ -90,6 +91,7 @@ createPanel <- function(tab = "enrich_result") {
                                sidebarLayout(
                                  sidebarPanel(
                                    includeMarkdown("gsca_summary.md"),
+                                   hr(),
                                    selectInput('analysis2', 'Analysis', availableResults(gsca@summary$results, TRUE)[-3]),
                                    selectInput('genesets2', 'Gene Sets Collection', availableResults(gsca@summary$results, FALSE)),
                                    radioButtons("nodename", "Node name", c("ID"="id", "Term"="term"), inline = TRUE),
@@ -106,21 +108,20 @@ createPanel <- function(tab = "enrich_result") {
                             sidebarLayout(
                               sidebarPanel(
                                 includeMarkdown("nwa_summary.md"),
-                                sliderInput("dist2", "Distance", 10, 300, value = 70, step = 10),
-                                sliderInput("charge2", "Charge", -1000, -100, value = -300, step = 50),
-
                                 hr(),
+
                                 fluidRow(
-                                  selectInput("selection", label = h4("Node Sets"), choices = list("All" = 1,"Set 1" = 2,"Selected" = 3),selected = 1),
+                                  selectInput("selection", label = h4("Node Sets"), choices = list("All" = 'all',"Set 1" = "set1","Selected" = 'selected'),selected = 1),
 
                                   h4("View Options"),
                                   fluidRow(
-                                    column(3, checkboxInput("visible", label = "Label",  value = TRUE)),
+                                    column(3, checkboxInput("label_visible", label = "Label",  value = TRUE)),
                                     column(3, checkboxInput("pause", label = "Pause",  value = FALSE))
                                   ),
                                   radioButtons( "shape", label = "Shape", choices = list("Circle" = "circle", "Rect" = "rect"), inline = TRUE, selected = "circle"),
-                                  sliderInput("size",label = "Size",min = 2,max = 16,value = 6)
-
+                                  sliderInput("size",label = "Size", min = 2,max = 16,value = 6),
+                                  sliderInput("dist2", "Distance", 10, 300, value = 70, step = 10),
+                                  sliderInput("charge2", "Charge", -1000, -100, value = -300, step = 50)
                                 )
                               ),
                               # Show subnetwork results in the main panel
@@ -183,8 +184,22 @@ server <- function(input, output, session) {
   observeEvent(input$pause, {
     output$subnetwork_output <- updateForceGraph(list(pause = input$pause))
   })
+  observeEvent(input$shape, {
+    output$subnetwork_output <- updateForceGraph(list(shape = input$shape, selection = input$selection))
+  })
+  observeEvent(input$label_visible, {
+    output$subnetwork_output <- updateForceGraph(list(label = input$label_visible, selection = input$selection))
+  })
+  observeEvent(input$size, {
+    output$subnetwork_output <- updateForceGraph(list(size = input$size, selection = input$selection))
+  })
 
-
+  observeEvent(input$charge2, {
+    output$subnetwork_output <- updateForceGraph(list(charge = input$charge2))
+  })
+  observeEvent(input$dist2, {
+    output$subnetwork_output <- updateForceGraph(list(distance = input$dist2))
+  })
 
 
   ## response reconstruct
@@ -220,15 +235,12 @@ server <- function(input, output, session) {
     output$gsca_output <- renderDataTable(selectDT(gsca, input))
   })
 
-  observeEvent(input$dist2, {
-    options <- list(charge = input$charge2, distance = input$dist2)
-    output$subnetwork_output <- renderForceGraph(viewSubNet(nwa, options = options))
-  })
-  observeEvent(input$charge2, {
-    options <- list(charge = input$charge2, distance = input$dist2)
-    output$subnetwork_output <- renderForceGraph(viewSubNet(nwa, options = options))
-  })
 
+  ## TODO: undefined behavior
+  observeEvent({42}, {
+    options <- list(charge = input$charge2, distance = input$dist2)
+    output$subnetwork_output <- renderForceGraph(viewSubNet(nwa, options = options))
+  })
 
   }
 

@@ -44,6 +44,56 @@ HTMLWidgets.widget({
     if('pause' in x) {
       x.pause ? simulation.stop() : simulation.restart()
     }
+
+    if('shape' in x) {
+        var sel = x.selection
+        selection = d3.selectAll(".node-shape");
+
+        if(x.shape == 'circle') {
+            selection.attr("rx", 1000).attr("ry", 1000)
+        } else if(x.shape == 'rect') {
+            selection.attr("rx", 0).attr("ry", 0)
+        }
+
+        // arr.forEach(
+        //     function (id) {
+        //         d3.select("#" + id)
+        //             .select("rect").transition().duration(300)
+        //             .attr("rx", 0)
+        //             .attr("ry", 0);
+        //     }
+        // );
+    }
+
+    if('size' in x ) {
+        selection = d3.selectAll(".node-shape");
+
+        var size = parseInt(x.size)
+        selection.attr("x", -size)
+        .attr("y", -size)
+        .attr("width", size * 2)
+        .attr("height", size * 2)
+    }
+
+    if('label' in x) {
+        var sel = x.selection
+        var selection = d3.selectAll(".node-label")
+        if(x.label) {
+            selection.style("opacity", "0.8")
+        } else {
+            selection.style("opacity", "0.0")
+        }
+    }
+
+    if('charge' in x) {
+        simulation.force("charge").strength(x.charge);
+        simulation.alphaTarget(0.3).restart();
+    }
+    if('distance' in x) {
+        simulation.force("link").distance(x.distance);
+        simulation.alphaTarget(0.3).restart();
+    }
+
   },
 
   renderValue: function(el, x, simulation) {
@@ -72,15 +122,17 @@ HTMLWidgets.widget({
         .selectAll("line")
         .data(links)
         .enter().append("line")
+        .attr("class", "link")
         .attr("stroke", "grey")
         .attr("opacity", "0.6")
         .attr("stroke-width", function(d) { return d.weight; });
 
     var node = svg.append("g")
         .attr("class", "nodes")
-        .selectAll("circle")
+        .selectAll("rect")
         .data(nodes)
         .enter().append("g")
+        .attr("class", "node")
         .on("mouseover", mouseover)
         .on("mouseout", mouseout)
         .call(d3.drag()
@@ -88,13 +140,28 @@ HTMLWidgets.widget({
             .on("drag", dragged)
             .on("end", dragended));
 
-    node.append("circle")
+    node.append("rect")
         .on("click", clicked)
-        .attr("r", function(d) {return d.size;})
+        .attr("class", "node-shape")
+        .attr("rx", 1000)
+        .attr("ry", 1000)
+        .attr("x", function (d) {
+            return -d.size;
+        })
+        .attr("y", function (d) {
+            return -d.size;
+        })
+        .attr("width", function (d) {
+            return d.size * 2;
+        })
+        .attr("height", function (d) {
+            return d.size * 2;
+        })
         .attr("fill", function(d) { return color(d.color);})
         .attr("stroke", "grey");
 
     node.append("text")
+        .attr("class", "node-label")
         .attr("fill", function(d) {return "black"})
         .attr("dx", function(d) {return d.size + 2;})
         .attr("dy", ".35em")
@@ -105,6 +172,7 @@ HTMLWidgets.widget({
     simulation
         .nodes(nodes)
         .on("tick", ticked);
+
     simulation.force("charge")
         .strength(options.charge);
     simulation.force("link")
@@ -156,9 +224,20 @@ HTMLWidgets.widget({
     }
 
     function mouseover() {
-      d3.select(this).select("circle").transition()
+      d3.select(this).select("rect").transition()
         .duration(300)
-        .attr("r", function(d) {return d.size + 8;});
+        .attr("x", function (d) {
+            return -(d.size + 8);
+        })
+        .attr("y", function (d) {
+            return -(d.size + 8);
+        })
+        .attr("width", function (d) {
+            return 2 * (d.size + 8);
+        })
+        .attr("height", function (d) {
+            return 2 * (d.size + 8);
+        });
       d3.select(this).select("text").transition()
         .duration(300)
         .attr("dx", function(d) {return d.size + 10;})
@@ -167,9 +246,20 @@ HTMLWidgets.widget({
     }
 
     function mouseout() {
-      d3.select(this).select("circle").transition()
+      d3.select(this).select("rect").transition()
         .duration(500)
-        .attr("r", function(d){return d.size;});
+        .attr("x", function (d) {
+            return -d.size;
+        })
+        .attr("y", function (d) {
+            return -d.size;
+        })
+        .attr("width", function (d) {
+            return d.size * 2;
+        })
+        .attr("height", function (d) {
+            return d.size * 2;
+        });
       d3.select(this).select("text").transition()
         .duration(500)
         .attr("dx", function(d) {return d.size + 1;})
@@ -219,5 +309,6 @@ HTMLWidgets.widget({
         .attr("text-anchor", "middle")
         .attr("font-weight", "bold")
         .text(options.title);
+
   }
 });
