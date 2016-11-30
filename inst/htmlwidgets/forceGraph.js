@@ -47,18 +47,31 @@ HTMLWidgets.widget(globalObj = {
     }
 
     if('selection' in x) {
-        //TODO, the set name can also be 'selected'
+        //TODO, the set name can also be 'selection'
         globalObj.mode = x.selection;
         if(globalObj.mode != 'selection') {
-            d3.selectAll(".node-shape")
-            .attr("stroke", "grey")
-            .attr("selected", false);
+            d3.selectAll(".node").attr("selected", false);
+            d3.selectAll(".node > rect").attr("stroke", "grey");
+        }
+    }
+
+    function getSelection(type) {
+        if(type == 'node') {
+            if(globalObj.mode == 'selection') {
+                return d3.selectAll(".node[selected='true'] > rect");
+            }
+            return d3.selectAll(".node > rect");
+        } else if(type == 'label') {
+            if(globalObj.mode == 'selection') {
+                return d3.selectAll(".node[selected='true'] > text");
+            }
+            return d3.selectAll(".node > text");
         }
     }
 
     if('shape' in x) {
-        var sel = x.selection
-        selection = d3.selectAll(".node-shape");
+        // var sel = x.selection
+        selection = getSelection('node')
 
         if(x.shape == 'circle') {
             selection.attr("rx", 1000).attr("ry", 1000)
@@ -77,7 +90,7 @@ HTMLWidgets.widget(globalObj = {
     }
 
     if('size' in x ) {
-        selection = d3.selectAll(".node-shape");
+        selection = getSelection('node')
 
         var size = parseInt(x.size)
         selection.attr("x", -size)
@@ -87,12 +100,12 @@ HTMLWidgets.widget(globalObj = {
     }
 
     if('label' in x) {
-        var sel = x.selection
-        var selection = d3.selectAll(".node-label")
+        // var sel = x.selection
+        selection = getSelection('label')
         if(x.label) {
-            selection.style("opacity", "0.8")
+            selection.attr("visibility", "visible")
         } else {
-            selection.style("opacity", "0.0")
+            selection.attr("visibility", "hidden")
         }
     }
 
@@ -153,7 +166,6 @@ HTMLWidgets.widget(globalObj = {
 
     node.append("rect")
         .on("click", clicked)
-        .attr("class", "node-shape")
         .attr("rx", 1000)
         .attr("ry", 1000)
         .attr("x", function (d) {
@@ -172,7 +184,6 @@ HTMLWidgets.widget(globalObj = {
         .attr("stroke", "grey");
 
     node.append("text")
-        .attr("class", "node-label")
         .attr("fill", function(d) {return "black"})
         .attr("dx", function(d) {return d.size + 2;})
         .attr("dy", ".35em")
@@ -208,13 +219,16 @@ HTMLWidgets.widget(globalObj = {
 
     function clicked(d) {
         if(globalObj.mode == "selection") {
-            var sel = d3.select(this);
+            var sel = d3.select(this)
+            var psel = d3.select(this.parentNode);
             if(JSON.parse(sel.attr("selected"))) {
                 d.fixed = false;
-                d3.select(this).attr("stroke", "grey").attr("selected", false);
+                sel.attr("stroke", "grey");
+                psel.attr("selected", false);
             } else {
                 d.fixed = true;
-                d3.select(this).attr("stroke", "red").attr("selected", true);
+                sel.attr("stroke", "red")
+                psel.attr("selected", true);
             }
         } else {
             d.fixed = !d.fixed;
