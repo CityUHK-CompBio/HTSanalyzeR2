@@ -225,7 +225,7 @@ HTMLWidgets.widget(globalObj = {
         if(globalObj.mode == "selection") {
             var sel = d3.select(this)
             var psel = d3.select(this.parentNode);
-            if(JSON.parse(sel.attr("selected"))) {
+            if(JSON.parse(psel.attr("selected"))) {
                 d.fixed = false;
                 sel.attr("stroke", "grey");
                 psel.attr("selected", false);
