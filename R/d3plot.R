@@ -2,7 +2,7 @@
 #' @export
 forceGraph <- function(nodes, links, nMappings, lMappings,
                        title = NULL, legendTitle = NULL,
-                       charge = -200, distance = 200,
+                       nodeOptions = NULL, charge = -200, distance = 200,
                        width = NULL, height = NULL) {
 
   # nMappings: "id", "size", "color", "label", "desc"
@@ -49,6 +49,7 @@ forceGraph <- function(nodes, links, nMappings, lMappings,
   options = list(title = title,
                  charge = charge,
                  distance = distance,
+                 nodeOptions = nodeOptions,
                  colorDomain = colorDomain,
                  legendTitle = legendTitle,
                  legendDomain = legendDomain)

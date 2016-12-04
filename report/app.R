@@ -4,11 +4,14 @@ library(igraph)
 library(dplyr)
 library(HTSanalyzeR2)
 
-## the input data is a list, list(gsca = gsca, nwa = nwa)
+## the input data is a list, list(gsca = gsca, nwa = nwa, gscaNodeOptions = list(), nwaNodeOptions = list())
 results <- readRDS(file = "./results.RData")
-gsca <- results$gsca
+# gsca <- results$gsca
+# gscaNodeOpt <- result$gscaNodeOptions
 gsca <- NULL
 nwa <- results$nwa
+nwaNodeOpts <- results$nwaNodeOptions
+
 
 ## write Summary
 generateGSCSummary <- function(gsca) {
@@ -71,6 +74,12 @@ availableResults <- function(results, byRow = TRUE) {
   res
 }
 
+namesToList <- function(li) {
+  res <- as.list(names(li))
+  names(res) <- names(li)
+  res
+}
+
 createPanel <- function(tab = "enrich_result") {
   switch(tab,
          enrich_result = tabPanel("Enrichment Results",
@@ -111,7 +120,7 @@ createPanel <- function(tab = "enrich_result") {
                                 hr(),
 
                                 fluidRow(
-                                  selectInput("selection", label = h4("Node Sets"), choices = list("All" = 'all',"Set 1" = "set1","Selection Mode" = 'selection'),selected = 1),
+                                  selectInput("selection", label = h4("Node Sets"), choices = c("All" = 'all', namesToList(nwaNodeOpts) ,"Selection Mode" = 'selection'),selected = 1),
 
                                   h4("View Options"),
                                   fluidRow(
@@ -243,7 +252,7 @@ server <- function(input, output, session) {
   ## TODO: undefined behavior
   observeEvent({42}, {
     options <- list(charge = input$charge2, distance = input$dist2)
-    output$subnetwork_output <- renderForceGraph(viewSubNet(nwa, options = options))
+    output$subnetwork_output <- renderForceGraph(viewSubNet(nwa, nwaNodeOpts, options))
   })
 
   }

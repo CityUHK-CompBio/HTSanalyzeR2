@@ -33,6 +33,7 @@ setMethod("extractSubNet", signature = "NWA",
 #' @importFrom igraph as_data_frame
 setMethod("viewSubNet", signature = "NWA",
           function(object,
+                   nodeOptions = NULL,
                    options = list(charge = -200, distance = 200)) {
             g <- extractSubNet(object)
 
@@ -43,5 +44,6 @@ setMethod("viewSubNet", signature = "NWA",
             lMappings <- list(source = "from",target = "to")
 
             forceGraph(em_nodes, em_links, nMappings, lMappings,
+                       nodeOptions = nodeOptions,
                        charge = options$charge, distance = options$distance)
           })

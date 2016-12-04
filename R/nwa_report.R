@@ -1,5 +1,6 @@
 if (!isGeneric("report")) {
-  setGeneric("report", function(object, what = "ALL", ...)
+  setGeneric("report",
+             function(object, nodeOptions = list(), reportDir = "NWAReport")
     standardGeneric("report"), package = "HTSanalyzeR2")
 }
 
@@ -7,7 +8,9 @@ if (!isGeneric("report")) {
 #' @export
 setMethod("report",
           "NWA",
-          function(object, reportDir = "NWAReport") {
-            reportAll(gsca = NULL, nwa = object, reportDir)
+          function(object, nodeOptions = list(), reportDir = "NWAReport") {
+            reportAll(gsca = NULL, nwa = object,
+                      gscaNodeOptions = NULL, nwaNodeOptions = nodeOptions,
+                      reportDir)
           }
-          )
+        )

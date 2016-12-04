@@ -2,6 +2,7 @@ HTMLWidgets.widget(globalObj = {
   name: "forceGraph",
   type: "output",
   mode: "all",
+  rawdata: null,
 
   initialize: function(el, width, height) {
 
@@ -60,12 +61,22 @@ HTMLWidgets.widget(globalObj = {
             if(globalObj.mode == 'selection') {
                 return d3.selectAll(".node[selected='true'] > rect");
             }
-            return d3.selectAll(".node > rect");
+            var sel = d3.selectAll(".node > rect");
+            if(globalObj.mode == 'all') {
+                return sel;
+            }
+            var set = globalObj.rawdata.options.nodeOptions[globalObj.mode];
+            return sel.filter(function(d) {return set.indexOf(d.id) >= 0});
         } else if(type == 'label') {
             if(globalObj.mode == 'selection') {
                 return d3.selectAll(".node[selected='true'] > text");
             }
-            return d3.selectAll(".node > text");
+            var sel = d3.selectAll(".node > text");
+            if(globalObj.mode == 'all') {
+                return sel;
+            }
+            var set = globalObj.rawdata.options.nodeOptions[globalObj.mode];
+            return sel.filter(function(d) {return set.indexOf(d.id) >= 0});
         }
     }
 
@@ -129,6 +140,8 @@ HTMLWidgets.widget(globalObj = {
         this.updateValue(el, x, simulation)
         return
     }
+
+    globalObj.rawdata = x;
 
     var options = x.options;
     var nodes = HTMLWidgets.dataframeToD3(x.nodes);
