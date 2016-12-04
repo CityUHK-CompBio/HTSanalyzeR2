@@ -3,6 +3,7 @@ HTMLWidgets.widget(globalObj = {
   type: "output",
   mode: "all",
   rawdata: null,
+  colorFunc : null,
 
   initialize: function(el, width, height) {
 
@@ -89,15 +90,6 @@ HTMLWidgets.widget(globalObj = {
         } else if(x.shape == 'rect') {
             selection.attr("rx", 0).attr("ry", 0)
         }
-
-        // arr.forEach(
-        //     function (id) {
-        //         d3.select("#" + id)
-        //             .select("rect").transition().duration(300)
-        //             .attr("rx", 0)
-        //             .attr("ry", 0);
-        //     }
-        // );
     }
 
     // TODO size change shoule be a scale
@@ -133,6 +125,15 @@ HTMLWidgets.widget(globalObj = {
         simulation.alphaTarget(0.3).restart();
     }
 
+    if('process' in x) {
+        var threshold = JSON.parse(x.process);
+        var sel = d3.selectAll(".node > rect");
+        var color = globalObj.colorFunc;
+
+        sel.attr("fill", function(d, i) {
+            return i > threshold ? "#ffffff" : color(d.color);
+        });
+    }
   },
 
   renderValue: function(el, x, simulation) {
@@ -157,6 +158,8 @@ HTMLWidgets.widget(globalObj = {
     .domain(options.colorDomain)
     .range(["#4575b4", "#ffffbf", "#a50026"])
     .interpolate(d3.interpolateHcl);
+
+    globalObj.colorFunc = color;
 
     var link = svg.append("g")
         .attr("class", "links")

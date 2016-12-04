@@ -130,7 +130,8 @@ createPanel <- function(tab = "enrich_result") {
                                   radioButtons( "shape", label = "Shape", choices = list("Circle" = "circle", "Rect" = "rect"), inline = TRUE, selected = "circle"),
                                   sliderInput("size",label = "Size", min = 2,max = 20,value = 6),
                                   sliderInput("dist2", "Distance", 10, 300, value = 70, step = 10),
-                                  sliderInput("charge2", "Charge", -1000, -100, value = -300, step = 50)
+                                  sliderInput("charge2", "Charge", -1000, -100, value = -300, step = 50),
+                                  sliderInput("process", "Process", 0, 30, value = 30, step = 1, animate = TRUE)
                                 )
                               ),
                               # Show subnetwork results in the main panel
@@ -213,6 +214,9 @@ server <- function(input, output, session) {
   observeEvent(input$dist2, {
     output$subnetwork_output <- updateForceGraph(list(distance = input$dist2))
   })
+  observeEvent(input$process, {
+    output$subnetwork_output <- updateForceGraph(list(process = input$process))
+  })
 
 
   ## response reconstruct
@@ -247,7 +251,6 @@ server <- function(input, output, session) {
   observeEvent(input$genesets, {
     output$gsca_output <- renderDataTable(selectDT(gsca, input))
   })
-
 
   ## TODO: undefined behavior
   observeEvent({42}, {
@@ -312,9 +315,6 @@ selectDT <- function(gsca, input) {
   }
   dt
 }
-
-
-
 
 
 # Run the application
