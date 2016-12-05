@@ -263,6 +263,7 @@ setMethod("viewEnrichMap", signature = "GSCA",
                    ntop = NULL,
                    allSig = TRUE,
                    gsNameType = "id",
+                   nodeOptions = NULL,
                    options = list(charge = -200, distance = 200)
           ) {
 
@@ -285,6 +286,7 @@ setMethod("viewEnrichMap", signature = "GSCA",
             forceGraph(em_nodes, em_links, nMappings, lMappings,
                        title = title,
                        legendTitle = legendTitle,
+                       nodeOptions = nodeOptions,
                        charge = options$charge,
                        distance = options$distance
             )

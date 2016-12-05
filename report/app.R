@@ -6,9 +6,8 @@ library(HTSanalyzeR2)
 
 ## the input data is a list, list(gsca = gsca, nwa = nwa, gscaNodeOptions = list(), nwaNodeOptions = list())
 results <- readRDS(file = "./results.RData")
-# gsca <- results$gsca
-# gscaNodeOpt <- result$gscaNodeOptions
-gsca <- NULL
+gsca <- results$gsca
+gscaNodeOpts <- results$gscaNodeOptions
 nwa <- results$nwa
 nwaNodeOpts <- results$nwaNodeOptions
 
@@ -104,8 +103,20 @@ createPanel <- function(tab = "enrich_result") {
                                    selectInput('analysis2', 'Analysis', availableResults(gsca@summary$results, TRUE)[-3]),
                                    selectInput('genesets2', 'Gene Sets Collection', availableResults(gsca@summary$results, FALSE)),
                                    radioButtons("nodename", "Node name", c("ID"="id", "Term"="term"), inline = TRUE),
-                                   sliderInput("dist", "Distance", 10, 300, value = 100, step = 10),
-                                   sliderInput("charge", "Charge", -1000, -100, value = -600, step = 50)
+
+                                   fluidRow(
+                                     selectInput("selection", label = h4("Node Sets"), choices = c("All" = 'all', namesToList(gscaNodeOpts) ,"Selection Mode" = 'selection'),selected = 1),
+
+                                     h4("View Options"),
+                                     fluidRow(
+                                       column(3, checkboxInput("label_visible", label = "Label",  value = TRUE)),
+                                       column(3, checkboxInput("pause", label = "Pause",  value = FALSE))
+                                     ),
+                                     radioButtons("shape", label = "Shape", choices = list("Circle" = "circle", "Rect" = "rect"), inline = TRUE, selected = "circle"),
+                                     sliderInput("scale",label = "Scale", min = 0.2, max = 3, value = 1),
+                                     sliderInput("dist", "Distance", 10, 300, value = 100, step = 10),
+                                     sliderInput("charge", "Charge", -1000, -100, value = -600, step = 50)
+                                   )
                                  ),
 
                                  # Show gsca results in the main panel
@@ -120,15 +131,15 @@ createPanel <- function(tab = "enrich_result") {
                                 hr(),
 
                                 fluidRow(
-                                  selectInput("selection", label = h4("Node Sets"), choices = c("All" = 'all', namesToList(nwaNodeOpts) ,"Selection Mode" = 'selection'),selected = 1),
+                                  selectInput("selection2", label = h4("Node Sets"), choices = c("All" = 'all', namesToList(nwaNodeOpts) ,"Selection Mode" = 'selection'),selected = 1),
 
                                   h4("View Options"),
                                   fluidRow(
-                                    column(3, checkboxInput("label_visible", label = "Label",  value = TRUE)),
-                                    column(3, checkboxInput("pause", label = "Pause",  value = FALSE))
+                                    column(3, checkboxInput("label_visible2", label = "Label",  value = TRUE)),
+                                    column(3, checkboxInput("pause2", label = "Pause",  value = FALSE))
                                   ),
-                                  radioButtons( "shape", label = "Shape", choices = list("Circle" = "circle", "Rect" = "rect"), inline = TRUE, selected = "circle"),
-                                  sliderInput("scale",label = "Scale", min = 0.2, max = 3, value = 1),
+                                  radioButtons( "shape2", label = "Shape", choices = list("Circle" = "circle", "Rect" = "rect"), inline = TRUE, selected = "circle"),
+                                  sliderInput("scale2",label = "Scale", min = 0.2, max = 3, value = 1),
                                   sliderInput("dist2", "Distance", 10, 300, value = 70, step = 10),
                                   sliderInput("charge2", "Charge", -1000, -100, value = -300, step = 50),
                                   sliderInput("process", "Process", 0, 30, value = 30, step = 1, animate = TRUE)
@@ -192,21 +203,43 @@ server <- function(input, output, session) {
 
   ## response update
   observeEvent(input$pause, {
-    output$subnetwork_output <- updateForceGraph(list(pause = input$pause))
+    output$network_output <- updateForceGraph(list(pause = input$pause))
   })
-
   observeEvent(input$selection, {
-    output$subnetwork_output <- updateForceGraph(list(selection = input$selection))
+    output$network_output <- updateForceGraph(list(selection = input$selection))
   })
-
   observeEvent(input$shape, {
-    output$subnetwork_output <- updateForceGraph(list(shape = input$shape, selection = input$selection))
+    output$network_output <- updateForceGraph(list(shape = input$shape, selection = input$selection))
   })
   observeEvent(input$label_visible, {
-    output$subnetwork_output <- updateForceGraph(list(label = input$label_visible, selection = input$selection))
+    output$network_output <- updateForceGraph(list(label = input$label_visible, selection = input$selection))
   })
   observeEvent(input$scale, {
-    output$subnetwork_output <- updateForceGraph(list(scale = input$scale, selection = input$selection))
+    output$network_output <- updateForceGraph(list(scale = input$scale, selection = input$selection))
+  })
+  observeEvent(input$charge, {
+    output$network_output <- updateForceGraph(list(charge = input$charge))
+  })
+  observeEvent(input$dist, {
+    output$network_output <- updateForceGraph(list(distance = input$dist))
+  })
+
+
+
+  observeEvent(input$pause2, {
+    output$subnetwork_output <- updateForceGraph(list(pause = input$pause2))
+  })
+  observeEvent(input$selection2, {
+    output$subnetwork_output <- updateForceGraph(list(selection = input$selection2))
+  })
+  observeEvent(input$shape2, {
+    output$subnetwork_output <- updateForceGraph(list(shape = input$shape2, selection = input$selection2))
+  })
+  observeEvent(input$label_visible2, {
+    output$subnetwork_output <- updateForceGraph(list(label = input$label_visible2, selection = input$selection2))
+  })
+  observeEvent(input$scale2, {
+    output$subnetwork_output <- updateForceGraph(list(scale = input$scale2, selection = input$selection2))
   })
   observeEvent(input$charge2, {
     output$subnetwork_output <- updateForceGraph(list(charge = input$charge2))
@@ -235,16 +268,6 @@ server <- function(input, output, session) {
     output$network_output <- updateNetwork(gsca, input)
   })
 
-  observeEvent(input$dist, {
-    # enrichment map
-    output$network_output <- updateNetwork(gsca, input)
-  })
-
-  observeEvent(input$charge, {
-    # enrichment map
-    output$network_output <- updateNetwork(gsca, input)
-  })
-
   observeEvent(input$analysis, {
     output$gsca_output <- renderDataTable(selectDT(gsca, input))
   })
@@ -253,6 +276,7 @@ server <- function(input, output, session) {
   })
 
   ## TODO: undefined behavior
+
   observeEvent({42}, {
     options <- list(charge = input$charge2, distance = input$dist2)
     output$subnetwork_output <- renderForceGraph(viewSubNet(nwa, nwaNodeOpts, options))
@@ -263,8 +287,9 @@ server <- function(input, output, session) {
 updateNetwork <- function(gsca, input) {
   options <- list(charge = input$charge, distance = input$dist)
   renderForceGraph(viewEnrichMap(gsca, resultName=paste0(input$analysis2, ".results"),
-                                 gscs = c(input$genesets2), allSig=F, ntop = 30, gsNameType=input$nodename,
-                                 options = options))
+                                 gscs = c(input$genesets2),
+                                 allSig=F, ntop = 30, gsNameType=input$nodename,
+                                 nodeOptions = gscaNodeOpts, options = options))
 }
 
 selectDT <- function(gsca, input) {
