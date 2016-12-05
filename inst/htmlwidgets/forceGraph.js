@@ -92,18 +92,18 @@ HTMLWidgets.widget(globalObj = {
         }
     }
 
-    // TODO size change shoule be a scale
-    if('size' in x ) {
-        var size = parseInt(x.size)
+    if('scale' in x) {
+        var scale = parseFloat(x.scale);
 
-        d3.selectAll(".node").each(function(d) {d.size = size});
+        getSelection('node').each(function(d) {d.scale = scale});
+        // d3.selectAll(".node").each(function(d) {d.size = size});
 
-        getSelection('node').attr("x", -size)
-            .attr("y", -size)
-            .attr("width", size * 2)
-            .attr("height", size * 2);
-        getSelection('label').attr("dx", size + 2)
-            .style("font", (size / 2 + 7) + "px serif")
+        getSelection('node').attr("x", function(d) {return -d.size * d.scale})
+            .attr("y", function(d) {return -d.size * d.scale})
+            .attr("width", function(d) {return d.size * d.scale * 2})
+            .attr("height", function(d) {return d.size * d.scale * 2});
+        getSelection('label').attr("dx", function(d) {return d.size * d.scale + 2})
+            .style("font", function(d) {return (d.size * d.scale / 2 + 7) + "px serif"})
     }
 
     if('label' in x) {
@@ -142,6 +142,7 @@ HTMLWidgets.widget(globalObj = {
         return
     }
 
+    x.nodes.scale = Array(x.nodes.size.length).fill(1);
     globalObj.rawdata = x;
 
     var options = x.options;
@@ -189,25 +190,25 @@ HTMLWidgets.widget(globalObj = {
         .attr("rx", 1000)
         .attr("ry", 1000)
         .attr("x", function (d) {
-            return -d.size;
+            return -d.size * d.scale;
         })
         .attr("y", function (d) {
-            return -d.size;
+            return -d.size * d.scale;
         })
         .attr("width", function (d) {
-            return d.size * 2;
+            return d.size * d.scale * 2;
         })
         .attr("height", function (d) {
-            return d.size * 2;
+            return d.size * d.scale * 2;
         })
         .attr("fill", function(d) { return color(d.color);})
         .attr("stroke", "grey");
 
     node.append("text")
         .attr("fill", function(d) {return "black"})
-        .attr("dx", function(d) {return d.size + 2})
+        .attr("dx", function(d) {return d.size * d.scale + 2})
         .attr("dy", ".35em")
-        .style("font", function(d) {return (d.size / 2 + 7) + "px serif"})
+        .style("font", function(d) {return (d.size * d.scale / 2 + 7) + "px serif"})
         .style("opacity", "0.8")
         .text(function(d) {return d.label;});
 
@@ -283,21 +284,21 @@ HTMLWidgets.widget(globalObj = {
       d3.select(this).select("rect").transition()
         .duration(300)
         .attr("x", function (d) {
-            return -(d.size + 8);
+            return -(d.size * d.scale + 8);
         })
         .attr("y", function (d) {
-            return -(d.size + 8);
+            return -(d.size * d.scale + 8);
         })
         .attr("width", function (d) {
-            return 2 * (d.size + 8);
+            return 2 * (d.size * d.scale + 8);
         })
         .attr("height", function (d) {
-            return 2 * (d.size + 8);
+            return 2 * (d.size * d.scale + 8);
         });
       d3.select(this).select("text").transition()
         .duration(300)
-        .attr("dx", function(d) {return d.size + 10;})
-        .style("font", function(d) {return (d.size / 2 + 11) + "px serif"})
+        .attr("dx", function(d) {return d.size * d.scale + 10;})
+        .style("font", function(d) {return (d.size * d.scale / 2 + 11) + "px serif"})
         .style("opacity", 1);
     }
 
@@ -305,21 +306,21 @@ HTMLWidgets.widget(globalObj = {
       d3.select(this).select("rect").transition()
         .duration(500)
         .attr("x", function (d) {
-            return -d.size;
+            return -d.size * d.scale;
         })
         .attr("y", function (d) {
-            return -d.size;
+            return -d.size * d.scale;
         })
         .attr("width", function (d) {
-            return d.size * 2;
+            return d.size * d.scale * 2;
         })
         .attr("height", function (d) {
-            return d.size * 2;
+            return d.size * d.scale * 2;
         });
       d3.select(this).select("text").transition()
         .duration(500)
-        .attr("dx", function(d) {return d.size + 1;})
-        .style("font", function(d) {return (d.size / 2 + 7) + "px serif"})
+        .attr("dx", function(d) {return d.size * d.scale + 1;})
+        .style("font", function(d) {return (d.size * d.scale / 2 + 7) + "px serif"})
         .style("opacity", 0.8);
     }
 

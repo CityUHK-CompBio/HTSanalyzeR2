@@ -128,7 +128,7 @@ createPanel <- function(tab = "enrich_result") {
                                     column(3, checkboxInput("pause", label = "Pause",  value = FALSE))
                                   ),
                                   radioButtons( "shape", label = "Shape", choices = list("Circle" = "circle", "Rect" = "rect"), inline = TRUE, selected = "circle"),
-                                  sliderInput("size",label = "Size", min = 2,max = 20,value = 6),
+                                  sliderInput("scale",label = "Scale", min = 0.2, max = 3, value = 1),
                                   sliderInput("dist2", "Distance", 10, 300, value = 70, step = 10),
                                   sliderInput("charge2", "Charge", -1000, -100, value = -300, step = 50),
                                   sliderInput("process", "Process", 0, 30, value = 30, step = 1, animate = TRUE)
@@ -205,8 +205,8 @@ server <- function(input, output, session) {
   observeEvent(input$label_visible, {
     output$subnetwork_output <- updateForceGraph(list(label = input$label_visible, selection = input$selection))
   })
-  observeEvent(input$size, {
-    output$subnetwork_output <- updateForceGraph(list(size = input$size, selection = input$selection))
+  observeEvent(input$scale, {
+    output$subnetwork_output <- updateForceGraph(list(scale = input$scale, selection = input$selection))
   })
   observeEvent(input$charge2, {
     output$subnetwork_output <- updateForceGraph(list(charge = input$charge2))
