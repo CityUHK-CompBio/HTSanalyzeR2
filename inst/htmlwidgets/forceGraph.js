@@ -51,7 +51,9 @@ HTMLWidgets.widget(globalObj = {
     },
 
     construct: function(el, x, simulation) {
-        x.nodes.scale = Array(x.nodes.size.length).fill(1);
+        // x.nodes.scale = Array(x.nodes.size.length).fill(1);
+        x.nodes.scale = Array.apply(null, Array(x.nodes.size.length)).map(Number.prototype.valueOf, 1);
+
         globalObj.rawdata = x;
 
         var options = x.options;
