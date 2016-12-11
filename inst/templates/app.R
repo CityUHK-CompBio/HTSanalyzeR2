@@ -4,84 +4,44 @@ library(igraph)
 library(dplyr)
 library(HTSanalyzeR2)
 
-## the input data is a list, list(gsca = gsca, nwa = nwa)
+## ====================== Loading results ======================
+## results: list(gsca = gsca, nwa = nwa, gscaNodeOptions = list(), nwaNodeOptions = list())
 results <- readRDS(file = "./results.RData")
 gsca <- results$gsca
 nwa <- results$nwa
+gscaNodeOpts <- results$gscaNodeOptions
+nwaNodeOpts <- results$nwaNodeOptions
 
-## write Summary
-generateGSCSummary <- function(gsca) {
-  paste(sapply(1:length(gsca@listOfGeneSetCollections), function(i){
-    (paste("- ", names(gsca@listOfGeneSetCollections)[i],
-           " ( ", length(gsca@listOfGeneSetCollections[[i]]),
-           " gene sets, of which ", gsca@summary$gsc[i, 2],
-           " were above the minimum size )", sep=""))
-  }), collapse = "\n")
-}
 
-generateMethodsSummary <- function(gsca) {
-  summ <- ""
-  if(!is.null(gsca@result$HyperGeo.results)) {
-    summ <- paste(summ, "- Hypergeometric test",
-                  "\n + Significant gene set cutoff p-value (adjusted): ", gsca@summary$para$hypergeo[, "pValueCutoff"],
-                  "\n + MHT correction method: ", gsca@summary$para$hypergeo[, "pAdjustMethod"],
-                  "\n + Minimum gene set size: ", gsca@summary$para$hypergeo[, "minGeneSetSize"], sep = "")
-  }
-  if(!is.null(gsca@result$GSEA.results)) {
-    summ <- paste(summ, "\n\n- Gene Set Enrichment Analysis",
-                  "\n + Significant gene set cutoff p-value (adjusted): ", gsca@summary$para$gsea[, "pValueCutoff"],
-                  "\n + Minimum gene set size: ", gsca@summary$para$gsea[, "minGeneSetSize"],
-                  "\n + MHT correction method: ", gsca@summary$para$gsea[, "pAdjustMethod"],
-                  "\n + Number of permutations: ", gsca@summary$para$gsea[, "nPermutations"],
-                  "\n + Exponent: ", gsca@summary$para$gsea[, "exponent"], sep = "")
-  }
-  summ
-}
-
+## ====================== Preprocessing ========================
 if(!is.null(gsca)) {
-  if(file.exists("gsca_summary.md"))  file.remove("gsca_summary.md")
-  knitr::knit("gsca_summary.Rmd", "gsca_summary.md")
-}
-if(!is.null(nwa)) {
-  if(file.exists("nwa_summary.md"))  file.remove("nwa_summary.md")
-  knitr::knit("nwa_summary.Rmd", "nwa_summary.md")
-}
+  gsca <- HTSanalyzeR2:::appendLinks(gsca)
+  gsca <- HTSanalyzeR2:::combineResults(gsca)
 
-
-createLink <- function(val) {
-  sprintf('<a href="https://www.google.com/#q=%s" target="_blank" class="btn btn-primary">Info</a>',val)
+  availableAnalysis <- HTSanalyzeR2:::availableResults(gsca@summary$results, TRUE)
+  availableGeneSets <- HTSanalyzeR2:::availableResults(gsca@summary$results, FALSE)
 }
 
-createLink_KEGG <- function(val) {
-  sprintf('<a href="http://www.genome.jp/dbget-bin/www_bget?pathway:%s" target="_blank" class="btn btn-primary">%s</a>',val,val)
-}
+file.remove(dir(".", pattern = "*\\.md", full.names = TRUE))
+if (!is.null(gsca))  knitr::knit("gsca_summary.Rmd", "gsca_summary.md")
+if (!is.null(nwa))  knitr::knit("nwa_summary.Rmd", "nwa_summary.md")
 
-createLink_GO <- function(val) {
-  sprintf('<a href="http://www.ebi.ac.uk/QuickGO/GTerm?id=%s" target="_blank" class="btn btn-primary">%s</a>',val,val)
-}
+namesToList <- HTSanalyzeR2:::namesToList
 
-availableResults <- function(results, byRow = TRUE) {
-  res <- c("HyperGeo", "GSEA", "Significant in both")
-  if(byRow) {
-    res <- res[which(!is.na(rowSums(results)))]
-  } else {
-    res <- colnames(results)[colSums(results, na.rm = TRUE) > 0]
-  }
-  res
-}
+## ==================== Define ui and server ====================
+createTab <- function(tab) {
+  sidebarStype <- "overflow-x:hidden; overflow-y:scroll; max-height:100vh;"
 
-createPanel <- function(tab = "enrich_result") {
   switch(tab,
          enrich_result = tabPanel("Enrichment Results",
                                   sidebarLayout(
                                     sidebarPanel(
+                                      style = sidebarStype,
                                       includeMarkdown("gsca_summary.md"),
-                                      selectInput('analysis', 'Analysis', availableResults(gsca@summary$results, TRUE)),
-                                      selectInput('genesets', 'Gene Sets Collection', c(availableResults(gsca@summary$results, FALSE), "ALL")),
-                                      style = "overflow-y:scroll; max-height:800px; position:relative;"
+                                      hr(),
+                                      selectInput('analysis_res', 'Analysis', availableAnalysis),
+                                      selectInput('genesets_res', 'Gene Sets Collection', c(availableGeneSets, "ALL"))
                                     ),
-
-                                    # Show gsca results in the main panel
                                     mainPanel(
                                       dataTableOutput("gsca_output")
                                     )
@@ -89,15 +49,26 @@ createPanel <- function(tab = "enrich_result") {
          enrich_map = tabPanel("Enrichment Map",
                                sidebarLayout(
                                  sidebarPanel(
-                                   includeMarkdown("gsca_summary.md"),
-                                   selectInput('analysis2', 'Analysis', availableResults(gsca@summary$results, TRUE)[-3]),
-                                   selectInput('genesets2', 'Gene Sets Collection', availableResults(gsca@summary$results, FALSE)),
-                                   radioButtons("nodename", "Node name", c("ID"="id", "Term"="term")),
-                                   sliderInput("dist", "Distance", 10, 300, value = 100, step = 10),
-                                   sliderInput("charge", "Charge", -1000, -100, value = -600, step = 50),
-                                   style = "overflow-y:scroll; max-height:800px; position:relative;"
+                                   style = sidebarStype,
+                                   # includeMarkdown("gsca_summary.md"),
+                                   # hr(),
+                                   h3("Enrichment Map"),
+                                   selectInput('analysis_map', 'Analysis', availableAnalysis[-3]),
+                                   selectInput('genesets_map', 'Gene Sets Collection', availableGeneSets),
+                                   hr(),
+                                   selectInput("selection_map", h4("Node Sets"), choices = c("All" = 'all', namesToList(gscaNodeOpts) ,"Selection Mode" = 'selection'), selected = 1),
+
+                                   h4("View Options"),
+                                   fluidRow(
+                                     column(3, checkboxInput("label_visible_map", "Label",  value = TRUE)),
+                                     column(3, checkboxInput("pause_map", "Pause",  value = FALSE))
+                                   ),
+                                   radioButtons("nodename_map", "Node name", c("ID" = "id", "Term" = "term"), inline = TRUE),
+                                   radioButtons("shape_map", "Shape", c("Circle" = "circle", "Rect" = "rect"), inline = TRUE),
+                                   sliderInput("scale_map", "Scale", min = 0.2, max = 3, value = 1),
+                                   sliderInput("dist_map", "Distance", 10, 300, value = 100, step = 10),
+                                   sliderInput("charge_map", "Charge", -1000, -100, value = -600, step = 50)
                                  ),
-                                 # Show gsca results in the main panel
                                  mainPanel(
                                    forceGraphOutput("network_output", height = "800px")
                                  )
@@ -105,13 +76,22 @@ createPanel <- function(tab = "enrich_result") {
          network = tabPanel("Network Analysis",
                             sidebarLayout(
                               sidebarPanel(
+                                style = sidebarStype,
                                 includeMarkdown("nwa_summary.md"),
-                                sliderInput("dist2", "Distance", 10, 300, value = 70, step = 10),
-                                sliderInput("charge2", "Charge", -1000, -100, value = -300, step = 50),
-                                style = "overflow-y:scroll; max-height:800px; position:relative;"
-                              ),
+                                hr(),
+                                selectInput("selection_net", label = h4("Node Sets"), choices = c("All" = 'all', namesToList(nwaNodeOpts) ,"Selection Mode" = 'selection'), selected = 1),
 
-                              # Show subnetwork results in the main panel
+                                h4("View Options"),
+                                fluidRow(
+                                  column(3, checkboxInput("label_visible_net", label = "Label",  value = TRUE)),
+                                  column(3, checkboxInput("pause_net", label = "Pause",  value = FALSE))
+                                ),
+                                radioButtons("shape_net", label = "Shape", choices = list("Circle" = "circle", "Rect" = "rect"), inline = TRUE, selected = "circle"),
+                                sliderInput("scale_net",label = "Scale", min = 0.2, max = 3, value = 1),
+                                sliderInput("dist_net", "Distance", 10, 300, value = 70, step = 10),
+                                sliderInput("charge_net", "Charge", -1000, -100, value = -300, step = 50),
+                                sliderInput("process_net", "Process", 0, 30, value = 30, step = 1, animate = TRUE)
+                              ),
                               mainPanel(
                                 forceGraphOutput("subnetwork_output", height = "800px")
                               )
@@ -119,150 +99,153 @@ createPanel <- function(tab = "enrich_result") {
   )
 }
 
+
+##
+
 ui <- NULL
 if(!is.null(gsca) && !is.null(nwa)) {
-  ui <- navbarPage("HTSanalyzeR2", createPanel("enrich_result"), createPanel("enrich_map"), createPanel("network"))
+  ui <- navbarPage("HTSanalyzeR2", createTab("enrich_result"), createTab("enrich_map"), createTab("network"))
+} else if(!is.null(gsca)) {
+    ui <- navbarPage("HTSanalyzeR2", createTab("enrich_result"), createTab("enrich_map"))
 } else {
-  if(is.null(gsca))
-    ui <- navbarPage("HTSanalyzeR2", createPanel("network"))
-  else
-    ui <- navbarPage("HTSanalyzeR2", createPanel("enrich_result"), createPanel("enrich_map"))
+    ui <- navbarPage("HTSanalyzeR2", createTab("network"))
 }
 
 
-# Define server logic required to draw a histogram
 server <- function(input, output, session) {
-
-  if(!is.null(gsca)) {
-    ## add gsca terms
-    for(analysis in c("HyperGeo.results", "GSEA.results", "Sig.pvals.in.both", "Sig.adj.pvals.in.both")) {
-      for(genesets in names(gsca@result[[analysis]])) {
-        if(grepl("KEGG", genesets)) {
-          gsca@result[[analysis]][[genesets]] <-
-            data.frame(Gene.Set=createLink_KEGG(rownames(gsca@result[[analysis]][[genesets]])),
-                       gsca@result[[analysis]][[genesets]])
-        } else if(grepl("GO", genesets)) {
-          gsca@result[[analysis]][[genesets]] <-
-            data.frame(Gene.Set=createLink_GO(rownames(gsca@result[[analysis]][[genesets]])),
-                       gsca@result[[analysis]][[genesets]])
-        } else {
-          gsca@result[[analysis]][[genesets]] <-
-            data.frame(Gene.Set=createLink(rownames(gsca@result[[analysis]][[genesets]])),
-                       gsca@result[[analysis]][[genesets]])
-        }
-      }
-    }
-
-    # combine
-    for(name in c("HyperGeo.results", "GSEA.results")) {
-      if(!is.null(gsca@result[[name]])){
-        gsca@result[[name]]$ALL <- do.call(rbind, gsca@result[[name]])
-        gsca@result[[name]]$ALL <- gsca@result[[name]]$ALL[order(gsca@result[[name]]$ALL$Adjusted.Pvalue), ]
-      }
-    }
-
-    if(!is.null(gsca@result$Sig.adj.pvals.in.both)){
-      gsca@result$Sig.adj.pvals.in.both$ALL <- do.call(rbind, gsca@result$Sig.adj.pvals.in.both)
-      gsca@result$Sig.adj.pvals.in.both$ALL <- gsca@result$Sig.adj.pvals.in.both$ALL[order(gsca@result$Sig.adj.pvals.in.both$ALL$HyperGeo.Adj.Pvalue, gsca@result$Sig.adj.pvals.in.both$ALL$GSEA.Adj.Pvalue), ]
-    }
-  }
-
-
-  ## response
-  observeEvent(input$analysis2, {
-    # enrichment map
-    output$network_output <- updateNetwork(gsca, input)
+  ## response update
+  observeEvent(input$pause_map, {
+    output$network_output <- updateForceGraph(list(pause = input$pause_map))
+  })
+  observeEvent(input$selection_map, {
+    output$network_output <- updateForceGraph(list(selection = input$selection_map))
+  })
+  observeEvent(input$shape_map, {
+    output$network_output <- updateForceGraph(list(shape = input$shape_map))
+  })
+  observeEvent(input$label_visible_map, {
+    output$network_output <- updateForceGraph(list(label = input$label_visible_map))
+  })
+  observeEvent(input$scale_map, {
+    output$network_output <- updateForceGraph(list(scale = input$scale_map))
+  })
+  observeEvent(input$charge_map, {
+    output$network_output <- updateForceGraph(list(charge = input$charge_map))
+  })
+  observeEvent(input$dist_map, {
+    output$network_output <- updateForceGraph(list(distance = input$dist_map))
   })
 
-  observeEvent(input$genesets2, {
-    # enrichment map
-    output$network_output <- updateNetwork(gsca, input)
+
+  observeEvent(input$pause_net, {
+    output$subnetwork_output <- updateForceGraph(list(pause = input$pause_net))
+  })
+  observeEvent(input$selection_net, {
+    output$subnetwork_output <- updateForceGraph(list(selection = input$selection_net))
+  })
+  observeEvent(input$shape_net, {
+    output$subnetwork_output <- updateForceGraph(list(shape = input$shape_net))
+  })
+  observeEvent(input$label_visible_net, {
+    output$subnetwork_output <- updateForceGraph(list(label = input$label_visible_net))
+  })
+  observeEvent(input$scale_net, {
+    output$subnetwork_output <- updateForceGraph(list(scale = input$scale_net))
+  })
+  observeEvent(input$charge_net, {
+    output$subnetwork_output <- updateForceGraph(list(charge = input$charge_net))
+  })
+  observeEvent(input$dist_net, {
+    output$subnetwork_output <- updateForceGraph(list(distance = input$dist_net))
+  })
+  observeEvent(input$process_net, {
+    output$subnetwork_output <- updateForceGraph(list(process = input$process_net))
   })
 
-  observeEvent(input$nodename, {
-    # enrichment map
-    output$network_output <- updateNetwork(gsca, input)
+
+  ## response reconstruct
+  observeEvent(input$analysis_map, {
+    output$network_output <- createNetwork(gsca, input)
   })
 
-  observeEvent(input$dist, {
-    # enrichment map
-    output$network_output <- updateNetwork(gsca, input)
+  observeEvent(input$genesets_map, {
+    output$network_output <- createNetwork(gsca, input)
   })
 
-  observeEvent(input$charge, {
-    # enrichment map
-    output$network_output <- updateNetwork(gsca, input)
+  ## TODO: use update method
+  observeEvent(input$nodename_map, {
+    output$network_output <- createNetwork(gsca, input)
   })
 
-  observeEvent(input$analysis, {
-    output$gsca_output <- renderDataTable(selectDT(gsca, input))
-  })
-  observeEvent(input$genesets, {
-    output$gsca_output <- renderDataTable(selectDT(gsca, input))
+  observeEvent(input$analysis_res, {
+    output$gsca_output <- renderDataTable(selectDT(gsca, input$analysis_res, input$genesets_res))
   })
 
-  observeEvent(input$dist2, {
-    options <- list(charge = input$charge2, distance = input$dist2)
-    output$subnetwork_output <- renderForceGraph(viewSubNet(nwa, options = options))
+  observeEvent(input$genesets_res, {
+    output$gsca_output <- renderDataTable(selectDT(gsca, input$analysis_res, input$genesets_res))
   })
-  observeEvent(input$charge2, {
-    options <- list(charge = input$charge2, distance = input$dist2)
-    output$subnetwork_output <- renderForceGraph(viewSubNet(nwa, options = options))
+
+
+  # observeEvent({42}, {
+  #   options <- list(charge = input$charge_map, distance = input$dist_map)
+  #   output$gsca_output <- renderForceGraph(viewEnrichMap(gsca,
+  #                                 resultName=paste0(input$analysis_map, ".results"),
+  #                                 gscs = c(input$genesets_map),
+  #                                 allSig=TRUE, gsNameType=input$nodename_map,
+  #                                 nodeOptions = gscaNodeOpts, options = options))
+  # })
+
+  ## TODO: undefined behavior
+  observeEvent({42}, {
+    options <- list(charge = input$charge_net, distance = input$dist_net)
+    output$subnetwork_output <- renderForceGraph(viewSubNet(nwa, nwaNodeOpts, options))
   })
+
 }
 
-updateNetwork <- function(gsca, input) {
-  options <- list(charge = input$charge, distance = input$dist)
-  renderForceGraph(viewEnrichMap(gsca, resultName=paste0(input$analysis2, ".results"),
-                                 gscs = c(input$genesets2), allSig=F, ntop = 30, gsNameType=input$nodename,
-                                 options = options))
+
+## ==================== Helper functions ====================
+createNetwork <- function(gsca, input) {
+  options <- list(charge = input$charge_map, distance = input$dist_map)
+  renderForceGraph(viewEnrichMap(gsca, resultName=paste0(input$analysis_map, ".results"),
+                                 gscs = c(input$genesets_map),
+                                 allSig=TRUE, gsNameType=input$nodename_map,
+                                 nodeOptions = gscaNodeOpts, options = options))
 }
 
-selectDT <- function(gsca, input) {
-  if (input$analysis == "Significant in both") {
+selectDT <- function(gsca, analysis, genesets) {
+  jsRender <- JS("function(data, type, row, meta) { return type === 'display' && Number(data) < 0.001 ? '<0.001' : data }")
+  jsCallback <- JS("table.page(0).draw(false)")
+
+  if (analysis == "Significant in both") {
     analysis <- "Sig.adj.pvals.in.both"
-    res <- gsca@result[[analysis]][[input$genesets]]
-
+    res <- gsca@result[[analysis]][[genesets]]
     res$HyperGeo.Adj.Pvalue <- round(res$HyperGeo.Adj.Pvalue, digits = 3)
     res$GSEA.Adj.Pvalue <- round(res$GSEA.Adj.Pvalue, digits = 3)
 
-    dt <- DT::datatable(res, filter = 'top', rownames = F, escape = F,
+    dt <- DT::datatable(res, filter = 'top', rownames = FALSE, escape = FALSE,
                         options = list(pageLength = 10,
                                        columnDefs = list(list(
-                                         targets = which(colnames(res) %in% c("HyperGeo.Adj.Pvalue", "GSEA.Adj.Pvalue"))-1,
-                                         render = JS(
-                                           "function(data, type, row, meta) {",
-                                           "return type === 'display' && Number(data) < 0.001 ?",
-                                           "'<0.001' : data;",
-                                           "}")
-                                       ))), callback = JS('table.page(0).draw(false);'))
-
+                                         targets = which(colnames(res) %in% c("HyperGeo.Adj.Pvalue", "GSEA.Adj.Pvalue")) - 1,
+                                         render = jsRender))), callback = jsCallback)
   } else {
-    analysis <- paste0(input$analysis, ".results")
-    res <- gsca@result[[analysis]][[input$genesets]]
+    analysis <- paste0(analysis, ".results")
+    res <- gsca@result[[analysis]][[genesets]]
 
     res$Pvalue <- round(res$Pvalue, digits = 3)
     res$Adjusted.Pvalue <- round(res$Adjusted.Pvalue, digits = 3)
 
-    dt <- DT::datatable(res, filter = 'top', rownames = F, escape = F,
+    dt <- DT::datatable(res, filter = 'top', rownames = FALSE, escape = FALSE,
                         options = list(pageLength = 10,
                                        columnDefs = list(list(
-                                         targets = which(colnames(res) %in% c("Pvalue", "Adjusted.Pvalue"))-1,
-                                         render = JS(
-                                           "function(data, type, row, meta) {",
-                                           "return type === 'display' && Number(data) < 0.001 ?",
-                                           "'<0.001' : data;",
-                                           "}")
-                                       ))), callback = JS('table.page(0).draw(false);')) %>%
-
+                                         targets = which(colnames(res) %in% c("Pvalue", "Adjusted.Pvalue")) - 1,
+                                         render = jsRender))), callback = jsCallback) %>%
       formatStyle('Adjusted.Pvalue', target = "row",
                   fontWeight = styleInterval(gsca@para$pValueCutoff, c('bold', 'weight'))
-                  # backgroundColor = styleInterval(gsca@para$pValueCutoff, c('green', 'gray')),
       )
 
     if (analysis == "HyperGeo.results") dt <- dt %>% formatRound("Expected.Hits", digits = 3)
     if (analysis == "GSEA.results") dt <- dt %>% formatSignif("Observed.score", digits = 3)
-
   }
   dt
 }

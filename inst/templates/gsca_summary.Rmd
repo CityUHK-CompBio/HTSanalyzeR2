@@ -4,7 +4,7 @@ The enrichment analysis was performed using the phenotype vector including `r gs
 
 
 This analysis was performed using the gene set collection(s):
-`r generateGSCSummary(gsca)`
+`r HTSanalyzeR2:::generateGSCSummary(gsca)`
 
 The following methods were used:
-`r generateMethodsSummary(gsca)`
+`r HTSanalyzeR2:::generateMethodsSummary(gsca)`
