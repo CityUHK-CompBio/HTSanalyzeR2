@@ -7,6 +7,11 @@ geneMatrix <- function(rowNames, colNames) {
   )
 }
 
+namesToList <- function(x) {
+  res <- as.list(names(x))
+  names(res) <- names(x)
+  res
+}
 
 ## This is the central function for argument checking
 paraCheck <- function(group, paraName, para) {
