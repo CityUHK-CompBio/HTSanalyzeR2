@@ -53,6 +53,7 @@ HTMLWidgets.widget(globalObj = {
     construct: function(el, x, simulation) {
         // x.nodes.scale = Array(x.nodes.size.length).fill(1);
         x.nodes.scale = Array.apply(null, Array(x.nodes.size.length)).map(Number.prototype.valueOf, 1);
+        x.nodes.color_scheme = Array.apply(null, Array(x.nodes.size.length)).map(function() {return "default"});
 
         globalObj.rawdata = x;
 
@@ -70,8 +71,12 @@ HTMLWidgets.widget(globalObj = {
             .domain(options.colorDomain)
             .range(["#4575b4", "#ffffbf", "#a50026"])
             .interpolate(d3.interpolateHcl);
-        globalObj.colorFunc = color;
+        var colorScheme1 = d3.scaleLinear()
+            .domain(options.colorDomain)
+            .range(["#d8b365", "#f5f5f5", "#5ab4ac"])
+            .interpolate(d3.interpolateHcl);
 
+        globalObj.colorFunc = {default : color, scheme1: colorScheme1};
 
         var link = svg.append("g")
             .attr("class", "links")
@@ -338,6 +343,13 @@ HTMLWidgets.widget(globalObj = {
             }
         }
 
+        if('color' in x) {
+            var colorFunc = globalObj.colorFunc;
+            select('node')
+                .each(function(d) {d.color_scheme = x.color})
+                .attr("fill", function(d) {return colorFunc[d.color_scheme](d.color)});
+        }
+
         if ('scale' in x) {
             var scale = parseFloat(x.scale);
 
@@ -369,10 +381,10 @@ HTMLWidgets.widget(globalObj = {
         if ('process' in x) {
             var threshold = JSON.parse(x.process);
             var sel = d3.selectAll(".node > rect");
-            var color = globalObj.colorFunc;
+            var colorFunc = globalObj.colorFunc;
 
             sel.attr("fill", function(d) {
-                return d.seq > threshold ? "#ffffff" : color(d.color);
+                return d.seq > threshold ? "#ffffff" : colorFunc[d.color_scheme](d.color);
             });
         }
     }

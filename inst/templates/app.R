@@ -60,6 +60,7 @@ createPanelList <- function(tab) {
                            ),
                            radioButtons("nodename_map", "Node name", c("ID" = "id", "Term" = "term"), inline = TRUE),
                            radioButtons("shape_map", "Shape", c("Circle" = "circle", "Rect" = "rect"), inline = TRUE),
+                           radioButtons("color_map", label = "Color Scheme", choices = list("Default" = "default", "Scheme 1" = "scheme1"), inline = TRUE, selected = "default"),
                            sliderInput("scale_map", "Scale", min = 0.2, max = 3, value = 1),
                            sliderInput("dist_map", "Distance", 10, 300, value = 100, step = 10),
                            sliderInput("charge_map", "Charge", -1000, -100, value = -600, step = 50)),
@@ -73,6 +74,7 @@ createPanelList <- function(tab) {
                           column(3, checkboxInput("pause_net", label = "Pause",  value = FALSE))
                         ),
                         radioButtons("shape_net", label = "Shape", choices = list("Circle" = "circle", "Rect" = "rect"), inline = TRUE, selected = "circle"),
+                        radioButtons("color_net", label = "Color Scheme", choices = list("Default" = "default", "Scheme 1" = "scheme1"), inline = TRUE, selected = "default"),
                         sliderInput("scale_net",label = "Scale", min = 0.2, max = 3, value = 1),
                         sliderInput("dist_net", "Distance", 10, 300, value = 70, step = 10),
                         sliderInput("charge_net", "Charge", -1000, -100, value = -300, step = 50),
@@ -128,6 +130,9 @@ server <- function(input, output, session) {
   observeEvent(input$shape_map, {
     output$network_output <- updateForceGraph(list(shape = input$shape_map))
   })
+  observeEvent(input$color_map, {
+    output$network_output <- updateForceGraph(list(color = input$color_map))
+  })
   observeEvent(input$label_visible_map, {
     output$network_output <- updateForceGraph(list(label = input$label_visible_map))
   })
@@ -151,6 +156,10 @@ server <- function(input, output, session) {
   observeEvent(input$shape_net, {
     output$subnetwork_output <- updateForceGraph(list(shape = input$shape_net))
   })
+  observeEvent(input$color_net, {
+    output$subnetwork_output <- updateForceGraph(list(color = input$color_net))
+  })
+
   observeEvent(input$label_visible_net, {
     output$subnetwork_output <- updateForceGraph(list(label = input$label_visible_net))
   })
