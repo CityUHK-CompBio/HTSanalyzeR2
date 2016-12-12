@@ -14,6 +14,8 @@ nwaNodeOpts <- results$nwaNodeOptions
 
 
 ## ====================== Preprocessing ========================
+processSlider <- NULL
+
 if(!is.null(gsca)) {
   gsca <- HTSanalyzeR2:::appendLinks(gsca)
   gsca <- HTSanalyzeR2:::combineResults(gsca)
@@ -21,7 +23,12 @@ if(!is.null(gsca)) {
   availableAnalysis <- HTSanalyzeR2:::availableResults(gsca@summary$results, TRUE)
   availableGeneSets <- HTSanalyzeR2:::availableResults(gsca@summary$results, FALSE)
 }
-
+if(!is.null(nwa)) {
+  if(!is.null(nwa@result$seq)) {
+    seqRange <- range(nwa@result$seq)
+    processSlider <- sliderInput("process_net", "Process", seqRange[1], seqRange[2], value = seqRange[2], step = 1, animate = TRUE)
+  }
+}
 file.remove(dir(".", pattern = "*\\.md", full.names = TRUE))
 if (!is.null(gsca))  knitr::knit("gsca_summary.Rmd", "gsca_summary.md")
 if (!is.null(nwa))  knitr::knit("nwa_summary.Rmd", "nwa_summary.md")
@@ -29,69 +36,69 @@ if (!is.null(nwa))  knitr::knit("nwa_summary.Rmd", "nwa_summary.md")
 namesToList <- HTSanalyzeR2:::namesToList
 
 ## ==================== Define ui and server ====================
-createTab <- function(tab) {
+createPanelList <- function(tab) {
   sidebarStype <- "overflow-x:hidden; overflow-y:scroll; max-height:100vh;"
 
   switch(tab,
+         enrich_result = list(style = sidebarStype,
+                              includeMarkdown("gsca_summary.md"),
+                              hr(),
+                              selectInput('analysis_res', 'Analysis', availableAnalysis),
+                              selectInput('genesets_res', 'Gene Sets Collection', c(availableGeneSets, "ALL"))),
+         enrich_map = list(style = sidebarStype,
+                           # includeMarkdown("gsca_summary.md"),
+                           # hr(),
+                           h3("Enrichment Map"),
+                           selectInput('analysis_map', 'Analysis', availableAnalysis[-3]),
+                           selectInput('genesets_map', 'Gene Sets Collection', availableGeneSets),
+                           hr(),
+                           selectInput("selection_map", h4("Node Sets"), choices = c("All" = 'all', namesToList(gscaNodeOpts) ,"Selection Mode" = 'selection'), selected = 1),
+                           h4("View Options"),
+                           fluidRow(
+                             column(3, checkboxInput("label_visible_map", "Label",  value = TRUE)),
+                             column(3, checkboxInput("pause_map", "Pause",  value = FALSE))
+                           ),
+                           radioButtons("nodename_map", "Node name", c("ID" = "id", "Term" = "term"), inline = TRUE),
+                           radioButtons("shape_map", "Shape", c("Circle" = "circle", "Rect" = "rect"), inline = TRUE),
+                           sliderInput("scale_map", "Scale", min = 0.2, max = 3, value = 1),
+                           sliderInput("dist_map", "Distance", 10, 300, value = 100, step = 10),
+                           sliderInput("charge_map", "Charge", -1000, -100, value = -600, step = 50)),
+         network = list(style = sidebarStype,
+                        includeMarkdown("nwa_summary.md"),
+                        hr(),
+                        selectInput("selection_net", label = h4("Node Sets"), choices = c("All" = 'all', namesToList(nwaNodeOpts) ,"Selection Mode" = 'selection'), selected = 1),
+                        h4("View Options"),
+                        fluidRow(
+                          column(3, checkboxInput("label_visible_net", label = "Label",  value = TRUE)),
+                          column(3, checkboxInput("pause_net", label = "Pause",  value = FALSE))
+                        ),
+                        radioButtons("shape_net", label = "Shape", choices = list("Circle" = "circle", "Rect" = "rect"), inline = TRUE, selected = "circle"),
+                        sliderInput("scale_net",label = "Scale", min = 0.2, max = 3, value = 1),
+                        sliderInput("dist_net", "Distance", 10, 300, value = 70, step = 10),
+                        sliderInput("charge_net", "Charge", -1000, -100, value = -300, step = 50),
+                        processSlider)
+  )
+}
+
+createTab <- function(tab) {
+  switch(tab,
          enrich_result = tabPanel("Enrichment Results",
                                   sidebarLayout(
-                                    sidebarPanel(
-                                      style = sidebarStype,
-                                      includeMarkdown("gsca_summary.md"),
-                                      hr(),
-                                      selectInput('analysis_res', 'Analysis', availableAnalysis),
-                                      selectInput('genesets_res', 'Gene Sets Collection', c(availableGeneSets, "ALL"))
-                                    ),
+                                    do.call(sidebarPanel, createPanelList(tab)),
                                     mainPanel(
                                       dataTableOutput("gsca_output")
                                     )
                                   )),
          enrich_map = tabPanel("Enrichment Map",
                                sidebarLayout(
-                                 sidebarPanel(
-                                   style = sidebarStype,
-                                   # includeMarkdown("gsca_summary.md"),
-                                   # hr(),
-                                   h3("Enrichment Map"),
-                                   selectInput('analysis_map', 'Analysis', availableAnalysis[-3]),
-                                   selectInput('genesets_map', 'Gene Sets Collection', availableGeneSets),
-                                   hr(),
-                                   selectInput("selection_map", h4("Node Sets"), choices = c("All" = 'all', namesToList(gscaNodeOpts) ,"Selection Mode" = 'selection'), selected = 1),
-
-                                   h4("View Options"),
-                                   fluidRow(
-                                     column(3, checkboxInput("label_visible_map", "Label",  value = TRUE)),
-                                     column(3, checkboxInput("pause_map", "Pause",  value = FALSE))
-                                   ),
-                                   radioButtons("nodename_map", "Node name", c("ID" = "id", "Term" = "term"), inline = TRUE),
-                                   radioButtons("shape_map", "Shape", c("Circle" = "circle", "Rect" = "rect"), inline = TRUE),
-                                   sliderInput("scale_map", "Scale", min = 0.2, max = 3, value = 1),
-                                   sliderInput("dist_map", "Distance", 10, 300, value = 100, step = 10),
-                                   sliderInput("charge_map", "Charge", -1000, -100, value = -600, step = 50)
-                                 ),
+                                 do.call(sidebarPanel, createPanelList(tab)),
                                  mainPanel(
                                    forceGraphOutput("network_output", height = "800px")
                                  )
                                )),
          network = tabPanel("Network Analysis",
                             sidebarLayout(
-                              sidebarPanel(
-                                style = sidebarStype,
-                                includeMarkdown("nwa_summary.md"),
-                                hr(),
-                                selectInput("selection_net", label = h4("Node Sets"), choices = c("All" = 'all', namesToList(nwaNodeOpts) ,"Selection Mode" = 'selection'), selected = 1),
-
-                                h4("View Options"),
-                                fluidRow(
-                                  column(3, checkboxInput("label_visible_net", label = "Label",  value = TRUE)),
-                                  column(3, checkboxInput("pause_net", label = "Pause",  value = FALSE))
-                                ),
-                                radioButtons("shape_net", label = "Shape", choices = list("Circle" = "circle", "Rect" = "rect"), inline = TRUE, selected = "circle"),
-                                sliderInput("scale_net",label = "Scale", min = 0.2, max = 3, value = 1),
-                                sliderInput("dist_net", "Distance", 10, 300, value = 70, step = 10),
-                                sliderInput("charge_net", "Charge", -1000, -100, value = -300, step = 50),
-                                sliderInput("process_net", "Process", 0, 30, value = 30, step = 1, animate = TRUE)
-                              ),
+                              do.call(sidebarPanel, createPanelList(tab)),
                               mainPanel(
                                 forceGraphOutput("subnetwork_output", height = "800px")
                               )
@@ -100,15 +107,13 @@ createTab <- function(tab) {
 }
 
 
-##
-
 ui <- NULL
 if(!is.null(gsca) && !is.null(nwa)) {
   ui <- navbarPage("HTSanalyzeR2", createTab("enrich_result"), createTab("enrich_map"), createTab("network"))
 } else if(!is.null(gsca)) {
-    ui <- navbarPage("HTSanalyzeR2", createTab("enrich_result"), createTab("enrich_map"))
+  ui <- navbarPage("HTSanalyzeR2", createTab("enrich_result"), createTab("enrich_map"))
 } else {
-    ui <- navbarPage("HTSanalyzeR2", createTab("network"))
+  ui <- navbarPage("HTSanalyzeR2", createTab("network"))
 }
 
 

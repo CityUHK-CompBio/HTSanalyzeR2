@@ -25,6 +25,11 @@ setMethod("extractSubNet", signature = "NWA",
 
             V(subnw)$diff  <- diff.expr[V(subnw)$name]
 
+            if(!is.null(object@result$seq)) {
+              sequence <- object@result$seq
+              V(subnw)$seq <- sequence[V(subnw)$name]
+            }
+
             subnw
           })
 
@@ -43,7 +48,20 @@ setMethod("viewSubNet", signature = "NWA",
             nMappings <- list(id = "name", color = "diff", label = "label")
             lMappings <- list(source = "from",target = "to")
 
+            if("seq" %in% vertex_attr_names(g)) {
+              nMappings$seq = "seq"
+            }
+
             forceGraph(em_nodes, em_links, nMappings, lMappings,
                        nodeOptions = nodeOptions,
                        charge = options$charge, distance = options$distance)
           })
+
+## TODO: append 'seq' column to nwa@result to indicate the coloring sequence
+#' @export
+appendSequence <- function(nwa) {
+  seq <- sample(seq(vcount(nwa@result$subnw)))
+  names(seq) <- vertex_attr(nwa@result$subnw, "name")
+  nwa@result$seq <- seq
+  nwa
+}

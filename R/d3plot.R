@@ -5,7 +5,7 @@ forceGraph <- function(nodes, links, nMappings, lMappings,
                        nodeOptions = NULL, charge = -200, distance = 200,
                        width = NULL, height = NULL) {
 
-  # nMappings: "id", "size", "color", "label", "desc"
+  # nMappings: "id", "size", "color", "label", "desc", "seq"
   # lMappings: "source", "target", "label", "weight"
 
   node.size <- list(min = 6, max = 20, default = 8)

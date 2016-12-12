@@ -57,14 +57,14 @@ setMethod("initialize",
             )
             sum.info.para <- geneMatrix(rowNames = c("Parameter"),
                                         colNames = c("FDR"))
-            sum.info.results <- geneMatrix(rowNames = c("Subnetwork"),
+            sum.info.result <- geneMatrix(rowNames = c("Subnetwork"),
                                            colNames = c("node No", "edge No"))
 
             .Object@summary <- list(
               input = sum.info.input,
               db = sum.info.db,
               para = sum.info.para,
-              results = sum.info.results
+              result = sum.info.result
             )
             ## initialization of summary
             .Object@summary$input["p-values", "input"] <- length(pvalues)

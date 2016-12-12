@@ -69,6 +69,7 @@ nwa <- interactome(nwa, species="Dm", reportDir="biogrid", genetic=FALSE)
 nwa <- analyze(nwa, fdr=0.0001, species="Dm")
 summarize(nwa)
 
+nwa <- appendSequence(nwa)
 
 
 # Report

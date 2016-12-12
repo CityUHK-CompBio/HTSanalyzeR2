@@ -371,8 +371,8 @@ HTMLWidgets.widget(globalObj = {
             var sel = d3.selectAll(".node > rect");
             var color = globalObj.colorFunc;
 
-            sel.attr("fill", function(d, i) {
-                return i > threshold ? "#ffffff" : color(d.color);
+            sel.attr("fill", function(d) {
+                return d.seq > threshold ? "#ffffff" : color(d.color);
             });
         }
     }
