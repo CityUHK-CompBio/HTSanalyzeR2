@@ -79,10 +79,12 @@ HTMLWidgets.widget(globalObj = {
         var svg = d3.select(el).select("svg");
         svg.selectAll("*").remove();
 
-        var view = svg.append("g");
-        svg.call(d3.zoom()
+        var view = svg.append("g").attr("class", "view");
+        var zoomHandler = d3.zoom()
             .scaleExtent([1 / 2, 8])
-            .on("zoom", function() { view.attr("transform", d3.event.transform); }));
+            .on("zoom", function() { view.attr("transform", d3.event.transform); });
+
+        svg.call(zoomHandler).on("dblclick.zoom", null);
 
         var color = d3.scaleLinear()
             .domain(options.colorDomain)
@@ -345,6 +347,65 @@ HTMLWidgets.widget(globalObj = {
             .attr("text-anchor", "middle")
             .attr("font-weight", "bold")
             .text(options.title);
+
+        var icons = ['\uf01e', '\uf0c7'];
+        var buttons = svg.append("g")
+            .selectAll(".button")
+            .data(icons).enter()
+            .append("g")
+            .attr("class", "button")
+            .style("cursor", "pointer")
+            .on("click", btnClick)
+            .on("mouseover", function() {
+                console.log("here");
+                d3.select(this).select("rect")
+                .transition().duration(300)
+                .attr("fill-opacity", "0.9");
+            })
+            .on("mouseout", function() {
+                d3.select(this).select("rect")
+                .transition().duration(300)
+                .attr("fill-opacity", "0.3");
+            });
+
+        buttons.append("rect")
+            .attr("width", 25).attr("height", 25)
+            .attr("x", function(d, i) {return i * 30})
+            .attr("rx", 5).attr("ry", 5)
+            .attr("fill", "#0d6dbc")
+            .attr("fill-opacity", "0.3");
+        buttons.append("text")
+            .attr("font-family", "FontAwesome")
+            .attr("x",function(d,i) {
+                return 0 + (25+5)*i + 25/2;
+            })
+            .attr("y",0+25/2)
+            .attr("text-anchor","middle")
+            .attr("dominant-baseline","central")
+            .attr("fill","white")
+            .text(function(d) {return d;})
+
+        function btnClick(d, i) {
+            if(i == 0) {
+                // reset zoom
+                svg.call(zoomHandler.transform, d3.zoomIdentity);
+            } else if (i == 1) {
+                buttons.attr("visibility", "hidden");
+                var svgData = svg.attr("version", 1.1)
+                    .attr("xmlns", "http://www.w3.org/2000/svg")
+                    .node().parentNode.outerHTML;
+                buttons.attr("visibility", "visible");
+
+                var svgBlob = new Blob([svgData], {type:"image/svg+xml;charset=utf-8"});
+                var svgUrl = URL.createObjectURL(svgBlob);
+                var tmpLink = document.createElement("a");
+                tmpLink.href = svgUrl;
+                tmpLink.download = "network.svg";
+                document.body.appendChild(tmpLink);
+                tmpLink.click();
+                document.body.removeChild(tmpLink);
+            }
+        }
     },
 
     update: function(el, x, simulation) {

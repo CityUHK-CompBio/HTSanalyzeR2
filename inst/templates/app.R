@@ -83,6 +83,7 @@ createPanelList <- function(tab) {
 }
 
 createTab <- function(tab) {
+  fontCssLink <- tags$head(tags$link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"))
   switch(tab,
          enrich_result = tabPanel("Enrichment Results",
                                   sidebarLayout(
@@ -91,14 +92,14 @@ createTab <- function(tab) {
                                       dataTableOutput("gsca_output")
                                     )
                                   )),
-         enrich_map = tabPanel("Enrichment Map",
+         enrich_map = tabPanel("Enrichment Map", fontCssLink,
                                sidebarLayout(
                                  do.call(sidebarPanel, createPanelList(tab)),
                                  mainPanel(
                                    forceGraphOutput("network_output", height = "800px")
                                  )
                                )),
-         network = tabPanel("Network Analysis",
+         network = tabPanel("Network Analysis", fontCssLink,
                             sidebarLayout(
                               do.call(sidebarPanel, createPanelList(tab)),
                               mainPanel(
