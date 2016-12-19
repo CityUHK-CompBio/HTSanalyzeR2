@@ -3,7 +3,7 @@
 forceGraph <- function(nodes, links, nMappings, lMappings,
                        title = NULL, legendTitle = NULL,
                        nodeOptions = NULL, charge = -200, distance = 200,
-                       width = NULL, height = NULL) {
+                       seriesData = NULL, width = NULL, height = NULL) {
 
   # nMappings: "id", "size", "color", "label", "desc", "seq"
   # lMappings: "source", "target", "label", "weight"
@@ -37,11 +37,9 @@ forceGraph <- function(nodes, links, nMappings, lMappings,
   maxAbs <- max(abs(nodesDF$color))
   if(maxAbs <= 1) {
     colorDomain <- color.domain.default
-    legendDomain <- color.domain.default[-2]
   } else {
     colorDomain <- c(-maxAbs, 0, maxAbs)
     ran <- range(nodesDF$color)
-    legendDomain <- if(ran[1] != ran[2]) ran else c(ran[1] - 1, ran[1] + 1)
   }
 
   # create options
@@ -52,7 +50,7 @@ forceGraph <- function(nodes, links, nMappings, lMappings,
                  nodeOptions = nodeOptions,
                  colorDomain = colorDomain,
                  legendTitle = legendTitle,
-                 legendDomain = legendDomain)
+                 seriesData = seriesData)
 
   # create widget
   htmlwidgets::createWidget(

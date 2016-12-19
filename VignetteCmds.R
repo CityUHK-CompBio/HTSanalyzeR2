@@ -61,6 +61,11 @@ nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
 nwa <- preprocess(nwa, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
 nwa <- interactome(nwa, species="Dm", reportDir="biogrid", genetic=FALSE)
 
+
+nwam <- NWA(pvalues=pvalues, phenotypes=data4enrichMat)
+nwam <- preprocess(nwam, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
+nwam <- interactome(nwam, species="Dm", reportDir="biogrid", genetic=FALSE)
+
 # or
 # nwa<-interactome(nwa, interactionMatrix = InteractionsData, species="Dm", reportDir="Report", genetic=FALSE)
 
@@ -69,7 +74,11 @@ nwa <- interactome(nwa, species="Dm", reportDir="biogrid", genetic=FALSE)
 nwa <- analyze(nwa, fdr=0.0001, species="Dm")
 summarize(nwa)
 
-nwa <- appendSequence(nwa)
+nwam <- analyze(nwam, fdr=0.0001, species="Dm")
+summarize(nwam)
+
+report(nwa)
+report(nwam)
 
 
 # Report

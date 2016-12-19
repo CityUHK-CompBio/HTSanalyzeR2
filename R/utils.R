@@ -62,12 +62,17 @@ paraCheck <- function(group, paraName, para) {
                stop("'pvalues' should be a named numeric vector with length > 0!\n")
            }
            if(paraName == "phenotypes") {
-             if(!(is.numeric(para) || is.integer(para)) || length(para) == 0 || is.null(names(para)))
-               stop("'phenotypes/phenotypeVector' should be a named numeric vector with length > 0!\n")
+             if(is.matrix(para)) {
+               if(!is.matrix(para) || nrow(para) == 0 || is.null(rownames(para)))
+                 stop("'phenotypes/phenotypeVector' should be a named numeric matrix with rownum > 0!\n")
+             } else {
+               if(!(is.numeric(para) || is.integer(para)) || length(para) == 0 || is.null(names(para)))
+                 stop("'phenotypes/phenotypeVector' should be a named numeric vector with length > 0!\n")
+             }
            }
            if(paraName == "interactome") {
-             if(!is(para,"igraph") || igraph::vcount(para) == 0 || igraph::ecount(para) == 0)
-              	stop("Input 'interactome/graph' should be a igraph object with node and edge No > 0!\n")
+             if(!is.na(para) && (!is(para,"igraph") || igraph::vcount(para) == 0 || igraph::ecount(para) == 0))
+               stop("Input 'interactome/graph' should be a igraph object with node and edge No > 0!\n")
            }
          },
 

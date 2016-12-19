@@ -3,7 +3,7 @@ setClass(
   Class = "NWA",
   representation(
     pvalues = "numeric",
-    phenotypes = "numeric_or_integer",
+    phenotypes = "numeric_or_matrix",
     interactome = "igraph_or_logical",
     fdr = "numeric",
     result = "list",
@@ -30,7 +30,7 @@ setMethod("initialize",
                    interactome = NA) {
             ## check input arguments
             paraCheck("NWAClass", "pvalues", pvalues)
-            if (!is.na(phenotypes))
+            if (!all(is.na(phenotypes)))
               paraCheck("NWAClass", "phenotypes", phenotypes)
             if (!is.na(interactome))
               paraCheck("NWAClass", "interactome", interactome)
@@ -68,7 +68,8 @@ setMethod("initialize",
             )
             ## initialization of summary
             .Object@summary$input["p-values", "input"] <- length(pvalues)
-            .Object@summary$input["phenotypes", "input"] <- length(phenotypes)
+            .Object@summary$input["phenotypes", "input"] <-
+              ifelse(is.matrix(phenotypes), nrow(phenotypes), length(phenotypes))
             .Object@summary$db[1, "name"] <- "Unknown"
 
             if (!is.na(interactome)) {
@@ -100,10 +101,6 @@ setMethod("initialize",
 #'
 #' @export
 NWA <- function(pvalues, phenotypes = as.numeric(NA), interactome = NA) {
-  paraCheck("NWAClass", "pvalues", pvalues)
-  paraCheck("NWAClass", "phenotypes", phenotypes)
-  paraCheck("NWAClass", "interactome", interactome)
-
   object <- new(
     Class = "NWA",
     pvalues = pvalues,

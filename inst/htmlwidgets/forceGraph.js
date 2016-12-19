@@ -357,7 +357,6 @@ HTMLWidgets.widget(globalObj = {
             .style("cursor", "pointer")
             .on("click", btnClick)
             .on("mouseover", function() {
-                console.log("here");
                 d3.select(this).select("rect")
                 .transition().duration(300)
                 .attr("fill-opacity", "0.9");
@@ -502,13 +501,17 @@ HTMLWidgets.widget(globalObj = {
         }
 
         if ('process' in x) {
-            var threshold = JSON.parse(x.process);
+            var options = globalStore.rawdata.options;
+            var series = options.seriesData;
+            var index = JSON.parse(x.process) - 1;
+
             var sel = activePanel.selectAll(".node > rect");
             var colorFunc = globalStore.colorFunc;
 
             sel.transition().duration(300)
             .attr("fill", function(d) {
-                return d.seq > threshold ? "#ffffff" : colorFunc[d.color_scheme](d.color);
+                if(index == 0) return "#fff";
+                return colorFunc[d.color_scheme](d["color." + series[index]]);
             });
         }
     }

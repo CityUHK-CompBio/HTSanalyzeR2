@@ -24,9 +24,9 @@ if(!is.null(gsca)) {
   availableGeneSets <- HTSanalyzeR2:::availableResults(gsca@summary$results, FALSE)
 }
 if(!is.null(nwa)) {
-  if(!is.null(nwa@result$seq)) {
-    seqRange <- range(nwa@result$seq)
-    processSlider <- sliderInput("process_net", "Process", seqRange[1], seqRange[2], value = seqRange[2], step = 1, animate = TRUE)
+  if(is.matrix(nwa@phenotypes)) {
+    seriesTicks <- colnames(nwa@phenotypes)
+    processSlider <- sliderInput("process_net", "Process", 1, length(seriesTicks), value = length(seriesTicks), step = 1, animate = animationOptions(interval=1500))
   }
 }
 file.remove(dir(".", pattern = "*\\.md", full.names = TRUE))

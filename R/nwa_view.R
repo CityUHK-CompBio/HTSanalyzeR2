@@ -18,16 +18,20 @@ setMethod("extractSubNet", signature = "NWA",
             }
 
             V(subnw)$label <- unlist(object@result$labels[V(subnw)$name])
-            phenotypeVector <- object@phenotypes
-            diff.expr <- phenotypeVector[vertex_attr(subnw, "name")]
-            names(diff.expr) <- vertex_attr(subnw, "name")
-            diff.expr[which(is.na(diff.expr))] <- 0
 
-            V(subnw)$diff  <- diff.expr[V(subnw)$name]
+            phenotypes <- object@phenotypes
+            if(is.matrix(phenotypes)) {
+              diff.expr <- phenotypes[V(subnw)$name, ]
 
-            if(!is.null(object@result$seq)) {
-              sequence <- object@result$seq
-              V(subnw)$seq <- sequence[V(subnw)$name]
+              ticks <- colnames(diff.expr)
+              for (tick in ticks) {
+                vertex_attr(subnw, paste0("diff.", tick)) <- diff.expr[, tick]
+              }
+              V(subnw)$diff <- diff.expr[, ncol(diff.expr)]
+            } else {
+              diff.expr <- phenotypes[V(subnw)$name]
+              diff.expr[is.na(diff.expr)] <- 0
+              V(subnw)$diff <- diff.expr
             }
 
             subnw
@@ -40,6 +44,8 @@ setMethod("viewSubNet", signature = "NWA",
           function(object,
                    nodeOptions = NULL,
                    options = list(charge = -200, distance = 200)) {
+
+            hasSeriesAttr <- is.matrix(object@phenotypes)
             g <- extractSubNet(object)
 
             em_nodes <- igraph::as_data_frame(g, "vertices")
@@ -48,20 +54,16 @@ setMethod("viewSubNet", signature = "NWA",
             nMappings <- list(id = "name", color = "diff", label = "label")
             lMappings <- list(source = "from",target = "to")
 
-            if("seq" %in% vertex_attr_names(g)) {
-              nMappings$seq = "seq"
+            if(hasSeriesAttr) {
+              ticks <- grep("^diff.", colnames(em_nodes), value = TRUE)
+              series <- sub("diff.", "", ticks)
+              names(ticks) <- sub("diff", "color", ticks)
+              nMappings <- c(nMappings, ticks)
             }
 
             forceGraph(em_nodes, em_links, nMappings, lMappings,
                        nodeOptions = nodeOptions,
-                       charge = options$charge, distance = options$distance)
+                       charge = options$charge, distance = options$distance,
+                       seriesData = series)
           })
 
-## TODO: append 'seq' column to nwa@result to indicate the coloring sequence
-#' @export
-appendSequence <- function(nwa) {
-  seq <- sample(seq(vcount(nwa@result$subnw)))
-  names(seq) <- vertex_attr(nwa@result$subnw, "name")
-  nwa@result$seq <- seq
-  nwa
-}

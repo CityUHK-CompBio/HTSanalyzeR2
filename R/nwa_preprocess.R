@@ -30,6 +30,7 @@ setMethod("preprocess", signature = "NWA",
     pvalues <- object@pvalues
     phenotypes <- object@phenotypes
 
+
     ## 1.remove NA
     if(verbose) cat("--Removing invalid p-values and phenotypes ...\n")
     pvalues <- pvalues[which(!is.na(pvalues)
@@ -39,13 +40,22 @@ setMethod("preprocess", signature = "NWA",
     if(length(pvalues) == 0)
       stop("Input 'pvalues' contains no useful data!\n")
     if(!is.null(phenotypes)) {
-      phenotypes <- phenotypes[which((!is.na(phenotypes)) &&
-                                       (names(phenotypes) != "" &&
-                                          !is.na(names(phenotypes))))]
-      ## valid phenotypes
-      object@summary$input[2,"valid"] <- length(phenotypes)
-      if(length(phenotypes) == 0)
-        stop("Input 'phenotypes' contains no useful data!\n")
+      if(is.matrix(phenotypes)) {
+        phenotypes <- phenotypes[apply(!is.na(phenotypes), 1, all) &
+                                   rownames(phenotypes) != "" &
+                                   !is.na(rownames(phenotypes)), ]
+        object@summary$input[2,"valid"] <- nrow(phenotypes)
+        if(nrow(phenotypes) == 0)
+          stop("Input 'phenotypes' contains no useful data!\n")
+      } else {
+        phenotypes <- phenotypes[which((!is.na(phenotypes)) &
+                                         (names(phenotypes) != "" &
+                                            !is.na(names(phenotypes))))]
+        ## valid phenotypes
+        object@summary$input[2,"valid"] <- length(phenotypes)
+        if(length(phenotypes) == 0)
+          stop("Input 'phenotypes' contains no useful data!\n")
+      }
     }
 
     ## 2.duplicate remover
@@ -56,10 +66,18 @@ setMethod("preprocess", signature = "NWA",
     object@summary$input[1, "duplicate removed"] <- length(pvalues)
 
     if(!is.null(phenotypes)) {
-      phenotypes <- duplicateRemover(geneList = phenotypes,
-                                     method = duplicateRemoverMethod)
-      ## phenotypes after removing duplicates
-      object@summary$input[2, "duplicate removed"] <- length(phenotypes)
+      if(is.matrix(phenotypes)) {
+        # TODO
+        # phenotypes <- duplicateRemover(geneList = phenotypes,
+        #                                method = duplicateRemoverMethod)
+        ## phenotypes after removing duplicates
+        object@summary$input[2, "duplicate removed"] <- nrow(phenotypes)
+      } else {
+        phenotypes <- duplicateRemover(geneList = phenotypes,
+                                       method = duplicateRemoverMethod)
+        ## phenotypes after removing duplicates
+        object@summary$input[2, "duplicate removed"] <- length(phenotypes)
+      }
     }
 
     ## 3.convert annotations in pvalues
@@ -88,7 +106,8 @@ setMethod("preprocess", signature = "NWA",
     object@summary$input[1, "converted to entrez"] <- length(pvalues)
     ## phenotypes after annotation conversion
     if(!is.null(phenotypes))
-      object@summary$input[2,"converted to entrez"] <- length(phenotypes)
+      object@summary$input[2,"converted to entrez"] <-
+        ifelse(is.matrix(phenotypes), nrow(phenotypes), length(phenotypes))
 
     ## 5.update genelist and hits, and return object
     object@pvalues <- pvalues

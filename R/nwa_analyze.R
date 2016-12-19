@@ -33,10 +33,16 @@ setMethod("analyze",
               length(intersect(names(object@pvalues),
                                vertex_attr(object@interactome, "name")))
             object@summary$para[1, 1] <- fdr
-            if (!is.null(object@phenotypes))
+
+            if (!is.null(object@phenotypes)) {
+              if(is.matrix(object@phenotypes))
+                pnames <- rownames(object@phenotypes)
+              else
+                pnames <- names(object@phenotypes)
+
               object@summary$input[2, "in interactome"] <-
-              length(intersect(names(object@phenotypes),
-                               vertex_attr(object@interactome, "name")))
+                length(intersect(pnames, vertex_attr(object@interactome, "name")))
+            }
             if (length(object@pvalues) == 0 ||
                 object@summary$input[1, "in interactome"] == 0)
               stop("pvalues vector has length 0, or has no overlap ",
