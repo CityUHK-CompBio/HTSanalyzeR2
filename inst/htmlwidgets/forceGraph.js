@@ -79,6 +79,11 @@ HTMLWidgets.widget(globalObj = {
         var svg = d3.select(el).select("svg");
         svg.selectAll("*").remove();
 
+        var view = svg.append("g");
+        svg.call(d3.zoom()
+            .scaleExtent([1 / 2, 8])
+            .on("zoom", function() { view.attr("transform", d3.event.transform); }));
+
         var color = d3.scaleLinear()
             .domain(options.colorDomain)
             .range(["#4575b4", "#ffffbf", "#a50026"])
@@ -90,7 +95,7 @@ HTMLWidgets.widget(globalObj = {
 
         globalStore.colorFunc = {default : color, scheme1: colorScheme1};
 
-        var link = svg.append("g")
+        var link = view.append("g")
             .attr("class", "links")
             .selectAll("line")
             .data(links)
@@ -102,7 +107,7 @@ HTMLWidgets.widget(globalObj = {
                 return d.weight;
             });
 
-        var node = svg.append("g")
+        var node = view.append("g")
             .attr("class", "nodes")
             .selectAll("rect")
             .data(nodes)
