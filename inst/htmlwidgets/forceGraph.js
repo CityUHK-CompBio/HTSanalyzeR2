@@ -3,12 +3,8 @@ HTMLWidgets.widget(globalObj = {
     type: "output",
 
     store: {},
-    // pause: false,
-    // mode: "all",
-    // rawdata: null,
-    // calcFunc: null,
-    // colorFunc: null,
-    // drawLegendFunc: null,
+    // rawdata: null, pause: false, mode: "all",
+    // calcFunc: null, colorFunc: null, drawLegendFunc: null,
 
     initialize: function(el, width, height) {
         d3.select(el).append("svg")
@@ -35,11 +31,8 @@ HTMLWidgets.widget(globalObj = {
             .attr("width", width)
             .attr("height", height);
 
-        d3.select(el).select(".mainLegend")
+        d3.select(el).select(".legend")
             .attr("transform", "translate(" + (parseInt(width) - 80) + ", 50)");
-
-        d3.select(el).select(".minorLegend")
-            .attr("transform", "translate(" + (parseInt(width) - 130) + ", 50)");
 
         d3.select(el).select(".title")
             .attr("transform", "translate(" + (parseInt(width) / 2) + ", 30)");
@@ -64,13 +57,16 @@ HTMLWidgets.widget(globalObj = {
         return globalObj.store[id];
     },
 
+    getActivePanel: function() {
+        return d3.select(".tab-pane.active");
+    },
+
     construct: function(el, x, simulation) {
         // x.nodes.scale = Array(x.nodes.size.length).fill(1);
         x.nodes.scale = Array.apply(null, Array(x.nodes.size.length)).map(Number.prototype.valueOf, 1);
         x.nodes.color_scheme = Array.apply(null, Array(x.nodes.size.length)).map(function() {return "default"});
 
         globalStore = globalObj.getStore();
-
         globalStore.rawdata = x;
 
         var options = x.options;
@@ -267,55 +263,73 @@ HTMLWidgets.widget(globalObj = {
                 .style("opacity", 0.8);
         }
 
-
-        function drawLegend(g, colorScale, domain) {
+        function drawLegend() {
             function pair(array) {
-                return array.slice(1).map(function(b, i) {
-                    return [array[i], b];
-                });
+                return array.slice(1).map(function(b, i) { return [array[i], b]; });
+            }
+            function domain(max, min) {
+                if(min >= 0 && max <= 1) { return [1, 0]; }
+                if(max - min <= 0.2) { return [max + 0.5, min - 0.5]; }
+                return [max, min];
             }
 
-            var legendScale = d3.scaleLinear()
-                .domain(domain.reverse())
-                .range([0, 200])
-                .nice();
+            activePanel = globalObj.getActivePanel();
+            nodes = activePanel.selectAll(".node");
+            legend = activePanel.select(".legend");
+            colorFunc = globalObj.getStore().colorFunc;
 
-            var axis = d3.axisRight(legendScale)
-                .tickSize(10)
-                .tickFormat(d3.format("+.1f"));
-
-            g.selectAll("rect")
-                .data(pair(legendScale.ticks(10)))
-                .enter().append("rect")
-                .attr("width", 8)
-                .attr("y", function(d) {
-                    return legendScale(d[0]);
-                })
-                .attr("height", function(d) {
-                    return legendScale(d[1]) - legendScale(d[0]);
-                })
-                .style("fill", function(d) {
-                    return colorScale(d[1]);
+            colorValues = {};
+            nodes.each(
+                function(d) {
+                    if (!(d.color_scheme in colorValues)) colorValues[d.color_scheme] = [];
+                    colorValues[d.color_scheme].push(d.color);
                 });
 
-            g.call(axis)
-                .append("text")
-                .attr("style", "fill:black")
-                .attr("transform", "translate(0, -10)")
-                // .text(options.legendTitle);
+            legend.selectAll("*").remove();
+            offset = 0;
+            for(key in colorValues) {
+                max = Math.max.apply(null, colorValues[key]);
+                min = Math.min.apply(null, colorValues[key]);
+                colorDomain = domain(max, min);
+                colorScale = colorFunc[key];
+
+                g = legend.append("g")
+                    .attr("transform", "translate(" + offset + ", 0)");
+
+                var legendScale = d3.scaleLinear()
+                    .domain(colorDomain)
+                    .range([0, 200])
+                    .nice();
+
+                g.selectAll("rect")
+                    .data(pair(legendScale.ticks(10)))
+                    .enter().append("rect")
+                    .attr("width", 8)
+                    .attr("y", function(d) {
+                        return legendScale(d[0]);
+                    })
+                    .attr("height", function(d) {
+                        return legendScale(d[1]) - legendScale(d[0]);
+                    })
+                    .style("fill", function(d) {
+                        return colorScale(d[1]);
+                    });
+
+                var axis = d3.axisRight(legendScale)
+                    .tickSize(10)
+                    .tickFormat(d3.format("+.1f"));
+                g.call(axis);
+
+                offset -= 40;
+            }
         }
         globalStore.drawLegendFunc = drawLegend;
 
-        var mainLegend = svg.append("g")
-            .attr("class", "mainLegend")
+        var legend = svg.append("g")
+            .attr("class", "legend")
             .attr("transform", "translate(" + (width - 80) + ", 50)");
 
-        var minorLegend = svg.append("g")
-            .attr("class", "minorLegend")
-            .attr("transform", "translate(" + (width - 130) + ", 50)");
-
-        var legendDomain = options.legendDomain.slice();
-        drawLegend(mainLegend, color, legendDomain);
+        drawLegend();
 
         var title = svg.append("g")
             .attr("class", "title")
@@ -330,14 +344,11 @@ HTMLWidgets.widget(globalObj = {
 
     update: function(el, x, simulation) {
         globalStore = globalObj.getStore();
+        activePanel = globalObj.getActivePanel();
 
         if ('pause' in x) {
             globalStore.pause = x.pause;
             x.pause ? simulation.stop() : simulation.restart();
-        }
-
-        function d3ActivePanel() {
-            return d3.select(".tab-pane.active");
         }
 
         function select(type) {
@@ -345,9 +356,9 @@ HTMLWidgets.widget(globalObj = {
             var cls = map[type];
 
             if (globalStore.mode == 'selection') {
-                return d3ActivePanel().selectAll(".node[selected='true'] > " + cls);
+                return activePanel.selectAll(".node[selected='true'] > " + cls);
             }
-            var sel = d3ActivePanel().selectAll(".node > " + cls);
+            var sel = activePanel.selectAll(".node > " + cls);
             if (globalStore.mode == 'all') {
                 return sel;
             }
@@ -361,8 +372,8 @@ HTMLWidgets.widget(globalObj = {
             //TODO, the set name can also be 'selection'
             globalStore.mode = x.selection;
             if (globalStore.mode != 'selection') {
-                d3ActivePanel().selectAll(".node").attr("selected", false);
-                d3ActivePanel().selectAll(".node > rect").attr("stroke", "grey");
+                activePanel.selectAll(".node").attr("selected", false);
+                activePanel.selectAll(".node > rect").attr("stroke", "grey");
             }
         }
 
@@ -378,25 +389,12 @@ HTMLWidgets.widget(globalObj = {
 
         if('color' in x) {
             var colorFunc = globalStore.colorFunc;
-            var drawLegend = globalStore.drawLegendFunc;
-            var legendDomain = globalStore.rawdata.options.legendDomain.slice();
 
             select('node')
                 .each(function(d) {d.color_scheme = x.color})
                 .attr("fill", function(d) {return colorFunc[d.color_scheme](d.color)});
 
-            var mainLegend = d3ActivePanel().select('.mainLegend');
-            var minorLegend = d3ActivePanel().select('.minorLegend');
-
-            mainLegend.selectAll("*").remove();
-            minorLegend.selectAll("*").remove();
-
-            if(globalStore.mode == "all") {
-                drawLegend(mainLegend, colorFunc[x.color], legendDomain);
-            } else {
-                drawLegend(mainLegend, colorFunc['default'], legendDomain);
-                drawLegend(minorLegend, colorFunc[x.color], legendDomain);
-            }
+            globalStore.drawLegendFunc();
         }
 
         if ('scale' in x) {
@@ -429,7 +427,7 @@ HTMLWidgets.widget(globalObj = {
 
         if ('process' in x) {
             var threshold = JSON.parse(x.process);
-            var sel = d3ActivePanel().selectAll(".node > rect");
+            var sel = activePanel.selectAll(".node > rect");
             var colorFunc = globalStore.colorFunc;
 
             sel.attr("fill", function(d) {
