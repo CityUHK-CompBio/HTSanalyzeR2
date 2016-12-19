@@ -249,6 +249,9 @@ setMethod("extractEnrichMap", signature = "GSCA",
             } else if (gsNameType == "term") {
               V(g)$label <- as.character(tempdf[, "Gene.Set.Term"])
             }
+            V(g)$label_id <- as.character(tempdf[, "gsID"])
+            V(g)$label_term <- as.character(tempdf[, "Gene.Set.Term"])
+
             g
           }
 )
@@ -272,7 +275,7 @@ setMethod("viewEnrichMap", signature = "GSCA",
             em_nodes <- as_data_frame(g, "vertices")
             em_links <- as_data_frame(g, "edge")
 
-            nMappings <- list(id = "name", size = "geneSetSize", color = "adjPvalue", label = "label")
+            nMappings <- list(id = "name", size = "geneSetSize", color = "adjPvalue", label = "label", label_id = "label_id", label_term = "label_term")
             lMappings <- list(source = "from",target = "to", weight = "weight")
 
             title <- "Enrichment Map of"
