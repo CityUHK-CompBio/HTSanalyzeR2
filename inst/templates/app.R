@@ -145,6 +145,9 @@ server <- function(input, output, session) {
   observeEvent(input$dist_map, {
     output$network_output <- updateForceGraph(list(distance = input$dist_map))
   })
+  observeEvent(input$nodename_map, {
+    output$network_output <- updateForceGraph(list(nodename = input$nodename_map))
+  })
 
 
   observeEvent(input$pause_net, {
@@ -186,10 +189,10 @@ server <- function(input, output, session) {
     output$network_output <- createNetwork(gsca, input)
   })
 
-  ## TODO: use update method
-  observeEvent(input$nodename_map, {
-    output$network_output <- createNetwork(gsca, input)
-  })
+  # ## TODO: use update method
+  # observeEvent(input$nodename_map, {
+  #   output$network_output <- createNetwork(gsca, input)
+  # })
 
   observeEvent(input$analysis_res, {
     output$gsca_output <- renderDataTable(selectDT(gsca, input$analysis_res, input$genesets_res))

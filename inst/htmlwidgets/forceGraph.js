@@ -411,6 +411,13 @@ HTMLWidgets.widget(globalObj = {
                 .style("font", globalStore.calcFunc.font);
         }
 
+        if ('nodename' in x) {
+            key = "label_" + x.nodename
+            select('label').text(function(d) {
+                return key in d ? d[key] : d.label;
+            });
+        }
+
         if ('label' in x) {
             select('label').attr("visibility", x.label ? "visible" : "hidden");
         }
