@@ -381,9 +381,9 @@ HTMLWidgets.widget(globalObj = {
             var sel = select('node')
 
             if (x.shape == 'circle') {
-                sel.attr("rx", 1000).attr("ry", 1000)
+                sel.transition().duration(300).attr("rx", 1000).attr("ry", 1000)
             } else if (x.shape == 'rect') {
-                sel.attr("rx", 0).attr("ry", 0)
+                sel.transition().duration(300).attr("rx", 0).attr("ry", 0)
             }
         }
 
@@ -392,6 +392,7 @@ HTMLWidgets.widget(globalObj = {
 
             select('node')
                 .each(function(d) {d.color_scheme = x.color})
+                .transition().duration(300)
                 .attr("fill", function(d) {return colorFunc[d.color_scheme](d.color)});
 
             globalStore.drawLegendFunc();
@@ -402,11 +403,13 @@ HTMLWidgets.widget(globalObj = {
 
             select('node')
                 .each(function(d) { d.scale = scale })
+                .transition().duration(300)
                 .attr("x", globalStore.calcFunc.x)
                 .attr("y", globalStore.calcFunc.y)
                 .attr("width", globalStore.calcFunc.width)
                 .attr("height", globalStore.calcFunc.height);
             select('label')
+                .transition().duration(300)
                 .attr("dx", globalStore.calcFunc.dx)
                 .style("font", globalStore.calcFunc.font);
         }
@@ -419,7 +422,7 @@ HTMLWidgets.widget(globalObj = {
         }
 
         if ('label' in x) {
-            select('label').attr("visibility", x.label ? "visible" : "hidden");
+            select('label').transition().duration(300).attr("visibility", x.label ? "visible" : "hidden");
         }
 
         if ('charge' in x) {
@@ -437,7 +440,8 @@ HTMLWidgets.widget(globalObj = {
             var sel = activePanel.selectAll(".node > rect");
             var colorFunc = globalStore.colorFunc;
 
-            sel.attr("fill", function(d) {
+            sel.transition().duration(300)
+            .attr("fill", function(d) {
                 return d.seq > threshold ? "#ffffff" : colorFunc[d.color_scheme](d.color);
             });
         }
