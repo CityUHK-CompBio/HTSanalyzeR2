@@ -54,6 +54,7 @@ setMethod("viewSubNet", signature = "NWA",
             nMappings <- list(id = "name", color = "diff", label = "label")
             lMappings <- list(source = "from",target = "to")
 
+            series <- NULL
             if(hasSeriesAttr) {
               ticks <- grep("^diff.", colnames(em_nodes), value = TRUE)
               series <- sub("diff.", "", ticks)

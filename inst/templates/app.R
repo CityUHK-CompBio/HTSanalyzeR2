@@ -27,6 +27,8 @@ if(!is.null(nwa)) {
   if(is.matrix(nwa@phenotypes)) {
     seriesTicks <- colnames(nwa@phenotypes)
     processSlider <- sliderInput("process_net", "Process", 1, length(seriesTicks), value = length(seriesTicks), step = 1, animate = animationOptions(interval=1500))
+  } else {
+    processSlider <- sliderInput("process_net", "Process", 1, 2, 2, step = 1, animate = animationOptions(interval=800))
   }
 }
 file.remove(dir(".", pattern = "*\\.md", full.names = TRUE))
@@ -189,11 +191,6 @@ server <- function(input, output, session) {
   observeEvent(input$genesets_map, {
     output$network_output <- createNetwork(gsca, input)
   })
-
-  # ## TODO: use update method
-  # observeEvent(input$nodename_map, {
-  #   output$network_output <- createNetwork(gsca, input)
-  # })
 
   observeEvent(input$analysis_res, {
     output$gsca_output <- renderDataTable(selectDT(gsca, input$analysis_res, input$genesets_res))
