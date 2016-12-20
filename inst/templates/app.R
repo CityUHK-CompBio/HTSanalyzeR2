@@ -26,9 +26,9 @@ if(!is.null(gsca)) {
 if(!is.null(nwa)) {
   if(is.matrix(nwa@phenotypes)) {
     seriesTicks <- colnames(nwa@phenotypes)
-    processSlider <- sliderInput("process_net", "Process", 1, length(seriesTicks), value = length(seriesTicks), step = 1, animate = animationOptions(interval=1500))
+    processSlider <- sliderInput("process_net", "Process", 0, length(seriesTicks), value = length(seriesTicks), step = 1, animate = animationOptions(interval=1500))
   } else {
-    processSlider <- sliderInput("process_net", "Process", 1, 2, 2, step = 1, animate = animationOptions(interval=800))
+    processSlider <- sliderInput("process_net", "Process", 0, 1, 1, step = 1, animate = animationOptions(interval=800))
   }
 }
 file.remove(dir(".", pattern = "*\\.md", full.names = TRUE))

@@ -510,7 +510,7 @@ HTMLWidgets.widget(globalObj = {
 
             sel.transition().duration(300)
             .attr("fill", function(d) {
-                if(index == 0) return "#fff";
+                if(index < 0) return "#fff";
                 if(!series) { return colorFunc[d.color_scheme](d["color"]);}
                 return colorFunc[d.color_scheme](d["color." + series[index]]);
             });

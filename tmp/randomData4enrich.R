@@ -6,8 +6,8 @@ colCount <- 10
 data4enrichMat <- matrix(rep(data4enrich, colCount), length(data4enrich), colCount)
 
 factor <- matrix(0, length(data4enrich), colCount)
+factor[, 0] <- runif(length(data4enrich), 0, 0.4)
 for(i in c(2:colCount)) factor[, i] <- factor[, i - 1] + runif(length(data4enrich), 0, 0.4)
-factor[,1] <- 0
 factor[,colCount] <- 1
 factor[factor > 1] <- 1
 
