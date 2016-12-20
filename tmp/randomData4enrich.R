@@ -22,5 +22,7 @@ factor
 data4enrichMat
 
 
+
 saveRDS(list(pvalues =pvalues, data4enrich = data4enrich, data4enrichMat = data4enrichMat), "./data4enrich.RDS")
 
+saveRDS(list(nwa = nwa, nwam = nwam), "./nwaobject.RDS")
