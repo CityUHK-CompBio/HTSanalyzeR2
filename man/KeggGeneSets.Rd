@@ -30,6 +30,5 @@ DM_KEGG<-KeggGeneSets(species = "Dm")
 
 }
 \seealso{
-GOGeneSets, MSigDBGeneSets
+\code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{MSigDBGeneSets}}
 }
-

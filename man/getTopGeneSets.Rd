@@ -34,4 +34,29 @@ and their names will be returned. If 'allSig=TRUE', then all significant
 (adjusted p-value < 'pValueCutoff' see help("analyze")) gene sets will
 be selected and their names will be returned.
 }
+\examples{
+## Not run:
+library(org.Dm.eg.db)
+library(GO.db)
+## load data for enrichment analyses
+data(data4enrich)
+## select hits
+hits <- names(data4enrich)[abs(data4enrich) > 2]
+## set up a list of gene set collections
+GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
+ListGSC <- list(GO_MF=GO_MF)
+## create an object of class 'GSCA'
+gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
+## print gsca
+gsca
+## do preprocessing
+gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
+## do hypergeometric tests and GSEA
+gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
+summarize(gsca)
+##print top significant gene sets in GO_MF
+topGS_GO_MF <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
+## End(Not run)
 
+
+}

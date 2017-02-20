@@ -41,4 +41,3 @@ This is a generic function.
 When implemented as the S4 method of class NWA, this function creates an
 interactome before conducting network analysis.
 }
-

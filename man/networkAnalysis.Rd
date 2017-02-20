@@ -31,4 +31,3 @@ This function takes in a vector of p-values and a graph standing
 for the interactome to identify the maximum scoring subnetwork based on
 the BioNet package.
 }
-

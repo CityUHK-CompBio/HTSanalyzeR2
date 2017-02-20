@@ -34,6 +34,5 @@ xprocessed<-duplicateRemover(geneList=x, method="max")
 
 }
 \seealso{
-preprocess
+\code{\link[HTSanalyzeR2]{preprocess}}
 }
-

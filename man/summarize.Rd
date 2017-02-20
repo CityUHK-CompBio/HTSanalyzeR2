@@ -35,3 +35,28 @@ slot 'interactome'), 'Para' (the slot 'fdr'), 'Result' (the slot 'result')
 and 'ALL' (all slots).
 }}
 
+\examples{
+## Not run:
+library(org.Dm.eg.db)
+library(GO.db)
+## load data for enrichment analyses
+data(data4enrich)
+## select hits
+hits <- names(data4enrich)[abs(data4enrich) > 2]
+## set up a list of gene set collections
+GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
+ListGSC <- list(GO_MF=GO_MF)
+## create an object of class 'GSCA'
+gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
+## print gsca
+gsca
+## do preprocessing
+gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
+## do hypergeometric tests and GSEA
+gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
+## summarize gsca
+summarize(gsca, what = "ALL")
+## End(not run)
+
+
+}

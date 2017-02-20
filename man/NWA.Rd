@@ -30,7 +30,7 @@ interactome and result.}
 \item{\code{preprocessed}}{a logical value specifying whether or not input data
 has been preprocessed.}
 }}
+
 \seealso{
 preprocess analyze summarize interactome report
 }
-

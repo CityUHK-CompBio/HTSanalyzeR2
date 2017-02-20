@@ -4,6 +4,47 @@ if(!isGeneric("viewGSEA"))
 if(!isGeneric("plotGSEA"))
   setGeneric("plotGSEA",function(object,...) standardGeneric("plotGSEA"), package="HTSanalyzeR2")
 
+
+#' Plot a figure of GSEA results for one gene set
+#'
+#' This is a generic function. When implemented as the S4 method for objects of class GSCA,
+#'  this function plots a figure
+#' of the positions of the gene sets in the ranked gene list and the location of the enrichment score.
+#'
+#' @section Details:
+#' We suggest to print the names of top significant gene sets using the
+#' function \code{\link[HTSanalyzeR2]getTopGeneSets}} before plotting the GSEA results.
+#'
+#'
+#' @param object an object. When this function is implemented as the S4 method of class GSCA,
+#' this argument is an object of class GSCA
+#' @param gscName a single character value specifying the name of the gene set collection where
+#' the gene set is
+#' @param gsName a single character value specifying the name of the gene set to be plotted
+#' @examples
+#' ## Not run:
+#' library(org.Dm.eg.db)
+#' library(GO.db)
+#' ## load data for enrichment analyses
+#' data(data4enrich)
+#' ## select hits
+#' hits <- names(data4enrich)[abs(data4enrich) > 2]
+#' ## set up a list of gene set collections
+#' GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
+#' ListGSC <- list(GO_MF=GO_MF)
+#' ## create an object of class 'GSCA'
+#' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
+#' ## print gsca
+#' gsca
+#' ## do preprocessing
+#' gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
+#' ## do hypergeometric tests and GSEA
+#' gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
+#' summarize(gsca)
+#' ##print top significant gene sets in GO_MF
+#' topGS_GO_MF <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
+#' ## view GSEA results for one gene set
+#' viewGSEA(gsca, "GO_MF", topGS_GO_MF[["GO_MF"]][1])
 #' @include gsca_class.R
 #' @export
 setMethod(
@@ -31,7 +72,49 @@ setMethod(
   }
 )
 
-
+#' Plot and save figures of GSEA results for top significant gene sets
+#'
+#' This is a generic function.When implemented as the S4 method for objects of class GSCA,
+#' this function plots figures of the positions of genes of the gene set in the ranked gene
+#' list and the location of the enrichment score for top significant gene sets.
+#'
+#' @param object an object. When this function is implemented as the S4 method of class GSCA,
+#' this argument is an object of class GSCA.
+#' @param gscs a character vector specifying the names of gene set collections whose top
+#' significant gene sets will be plotted
+#' @param ntop a single integer or numeric value specifying how many gene sets of top
+#'  significance will be plotted.
+#' @param allSig a single logical value. If 'TRUE', all significant gene sets (GSEA adjusted
+#'  p-value < 'pValueCutoff' of slot 'para') will be plotted; otherwise, only top 'ntop' gene
+#'   sets will be plotted.
+#' @param filepath a single character value specifying where to store GSEA figures.
+#' @param output a single character value specifying the format of output image: "pdf" or "png"
+#' @param ... other arguments used by the function png or pdf such as 'width' and 'height'
+#' @examples
+#' ## Not run:
+#' library(org.Dm.eg.db)
+#' library(GO.db)
+#' ## load data for enrichment analyses
+#' data(data4enrich)
+#' ## select hits
+#' hits <- names(data4enrich)[abs(data4enrich) > 2]
+#' ## set up a list of gene set collections
+#' GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
+#' PW_KEGG <- KeggGeneSets(species="Dm")
+#' H_MSig <- MSigDBGeneSets(collection = "h")
+#' ListGSC <- list(GO_MF=GO_MF, H_MSig = H_MSig, PW_KEGG=PW_KEGG)
+#' ## create an object of class 'GSCA'
+#' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
+#' ## print gsca
+#' gsca
+#' ## do preprocessing
+#' gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
+#' ## do hypergeometric tests and GSEA
+#' gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
+#' summarize(gsca)
+#' ## plot  significant gene sets in GO_MF and PW_KEGG
+#' plotGSEA(gsca, gscs=c("GO_MF","PW_KEGG"), ntop=1, filepath=".")
+#' @export
 ##plot GSEA for GSCA
 setMethod(
   "plotGSEA",
@@ -60,12 +143,13 @@ setMethod(
 )
 
 
+
 gseaPlots <- function(runningScore, enrichmentScore, positions, geneList) {
   ##check arguments
   paraCheck("GSCAClass", "genelist", geneList)
-  paraCheck("Report", "filepath", filepath)
-  paraCheck("Report", "filename", filename)
-  paraCheck("Report", "output", output)
+  # paraCheck("Report", "filepath", filepath)
+  # paraCheck("Report", "filename", filename)
+  # paraCheck("Report", "output", output)
   ##check that the 'runningScore' is a vector of length=length of geneList
   if(!is.numeric(runningScore) || length(runningScore)==0)
     stop("'runningScore' should be a numerical vector!\n")
