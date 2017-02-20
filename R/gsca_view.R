@@ -63,9 +63,9 @@ setMethod(
 gseaPlots <- function(runningScore, enrichmentScore, positions, geneList) {
   ##check arguments
   paraCheck("GSCAClass", "genelist", geneList)
-  paraCheck("Report", "filepath", filepath)
-  paraCheck("Report", "filename", filename)
-  paraCheck("Report", "output", output)
+  # paraCheck("Report", "filepath", filepath)
+  # paraCheck("Report", "filename", filename)
+  # paraCheck("Report", "output", output)
   ##check that the 'runningScore' is a vector of length=length of geneList
   if(!is.numeric(runningScore) || length(runningScore)==0)
     stop("'runningScore' should be a numerical vector!\n")
