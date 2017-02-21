@@ -28,7 +28,7 @@ This is a generic function.
 }
 \details{
 When implemented as the method of class GSCA or NWA, this function produces reports for
-either the Gene Set Collection Analysis or the Network Analysis.
+either the Gene Set Collection Analysis or the NetWork Analysis.
 }
 \examples{
 ## Not run:

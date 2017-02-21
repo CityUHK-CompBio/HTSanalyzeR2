@@ -10,7 +10,7 @@ if (!isGeneric("report")) {
 #' This is a generic function.
 #'
 #' When implemented as the method of class GSCA or NWA, this function produces reports for
-#' either the Gene Set Collection Analysis or the Network Analysis.
+#' either the Gene Set Collection Analysis or the NetWork Analysis.
 #'
 #' @param object  an object. When this function is implemented as the S4
 #' method of class 'GSCA' or 'NWA', this argument is an object of class

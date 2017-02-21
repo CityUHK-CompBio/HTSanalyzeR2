@@ -81,7 +81,7 @@ setMethod("initialize",
             .Object
           })
 
-#' An S4 class for Network Analysis on high-throughput screens
+#' An S4 class for NetWork Analysis on high-throughput screens
 #'
 #' This class includes a series of methods to do network analysis for
 #' high-throughput screens.
