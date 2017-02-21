@@ -4,7 +4,49 @@ if (!isGeneric("report")) {
     standardGeneric("report"), package = "HTSanalyzeR2")
 }
 
-## report
+##  report
+#' Write HTML reports for enrichment or network analyses
+#'
+#' This is a generic function.
+#' When implemented as the method of class GSCA or NWA, this function produces reports for
+#' either the Gene Set Collection Analysis or the Network Analysis.
+#'
+#' @param object  an object. When this function is implemented as the S4
+#' method of class 'GSCA' or 'NWA', this argument is an object of class
+#' 'GSCA' or 'NWA'.
+#' @param nodeOptions a list of interested gene set terms which can be edited in the shiny report such as
+#' changing the shape of this set, etc.
+#' @param reportDir a single character value specifying the directory to store reports. For default
+#' the enrichment analysis reports will be stored in the directory called "GSCAReport"
+#'
+#' @examples
+#' ## Not run:
+#' library(org.Dm.eg.db)
+#' library(GO.db)
+#' ## load data for enrichment analyses
+#' data(data4enrich)
+#' ## select hits
+#' hits <- names(data4enrich)[abs(data4enrich) > 2]
+#' ## set up a list of gene set collections
+#' GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
+#' ListGSC <- list(GO_MF=GO_MF)
+#' ## create an object of class 'GSCA'
+#' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
+#' ## print gsca
+#' gsca
+#' ## do preprocessing
+#' gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
+#' ## do hypergeometric tests and GSEA
+#' gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
+#' summarize(gsca)
+#' ## append gene set terms to results
+#' gsca <- appendGSTerms(gsca, goGSCs=c("GO_MF"), keggGSCs= NULL, msigdbGSCs=NULL))
+#' ## report for a GSCA object
+#' report(gsca)
+#'
+#'
+#'
+#'
 #' @export
 setMethod("report", signature = "GSCA",
           function(object, nodeOptions = list(), reportDir = "GSCAReport") {
@@ -14,7 +56,23 @@ setMethod("report", signature = "GSCA",
           }
 )
 
-
+#' Write HTML reports for both enrichment and network analyses
+#'
+#'This function can create HTML reports for both gene sets enrichment analysis and network analysis using
+#'shiny.
+#'
+#'@param gsca an object of class GSCA
+#'@param nwa an object of class NWA
+#'@param gscaNodeOptions a list of interested gene set terms which can be edited in the shiny report such as
+#' changing the shape of this set, etc.
+#'@param nwaNodeOptions a list of interested phenotypes which can be edited in the shiny report such as
+#' changing the shape of this set, etc.
+#'
+#'@param reportDir a single character value specifying the directory to store reports. For default both the
+#'  enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport"
+#'
+#'
+#'
 #' @export
 reportAll <- function(gsca, nwa, gscaNodeOptions = NULL, nwaNodeOptions = NULL,
                       reportDir = "AnalysisReport") {

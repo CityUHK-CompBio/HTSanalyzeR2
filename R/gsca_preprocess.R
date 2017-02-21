@@ -5,32 +5,46 @@ if (!isGeneric("preprocess")) {
 
 #' A preprocessing method for objects of class GSCA or NWA
 #'
-#' This is a generic function.
-#' When implemented as the S4 method for objects of class GSCA or NWA,
-#' this function filters out invalid data, removes duplicated genes,
-#' converts annotations to Entrez identifiers, etc.
-#'
+#' This is a generic function. When implemented as the S4 method for objects of
+#' class GSCA or NWA, this function filters out invalid data, removes duplicated
+#' genes, converts annotations to Entrez identifiers, etc.
 #' @rdname preprocess
 #'
 #' @param object A GSCA object.
-#' @param species A single character value specifying the species
-#' for which the data should be read.
-#' @param initialIDs A single character value specifying the type of
-#' initial identifiers for input geneList
-#' @param keepMultipleMappings A single logical value. If TRUE, the
-#' function keeps the entries with multiple mappings (first mapping
-#' is kept). If FALSE, the entries with multiple mappings will be discarded.
+#' @param species A single character value specifying the species for which the
+#'   data should be read.
+#' @param initialIDs A single character value specifying the type of initial
+#'   identifiers for input geneList
+#' @param keepMultipleMappings A single logical value. If TRUE, the function
+#'   keeps the entries with multiple mappings (first mapping is kept). If FALSE,
+#'   the entries with multiple mappings will be discarded.
 #'
-#' @param duplicateRemoverMethod A single character value specifying
-#' the method to remove the duplicates. See duplicateRemover for details.
-#' @param orderAbsValue A single logical value indicating whether the
-#' values should be converted to absolute values and then ordered (if
-#' TRUE), or ordered as they are (if FALSE).
-#' @param verbose A single logical value specifying to display detailed
-#' messages (when verbose=TRUE) or not (when verbose=FALSE)
+#' @param duplicateRemoverMethod A single character value specifying the method
+#'   to remove the duplicates. See duplicateRemover for details.
+#' @param orderAbsValue A single logical value indicating whether the values
+#'   should be converted to absolute values and then ordered (if TRUE), or
+#'   ordered as they are (if FALSE).
+#' @param verbose A single logical value specifying to display detailed messages
+#'   (when verbose=TRUE) or not (when verbose=FALSE)
 #'
-#' @seealso duplicateRemover annotationConvertor
-#'
+#' @seealso \code{\link[HTSanalyzeR2]{duplicateRemover}}, \code{\link[HTSanalyzeR2]{annotationConvertor}}
+#' @examples
+#' ## Not run:
+#' library(org.Dm.eg.db)
+#' library(GO.db)
+#' ## load data for enrichment analyses
+#' data(data4enrich)
+#' ## select hits
+#' hits <- names(data4enrich)[abs(data4enrich) > 2]
+#' ## set up a list of gene set collections
+#' GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
+#' ListGSC <- list(GO_MF=GO_MF)
+#' ## create an object of class 'GSCA'
+#' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
+#' ## do preprocessing
+#' gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
+#' ## print gsca
+#' gsca
 #' @export
 #' @include gsca_class.R
 setMethod("preprocess", signature = "GSCA",
@@ -150,7 +164,7 @@ setMethod("preprocess", signature = "GSCA",
 #'
 #' @return A named vector of phenotypes with duplicates removed
 #'
-#' @seealso preprocess
+#' @seealso \code{\link[HTSanalyzeR2]{preprocess}}
 #'
 #' @examples
 #' x<-c(5,1,3,-2,6)

@@ -8,7 +8,21 @@ if (!isGeneric("summarize")) {
 #' (the slot 'pvalue'), 'Phenotype' (the slot 'phenotype'), 'Interactome' (the
 #' slot 'interactome'), 'Para' (the slot 'fdr'), 'Result' (the slot 'result')
 #' and 'ALL' (all slots).
-#'
+#' @examples
+#' @examples
+#' # Conducting the preparation steps
+#' data(xn)
+#' data(data4enrich)
+#' # Conducting one sample t-test & compute the p-values
+#' test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn,annotationColumn="GeneID", alternative="two.sided",tests=c("T-test"))
+#' library(BioNet)
+#' pvalues <- BioNet::aggrPvals(test.stats, order=2, plot=FALSE)
+#' nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
+#' nwa <- preprocess(nwa, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
+#' nwa_inter <- interactome(nwa, species="Dm", reportDir="biogrid", genetic=FALSE)
+#' nwa_result <- analyze(nwa_inter, fdr=0.0001, species="Dm")
+#' # Conducting the summary of the results
+#' summer_result<-summarize(nwa_result)
 #' @export
 setMethod("summarize", signature = "NWA",
           function(object, what = "ALL") {

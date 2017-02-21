@@ -17,33 +17,74 @@
 \arguments{
 \item{object}{A GSCA object.}
 
-\item{species}{A single character value specifying the species
-for which the data should be read.}
+\item{species}{A single character value specifying the species for which the
+data should be read.}
 
-\item{initialIDs}{A single character value specifying the type of
-initial identifiers for input geneList}
+\item{initialIDs}{A single character value specifying the type of initial
+identifiers for input geneList}
 
-\item{keepMultipleMappings}{A single logical value. If TRUE, the
-function keeps the entries with multiple mappings (first mapping
-is kept). If FALSE, the entries with multiple mappings will be discarded.}
+\item{keepMultipleMappings}{A single logical value. If TRUE, the function
+keeps the entries with multiple mappings (first mapping is kept). If FALSE,
+the entries with multiple mappings will be discarded.}
 
-\item{duplicateRemoverMethod}{A single character value specifying
-the method to remove the duplicates. See duplicateRemover for details.}
+\item{duplicateRemoverMethod}{A single character value specifying the method
+to remove the duplicates. See duplicateRemover for details.}
 
-\item{orderAbsValue}{A single logical value indicating whether the
-values should be converted to absolute values and then ordered (if
-TRUE), or ordered as they are (if FALSE).}
+\item{orderAbsValue}{A single logical value indicating whether the values
+should be converted to absolute values and then ordered (if TRUE), or
+ordered as they are (if FALSE).}
 
-\item{verbose}{A single logical value specifying to display detailed
-messages (when verbose=TRUE) or not (when verbose=FALSE)}
+\item{verbose}{A single logical value specifying to display detailed messages
+(when verbose=TRUE) or not (when verbose=FALSE)}
 }
 \description{
-This is a generic function.
-When implemented as the S4 method for objects of class GSCA or NWA,
-this function filters out invalid data, removes duplicated genes,
-converts annotations to Entrez identifiers, etc.
+This is a generic function. When implemented as the S4 method for objects of
+class GSCA or NWA, this function filters out invalid data, removes duplicated
+genes, converts annotations to Entrez identifiers, etc.
+}
+\examples{
+## Not run:
+library(org.Dm.eg.db)
+library(GO.db)
+## load data for enrichment analyses
+data(data4enrich)
+## select hits
+hits <- names(data4enrich)[abs(data4enrich) > 2]
+## set up a list of gene set collections
+GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
+ListGSC <- list(GO_MF=GO_MF)
+## create an object of class 'GSCA'
+gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
+## do preprocessing
+gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
+## print gsca
+gsca
+# loading the pre_selected sample data
+data(xn)
+data(data4enrich)
+# Conducting one sample t-test & compute the p-values
+test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn,annotationColumn="GeneID", alternative="two.sided",tests=c("T-test"))
+library(BioNet)
+pvalues <- BioNet::aggrPvals(test.stats, order=2, plot=FALSE)
+# Case1: Using the enrich vector
+nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
+nwa <- preprocess(nwa, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
+# Case2: Using the enrich matrix
+# generate the simulated enrich matrix
+colCount <- 10
+data4enrichMat <- matrix(rep(data4enrich, colCount), length(data4enrich), colCount)
+factor <- matrix(0, length(data4enrich), colCount)
+factor[, 0] <- runif(length(data4enrich), 0, 0.4)
+for(i in c(2:colCount)) factor[, i] <- factor[, i - 1] + runif(length(data4enrich), 0, 0.4)
+factor[,colCount] <- 1
+factor[factor > 1] <- 1
+data4enrichMat <- data4enrichMat * factor
+rownames(data4enrichMat) <- names(data4enrich)
+colnames(data4enrichMat) <- paste0(c(1:colCount), "h")
+nwam <- NWA(pvalues=pvalues, phenotypes=data4enrichMat)
+nwam <- preprocess(nwam, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
 }
 \seealso{
-duplicateRemover annotationConvertor
+\code{\link[HTSanalyzeR2]{duplicateRemover}}, \code{\link[HTSanalyzeR2]{annotationConvertor}}
 }
 

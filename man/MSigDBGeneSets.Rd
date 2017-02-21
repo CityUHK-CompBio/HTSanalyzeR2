@@ -26,6 +26,6 @@ H_MSig <- MSigDBGeneSets(collection = "h")
 
 }
 \seealso{
-GOGeneSets, KeggGeneSets
+\code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{KeggGeneSets}}
 }
 

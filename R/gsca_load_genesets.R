@@ -12,7 +12,7 @@
 #'
 #' @return Return A list of gene sets.
 #'
-#' @seealso GOGeneSets, KeggGeneSets
+#' @seealso \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{KeggGeneSets}}
 #'
 #' @examples
 #' H_MSig <- MSigDBGeneSets(collection = "h")
@@ -43,7 +43,7 @@ MSigDBGeneSets <- function(collection = "h") {
 #' @details This function needs Internet connection and relies on the
 #' following packages: KEGGREST
 #'
-#' @seealso GOGeneSets, MSigDBGeneSets
+#' @seealso \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{MSigDBGeneSets}}
 #'
 #' @examples
 #' library(KEGGREST)
@@ -127,7 +127,7 @@ KeggGeneSets <- function(species = "Dm") {
 #' @details This function relies on the following packages:
 #' AnnotationDbi, GO.db and the species db, such as org.Dm.eg.db.
 #'
-#' @seealso KeggGeneSets, MSigDBGeneSets
+#' @seealso \code{\link[HTSanalyzeR2]{KeggGeneSets}}, \code{\link[HTSanalyzeR2]{MSigDBGeneSets}}
 #'
 #' @examples
 #' library(GO.db)
