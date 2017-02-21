@@ -2,7 +2,7 @@
 % Please edit documentation in R/nwa_class.R
 \name{NWA}
 \alias{NWA}
-\title{An S4 class for NetWork Analysis on high-throughput screens}
+\title{An S4 class for Network Analysis on high-throughput screens}
 \usage{
 NWA(pvalues, phenotypes = as.numeric(NA), interactome = NA)
 }
