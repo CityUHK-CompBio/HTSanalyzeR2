@@ -4,7 +4,8 @@ if (!isGeneric("report")) {
     standardGeneric("report"), package = "HTSanalyzeR2")
 }
 
-## report
+
+#' @rdname report
 #' @examples
 #' # Conducting the preparation steps
 #' data(xn)

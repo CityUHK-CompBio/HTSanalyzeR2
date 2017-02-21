@@ -9,7 +9,6 @@ if (!isGeneric("summarize")) {
 #' slot 'interactome'), 'Para' (the slot 'fdr'), 'Result' (the slot 'result')
 #' and 'ALL' (all slots).
 #' @examples
-#' @examples
 #' # Conducting the preparation steps
 #' data(xn)
 #' data(data4enrich)

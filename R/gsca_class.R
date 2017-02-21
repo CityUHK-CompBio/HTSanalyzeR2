@@ -98,8 +98,11 @@ setMethod("initialize",
 #' @slot preprocessed a single logical value specifying whether or not the
 #' input data has been preprocessed.
 #'
-#' @seealso \code{\link[HTSanalyzeR2]{preprocess}}, \code{\link[HTSanalyzeR2]{analyze}}, \code{\link[HTSana
-#' lyzeR2]{appendGSTerms}}, \code{\link[HTSanalyzeR2]{summarize}}, \code{\link[HTSanalyzeR2]{report}}
+#' @seealso \code{\link[HTSanalyzeR2]{preprocess}},
+#' \code{\link[HTSanalyzeR2]{analyze}},
+#' \code{\link[HTSanalyzeR2]{appendGSTerms}},
+#' \code{\link[HTSanalyzeR2]{summarize}},
+#' \code{\link[HTSanalyzeR2]{report}}
 #'
 #' @export
 GSCA <- function(listOfGeneSetCollections, geneList, hits) {

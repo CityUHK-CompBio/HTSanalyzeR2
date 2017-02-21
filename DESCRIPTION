@@ -1,6 +1,7 @@
 Package: HTSanalyzeR2
 Type: Package
-Title: Gene set over-representation, enrichment and network analyses for high-throughput screens
+Title: Gene set over-representation, enrichment and network analyses for high-
+    throughput screens
 Version: 0.1.0.9000
 Author: Feng GAO <gaofeng21cn@gmail.com>, Xiupei MEI <meixiupei@gmail.com>
     Xin Wang <xinwang2hms@gmail.com>
@@ -9,7 +10,7 @@ Description: This package provides classes and methods for gene set over-
     representation, enrichment and network analyses on high-throughput screens.
 License: Artistic-2.0
 LazyData: TRUE
-RoxygenNote: 6.0.1
+RoxygenNote: 5.0.1
 Imports:
     cellHTS2,
     Rcpp,
@@ -48,7 +49,8 @@ Collate:
     'stat_test.R'
     'zzz.R'
 LinkingTo: Rcpp
-Suggests: knitr,
+Suggests:
+    knitr,
     rmarkdown,
     testthat
 VignetteBuilder: knitr

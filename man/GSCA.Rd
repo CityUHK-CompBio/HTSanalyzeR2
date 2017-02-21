@@ -35,7 +35,10 @@ geneList, hits, para, and result.}
 input data has been preprocessed.}
 }}
 \seealso{
-\code{\link[HTSanalyzeR2]{preprocess}}, \code{\link[HTSanalyzeR2]{analyze}}, \code{\link[HTSana
-lyzeR2]{appendGSTerms}}, \code{\link[HTSanalyzeR2]{summarize}}, \code{\link[HTSanalyzeR2]{report}}
+\code{\link[HTSanalyzeR2]{preprocess}},
+\code{\link[HTSanalyzeR2]{analyze}},
+\code{\link[HTSanalyzeR2]{appendGSTerms}},
+\code{\link[HTSanalyzeR2]{summarize}},
+\code{\link[HTSanalyzeR2]{report}}
 }
 

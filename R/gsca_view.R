@@ -13,14 +13,16 @@ if(!isGeneric("plotGSEA"))
 #'
 #' @section Details:
 #' We suggest to print the names of top significant gene sets using the
-#' function \code{\link[HTSanalyzeR2]getTopGeneSets}} before plotting the GSEA results.
-#'
+#' function \code{\link[HTSanalyzeR2]{getTopGeneSets}} before plotting the GSEA results.
 #'
 #' @param object an object. When this function is implemented as the S4 method of class GSCA,
 #' this argument is an object of class GSCA
 #' @param gscName a single character value specifying the name of the gene set collection where
 #' the gene set is
 #' @param gsName a single character value specifying the name of the gene set to be plotted
+#'
+#' @rdname viewGSEA
+#'
 #' @examples
 #' ## Not run:
 #' library(org.Dm.eg.db)
@@ -90,6 +92,8 @@ setMethod(
 #' @param filepath a single character value specifying where to store GSEA figures.
 #' @param output a single character value specifying the format of output image: "pdf" or "png"
 #' @param ... other arguments used by the function png or pdf such as 'width' and 'height'
+#'
+#' @rdname plotGSEA
 #' @examples
 #' ## Not run:
 #' library(org.Dm.eg.db)

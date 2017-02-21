@@ -4,10 +4,11 @@ if (!isGeneric("report")) {
     standardGeneric("report"), package = "HTSanalyzeR2")
 }
 
-##  report
+
 #' Write HTML reports for enrichment or network analyses
 #'
 #' This is a generic function.
+#'
 #' When implemented as the method of class GSCA or NWA, this function produces reports for
 #' either the Gene Set Collection Analysis or the Network Analysis.
 #'
@@ -44,8 +45,7 @@ if (!isGeneric("report")) {
 #' ## report for a GSCA object
 #' report(gsca)
 #'
-#'
-#'
+#' @rdname report
 #'
 #' @export
 setMethod("report", signature = "GSCA",

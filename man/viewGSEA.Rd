@@ -21,6 +21,11 @@ This is a generic function. When implemented as the S4 method for objects of cla
  this function plots a figure
 of the positions of the gene sets in the ranked gene list and the location of the enrichment score.
 }
+\section{Details}{
+
+We suggest to print the names of top significant gene sets using the
+function \code{\link[HTSanalyzeR2]{getTopGeneSets}} before plotting the GSEA results.
+}
 \examples{
 ## Not run:
 library(org.Dm.eg.db)
