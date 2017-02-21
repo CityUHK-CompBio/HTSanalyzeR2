@@ -46,3 +46,4 @@ topGS_GO_MF <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
 ## view GSEA results for one gene set
 viewGSEA(gsca, "GO_MF", topGS_GO_MF[["GO_MF"]][1])
 }
+

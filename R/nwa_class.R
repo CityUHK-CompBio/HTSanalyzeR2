@@ -97,8 +97,17 @@ setMethod("initialize",
 #' @slot preprocessed a logical value specifying whether or not input data
 #' has been preprocessed.
 #'
-#' @seealso preprocess analyze summarize interactome report
-#'
+#' @seealso \code{\link[HTSanalyzeR2]{preprocess}} \code{\link[HTSanalyzeR2]{analyze}} \code{\link[HTSanalyzeR2]{summarize}} \code{\link[HTSanalyzeR2]{interactome}} \code{\link[HTSanalyzeR2]{report}}
+#' @examples
+#' # loading the pre_selected sample data
+#' data(xn)
+#' data(data4enrich)
+#' # Conducting one sample t-test & compute the p-values
+#' test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn,annotationColumn="GeneID", alternative="two.sided",tests=c("T-test"))
+#' library(BioNet)
+# pvalues <- BioNet::aggrPvals(test.stats, order=2, plot=FALSE)
+# # Conducting the constrction of a S4 class data
+# nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
 #' @export
 NWA <- function(pvalues, phenotypes = as.numeric(NA), interactome = NA) {
   object <- new(

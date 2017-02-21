@@ -41,3 +41,13 @@ This is a generic function.
 When implemented as the S4 method of class NWA, this function creates an
 interactome before conducting network analysis.
 }
+\examples{
+#' # load the preprocessed p-values and phenotypes data of S4 class, either nwa or nwam,
+# Case1: using "nwa" (without the interactionMatrix)
+data(nwa)
+nwa_inter <- interactome(nwa, species="Dm", reportDir="biogrid", genetic=FALSE)
+# Case2: using "nwa" (when the interactionMatrix is available)
+data(nwam)
+nwam <- interactome(nwam, species="Dm", reportDir="biogrid", genetic=FALSE)
+}
+

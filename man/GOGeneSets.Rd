@@ -36,3 +36,4 @@ DM_GO_CC<-GOGeneSets(species="Dm",ontologies=c("CC"))
 \seealso{
 \code{\link[HTSanalyzeR2]{KeggGeneSets}}, \code{\link[HTSanalyzeR2]{MSigDBGeneSets}}
 }
+

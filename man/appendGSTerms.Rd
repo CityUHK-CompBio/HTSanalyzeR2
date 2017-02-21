@@ -67,3 +67,4 @@ gsca <- appendGSTerms(gsca, goGSCs=c("GO_MF"), keggGSCs=NULL, msigdbGSCs=NULL)
 ## print gsca again
 gsca
 }
+

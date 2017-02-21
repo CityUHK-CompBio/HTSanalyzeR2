@@ -35,7 +35,6 @@ A full listing of documented topics is available in HTML view by typing
 help.start() and selecting the HTSanalyzeR package from the Packages menu
 or via library(help="HTSanalyzeR2").
 }
-
 \references{
 Subramanian, A., Tamayo, P., Mootha, V. K., Mukherjee, S., Ebert,
   B. L., Gillette, M. A., Paulovich, A., Pomeroy, S. L., Golub, T. R.,
@@ -52,3 +51,4 @@ Subramanian, A., Tamayo, P., Mootha, V. K., Mukherjee, S., Ebert,
   networks: an integrated exact approach.} Bioinformatics 2008
   24(13):i223-i231.
 }
+

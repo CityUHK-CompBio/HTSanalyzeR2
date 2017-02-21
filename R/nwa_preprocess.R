@@ -9,6 +9,31 @@ if (!isGeneric("interactome")) {
 
 
 #' @rdname preprocess
+#' @examples
+#' # loading the pre_selected sample data
+#' data(xn)
+#' data(data4enrich)
+#' # Conducting one sample t-test & compute the p-values
+#' test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn,annotationColumn="GeneID", alternative="two.sided",tests=c("T-test"))
+#' library(BioNet)
+#' pvalues <- BioNet::aggrPvals(test.stats, order=2, plot=FALSE)
+#' # Case1: Using the enrich vector
+#' nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
+#' nwa <- preprocess(nwa, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
+#' # Case2: Using the enrich matrix
+#' # generate the simulated enrich matrix
+#' colCount <- 10
+#' data4enrichMat <- matrix(rep(data4enrich, colCount), length(data4enrich), colCount)
+#' factor <- matrix(0, length(data4enrich), colCount)
+#' factor[, 0] <- runif(length(data4enrich), 0, 0.4)
+#' for(i in c(2:colCount)) factor[, i] <- factor[, i - 1] + runif(length(data4enrich), 0, 0.4)
+#' factor[,colCount] <- 1
+#' factor[factor > 1] <- 1
+#' data4enrichMat <- data4enrichMat * factor
+#' rownames(data4enrichMat) <- names(data4enrich)
+#' colnames(data4enrichMat) <- paste0(c(1:colCount), "h")
+#' nwam <- NWA(pvalues=pvalues, phenotypes=data4enrichMat)
+#' nwam <- preprocess(nwam, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
 #' @export
 #' @include gsca_class.R
 setMethod("preprocess", signature = "NWA",
@@ -144,7 +169,14 @@ setMethod("preprocess", signature = "NWA",
 #' @param force force to download the data set.
 #' @param verbose a single logical value indicating to display detailed
 #' messages (when verbose=TRUE) or not (when verbose=FALSE)
-#'
+#' @examples
+#' #' # load the preprocessed p-values and phenotypes data of S4 class, either nwa or nwam,
+#' # Case1: using "nwa" (without the interactionMatrix)
+#' data(nwa)
+#' nwa_inter <- interactome(nwa, species="Dm", reportDir="biogrid", genetic=FALSE)
+#' # Case2: using "nwa" (when the interactionMatrix is available)
+#' data(nwam)
+#' nwam <- interactome(nwam, species="Dm", reportDir="biogrid", genetic=FALSE)
 #' @export
 #' @importFrom BioNet makeNetwork
 #' @importFrom igraph vcount ecount
