@@ -353,7 +353,7 @@ HTMLWidgets.widget(globalObj = {
             .attr("font-weight", "bold")
             .text(options.title);
 
-        var icons = ['\uf01e', '\uf0c7'];
+        var icons = ['icon-spinner11', 'icon-floppy-disk'];
         var buttons = svg.append("g")
             .selectAll(".button")
             .data(icons).enter()
@@ -371,23 +371,17 @@ HTMLWidgets.widget(globalObj = {
                 .transition().duration(300)
                 .attr("fill-opacity", "0.3");
             });
-
+        buttons.attr("transform", function(d, i) {return "translate(" + (i * 30) + ", 0)"})
         buttons.append("rect")
             .attr("width", 25).attr("height", 25)
-            .attr("x", function(d, i) {return i * 30})
             .attr("rx", 5).attr("ry", 5)
             .attr("fill", "#0d6dbc")
             .attr("fill-opacity", "0.3");
-        buttons.append("text")
-            .attr("font-family", "FontAwesome")
-            .attr("x",function(d,i) {
-                return 0 + (25+5)*i + 25/2;
-            })
-            .attr("y",0+25/2)
-            .attr("text-anchor","middle")
-            .attr("dominant-baseline","central")
-            .attr("fill","white")
-            .text(function(d) {return d;})
+        buttons.append("svg:foreignObject")
+            .attr("width", 20).attr("height", 20)
+            .attr("transform", "translate(5, 4)")
+            .append("xhtml:span")
+            .attr("class", function(d) {return d;})
 
         function btnClick(d, i) {
             if(i == 0) {
