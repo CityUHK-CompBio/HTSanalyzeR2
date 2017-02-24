@@ -50,7 +50,8 @@ HTMLWidgets.widget(globalObj = {
     },
 
     getStore: function() {
-        id = d3.select('.tab-pane.active').attr('id');
+        activePanel = globalObj.getActivePanel();
+        id = activePanel.attr('id');
         if(!(id in globalObj.store)) {
             globalObj.store[id] = { pause: false, mode: "all" }
         }
@@ -58,7 +59,11 @@ HTMLWidgets.widget(globalObj = {
     },
 
     getActivePanel: function() {
-        return d3.select(".tab-pane.active");
+        panel = d3.select(".tab-pane.active");
+        if(panel.empty()) {
+            panel = d3.select("#htmlwidget_container")
+        }
+        return panel;
     },
 
     construct: function(el, x, simulation) {
