@@ -275,8 +275,15 @@ setMethod("extractEnrichMap", signature = "GSCA",
             } else if (gsNameType == "term") {
               V(g)$label <- as.character(tempdf[, "Gene.Set.Term"])
             }
+
             V(g)$label_id <- as.character(tempdf[, "gsID"])
-            V(g)$label_term <- as.character(tempdf[, "Gene.Set.Term"])
+
+            if ("Gene.Set.Term" %in% colnames(tempdf)) {
+              V(g)$label_term <- as.character(tempdf[, "Gene.Set.Term"])
+            } else {
+              warning("No appended terms, please run appendGSTerms.")
+              V(g)$label_term <- as.character(tempdf[, "gsID"])
+            }
 
             g
           }
