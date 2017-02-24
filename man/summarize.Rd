@@ -34,7 +34,10 @@ function prints a summary of information about the slots of these classes.
 slot 'interactome'), 'Para' (the slot 'fdr'), 'Result' (the slot 'result')
 and 'ALL' (all slots).
 }}
+
 \examples{
+# =================================================================
+# GSCA class
 ## Not run:
 library(org.Dm.eg.db)
 library(GO.db)
@@ -56,8 +59,8 @@ gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermuta
 ## summarize gsca
 summarize(gsca, what = "ALL")
 ## End(not run)
-
-
+# ==========================================================
+# NWA class
 # Conducting the preparation steps
 data(xn)
 data(data4enrich)
@@ -72,4 +75,3 @@ nwa_result <- analyze(nwa_inter, fdr=0.0001, species="Dm")
 # Conducting the summary of the results
 summer_result<-summarize(nwa_result)
 }
-

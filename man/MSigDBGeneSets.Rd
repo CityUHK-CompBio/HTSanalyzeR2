@@ -28,4 +28,3 @@ H_MSig <- MSigDBGeneSets(collection = "h")
 \seealso{
 \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{KeggGeneSets}}
 }
-

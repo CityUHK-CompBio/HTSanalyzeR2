@@ -61,4 +61,3 @@ of replicates for each construct is low.
 Michael Boutros, Ligia P. Bras L and Wolfgang Huber. Analysis of cell-based
 RNAi screens. Genome Biology 7:7 R66 (2006)."
 }
-

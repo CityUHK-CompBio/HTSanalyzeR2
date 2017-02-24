@@ -26,9 +26,11 @@ if (!isGeneric("preprocess")) {
 #'   ordered as they are (if FALSE).
 #' @param verbose A single logical value specifying to display detailed messages
 #'   (when verbose=TRUE) or not (when verbose=FALSE)
-#'
+#' @return In the end, this function will return an updated object of class GSCA or NWA.
 #' @seealso \code{\link[HTSanalyzeR2]{duplicateRemover}}, \code{\link[HTSanalyzeR2]{annotationConvertor}}
 #' @examples
+#' # ===========================================================
+#' # GSCA class
 #' ## Not run:
 #' library(org.Dm.eg.db)
 #' library(GO.db)
@@ -45,6 +47,33 @@ if (!isGeneric("preprocess")) {
 #' gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
 #' ## print gsca
 #' gsca
+#' # ===========================================================
+#' # NWA class
+#'
+#' @details
+#' This function will do the following preprocessing steps:
+#'
+#' 1:filter out p-values (the slot **pvalues** of class NWA), phenotypes
+#'  (the slot phenotypes of class NWA) and data for enrichment (the slot
+#'  geneList of class GSCA) with NA values or without valid names, and invalid
+#'   gene names (the slot hits of class GSCA);
+#'
+#' 2:invoke function duplicateRemover to remove duplicated genes in the slot pvalues,
+#'  phenotypes of class NWA, and the slot geneList and hits of class GSCA;
+#'
+#' 3:invoke function annotationConvertor to convert annotations from initialIDs
+#' to Entrez identifiers. Please note that the slot hits and the names of the slot
+#' geneList of class GSCA, the names of the slot pvalues and the names of the slot
+#' phenotypes of class NWA must have the same type of gene annotation specified by
+#' initialIDs;
+#'
+#' 4:order the data for enrichment decreasingly for objects of class GSCA.
+#'
+#' See the function duplicateRemover for more details about how to remove
+#' duplicated genes.
+#'
+#' See the function annotationConvertor for more details about how to convert
+#' annotations.
 #' @export
 #' @include gsca_class.R
 setMethod("preprocess", signature = "GSCA",

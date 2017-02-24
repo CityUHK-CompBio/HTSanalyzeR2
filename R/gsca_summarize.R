@@ -26,6 +26,8 @@ setGeneric("getTopGeneSets", function(object,
 #'
 #'
 #' @examples
+#' # =================================================================
+#' # GSCA class
 #' ## Not run:
 #' library(org.Dm.eg.db)
 #' library(GO.db)
@@ -47,8 +49,8 @@ setGeneric("getTopGeneSets", function(object,
 #' ## summarize gsca
 #' summarize(gsca, what = "ALL")
 #'## End(not run)
-#'
-#'
+#' # ==========================================================
+#' # NWA class
 #' @include gsca_class.R
 #' @export
 setMethod("summarize", signature = "GSCA",
@@ -142,7 +144,8 @@ setMethod("summarize", signature = "GSCA",
 #' ## End(Not run)
 
 #'
-#'
+#' @return a list of character vectors, each of which contains the names of top
+#' significant gene sets for each gene set collection
 #' @include gsca_class.R
 #' @export
 setMethod("getTopGeneSets", signature = "GSCA",

@@ -25,6 +25,10 @@ gene sets of top significance.}
 (GSEA adjusted p-value < 'pValueCutoff' of slot 'para') will be selected;
 otherwise, only top 'ntop' gene sets will be selected.}
 }
+\value{
+a list of character vectors, each of which contains the names of top
+significant gene sets for each gene set collection
+}
 \description{
 This is a generic function.
 This function selects top significant gene sets from GSEA results for
@@ -58,6 +62,4 @@ summarize(gsca)
 topGS_GO_MF <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
 ## End(Not run)
 
-
 }
-

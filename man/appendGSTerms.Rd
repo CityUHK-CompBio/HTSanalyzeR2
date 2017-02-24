@@ -64,7 +64,5 @@ gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermuta
 ## append gene set terms to results
 gsca <- appendGSTerms(gsca, goGSCs=c("GO_MF"), keggGSCs=NULL, msigdbGSCs=NULL)
 ## view an enrichment map for GSEA results
-## print gsca again
-gsca
+viewEnrichMap(gsca, gscs="GO_MF", allSig = F, ntop = 7, gsNameType = "term")
 }
-

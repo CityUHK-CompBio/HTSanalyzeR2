@@ -63,8 +63,7 @@ if (!isGeneric("viewEnrichMap"))
 #' ## append gene set terms to results
 #' gsca <- appendGSTerms(gsca, goGSCs=c("GO_MF"), keggGSCs=NULL, msigdbGSCs=NULL)
 #' ## view an enrichment map for GSEA results
-#' ## print gsca again
-#' gsca
+#' viewEnrichMap(gsca, gscs="GO_MF", allSig = F, ntop = 7, gsNameType = "term")
 #' @export
 #'
 setMethod(
@@ -168,7 +167,7 @@ appendMSigDBTerm <- function(df) {
 }
 
 
-#' @export
+
 #' @importFrom igraph V graph.adjacency simplify
 setMethod("extractEnrichMap", signature = "GSCA",
           function(object,
@@ -282,7 +281,59 @@ setMethod("extractEnrichMap", signature = "GSCA",
           }
 )
 
+#' Plot a figure of the enrichment map for GSEA or Hypergeometric tests
+#'
+#' This is a generic function.When implemented as the S4 method for objects
+#' of class GSCA, this function will plot an enrichment map for GSEA or
+#' Hypergeometric test results.
+#'
+#' @param object 	an object. When this function is implemented as the S4 method
+#'  of class GSCA, this argument is an object of class GSCA.
+#' @param resultName a single character value: 'HyperGeo.results' or 'GSEA.results'
+#' @param gscs a character vector specifying the names of gene set collections
+#' of which the top significant gene sets will be plotted
+#' @param ntop a single integer or numeric value specifying how many gene
+#' sets of top significance will be plotted.
+#' @param allSig a single logical value. If 'TRUE', all significant gene sets
+#' (GSEA adjusted p-value < 'pValueCutoff' of slot 'para') will be used; otherwise,
+#' only top 'ntop' gene sets will be used.
+#' @param gsNameType a single character value specifying the type of the gene set names that
+#' will be displayed as the names of nodes in the enrichment map. The type of the gene
+#' set names should be one of the following: "id", "term" or "none".
 
+#' @details The idea of this function is similar to the PLoS one paper by Merico et al.
+#'
+#' An enrichment map is a network to help better visualize and interpret the GSEA or
+#'Hypergeometric test results. In an enrichment map, the nodes represent gene sets
+#'and the edges denote the Jaccard similarity coefficient between two gene sets.
+#'Node colors are scaled according to the adjusted p-values (the darker the more significant).
+#'For GSEA, nodes are colored by the sign of the enrichment scores (red:+, blue: -).
+#'The size of nodes illustrates the size of gene sets, while the width of edges denotes the
+#'Jaccard coefficient.
+#'@return an object of igraph with all attributes about the enrichement map
+#'@examples
+#'#' ## Not run:
+#' library(org.Dm.eg.db)
+#' library(GO.db)
+#' ## load data for enrichment analyses
+#' data(data4enrich)
+#' ## select hits
+#' hits <- names(data4enrich)[abs(data4enrich) > 2]
+#' ## set up a list of gene set collections
+#' GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
+#' ListGSC <- list(GO_MF=GO_MF)
+#' ## create an object of class 'GSCA'
+#' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
+#' ## print gsca
+#' gsca
+#' ## do preprocessing
+#' gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
+#' ## do hypergeometric tests and GSEA
+#' gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
+#' ## append gene set terms to results
+#' gsca <- appendGSTerms(gsca, goGSCs=c("GO_MF"), keggGSCs=NULL, msigdbGSCs=NULL)
+#' ## view an enrichment map for GSEA results
+#' viewEnrichMap(gsca, gscs="GO_MF", allSig = F, ntop = 7, gsNameType = "term")
 #' @export
 #' @importFrom igraph as_data_frame
 setMethod("viewEnrichMap", signature = "GSCA",

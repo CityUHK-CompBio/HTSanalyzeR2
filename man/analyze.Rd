@@ -66,7 +66,10 @@ by BioNet (if species is given, labels of nodes will also be mapped from
 Entrez IDs to gene symbols), and update information about these results to
 slot summary of class NWA.
 }}
+
 \examples{
+# ====================================================
+# Gene Set Collection Analysis Part
 ## Not run:
 library(org.Dm.eg.db)
 library(GO.db)
@@ -87,6 +90,8 @@ gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappi
 gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
 summarize(gsca)
 ## End(not run)
+# ==================================================================
+# NetWork Analysis
 # Conducting the preparation steps
 data(xn)
 data(data4enrich)
@@ -104,4 +109,3 @@ data(nwam)
 nwam_inter <- interactome(nwam, species="Dm", reportDir="biogrid", genetic=FALSE)
 nwam_result <- analyze(nwam_inter, fdr=0.0001, species="Dm")
 }
-
