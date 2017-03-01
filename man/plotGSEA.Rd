@@ -58,4 +58,3 @@ summarize(gsca)
 ## plot  significant gene sets in GO_MF and PW_KEGG
 plotGSEA(gsca, gscs=c("GO_MF","PW_KEGG"), ntop=1, filepath=".")
 }
-

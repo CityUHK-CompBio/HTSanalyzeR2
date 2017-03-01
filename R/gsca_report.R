@@ -21,6 +21,8 @@ if (!isGeneric("report")) {
 #' the enrichment analysis reports will be stored in the directory called "GSCAReport"
 #'
 #' @examples
+#' # =======================================================
+#' # GSCA class
 #' ## Not run:
 #' library(org.Dm.eg.db)
 #' library(GO.db)
@@ -41,10 +43,13 @@ if (!isGeneric("report")) {
 #' gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
 #' summarize(gsca)
 #' ## append gene set terms to results
-#' gsca <- appendGSTerms(gsca, goGSCs=c("GO_MF"), keggGSCs= NULL, msigdbGSCs=NULL))
+#' gsca <- appendGSTerms(gsca, goGSCs=c("GO_MF"), keggGSCs= NULL, msigdbGSCs=NULL)
+#' ## view an enrichment map for GSEA results
+#' viewEnrichMap(gsca, gscs="GO_MF", allSig = F, ntop = 7)
 #' ## report for a GSCA object
 #' report(gsca)
-#'
+#' # ======================================================
+#' # NWA class
 #' @rdname report
 #'
 #' @export

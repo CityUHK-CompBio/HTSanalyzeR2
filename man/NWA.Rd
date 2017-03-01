@@ -30,6 +30,7 @@ interactome and result.}
 \item{\code{preprocessed}}{a logical value specifying whether or not input data
 has been preprocessed.}
 }}
+
 \examples{
 # loading the pre_selected sample data
 data(xn)
@@ -41,4 +42,3 @@ library(BioNet)
 \seealso{
 \code{\link[HTSanalyzeR2]{preprocess}} \code{\link[HTSanalyzeR2]{analyze}} \code{\link[HTSanalyzeR2]{summarize}} \code{\link[HTSanalyzeR2]{interactome}} \code{\link[HTSanalyzeR2]{report}}
 }
-

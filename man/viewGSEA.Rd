@@ -21,8 +21,7 @@ This is a generic function. When implemented as the S4 method for objects of cla
  this function plots a figure
 of the positions of the gene sets in the ranked gene list and the location of the enrichment score.
 }
-\section{Details}{
-
+\details{
 We suggest to print the names of top significant gene sets using the
 function \code{\link[HTSanalyzeR2]{getTopGeneSets}} before plotting the GSEA results.
 }
@@ -51,4 +50,3 @@ topGS_GO_MF <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
 ## view GSEA results for one gene set
 viewGSEA(gsca, "GO_MF", topGS_GO_MF[["GO_MF"]][1])
 }
-

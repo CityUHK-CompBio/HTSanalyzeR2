@@ -31,6 +31,8 @@ When implemented as the method of class GSCA or NWA, this function produces repo
 either the Gene Set Collection Analysis or the NetWork Analysis.
 }
 \examples{
+# =======================================================
+# GSCA class
 ## Not run:
 library(org.Dm.eg.db)
 library(GO.db)
@@ -51,10 +53,13 @@ gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappi
 gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
 summarize(gsca)
 ## append gene set terms to results
-gsca <- appendGSTerms(gsca, goGSCs=c("GO_MF"), keggGSCs= NULL, msigdbGSCs=NULL))
+gsca <- appendGSTerms(gsca, goGSCs=c("GO_MF"), keggGSCs= NULL, msigdbGSCs=NULL)
+## view an enrichment map for GSEA results
+viewEnrichMap(gsca, gscs="GO_MF", allSig = F, ntop = 7)
 ## report for a GSCA object
 report(gsca)
-
+# ======================================================
+# NWA class
 # Conducting the preparation steps
 data(xn)
 data(data4enrich)
@@ -75,4 +80,3 @@ nwam_result <- analyze(nwam_inter, fdr=0.0001, species="Dm")
 report(nwa_result)
 report(nwam_result)
 }
-

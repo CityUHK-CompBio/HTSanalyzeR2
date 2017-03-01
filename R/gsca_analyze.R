@@ -42,6 +42,8 @@ if (!isGeneric("analyze")) {
 #' @include gsca_class.R
 #' @export
 #' @examples
+#' # ====================================================
+#' # Gene Set Collection Analysis Part
 #' ## Not run:
 #' library(org.Dm.eg.db)
 #' library(GO.db)
@@ -62,6 +64,9 @@ if (!isGeneric("analyze")) {
 #' gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
 #' summarize(gsca)
 #'## End(not run)
+#' # ==================================================================
+#' # NetWork Analysis
+
 
 setMethod("analyze",
           "GSCA",

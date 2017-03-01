@@ -3,15 +3,13 @@ if(!isGeneric("viewGSEA"))
   setGeneric("viewGSEA",function(object,...) standardGeneric("viewGSEA"), package="HTSanalyzeR2")
 if(!isGeneric("plotGSEA"))
   setGeneric("plotGSEA",function(object,...) standardGeneric("plotGSEA"), package="HTSanalyzeR2")
-
-
 #' Plot a figure of GSEA results for one gene set
 #'
 #' This is a generic function. When implemented as the S4 method for objects of class GSCA,
 #'  this function plots a figure
 #' of the positions of the gene sets in the ranked gene list and the location of the enrichment score.
 #'
-#' @section Details:
+#' @details
 #' We suggest to print the names of top significant gene sets using the
 #' function \code{\link[HTSanalyzeR2]{getTopGeneSets}} before plotting the GSEA results.
 #'

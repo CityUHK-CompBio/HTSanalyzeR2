@@ -50,4 +50,3 @@ nwa_inter <- interactome(nwa, species="Dm", reportDir="biogrid", genetic=FALSE)
 data(nwam)
 nwam <- interactome(nwam, species="Dm", reportDir="biogrid", genetic=FALSE)
 }
-
