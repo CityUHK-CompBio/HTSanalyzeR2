@@ -462,8 +462,11 @@ calcGSEA <-
     ## tag the gene sets that can be used in the analysis, i.e. those
     # that are smaller than the size of the gene list and that have more
     # than 'minGeneSetSize' elements that can be found in the geneList
+    #
+    # tagGeneSets <- sapply(combinedGeneSets, function(geneSet)
+    #   length(geneSet) < length(geneList) &&
+    #     sum(geneSet %in% listNames) >= minGeneSetSize)
     tagGeneSets <- sapply(combinedGeneSets, function(geneSet)
-      length(geneSet) < length(geneList) &&
         sum(geneSet %in% listNames) >= minGeneSetSize)
     combinedGeneSets <- combinedGeneSets[tagGeneSets]
 

@@ -175,7 +175,7 @@ combineResults <- function(gsca) {
 availableResults <- function(results, byRow = TRUE) {
   res <- c("HyperGeo", "GSEA", "Significant in both")
   if(byRow) {
-    res <- res[which(!is.na(rowSums(results)))]
+    res <- res[which(!is.na(rowSums(results)) & rowSums(results) > 0)]
   } else {
     res <- colnames(results)[colSums(results, na.rm = TRUE) > 0]
   }
