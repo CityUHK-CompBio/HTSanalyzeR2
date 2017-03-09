@@ -61,7 +61,12 @@ HTMLWidgets.widget(globalObj = {
     getActivePanel: function() {
         panel = d3.select(".tab-pane.active");
         if(panel.empty()) {
+            // in viewer
             panel = d3.select("#htmlwidget_container")
+        }
+        if(panel.empty()) {
+            // in rmarkdown
+            panel = d3.select(".forceGraph.html-widget")
         }
         return panel;
     },
