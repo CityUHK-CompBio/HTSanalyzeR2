@@ -2,8 +2,9 @@
 #' @export
 forceGraph <- function(nodes, links, nMappings, lMappings,
                        title = NULL, legendTitle = NULL,
-                       nodeOptions = NULL, charge = -200, distance = 200,
-                       seriesData = NULL, width = NULL, height = NULL) {
+                       charge = -400, distance = 200, 
+                       width = NULL, height = NULL,
+                       seriesData = NULL) {
 
   # nMappings: "id", "size", "color", "label", "desc", "seq"
   # lMappings: "source", "target", "label", "weight"
@@ -47,7 +48,6 @@ forceGraph <- function(nodes, links, nMappings, lMappings,
   options = list(title = title,
                  charge = charge,
                  distance = distance,
-                 nodeOptions = nodeOptions,
                  colorDomain = colorDomain,
                  legendTitle = legendTitle,
                  seriesData = seriesData)
@@ -65,7 +65,7 @@ forceGraph <- function(nodes, links, nMappings, lMappings,
 
 #' @importFrom htmlwidgets shinyWidgetOutput
 #' @export
-forceGraphOutput <- function(outputId, width = "100%", height = "500px") {
+forceGraphOutput <- function(outputId, width = "100%", height = "750px") {
   shinyWidgetOutput(outputId, "forceGraph", width, height,
                     package = "HTSanalyzeR2")
 }

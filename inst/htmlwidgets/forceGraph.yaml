@@ -1,6 +1,17 @@
 dependencies:
-  - name: d3v4
-    version: 3.4.0
+  - name: d3netlib
+    version: 4.0
     src: "htmlwidgets/lib"
-    script: d3.min.js
-    stylesheet: style.css
+    script:
+      - js/d3.js
+      - js/jscolor.js
+      - js/bootstrap-slider.js
+      - js/jquery-ui.min.js
+      - js/lobipanel.js
+      - settings.js
+      - common.js
+    stylesheet:
+      - css/bootstrap-slider.css
+      - css/lobipanel.css
+      - css/jquery-ui.min.css
+      - css/d3force.css

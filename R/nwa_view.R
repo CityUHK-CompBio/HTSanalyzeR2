@@ -42,7 +42,6 @@ setMethod("extractSubNet", signature = "NWA",
 #' @importFrom igraph as_data_frame
 setMethod("viewSubNet", signature = "NWA",
           function(object,
-                   nodeOptions = NULL,
                    options = list(charge = -200, distance = 200)) {
 
             hasSeriesAttr <- is.matrix(object@phenotypes)
@@ -63,8 +62,6 @@ setMethod("viewSubNet", signature = "NWA",
             }
 
             forceGraph(em_nodes, em_links, nMappings, lMappings,
-                       nodeOptions = nodeOptions,
                        charge = options$charge, distance = options$distance,
                        seriesData = series)
           })
-

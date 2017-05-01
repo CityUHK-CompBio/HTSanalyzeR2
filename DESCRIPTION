@@ -11,7 +11,7 @@ Description: This package provides classes and methods for gene set over-
 License: Artistic-2.0
 LazyData: TRUE
 RoxygenNote: 6.0.1
-Imports:
+Imports: 
     cellHTS2,
     Rcpp,
     doParallel,
@@ -25,7 +25,7 @@ Imports:
     DT,
     knitr,
     shiny
-Collate:
+Collate: 
     'HTSanalyzeR2.R'
     'RcppExports.R'
     'backup.R'
@@ -49,7 +49,7 @@ Collate:
     'stat_test.R'
     'zzz.R'
 LinkingTo: Rcpp
-Suggests:
+Suggests: 
     knitr,
     rmarkdown,
     testthat

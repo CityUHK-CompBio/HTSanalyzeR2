@@ -1,13 +1,57 @@
-HTMLWidgets.widget(globalObj = {
+HTMLWidgets.widget(global = {
     name: "forceGraph",
     type: "output",
 
+    // storeFormat:
+    // store: {elementId1: elementState1, elementId2: elementState2, ...}
+    // elementState: {width, height, svg, simulation, controllers, currentSubId, hashId1: subState1, hashId2: Substate2, ...}
+    // subState: {pause, charge, distance, title, ...}
     store: {},
-    // rawdata: null, pause: false, mode: "all",
-    // calcFunc: null, colorFunc: null, drawLegendFunc: null,
+
+    defaultState: {
+        pause: false,
+        charge: -400,
+        distance: 200,
+
+        title: "title",
+        titleSize: 22,
+        legendTitle: "legend",
+
+        label: "id",
+        labelColor: "#000000",  // black
+        labelOpacity: 0.8,
+        labelScale: 1,
+
+        nodeScale: 1,
+        nodeScheme: "default",
+        nodeShape: "circle",
+        nodeBorderColor: "#808080", // grey
+        nodeBorderWidth: 1,
+        nodeBorderOpacity: 1,
+
+        edgeScale: 1,
+        edgeColor: "#808080",  // grey
+        edgeOpacity: 0.6,
+
+        palettes: {
+            default: { domain: [-1, 0, 1], range: ["#0E0F7E", "#EBEEED", "#BB0000"] },
+            scheme1: { domain: [-1, 0, 1], range: ["#0E0F7E", "#FF0000", "#BB0000"] },
+            scheme2: { domain: [-2, 0, 2], range: ["#0E0F7E", "#00FF00", "#BB0000"] },
+            // scheme3: { domain: [-3, 0, 3], range: ["#0E0F7E", "#0000FF", "#BB0000"] },
+        },
+        scalers: {
+            //generated from palettes when constructing views.
+        },
+
+      	modified: false
+    },
 
     initialize: function(el, width, height) {
-        d3.select(el).append("svg")
+        el.style.height = "90vh";
+
+        var state = global.getElementState(el);
+
+        var svg = d3.select(el).append("svg")
             .attr("width", width)
             .attr("height", height);
 
@@ -23,89 +67,126 @@ HTMLWidgets.widget(globalObj = {
             .x(width / 2)
             .y(height / 2);
 
-        return simulation
+        $.extend(state, { svg: svg, width: width, height: height, simulation: simulation })
+
+        return simulation;
     },
 
     resize: function(el, width, height, simulation) {
+        var state = global.getElementState(el);
+        $.extend(state, { width: width, height: height });
+
         d3.select(el).select("svg")
             .attr("width", width)
             .attr("height", height);
 
-        d3.select(el).select(".legend")
-            .attr("transform", "translate(" + (parseInt(width) - 80) + ", 50)");
+        d3.select(el).select("svg")
+            .select(".title")
+            .attr("transform", "translate(" + (state.width / 2) + ", 40)");
 
-        d3.select(el).select(".title")
-            .attr("transform", "translate(" + (parseInt(width) / 2) + ", 30)");
+        d3.select(el).select("svg")
+            .select(".legend")
+            .attr("transform", "translate(" + (state.width - 80) + ", 50)");
 
         simulation
             .force("center", d3.forceCenter(width / 2, height / 2));
     },
 
+    getElementState: function(el) {
+        var elId = el.id;
+        if (!(elId in global.store)) {
+            global.store[elId] = {elId: elId, controller: {}};
+        }
+        return global.store[elId];
+    },
+
+    getSelection: function(elState, type) {
+        var svg = elState.svg;
+        switch (type) {
+            case 'circle':
+                return svg.selectAll(".node > .shape-circle");
+            case 'polygon':
+                return svg.selectAll(".node > .shape-polygon");
+            case 'label':
+                return svg.selectAll(".node > text");
+            case 'edge':
+                return svg.selectAll(".link");
+            case 'title':
+                return svg.selectAll(".title > text");
+            case 'legend':
+                return svg.select(".legend");
+            case 'legendTitle':
+                return svg.select(".legend > text");
+        }
+    },
+
     renderValue: function(el, x, simulation) {
+        // console.log(x);
+        var elState = global.getElementState(el);
+
         if (x.update) {
-            globalObj.update(el, x, simulation)
+            global.update(elState, x, simulation);
         } else {
-            globalObj.construct(el, x, simulation)
+        	var hashKey = JSON.stringify(x).hashCode().toString();
+        	if(!(hashKey in elState)) {
+        		elState[hashKey] = $.extend({}, global.defaultState);
+        	}
+        	elState.currentSubId = hashKey;
+            global.construct(elState, x, simulation);
         }
     },
 
-    getStore: function() {
-        activePanel = globalObj.getActivePanel();
-        id = activePanel.attr('id');
-        if(!(id in globalObj.store)) {
-            globalObj.store[id] = { pause: false, mode: "all" }
-        }
-        return globalObj.store[id];
-    },
-
-    getActivePanel: function() {
-        panel = d3.select(".tab-pane.active");
-        if(panel.empty()) {
-            // in viewer
-            panel = d3.select("#htmlwidget_container")
-        }
-        if(panel.empty()) {
-            // in rmarkdown
-            panel = d3.select(".forceGraph.html-widget")
-        }
-        return panel;
-    },
-
-    construct: function(el, x, simulation) {
-        // x.nodes.scale = Array(x.nodes.size.length).fill(1);
-        x.nodes.scale = Array.apply(null, Array(x.nodes.size.length)).map(Number.prototype.valueOf, 1);
-        x.nodes.color_scheme = Array.apply(null, Array(x.nodes.size.length)).map(function() {return "default"});
-
-        globalStore = globalObj.getStore();
-        globalStore.rawdata = x;
-
+    construct: function(elState, x, simulation) {
+        // TODO: use smarter loader, check proverty available.
         var options = x.options;
+        var curState = elState[elState.currentSubId];
+
+        if(!curState.modified) {
+        	curState.palettes.default.domain = options.colorDomain;
+		    curState.title = options.title;
+		    curState.charge = options.charge;
+		    curState.distance = options.distance;
+		    curState.modified = true;
+        }
+
         var nodes = HTMLWidgets.dataframeToD3(x.nodes);
         var links = HTMLWidgets.dataframeToD3(x.links);
 
-        var width = parseInt(el.offsetWidth);
-        var height = parseInt(el.offsetHeight);
-
-        var svg = d3.select(el).select("svg");
+        var svg = elState.svg;
         svg.selectAll("*").remove();
-
         var view = svg.append("g").attr("class", "view");
+
         var zoomHandler = d3.zoom()
             .scaleExtent([1 / 2, 8])
-            .on("zoom", function() { view.attr("transform", d3.event.transform); });
-
+            .on("zoom", function() {
+                view.attr("transform", d3.event.transform);
+            });
         svg.call(zoomHandler).on("dblclick.zoom", null);
 
-        var color = d3.scaleLinear()
-            .domain(options.colorDomain)
-            .range(["#4575b4", "#ffffbf", "#a50026"])
-            .interpolate(d3.interpolateHcl);
-        var colorScheme1 = d3.scaleLinear()
-            .domain(options.colorDomain)
-            .range(["#d8b365", "#f5f5f5", "#5ab4ac"])
-            .interpolate(d3.interpolateHcl);
+        for (var scheme in curState.palettes) {
+            var palette = curState.palettes[scheme];
+            curState.scalers[scheme] = d3.scaleLinear()
+                .domain(palette.domain)
+                .range(palette.range)
+                .interpolate(d3.interpolateHcl);
+        }
 
-        globalStore.colorFunc = {default : color, scheme1: colorScheme1};
+        // Start
+        var title = svg.append("g")
+            .attr("class", "title")
+            .attr("transform", "translate(" + (elState.width / 2) + ", 40)")
+            .append("text")
+            .attr("font-size", curState.titleSize)
+            .attr("text-anchor", "middle")
+            .attr("font-weight", "bold")
+            .style("fill", "black")
+            .text(curState.title);
+
+        var legend = svg.append("g")
+            .attr("class", "legend")
+            .attr("transform", "translate(" + (elState.width - 80) + ", 50)");
+
+        global.drawLegend(elState);
 
         var link = view.append("g")
             .attr("class", "links")
@@ -113,15 +194,15 @@ HTMLWidgets.widget(globalObj = {
             .data(links)
             .enter().append("line")
             .attr("class", "link")
-            .attr("stroke", "grey")
-            .attr("opacity", "0.6")
+            .attr("stroke", curState.edgeColor)
+            .attr("opacity", curState.edgeOpacity)
             .attr("stroke-width", function(d) {
-                return d.weight;
+                return d.weight * curState.edgeScale;
             });
 
         var node = view.append("g")
             .attr("class", "nodes")
-            .selectAll("rect")
+            .selectAll("g")
             .data(nodes)
             .enter().append("g")
             .attr("class", "node")
@@ -132,57 +213,55 @@ HTMLWidgets.widget(globalObj = {
                 .on("drag", dragged)
                 .on("end", dragended));
 
+        node.append("circle")
+            .attr("class", "shape-circle")
+            .attr("r", function(d) {
+                return d.size * curState.nodeScale;
+            })
+            .attr("fill", function(d) {
+                return curState.scalers[curState.nodeScheme](d.color)
+            })
+            .attr("stroke", curState.nodeBorderColor)
+            .attr("stroke-width", curState.nodeBorderWidth)
+            .attr("stroke-opacity", curState.nodeBorderOpacity)
+            .attr("visibility", curState.nodeShape == "circle" ? "visible" : "hidden");
 
-        var calc = {
-            x: function(d) { return -d.size * d.scale },
-            y: function(d) { return -d.size * d.scale },
-            width: function(d) { return d.size * d.scale * 2 },
-            height: function(d) { return d.size * d.scale * 2 },
-            fill: function(d) { return color(d.color) },
-            dx: function(d) {return d.size * d.scale + 2 },
-            font: function(d) {return (d.size * d.scale / 2 + 7) + "px serif" },
-
-            xL: function(d) { return -(d.size * d.scale + 8) },
-            yL: function(d) { return -(d.size * d.scale + 8) },
-            widthL: function(d) { return 2 * (d.size * d.scale + 8) },
-            heightL: function(d) { return 2 * (d.size * d.scale + 8) },
-            dxL: function(d) { return d.size * d.scale + 10 },
-            fontL: function(d) { return (d.size * d.scale / 2 + 11) + "px serif"}
-        };
-        globalStore.calcFunc = calc;
-
-        node.append("rect")
-            .on("click", clicked)
-            .attr("rx", 1000)
-            .attr("ry", 1000)
-            .attr("x", calc.x)
-            .attr("y", calc.y)
-            .attr("width", calc.width)
-            .attr("height", calc.height)
-            .attr("fill", calc.fill)
-            .attr("stroke", "grey");
+        node.append("polygon")
+            .attr("class", "shape-polygon")
+            .attr("points", function(d) {
+                return d3ForceCalc.points(curState.nodeShape, d.size * curState.nodeScale);
+            })
+            .attr("fill", function(d) {
+                return curState.scalers[curState.nodeScheme](d.color)
+            })
+            .attr("stroke", curState.nodeBorderColor)
+            .attr("stroke-width", curState.nodeBorderWidth)
+            .attr("stroke-opacity", curState.nodeBorderOpacity)
+            .attr("visibility", curState.nodeShape != "circle" ? "visible" : "hidden");
 
         node.append("text")
-            .attr("fill", "black")
-            .attr("dx", calc.dx)
+            .attr("fill", curState.labelColor)
+            .attr("dx", function(d) {
+                return d.size * curState.nodeScale + 2;
+            })
             .attr("dy", ".35em")
-            .style("font", calc.font)
-            .style("opacity", "0.8")
+            .style("font", function(d) {
+                return (d.size * curState.nodeScale * curState.labelScale / 2 + 7) + "px serif"
+            })
+            .style("opacity", curState.labelOpacity)
             .text(function(d) {
-                return d.label;
+                return d["label_" + curState.label];
             });
 
-        simulation
-            .nodes(nodes)
+        simulation.nodes(nodes)
             .on("tick", ticked);
-
         simulation.force("charge")
-            .strength(options.charge);
+            .strength(curState.charge);
         simulation.force("link")
             .id(function(d) {
                 return d.id;
             })
-            .distance(options.distance)
+            .distance(curState.distance)
             .links(links);
 
         // simulation.alpha(1).restart();
@@ -208,25 +287,6 @@ HTMLWidgets.widget(globalObj = {
                 })
         }
 
-        function clicked(d) {
-            if (globalStore.mode == "selection") {
-                var sel = d3.select(this)
-                var psel = d3.select(this.parentNode);
-                if (JSON.parse(psel.attr("selected"))) {
-                    d.fixed = false;
-                    sel.attr("stroke", "grey");
-                    psel.attr("selected", false);
-                } else {
-                    d.fixed = true;
-                    sel.attr("stroke", "red")
-                    psel.attr("selected", true);
-                }
-            } else {
-                d.fixed = !d.fixed;
-            }
-            dragended(d);
-        }
-
         function dragstarted(d) {
             if (!d3.event.active) simulation.alphaTarget(0.3).restart();
             d.fx = d.x;
@@ -247,277 +307,325 @@ HTMLWidgets.widget(globalObj = {
                 d.fx = d.x;
                 d.fy = d.y;
             }
-            if (globalStore.pause) {
+            if (curState.pause) {
                 simulation.stop();
             }
         }
 
         function mouseover() {
-            d3.select(this).select("rect").transition()
+            d3.select(this).select("circle").transition()
                 .duration(300)
-                .attr("x", calc.xL)
-                .attr("y", calc.yL)
-                .attr("width", calc.widthL)
-                .attr("height", calc.heightL)
-            d3.select(this).select("text").transition()
+                .attr("r", function(d) {
+                    return (d.size * curState.nodeScale + 8)
+                });
+            d3.select(this).select("polygon").transition()
                 .duration(300)
-                .attr("dx", calc.dxL)
-                .style("font", calc.fontL)
+                .attr("points", function(d) {
+                    return d3ForceCalc.points(curState.nodeShape, d.size * curState.nodeScale * 1.5);
+                });
+            d3.select(this).select("text")
+                .transition().duration(300)
+                .attr("dx", function(d) {
+                    return d.size * curState.nodeScale + 10
+                })
+                .style("font", function(d) {
+                    return (d.size * curState.nodeScale * curState.labelScale / 2 + 11) + "px serif"
+                })
                 .style("opacity", 1);
         }
 
         function mouseout() {
-            d3.select(this).select("rect").transition()
+            d3.select(this).select("circle").transition()
                 .duration(500)
-                .attr("x", calc.x)
-                .attr("y", calc.y)
-                .attr("width", calc.width)
-                .attr("height", calc.height)
+                .attr("r", function(d) {
+                    return (d.size * curState.nodeScale)
+                })
+            d3.select(this).select("polygon").transition()
+                .duration(300)
+                .attr("points", function(d) {
+                    return d3ForceCalc.points(curState.nodeShape, d.size * curState.nodeScale);
+                });
             d3.select(this).select("text").transition()
                 .duration(500)
-                .attr("dx", calc.dx)
-                .style("font", calc.font)
-                .style("opacity", 0.8);
+                .attr("dx", function(d) {
+                    return d.size * curState.nodeScale + 2;
+                })
+                .style("font", function(d) {
+                    return (d.size * curState.nodeScale * curState.labelScale / 2 + 7) + "px serif"
+                })
+                .style("opacity", curState.labelOpacity);
         }
 
-        function drawLegend() {
-            function pair(array) {
-                return array.slice(1).map(function(b, i) { return [array[i], b]; });
-            }
-            function domain(max, min) {
-                if(min >= 0 && max <= 1) { return [1, 0]; }
-                if(max - min <= 0.2) { return [max + 0.5, min - 0.5]; }
-                return [max, min];
-            }
+        // For setting panel
+        global.generateControllers(elState);
+        configureSettingPanel(elState);
+    },
 
-            activePanel = globalObj.getActivePanel();
-            nodes = activePanel.selectAll(".node");
-            legend = activePanel.select(".legend");
-            colorFunc = globalObj.getStore().colorFunc;
+    generateControllers: function(elState) {
+        var simulation = elState.simulation;
+        var curState = elState[elState.currentSubId];
 
-            colorValues = {};
-            nodes.each(
-                function(d) {
-                    if (!(d.color_scheme in colorValues)) colorValues[d.color_scheme] = [];
-                    colorValues[d.color_scheme].push(d.color);
+        // General
+        elState.controller.title = function(val) {
+            curState.title = val;
+            var title = global.getSelection(elState, 'title');
+            title.text(curState.title);
+        }
+
+        elState.controller.titleSize = function(val) {
+            curState.titleSize = val;
+            var title = global.getSelection(elState, 'title');
+            title.style("font-size", curState.titleSize);
+        }
+
+        elState.controller.legendTitle = function(val) {
+            curState.legendTitle = val;
+            var legendTitle = global.getSelection(elState, 'legendTitle');
+            legendTitle.text(curState.legendTitle);
+        }
+
+        elState.controller.charge = function(val) {
+            curState.charge = val;
+            simulation.force("charge").strength(curState.charge);
+            simulation.alphaTarget(0.3).restart();
+            if (curState.pause) {
+                setTimeout(function() { simulation.stop(); }, 600);
+            }
+        }
+        elState.controller.distance = function(val) {
+            curState.distance = val;
+            simulation.force("link").distance(curState.distance);
+            simulation.alphaTarget(0.3).restart();
+            if (curState.pause) {
+                setTimeout(function() { simulation.stop(); }, 600);
+            }
+        }
+
+        //Label
+        elState.controller.labelOption = function(type) {
+            // type == id, term, none
+            curState.label = type;
+            var sel = global.getSelection(elState, 'label');
+            if (curState.label == 'none') {
+                sel.transition().duration(300).attr("visibility", "hidden");
+            } else {
+                var key = "label_" + curState.label;
+                sel.transition().duration(300).attr("visibility", "visible").text(function(d) {
+                    return key in d ? d[key] : d.label;
                 });
-
-            legend.selectAll("*").remove();
-            offset = 0;
-            for(key in colorValues) {
-                max = Math.max.apply(null, colorValues[key]);
-                min = Math.min.apply(null, colorValues[key]);
-                colorDomain = domain(max, min);
-                colorScale = colorFunc[key];
-
-                g = legend.append("g")
-                    .attr("transform", "translate(" + offset + ", 0)");
-
-                var legendScale = d3.scaleLinear()
-                    .domain(colorDomain)
-                    .range([0, 200])
-                    .nice();
-
-                g.selectAll("rect")
-                    .data(pair(legendScale.ticks(10)))
-                    .enter().append("rect")
-                    .attr("width", 8)
-                    .attr("y", function(d) {
-                        return legendScale(d[0]);
-                    })
-                    .attr("height", function(d) {
-                        return legendScale(d[1]) - legendScale(d[0]);
-                    })
-                    .style("fill", function(d) {
-                        return colorScale(d[1]);
-                    });
-
-                var axis = d3.axisRight(legendScale)
-                    .tickSize(10)
-                    .tickFormat(d3.format("+.1f"));
-                g.call(axis);
-
-                offset -= 40;
             }
         }
-        globalStore.drawLegendFunc = drawLegend;
 
-        var legend = svg.append("g")
-            .attr("class", "legend")
-            .attr("transform", "translate(" + (width - 80) + ", 50)");
+        elState.controller.labelColor = function(color) {
+            curState.labelColor = color;
+            var sel = global.getSelection(elState, 'label');
+            sel.transition().duration(300).attr("fill", curState.labelColor)
+        }
 
-        drawLegend();
+        elState.controller.labelOpacity = function(val) {
+            curState.labelOpacity = val;
+            var sel = global.getSelection(elState, 'label');
+            sel.transition().duration(300).style("opacity", curState.labelOpacity)
+        }
 
-        var title = svg.append("g")
-            .attr("class", "title")
-            .attr("transform", "translate(" + (width / 2) + ", 30)")
-            .append("text")
-            .style("font", "20px")
-            .style("fill", "black")
-            .attr("text-anchor", "middle")
-            .attr("font-weight", "bold")
-            .text(options.title);
-
-        var icons = ['icon-spinner11', 'icon-floppy-disk'];
-        var buttons = svg.append("g")
-            .selectAll(".button")
-            .data(icons).enter()
-            .append("g")
-            .attr("class", "button")
-            .style("cursor", "pointer")
-            .on("click", btnClick)
-            .on("mouseover", function() {
-                d3.select(this).select("rect")
-                .transition().duration(300)
-                .attr("fill-opacity", "0.9");
+        elState.controller.labelScale = function(val) {
+            curState.labelScale = val;
+            var sel = global.getSelection(elState, 'label');
+            sel.transition().duration(300).style("font", function(d) {
+                return (d.size * curState.nodeScale * curState.labelScale / 2 + 7) + "px serif"
             })
-            .on("mouseout", function() {
-                d3.select(this).select("rect")
-                .transition().duration(300)
-                .attr("fill-opacity", "0.3");
-            });
-        buttons.attr("transform", function(d, i) {return "translate(" + (i * 30) + ", 0)"})
-        buttons.append("rect")
-            .attr("width", 25).attr("height", 25)
-            .attr("rx", 5).attr("ry", 5)
-            .attr("fill", "#0d6dbc")
-            .attr("fill-opacity", "0.3");
-        buttons.append("svg:foreignObject")
-            .attr("width", 20).attr("height", 20)
-            .attr("transform", "translate(5, 4)")
-            .append("xhtml:span")
-            .attr("class", function(d) {return d;})
+        }
 
-        function btnClick(d, i) {
-            if(i == 0) {
-                // reset zoom
-                svg.call(zoomHandler.transform, d3.zoomIdentity);
-            } else if (i == 1) {
-                buttons.attr("visibility", "hidden");
-                var svgData = svg.attr("version", 1.1)
-                    .attr("xmlns", "http://www.w3.org/2000/svg")
-                    .node().parentNode.outerHTML;
-                buttons.attr("visibility", "visible");
+        // Node
+        elState.controller.nodeShape = function(shape) {
+            // shape == circle, triangle, rectangle, diamond
+            curState.nodeShape = shape;
+            var sel_circle = global.getSelection(elState, 'circle');
+            var sel_polygon = global.getSelection(elState, 'polygon');
 
-                var svgBlob = new Blob([svgData], {type:"image/svg+xml;charset=utf-8"});
-                var svgUrl = URL.createObjectURL(svgBlob);
-                var tmpLink = document.createElement("a");
-                tmpLink.href = svgUrl;
-                tmpLink.download = "network.svg";
-                document.body.appendChild(tmpLink);
-                tmpLink.click();
-                document.body.removeChild(tmpLink);
+            if (shape == 'circle') {
+                sel_circle.transition().duration(300).attr('visibility', 'visible');
+                sel_polygon.transition().duration(300).attr('visibility', 'hidden');
+            } else {
+                sel_circle.transition().duration(300).attr('visibility', 'hidden');
+                sel_polygon.transition().duration(300).attr('visibility', 'visible')
+                    .attr("points", function(d) {
+                        return d3ForceCalc.points(curState.nodeShape, d.size * curState.nodeScale);
+                    })
             }
+        }
+
+        elState.controller.nodeScale = function(val) {
+            curState.nodeScale = val;
+            var sel_circle = global.getSelection(elState, 'circle');
+            var sel_polygon = global.getSelection(elState, 'polygon');
+            sel_circle.attr("r", function(d) {
+                return d.size * curState.nodeScale;
+            })
+            sel_polygon.attr("points", function(d) {
+                return d3ForceCalc.points(curState.nodeShape, d.size * curState.nodeScale);
+            })
+        }
+
+        elState.controller.nodeScheme = function(schemeId) {
+            // scheme: default, scheme1, scheme2, scheme3
+            curState.nodeScheme = schemeId;
+            var sel_circle = global.getSelection(elState, 'circle');
+            var sel_polygon = global.getSelection(elState, 'polygon');
+            sel_circle.transition().duration(300).attr("fill", function(d) {
+                return curState.scalers[curState.nodeScheme](d.color)
+            })
+            sel_polygon.transition().duration(300).attr("fill", function(d) {
+                return curState.scalers[curState.nodeScheme](d.color)
+            })
+            global.drawLegend(elState);
+        }
+
+        elState.controller.nodeBorderColor = function(color) {
+            curState.nodeBorderColor = color;
+            var sel_circle = global.getSelection(elState, 'circle');
+            var sel_polygon = global.getSelection(elState, 'polygon');
+            sel_circle.transition().duration(300).attr("stroke", function(d) {
+                return curState.nodeBorderColor
+            })
+            sel_polygon.transition().duration(300).attr("stroke", function(d) {
+                return curState.nodeBorderColor
+            })
+        }
+
+        elState.controller.nodeBorderOpacity = function(val) {
+            curState.nodeBorderOpacity = val;
+            var sel_circle = global.getSelection(elState, 'circle');
+            var sel_polygon = global.getSelection(elState, 'polygon');
+            sel_circle.transition().duration(300).attr("stroke-opacity", function(d) {
+                return curState.nodeBorderOpacity
+            })
+            sel_polygon.transition().duration(300).attr("stroke-opacity", function(d) {
+                return curState.nodeBorderOpacity
+            })
+        }
+
+        elState.controller.nodeBorderWidth = function(val) {
+            curState.nodeBorderWidth = val;
+            var sel_circle = global.getSelection(elState, 'circle');
+            var sel_polygon = global.getSelection(elState, 'polygon');
+            sel_circle.transition().duration(300).attr("stroke-width", function(d) {
+                return curState.nodeBorderWidth
+            })
+            sel_polygon.transition().duration(300).attr("stroke-width", function(d) {
+                return curState.nodeBorderWidth
+            })
+        }
+
+
+        // Edge
+        elState.controller.edgeColor = function(color) {
+            curState.edgeColor = color;
+            var sel = global.getSelection(elState, 'edge');
+            sel.transition().duration(300).attr('stroke', curState.edgeColor);
+        }
+
+        elState.controller.edgeOpacity = function(val) {
+            curState.edgeOpacity = val;
+            var sel = global.getSelection(elState, 'edge');
+            sel.transition().duration(300).attr('opacity', curState.edgeOpacity);
+        }
+
+        elState.controller.edgeScale = function(val) {
+            curState.edgeScale = val;
+            var sel = global.getSelection(elState, 'edge');
+            sel.transition().duration(300).attr('stroke-width', function(d) {
+                return d.weight * curState.edgeScale;
+            });
+        }
+
+        //Schemes
+        elState.controller.changeScheme = function(schemeId, domain, range) {
+            // scheme: default, scheme1, scheme2, scheme3
+            var palette = { domain: domain, range: range };
+            curState.palettes[schemeId] = palette;
+            var scaler = curState.scalers[schemeId];
+            scaler.domain(palette.domain).range(palette.range);
+            if (curState.nodeScheme == schemeId) {
+                elState.controller.nodeScheme(schemeId);
+                global.drawLegend(elState);
+            }
+        }
+
+        // BorderButtons
+        elState.controller.pause = function() {
+            curState.pause = !curState.pause;
+            curState.pause ? simulation.stop() : simulation.restart();
+        }
+
+        elState.controller.saveSvg = function() {
+            var svg = elState.svg;
+            var svgData = svg.attr("version", 1.1)
+                .attr("xmlns", "http://www.w3.org/2000/svg")
+                .node().parentNode.outerHTML;
+
+            var svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+            var svgUrl = URL.createObjectURL(svgBlob);
+            var tmpLink = document.createElement("a");
+            tmpLink.href = svgUrl;
+            tmpLink.download = "network.svg";
+            document.body.appendChild(tmpLink);
+            tmpLink.click();
+            document.body.removeChild(tmpLink);
         }
     },
 
-    update: function(el, x, simulation) {
-        globalStore = globalObj.getStore();
-        activePanel = globalObj.getActivePanel();
+    drawLegend: function(elState) {
+    	var curState = elState[elState.currentSubId];
 
-        if ('pause' in x) {
-            globalStore.pause = x.pause;
-            x.pause ? simulation.stop() : simulation.restart();
-        }
-
-        function select(type) {
-            var map = {node: "rect", label: "text"};
-            var cls = map[type];
-
-            if (globalStore.mode == 'selection') {
-                return activePanel.selectAll(".node[selected='true'] > " + cls);
-            }
-            var sel = activePanel.selectAll(".node > " + cls);
-            if (globalStore.mode == 'all') {
-                return sel;
-            }
-            var set = globalStore.rawdata.options.nodeOptions[globalStore.mode];
-            return sel.filter(function(d) {
-                return set.indexOf(d.id) >= 0
+        function pair(array) {
+            return array.slice(1).map(function(b, i) {
+                return [array[i], b];
             });
         }
 
-        if ('selection' in x) {
-            //TODO, the set name can also be 'selection'
-            globalStore.mode = x.selection;
-            if (globalStore.mode != 'selection') {
-                activePanel.selectAll(".node").attr("selected", false);
-                activePanel.selectAll(".node > rect").attr("stroke", "grey");
-            }
-        }
+        palette = curState.palettes[curState.nodeScheme];
+        colorFunc = curState.scalers[curState.nodeScheme];
+        colorDomain = [palette.domain[2], palette.domain[0]];
 
-        if ('shape' in x) {
-            var sel = select('node')
+        var legendScale = d3.scaleLinear()
+            .domain(colorDomain)
+            .range([0, 200])
+            .nice();
 
-            if (x.shape == 'circle') {
-                sel.transition().duration(300).attr("rx", 1000).attr("ry", 1000)
-            } else if (x.shape == 'rect') {
-                sel.transition().duration(300).attr("rx", 0).attr("ry", 0)
-            }
-        }
+        var axis = d3.axisRight(legendScale)
+            .tickSize(10)
+            .tickFormat(d3.format("+.1f"));
 
-        if('color' in x) {
-            var colorFunc = globalStore.colorFunc;
-
-            select('node')
-                .each(function(d) {d.color_scheme = x.color})
-                .transition().duration(300)
-                .attr("fill", function(d) {return colorFunc[d.color_scheme](d.color)});
-
-            globalStore.drawLegendFunc();
-        }
-
-        if ('scale' in x) {
-            var scale = parseFloat(x.scale);
-
-            select('node')
-                .each(function(d) { d.scale = scale })
-                .transition().duration(300)
-                .attr("x", globalStore.calcFunc.x)
-                .attr("y", globalStore.calcFunc.y)
-                .attr("width", globalStore.calcFunc.width)
-                .attr("height", globalStore.calcFunc.height);
-            select('label')
-                .transition().duration(300)
-                .attr("dx", globalStore.calcFunc.dx)
-                .style("font", globalStore.calcFunc.font);
-        }
-
-        if ('nodename' in x) {
-            key = "label_" + x.nodename
-            select('label').text(function(d) {
-                return key in d ? d[key] : d.label;
+        var legend = global.getSelection(elState, "legend");
+        legend.selectAll("*").remove();
+        legend.selectAll("rect")
+            .data(pair(legendScale.ticks(10)))
+            .enter().append("rect")
+            .attr("width", 8)
+            .attr("y", function(d) {
+                return legendScale(d[0]);
+            })
+            .attr("height", function(d) {
+                return legendScale(d[1]) - legendScale(d[0]);
+            })
+            .style("fill", function(d) {
+                return colorFunc(d[1]);
             });
-        }
+        legend.call(axis);
 
-        if ('label' in x) {
-            select('label').transition().duration(300).attr("visibility", x.label ? "visible" : "hidden");
-        }
+        legend.append("text")
+            .attr("transform", "translate(10, 215)")
+            .attr("font-size", 10)
+            .attr("text-anchor", "middle")
+            .style("fill", "black")
+            .text(curState.legendTitle);
+    },
 
-        if ('charge' in x) {
-            simulation.force("charge").strength(x.charge);
-            simulation.alphaTarget(0.3).restart();
-        }
-
-        if ('distance' in x) {
-            simulation.force("link").distance(x.distance);
-            simulation.alphaTarget(0.3).restart();
-        }
-
-        if ('process' in x) {
-            var options = globalStore.rawdata.options;
-            var series = options.seriesData;
-            var index = JSON.parse(x.process) - 1;
-
-            var sel = activePanel.selectAll(".node > rect");
-            var colorFunc = globalStore.colorFunc;
-
-            sel.transition().duration(300)
-            .attr("fill", function(d) {
-                if(index < 0) return "#fff";
-                if(!series) { return colorFunc[d.color_scheme](d["color"]);}
-                return colorFunc[d.color_scheme](d["color." + series[index]]);
-            });
-        }
+    update: function(elState, x, simulation) {
+        // TODO, update interface for R
+        console.log("update: ");
+        console.log(x);
     }
-});
+}
+);
