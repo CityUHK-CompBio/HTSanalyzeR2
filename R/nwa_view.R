@@ -50,7 +50,7 @@ setMethod("viewSubNet", signature = "NWA",
             em_nodes <- igraph::as_data_frame(g, "vertices")
             em_links <- igraph::as_data_frame(g, "edge")
 
-            nMappings <- list(id = "name", color = "diff", label = "label")
+            nMappings <- list(id = "name", color = "diff", label = "label", label_id = "name", label_term = "label")
             lMappings <- list(source = "from",target = "to")
 
             series <- NULL
