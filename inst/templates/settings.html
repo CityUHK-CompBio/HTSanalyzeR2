@@ -1,0 +1,245 @@
+<div class="panel panel-info d3-setting-panel hidden">
+    <div class="panel-heading">
+        <div class="panel-title">
+            <h4 id="settingPanelTitle">Settings</h4>
+        </div>
+    </div>
+    <div class="panel-body" id="setting-panel">
+        <div class="panel-group" id="accordion">
+            <!-- General Panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#generalPanel">
+                        General</a>
+                </h4>
+                </div>
+                <div id="generalPanel" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <h5 for="generalTitle">Title:</h5>
+                            <input id="generalTitle" type="text" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <h5 for="generalTitleSize">Title Size:</h5>
+                            <input id="generalTitleSize" data-slider-id='titleSizeSlider' type="text" data-slider-min="5" data-slider-max="50" data-slider-step="1" data-slider-value="22" />
+                        </div>
+                        <div class="form-group">
+                            <h5 for="generalLegendTitle">Legend title:</h5>
+                            <input id="generalLegendTitle" type="text" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <h5 for="generalCharge">Charge:</h5>
+                            <input id="generalCharge" data-slider-id='chargeSlider' type="text" data-slider-min="-2000" data-slider-max="-200" data-slider-step="100" data-slider-value="-400" />
+                        </div>
+                        <div class="form-group">
+                            <h5 for="generalDistance">Distance:</h5>
+                            <input id="generalDistance" data-slider-id='distanceSlider' type="text" data-slider-min="0" data-slider-max="800" data-slider-step="50" data-slider-value="200" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Label Panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#labelPanel">
+                        Label</a>
+                </h4>
+                </div>
+                <div id="labelPanel" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <h5>Text:</h5>
+                            <div id="labelOption" class="btn-group btn-group-justified" data-toggle="buttons">
+                                <label class="btn btn-default" value="id">
+                                    <input type="radio" name="labelOption" value="id" autocomplete="off" checked>ID
+                                </label>
+                                <label class="btn btn-default" value="term">
+                                    <input type="radio" name="labelOption" value="term" autocomplete="off">Term
+                                </label>
+                                <label class="btn btn-default" value="none">
+                                    <input type="radio" name="labelOption" value="none" autocomplete="off">None
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <h5>Color / Opacity:</h5>
+                            <input id="labelColor" class="jscolor" value="AABBAA" style="float: left">
+                            <div style="margin-left: 190px;">
+                                <input id="labelOpacity" data-slider-id='labelOpacitySlider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.05" data-slider-value="0.8" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <h5>Scale:</h5>
+                            <input id="labelScale" data-slider-id='labelScaleSlider' type="text" data-slider-min="0.1" data-slider-max="4" data-slider-step="0.1" data-slider-value="1" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Node Panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#nodePanel">
+                        Node</a>
+                </h4>
+                </div>
+                <div id="nodePanel" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <h5>Shape:</h5>
+                            <div id="nodeShapeOption" class="btn-group btn-group-justified" data-toggle="buttons">
+                                <label class="btn btn-default" value='circle'>
+                                    <input type="radio" name='nodeShapeOption' value='circle' autocomplete="off" checked>Circle
+                                </label>
+                                <label class="btn btn-default" value='triangle'>
+                                    <input type="radio" name='nodeShapeOption' value='triangle' autocomplete="off">Triangle
+                                </label>
+                                <label class="btn btn-default" value='rectangle'>
+                                    <input type="radio" name='nodeShapeOption' value='rectangle' autocomplete="off">Rectangle
+                                </label>
+                                <label class="btn btn-default" value='diamond'>
+                                    <input type="radio" name='nodeShapeOption' value='diamond' autocomplete="off">Diamond
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <h5>Scale:</h5>
+                            <input id="nodeScale" data-slider-id='nodeScaleSlider' type="text" data-slider-min="0.1" data-slider-max="10" data-slider-step="0.1" data-slider-value="1" />
+                        </div>
+                        <div class="form-group">
+                            <h5>Color Scheme:</h5>
+                            <div>
+                                <div class="input-group">
+                                    <div class="input-group-btn">
+                                        <button id="nodeSchemeDropdown" value="default" type="button" class="btn btn-default dropdown-toggle"
+                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Default<span class="caret"></span>
+                                        </button>
+                                        <ul id="nodeSchemeBtns" class="dropdown-menu">
+                                            <li><a value="default">Default</a></li>
+                                            <li><a value="scheme1">Scheme1</a></li>
+                                            <li><a value="scheme2">Scheme2</a></li>
+                                            <li><a value="scheme3">Scheme3</a></li>
+                                        </ul>
+                                    </div>
+                                    <div style="width: 100%">
+                                        <canvas id="schemePreview" width="100" height="1"
+                                                style="width: 100%; height: 45px; padding-top: 6px; padding-left: 8px; padding-bottom: 2px;"></canvas>
+                                    </div>
+                                </div>
+                                <!-- /input-group -->
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <h5>Border Color/Opacity:</h5>
+                            <input id="nodeBorderColor" class="jscolor" value="ab2567" style="float: left">
+                            <div style="margin-left: 190px;">
+                                <input id="nodeBorderOpacity" data-slider-id='nodeBorderOpacitySlider' type="text" data-slider-min="0.0" data-slider-max="1" data-slider-step="0.05" data-slider-value="0.8" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <h5>Border Width:</h5>
+                            <input id="nodeBorderWidth" data-slider-id='widthSlider' type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="1" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Edge Panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#edgePanel">
+                        Edge</a>
+                </h4>
+                </div>
+                <div id="edgePanel" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <h5>Color / Opacity:</h5>
+                            <input id="edgeColor" class="jscolor" value="ab2567" style="float: left">
+                            <div style="margin-left: 190px;">
+                                <input id="edgeOpacity" data-slider-id='edgeOpacitySlider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.05" data-slider-value="0.6" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <h5>Weight:</h5>
+                            <input id="edgeScale" data-slider-id='edgeScaleSlider' type="text" data-slider-min="0.5" data-slider-max="5" data-slider-step="0.5" data-slider-value="1" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Color Scheme Panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#schemePanel">
+                        Color schemes</a>
+                </h4>
+                </div>
+                <div id="schemePanel" class="panel-collapse collapse">
+                    <div id="nodeSchemes" class="panel-body">
+                        <div id="default" class="form-group">
+                            <h5>Default: </h5>
+                            <canvas id="palette" width="100" height="1" style="width:100%; height:30px"></canvas>
+                            <div class="row" style="width:100%; margin-left:0px; margin-right:0px;">
+                                <div class="col-xs-4" style="padding-left:0px; padding-right:0px;">
+                                    <input id="value1" class="text" value="-1" style="width:100%; text-align: left;">
+                                    <input id="color1" class="jscolor" value="0E0F7E" style="width:100%; text-align: left;">
+                                </div>
+                                <div class="col-xs-4" style="padding-left:0px; padding-right:0px;">
+                                    <input id="value2" class="text" value="0" style="width:100%; text-align: center;">
+                                    <input id="color2" class="jscolor" value="EBEEED" style="width:100%; text-align: center;">
+                                </div>
+                                <div class="col-xs-4" style="padding-left:0px; padding-right:0px;">
+                                    <input id="value3" class="text" value="1" style="width:100%; text-align: right;">
+                                    <input id="color3" class="jscolor" value="BB0000" style="width:100%; text-align: right;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="scheme1" class="form-group">
+                            <h5>Scheme 1: </h5>
+                            <canvas id="palette" width="100" height="1" style="width:100%; height:30px"></canvas>
+                            <div class="row" style="width:100%; margin-left:0px; margin-right:0px;">
+                                <div class="col-xs-4" style="padding-left:0px; padding-right:0px;">
+                                    <input id="value1" class="text" value="-1" style="width:100%; text-align: left;">
+                                    <input id="color1" class="jscolor" value="0E0F7E" style="width:100%; text-align: left;">
+                                </div>
+                                <div class="col-xs-4" style="padding-left:0px; padding-right:0px;">
+                                    <input id="value2" class="text" value="0" style="width:100%; text-align: center;">
+                                    <input id="color2" class="jscolor" value="FF0000" style="width:100%; text-align: center;">
+                                </div>
+                                <div class="col-xs-4" style="padding-left:0px; padding-right:0px;">
+                                    <input id="value3" class="text" value="1" style="width:100%; text-align: right;">
+                                    <input id="color3" class="jscolor" value="BB0000" style="width:100%; text-align: right;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="scheme2" class="form-group">
+                            <h5>Scheme 2: </h5>
+                            <canvas id="palette" width="100" height="1" style="width:100%; height:30px"></canvas>
+                            <div class="row" style="width:100%; margin-left:0px; margin-right:0px;">
+                                <div class="col-xs-4" style="padding-left:0px; padding-right:0px;">
+                                    <input id="value1" class="text" value="-2" style="width:100%; text-align: left;">
+                                    <input id="color1" class="jscolor" value="0E0F7E" style="width:100%; text-align: left;">
+                                </div>
+                                <div class="col-xs-4" style="padding-left:0px; padding-right:0px;">
+                                    <input id="value2" class="text" value="0" style="width:100%; text-align: center;">
+                                    <input id="color2" class="jscolor" value="FF00FF" style="width:100%; text-align: center;">
+                                </div>
+                                <div class="col-xs-4" style="padding-left:0px; padding-right:0px;">
+                                    <input id="value3" class="text" value="2" style="width:100%; text-align: right;">
+                                    <input id="color3" class="jscolor" value="BB0000" style="width:100%; text-align: right;">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- END setting menu -->
+            </div>
+        </div>
+    </div>
+</div>

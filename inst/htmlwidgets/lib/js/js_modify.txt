@@ -1,0 +1,9 @@
+jscolor
+
+zIndex    1000 -> 1e6
+
+
+
+lobipanel
+
+add parameter, slideUp(0)
