@@ -95,34 +95,34 @@ create_network <- function(nwa) {
 
 
 ## ============================================ Define ui ==================================================
-enrich_res_sidebar <- wellPanel(
-  includeMarkdown("gsca_summary.md"),
-  hr(),
-  selectInput('analysis_res', 'Analysis', availableAnalysis),
-  selectInput('genesets_res', 'Gene Sets Collection', c(availableGeneSets, "ALL"))
-)
-enrich_res_content <- dataTableOutput("gsca_output")
+create_panel <- function(name) {
+  switch(name,
+         enrich_res_sidebar = wellPanel(
+           includeMarkdown("gsca_summary.md"),
+           hr(),
+           selectInput('analysis_res', 'Analysis', availableAnalysis),
+           selectInput('genesets_res', 'Gene Sets Collection', c(availableGeneSets, "ALL"))),
+         enrich_res_content = dataTableOutput("gsca_output"),
 
-settings <- includeHTML("settings.html")
-enrich_map_sidebar <- wellPanel(
-  h3("Enrichment Map"),
-  selectInput('analysis_map', 'Analysis', availableAnalysis[-3]),
-  selectInput('genesets_map', 'Gene Sets Collection', availableGeneSets)
-)
-enrich_map_content <- forceGraphOutput("map_output")
+         settings = includeHTML("settings.html"),
+         enrich_map_sidebar = wellPanel(
+           h3("Enrichment Map"),
+           selectInput('analysis_map', 'Analysis', availableAnalysis[-3]),
+           selectInput('genesets_map', 'Gene Sets Collection', availableGeneSets)),
+         enrich_map_content = forceGraphOutput("map_output"),
 
-network_sidebar <- wellPanel(
-  includeMarkdown("nwa_summary.md")
-)
-network_content <- forceGraphOutput("network_output")
+         network_sidebar = wellPanel(includeMarkdown("nwa_summary.md")),
+         network_content = forceGraphOutput("network_output")
+  )
+}
 
 tabs <- list()
 if(!is.null(gsca)) {
-  tabs <- c(tabs, list(create_sidebar_tab("Enrichment Result", enrich_res_sidebar, enrich_res_content)))
-  tabs <- c(tabs, list(create_sidebar_setting_tab("Enrichment Map", enrich_map_sidebar, settings, enrich_map_content)))
+  tabs <- c(tabs, list(create_sidebar_tab("Enrichment Result", create_panel("enrich_res_sidebar"), create_panel("enrich_res_content"))))
+  tabs <- c(tabs, list(create_sidebar_setting_tab("Enrichment Map", create_panel("enrich_map_sidebar"), create_panel("settings"), create_panel("enrich_map_content"))))
 }
 if(!is.null(nwa)) {
-  tabs <- c(tabs, list(create_sidebar_setting_tab("Network Analysis", network_sidebar, settings, network_content)))
+  tabs <- c(tabs, list(create_sidebar_setting_tab("Network Analysis", create_panel("network_sidebar"), create_panel("settings"), create_panel("network_content"))))
 }
 
 ui <- do.call(navbarPage, c(list(title="HTSanalyzeR2", fluid = TRUE, theme = shinytheme("yeti")), tabs))
