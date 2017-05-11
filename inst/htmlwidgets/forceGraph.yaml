@@ -1,4 +1,8 @@
 dependencies:
+  - name: jquery
+    version: 1.12.4
+    src: "htmlwidgets/lib"
+    script: js/jquery-1.12.4.min.js
   - name: d3netlib
     version: 4.0
     src: "htmlwidgets/lib"
