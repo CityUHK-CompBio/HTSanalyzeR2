@@ -367,14 +367,35 @@ setMethod("viewEnrichMap", signature = "GSCA",
             } else if (resultName=="HyperGeo.results") {
               title <- paste(title, "Hypergeometric tests on", paste(gscs, collapse =", "))
             }
-            legendTitle = "Adjusted p-values"
 
-            forceGraph(em_nodes, em_links, nMappings, lMappings,
-                       title = title,
-                       legendTitle = legendTitle,
-                       charge = options$charge,
-                       distance = options$distance)
+            defaultOptions = list(charge = -300, distance = 200, title = title, legendTitle = "Adjusted p-values")
+            graphOptions <- modifyList(defaultOptions, options)
+
+            forceGraph(em_nodes, em_links, nMappings, lMappings, graphOptions)
 
           })
 
-
+## Available graphOptions:
+#
+# charge: -400,
+# distance: 200,
+#
+# title: "title",
+# titleSize: 22,
+# legendTitle: "legend",
+#
+# label: "id",
+# labelColor: "#000000",  // black
+# labelOpacity: 0.8,
+# labelScale: 1,
+#
+# nodeScale: 1,
+# nodeScheme: "default",
+# nodeShape: "circle",
+# nodeBorderColor: "#808080", // grey
+# nodeBorderWidth: 1,
+# nodeBorderOpacity: 1,
+#
+# edgeScale: 1,
+# edgeColor: "#808080",  // grey
+# edgeOpacity: 0.6,

@@ -13,9 +13,9 @@ HTMLWidgets.widget(global = {
         charge: -400,
         distance: 200,
 
-        title: "title",
+        title: "",
         titleSize: 22,
-        legendTitle: "legend",
+        legendTitle: "", 
 
         label: "id",
         labelColor: "#000000",  // black
@@ -145,9 +145,20 @@ HTMLWidgets.widget(global = {
             curState.palettes.default.domain = options.colorDomain;
             curState.palettes.scheme1.domain = options.colorDomain;
             curState.palettes.scheme2.domain = options.colorDomain;
-            curState.title = options.title;
-            curState.charge = options.charge;
-            curState.distance = options.distance;
+
+            var keys = ["charge","distance",
+                "title","titleSize","legendTitle",
+                "label","labelColor","labelOpacity","labelScale",
+                "edgeScale","edgeColor","edgeOpacity",
+                "nodeScale","nodeScheme","nodeShape","nodeBorderColor","nodeBorderWidth","nodeBorderOpacity"]
+
+            for(var i in keys) {
+                var key = keys[i]
+                if(options.hasOwnProperty(key)) {
+                    curState[key] = options[key];
+                }
+            }
+
             curState.modified = true;
         }
 

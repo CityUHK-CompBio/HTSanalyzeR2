@@ -1,10 +1,7 @@
 
 #' @export
-forceGraph <- function(nodes, links, nMappings, lMappings,
-                       title = NULL, legendTitle = NULL,
-                       charge = -400, distance = 200, 
-                       width = NULL, height = NULL,
-                       seriesData = NULL) {
+forceGraph <- function(nodes, links, nMappings, lMappings, options,
+                       width = NULL, height = NULL, seriesData = NULL) {
 
   # nMappings: "id", "size", "color", "label", "desc", "seq"
   # lMappings: "source", "target", "label", "weight"
@@ -40,22 +37,16 @@ forceGraph <- function(nodes, links, nMappings, lMappings,
     colorDomain <- color.domain.default
   } else {
     colorDomain <- c(-maxAbs, 0, maxAbs)
-    ran <- range(nodesDF$color)
   }
 
   # create options
   # colorDomain must be three nums
-  options = list(title = title,
-                 charge = charge,
-                 distance = distance,
-                 colorDomain = colorDomain,
-                 legendTitle = legendTitle,
-                 seriesData = seriesData)
+  argOptions <- modifyList(options, list(colorDomain = colorDomain, seriesData = seriesData))
 
   # create widget
   htmlwidgets::createWidget(
     name = "forceGraph",
-    x = list(nodes = nodesDF, links = linksDF, options = options),
+    x = list(nodes = nodesDF, links = linksDF, options = argOptions),
     width = width,
     height = height,
     htmlwidgets::sizingPolicy(padding = 10, browser.fill = TRUE),

@@ -61,7 +61,9 @@ setMethod("viewSubNet", signature = "NWA",
               nMappings <- c(nMappings, ticks)
             }
 
-            forceGraph(em_nodes, em_links, nMappings, lMappings,
-                       charge = options$charge, distance = options$distance,
-                       seriesData = series)
+            defaultOptions = list(charge = -300, distance = 200)
+            graphOptions <- modifyList(defaultOptions, options)
+
+            forceGraph(em_nodes, em_links, nMappings, lMappings, graphOptions, seriesData = series)
+
           })
