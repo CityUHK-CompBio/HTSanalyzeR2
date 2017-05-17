@@ -34,16 +34,16 @@ HTMLWidgets.widget(global = {
         edgeOpacity: 0.6,
 
         palettes: {
-            default: { domain: [-1, 0, 1], range: ["#0E0F7E", "#EBEEED", "#BB0000"] },
-            scheme1: { domain: [-1, 0, 1], range: ["#0E0F7E", "#FF0000", "#BB0000"] },
-            scheme2: { domain: [-2, 0, 2], range: ["#0E0F7E", "#00FF00", "#BB0000"] },
+            default: { domain: [-1, 0, 1], range: ["#69D2E7", "#E3E3E3", "#FA6900"] },
+            scheme1: { domain: [-1, 0, 1], range: ["#517281", "#BEC9E8", "#F03C18"] },
+            scheme2: { domain: [-2, 0, 2], range: ["#0E0F7E", "#BFFBFF", "#87420E"] },
             // scheme3: { domain: [-3, 0, 3], range: ["#0E0F7E", "#0000FF", "#BB0000"] },
         },
         scalers: {
             //generated from palettes when constructing views.
         },
 
-      	modified: false
+        modified: false
     },
 
     initialize: function(el, width, height) {
@@ -127,11 +127,11 @@ HTMLWidgets.widget(global = {
         if (x.update) {
             global.update(elState, x, simulation);
         } else {
-        	var hashKey = JSON.stringify(x).hashCode().toString();
-        	if(!(hashKey in elState)) {
-        		elState[hashKey] = $.extend({}, global.defaultState);
-        	}
-        	elState.currentSubId = hashKey;
+            var hashKey = JSON.stringify(x).hashCode().toString();
+            if(!(hashKey in elState)) {
+                elState[hashKey] = $.extend({}, global.defaultState);
+            }
+            elState.currentSubId = hashKey;
             global.construct(elState, x, simulation);
         }
     },
@@ -142,11 +142,13 @@ HTMLWidgets.widget(global = {
         var curState = elState[elState.currentSubId];
 
         if(!curState.modified) {
-        	curState.palettes.default.domain = options.colorDomain;
-		    curState.title = options.title;
-		    curState.charge = options.charge;
-		    curState.distance = options.distance;
-		    curState.modified = true;
+            curState.palettes.default.domain = options.colorDomain;
+            curState.palettes.scheme1.domain = options.colorDomain;
+            curState.palettes.scheme2.domain = options.colorDomain;
+            curState.title = options.title;
+            curState.charge = options.charge;
+            curState.distance = options.distance;
+            curState.modified = true;
         }
 
         var nodes = HTMLWidgets.dataframeToD3(x.nodes);
@@ -576,7 +578,7 @@ HTMLWidgets.widget(global = {
     },
 
     drawLegend: function(elState) {
-    	var curState = elState[elState.currentSubId];
+        var curState = elState[elState.currentSubId];
 
         function pair(array) {
             return array.slice(1).map(function(b, i) {
