@@ -24,7 +24,9 @@ Imports:
     BioNet,
     DT,
     knitr,
-    shiny
+    dplyr,
+    shiny,
+    shinythemes
 Collate: 
     'HTSanalyzeR2.R'
     'RcppExports.R'

@@ -3,7 +3,7 @@ addCustomBtns = function(panel, elState) {
     var menu = dropdown.find('.dropdown-menu');
 
     var createButton = function(icon, tooltip, func) {
-        var control = $('<a data-func="editTitle"></a>');
+        var control = $('<a data-func="customBtn"></a>');
         control.append('<i class="panel-control-icon ' + icon + '"></i>');
         control.append('<span class="control-title">' + tooltip + '</span>');
         control.attr('data-tooltip', tooltip);
@@ -136,6 +136,7 @@ initPanel = function(panel, title, elState) {
     var instance = panel.data('lobiPanel');
     instance.$el.attr("old-style", "left: 200px; top: 80px; z-index: 10001; position: fixed; width: 750px; right: auto; bottom: auto; height: 730px; user-select: initial;");
 
+    instance.disableTooltips();
     instance.toggleMinimize = function() {
         if (instance.isMinimized()) {
             instance.maximize();

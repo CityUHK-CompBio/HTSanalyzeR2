@@ -21,7 +21,7 @@ d3ForceCalc = {
 
     circle: [],
 
-    points: function(shape, factor = 1) {
+    points: function(shape, factor) {
         var pts = d3ForceCalc[shape];
         pts = pts.map(function(arr) {
             return arr.map(function(x) {

@@ -6,8 +6,8 @@
 \title{Plot a figure of the enrichment map for GSEA or Hypergeometric tests}
 \usage{
 \S4method{viewEnrichMap}{GSCA}(object, resultName = "GSEA.results", gscs,
-  ntop = NULL, allSig = TRUE, gsNameType = "id", nodeOptions = NULL,
-  options = list(charge = -200, distance = 200))
+  ntop = NULL, allSig = TRUE, gsNameType = "id", options = list(charge =
+  -300, distance = 200))
 }
 \arguments{
 \item{object}{an object. When this function is implemented as the S4 method
