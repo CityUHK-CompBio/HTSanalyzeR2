@@ -323,22 +323,30 @@ checkGSCAPara <- function(para) {
   if (!(is.integer(para$pValueCutoff) ||
         is.numeric(para$pValueCutoff)) ||
       length(para$pValueCutoff) != 1 || para$pValueCutoff > 1)
-    stop("'pValueCutoff' should be an integer or numeric value <=1!\n")
+    stop("'pValueCutoff' of para should be an integer or numeric value <=1!\n")
   if (!is.character(para$pAdjustMethod) ||
       length(para$pAdjustMethod) != 1 ||
       !(para$pAdjustMethod %in% c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none")))
-    stop("'pAdjustMethod' should be any one of 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr' and 'none'!\n")
+    stop("'pAdjustMethod' of para should be any one of 'holm', 'hochberg', 'hommel', 'bonferroni', 'BH', 'BY', 'fdr' and 'none'!\n")
   if (!(is.integer(para$nPermutations) ||
         is.numeric(para$nPermutations)) ||
       length(para$nPermutations) != 1 || para$nPermutations < 1)
-    stop("'nPermutations' should be an integer >=1 !\n'")
+    stop("'nPermutations' of para should be an integer >=1 !\n")
   if (!(is.integer(para$minGeneSetSize) ||
         is.numeric(para$minGeneSetSize)) ||
       length(para$minGeneSetSize) != 1 || para$minGeneSetSize < 1)
-    stop("'minGeneSetSize' should be an integer >=1 !\n'")
+    stop("'minGeneSetSize' of para should be an integer >=1 !\n")
   if (!(is.integer(para$exponent) ||
         is.numeric(para$exponent)) ||
       length(para$pValueCutoff) != 1 || para$exponent < 1)
-    stop("'exponent' should be an integer or numeric value >=1 !\n")
+    stop("'exponent' of para should be an integer or numeric value >=1 !\n")
+
+  ##check parameter names
+  AVAILABLE_NAMES <- c("pValueCutoff","pAdjustMethod","nPermutations","minGeneSetSize","exponent")
+  if (!all(names(para) %in% AVAILABLE_NAMES)) {
+    unavaNames <- paste(names(para)[!(names(para) %in% AVAILABLE_NAMES)], collapse = ", ")
+    stop(paste("'para' should not contain", unavaNames, "!\n"))
+  }
+
 }
 
