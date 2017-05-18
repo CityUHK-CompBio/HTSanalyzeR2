@@ -177,18 +177,18 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList) {
   ##this is done using the 'positions' output of gseaScores,
   ##which stores a one for each match position and a zero otherwise
   plot(x=seq(1, length(geneList)), type="l", y=geneList,
-       ylab="Phenotypes", xlab=NA, col="magenta", lwd=2, xaxt="n")
+       ylab="Phenotypes", xlab=NA, col="red3", lwd=2, xaxt="n")
   abline(v=which(positions == 1))
   abline(h=0)
   lines(x=seq(1, length(geneList)), type="l", y=geneList,
-        ylab="Phenotypes", xlab=NA, col="magenta", lwd=2, xaxt="n")
+        ylab="Phenotypes", xlab=NA, col="red3", lwd=2, xaxt="n")
   ##Plot the running score and add a vertical line at the position of
   ##the enrichment score (maximal absolute value of the running score)
   par(mai=c(1, 1, 0.1, 1))
   plot(x=c(1:length(runningScore)), y=runningScore,type="l",
-       xlab="Position in the ranked list of genes", ylab="Running enrichment score")
+       xlab="Position in the ranked list of genes", ylab="Running enrichment score", lwd=4, col="darkgreen")
   abline(h=0)
-  abline(v=which(runningScore == enrichmentScore), lty=3, col="magenta", lwd=3)
+  abline(v=which(runningScore == enrichmentScore), lty=3, col="red3", lwd=3)
 }
 
 
