@@ -266,9 +266,12 @@ setMethod("extractEnrichMap", signature = "GSCA",
             ## "Node size" controlled by the "size of gene set"
             V(g)$geneSetSize <- map.diag
             V(g)$adjPvalue <- tempdf[, "Adjusted.Pvalue"]
+            V(g)$obsPvalue <- tempdf[, "Observed.score"]
 
+            V(g)$colorPvalue <- 1 - tempdf[, "Adjusted.Pvalue"]
             if (resultName == "GSEA.results") {
-              V(g)$obsPvalue <- tempdf[, "Observed.score"]
+              negIds <- which(tempdf[, "Observed.score"] < 0)
+              V(g)$colorPvalue[negIds] <- -V(g)$colorPvalue[negIds]
             }
 
             ##labels attributes
@@ -360,7 +363,7 @@ setMethod("viewEnrichMap", signature = "GSCA",
             em_nodes <- as_data_frame(g, "vertices")
             em_links <- as_data_frame(g, "edge")
 
-            nMappings <- list(id = "name", size = "geneSetSize", color = "adjPvalue", label = "label", label_id = "label_id", label_term = "label_term")
+            nMappings <- list(id = "name", size = "geneSetSize", color = "colorPvalue", label = "label", label_id = "label_id", label_term = "label_term")
             lMappings <- list(source = "from",target = "to", weight = "weight")
 
             title <- "Enrichment Map of"
