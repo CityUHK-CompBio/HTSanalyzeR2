@@ -75,17 +75,17 @@ setMethod(
     gsc.names<-names(object@listOfGeneSetCollections)
 
     if(!is.null(keggGSCs)) {
-      paraCheck("Record", "keggGSCs", keggGSCs)
+      paraCheck("Report", "keggGSCs", keggGSCs)
       if(!all(keggGSCs %in% gsc.names))
         stop("Wrong gene set collection names specified in 'keggGSCs'!\n")
     }
     if(!is.null(goGSCs)) {
-      paraCheck("Record", "goGSCs", goGSCs)
+      paraCheck("Report", "goGSCs", goGSCs)
       if(!all(goGSCs %in% gsc.names))
         stop("Wrong gene set collection names specified in 'goGSCs'!\n")
     }
     if(!is.null(msigdbGSCs)) {
-      paraCheck("Record", "msigdbGSCs", msigdbGSCs)
+      paraCheck("Report", "msigdbGSCs", msigdbGSCs)
       if(!all(msigdbGSCs %in% gsc.names))
         stop("Wrong gene set collection names specified in 'msigdbGSCs'!\n")
     }
@@ -176,6 +176,9 @@ setMethod("extractEnrichMap", signature = "GSCA",
                    ntop = NULL,
                    allSig = TRUE,
                    gsNameType = "id") {
+
+            paraCheck("Report", "gsNameType", gsNameType)
+
             ## get top gene sets
             topGS <-
               getTopGeneSets(object, resultName, gscs, ntop, allSig)
@@ -352,7 +355,6 @@ setMethod("viewEnrichMap", signature = "GSCA",
                    gsNameType = "id",
                    options = list(charge = -300, distance = 200)
           ) {
-
             g <- extractEnrichMap(object, resultName, gscs, ntop, allSig, gsNameType)
 
             em_nodes <- as_data_frame(g, "vertices")
@@ -368,7 +370,8 @@ setMethod("viewEnrichMap", signature = "GSCA",
               title <- paste(title, "Hypergeometric tests on", paste(gscs, collapse =", "))
             }
 
-            defaultOptions = list(charge = -300, distance = 200, title = title, legendTitle = "Adjusted p-values")
+            defaultOptions = list(charge = -300, distance = 200,
+                                  title = title, label = gsNameType, legendTitle = "Adjusted p-values")
             graphOptions <- modifyList(defaultOptions, options)
 
             forceGraph(em_nodes, em_links, nMappings, lMappings, graphOptions)
