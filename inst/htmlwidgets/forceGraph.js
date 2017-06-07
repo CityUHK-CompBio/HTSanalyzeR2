@@ -15,7 +15,7 @@ HTMLWidgets.widget(global = {
 
         title: "",
         titleSize: 22,
-        legendTitle: "", 
+        legendTitle: "",
 
         label: "id",
         labelColor: "#000000",  // black
@@ -146,7 +146,7 @@ HTMLWidgets.widget(global = {
             curState.palettes.scheme1.domain = options.colorDomain;
             curState.palettes.scheme2.domain = options.colorDomain;
 
-            var keys = ["charge","distance",
+            var keys = ["charge","distance", "seriesData",
                 "title","titleSize","legendTitle",
                 "label","labelColor","labelOpacity","labelScale",
                 "edgeScale","edgeColor","edgeOpacity",
@@ -636,9 +636,34 @@ HTMLWidgets.widget(global = {
     },
 
     update: function(elState, x, simulation) {
-        // TODO, update interface for R
-        console.log("update: ");
-        console.log(x);
+        // update interface for R
+        var curState = elState[elState.currentSubId];
+
+        // TODO: index < 0, zero value
+        if ('process' in x) {
+            var series = curState.seriesData;
+            var index = JSON.parse(x.process) - 1;
+
+            if(series) {
+                var sel_circle = global.getSelection(elState, 'circle');
+                var sel_polygon = global.getSelection(elState, 'polygon');
+
+                if(index < 0) {
+                    sel_circle.each(function(d) { d.color = 0 });
+                    sel_polygon.each(function(d) { d.color = 0 });
+                } else {
+                    sel_circle.each(function(d) { d.color = d["color." + series[index]] });
+                    sel_polygon.each(function(d) { d.color = d["color." + series[index]] });
+                }
+
+                sel_circle.transition().duration(300).attr("fill", function(d) {
+                    return curState.scalers[curState.nodeScheme](d.color);
+                })
+                sel_polygon.transition().duration(300).attr("fill", function(d) {
+                    return curState.scalers[curState.nodeScheme](d.color);
+                })
+            }
+        }
     }
 }
 );

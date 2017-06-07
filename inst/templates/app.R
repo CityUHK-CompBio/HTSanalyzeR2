@@ -13,8 +13,6 @@ gsca <- results$gsca
 nwa <- results$nwa
 
 ## ============================================ Preprocessing ==============================================
-# processSlider <- NULL
-
 if(!is.null(gsca)) {
   gsca <- HTSanalyzeR2:::appendLinks(gsca)
   gsca <- HTSanalyzeR2:::combineResults(gsca)
@@ -22,14 +20,13 @@ if(!is.null(gsca)) {
   availableAnalysis <- HTSanalyzeR2:::availableResults(gsca@summary$results, TRUE)
   availableGeneSets <- HTSanalyzeR2:::availableResults(gsca@summary$results, FALSE)
 }
-# if(!is.null(nwa)) {
-#   if(is.matrix(nwa@phenotypes)) {
-#     seriesTicks <- colnames(nwa@phenotypes)
-#     processSlider <- sliderInput("process_net", "Process", 0, length(seriesTicks), value = length(seriesTicks), step = 1, animate = animationOptions(interval=1500))
-#   } else {
-#     processSlider <- sliderInput("process_net", "Process", 0, 1, 1, step = 1, animate = animationOptions(interval=800))
-#   }
-# }
+if(!is.null(nwa)) {
+  processSlider <- sliderInput("process_net", "", 0, 1, 1, step = 1, animate = animationOptions(interval=800))
+  if(is.matrix(nwa@phenotypes)) {
+    seriesTicks <- colnames(nwa@phenotypes)
+    processSlider <- sliderInput("process_net", "", 0, length(seriesTicks), value = length(seriesTicks), step = 1, animate = animationOptions(interval=1000))
+  }
+}
 file.remove(dir(".", pattern = "*\\.md", full.names = TRUE))
 if (!is.null(gsca))  knitr::knit("gsca_summary.Rmd", "gsca_summary.md")
 if (!is.null(nwa))  knitr::knit("nwa_summary.Rmd", "nwa_summary.md")
@@ -111,7 +108,10 @@ create_panel <- function(name) {
            selectInput('genesets_map', 'Gene Sets Collection', availableGeneSets)),
          enrich_map_content = forceGraphOutput("map_output"),
 
-         network_sidebar = wellPanel(includeMarkdown("nwa_summary.md")),
+         network_sidebar = wellPanel(
+           includeMarkdown("nwa_summary.md"),
+           hr(), h3("Progress"),
+           processSlider),
          network_content = forceGraphOutput("network_output")
   )
 }
@@ -138,6 +138,10 @@ server <- function(input, output, session) {
     input$genesets_map}, {
       output$map_output <- renderForceGraph(create_enrich_map(gsca, input))
     })
+
+  observeEvent(input$process_net, {
+    output$network_output <- updateForceGraph(list(process = input$process_net))
+  })
 
   ## TODO: undefined behavior
   observeEvent({42}, {
