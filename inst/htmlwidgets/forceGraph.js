@@ -23,7 +23,7 @@ HTMLWidgets.widget(global = {
         labelScale: 1,
 
         nodeScale: 1,
-        nodeScheme: "default",
+        nodeScheme: "linear2",
         nodeShape: "circle",
         nodeBorderColor: "#808080", // grey
         nodeBorderWidth: 1,
@@ -34,12 +34,20 @@ HTMLWidgets.widget(global = {
         edgeOpacity: 0.6,
 
         palettes: {
-            dualPos: { domain: [0, 1], range: ["#F03C18", "#BEC9E8"] },
-            dualNeg: { domain: [0, 1], range: ["#517281", "#BEC9E8"] },
             linear2: { domain: [-1, 1], range: ["#0E0F7E", "#87420E"] },
             linear3: { domain: [-1, 0, 1], range: ["#69D2E7", "#E3E3E3", "#FA6900"] },
+            dual: { domain: [0, 1], range: ["#F03C18", "#BEC9E8"] },
+            dualPos: { domain: [0, 1], range: ["#F03C18", "#BEC9E8"] },
+            dualNeg: { domain: [0, 1], range: ["#517281", "#BEC9E8"] },
         },
         scalers: {
+            wrapper: function(schemeId, color, scheme) {
+                if(schemeId == "dual") {
+                    return this[schemeId+scheme](color);
+                } else {
+                    return this[schemeId](color);
+                }
+            }
             //generated from palettes when constructing views.
         },
 
@@ -183,6 +191,7 @@ HTMLWidgets.widget(global = {
                 .range(palette.range)
                 .interpolate(d3.interpolateHcl);
         }
+        curState.scalers["dual"] = curState.scalers["dualPos"];
 
         // Start
         var title = svg.append("g")
@@ -232,7 +241,7 @@ HTMLWidgets.widget(global = {
                 return d.size * curState.nodeScale;
             })
             .attr("fill", function(d) {
-				return curState.scalers[curState.nodeScheme + d.scheme](d.color);
+                return curState.scalers.wrapper(curState.nodeScheme, d.color, d.scheme);
             })
             .attr("stroke", curState.nodeBorderColor)
             .attr("stroke-width", curState.nodeBorderWidth)
@@ -245,7 +254,7 @@ HTMLWidgets.widget(global = {
                 return d3ForceCalc.points(curState.nodeShape, d.size * curState.nodeScale);
             })
             .attr("fill", function(d) {
-				return curState.scalers[curState.nodeScheme + d.scheme](d.color);
+                return curState.scalers.wrapper(curState.nodeScheme, d.color, d.scheme);
             })
             .attr("stroke", curState.nodeBorderColor)
             .attr("stroke-width", curState.nodeBorderWidth)
@@ -481,15 +490,15 @@ HTMLWidgets.widget(global = {
         }
 
         elState.controller.nodeScheme = function(schemeId) {
-            // scheme: "linear2", "linear3", "dualPos", "dualNeg"
-            curState.nodeScheme = schemeId.startsWith("dual") ? "dual" : schemeId;
+            // scheme: "linear2", "linear3", "dual"
+            curState.nodeScheme = schemeId;
             var sel_circle = global.getSelection(elState, 'circle');
             var sel_polygon = global.getSelection(elState, 'polygon');
             sel_circle.transition().duration(300).attr("fill", function(d) {
-                return curState.scalers[curState.nodeScheme + d.scheme](d.color);
+                return curState.scalers.wrapper(schemeId, d.color, d.scheme);
             })
             sel_polygon.transition().duration(300).attr("fill", function(d) {
-                return curState.scalers[curState.nodeScheme + d.scheme](d.color);
+                return curState.scalers.wrapper(schemeId, d.color, d.scheme);
             })
             global.drawLegend(elState);
         }
@@ -554,14 +563,17 @@ HTMLWidgets.widget(global = {
 
         //Schemes
         elState.controller.changeScheme = function(schemeId, domain, range) {
-            // scheme: "linear2", "linear3", "dualPos", "dualNeg"
+            // schemeId: "linear2", "linear3", "dualPos", "dualNeg"
             var palette = { domain: domain, range: range };
             curState.palettes[schemeId] = palette;
             var scaler = curState.scalers[schemeId];
             scaler.domain(palette.domain).range(palette.range);
 
+            // TODO: revise needed
+            scaler['dual'] = scaler['dualPos'];
+
             if (schemeId.startsWith(curState.nodeScheme)) {
-                elState.controller.nodeScheme(schemeId);
+                elState.controller.nodeScheme(curState.nodeScheme);
                 global.drawLegend(elState);
             }
         }
@@ -710,10 +722,10 @@ HTMLWidgets.widget(global = {
                 }
 
                 sel_circle.transition().duration(300).attr("fill", function(d) {
-                    return curState.scalers[curState.nodeScheme + d.scheme](d.color);
+                    return curState.scalers.wrapper(schemeId, d.color, d.scheme);
                 })
                 sel_polygon.transition().duration(300).attr("fill", function(d) {
-                    return curState.scalers[curState.nodeScheme + d.scheme](d.color);
+                    return curState.scalers.wrapper(schemeId, d.color, d.scheme);
                 })
             }
         }

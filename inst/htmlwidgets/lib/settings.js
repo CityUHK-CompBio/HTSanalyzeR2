@@ -82,15 +82,23 @@ refreshValues = function(panel, elState) {
     var nodeOptions = $("#nodeShapeOption", panel);
     nodeOptions.find("label").removeClass("active");
     nodeOptions.find("label[value='"+ curState.nodeShape +"']").addClass("active");
-    // TODO: revise needed
-    // var scheme = $("#nodeSchemeBtns li a[value='" + curState.nodeScheme + "']", panel).text();
-    // var dropdownBtn = $('#nodeSchemeDropdown', panel);
-    // dropdownBtn.attr("value", curState.nodeScheme);
-    // dropdownBtn.html(scheme + ' <span class="caret"></span>')
-    // var canvas = d3.select($("#schemePreview", panel)[0]);
-    // var palette = curState.palettes[curState.nodeScheme];
-    // renderPalette(canvas, palette.domain, palette.range);
-
+    // Node - Scheme
+    var scheme = $("#nodeSchemeBtns li a[value='" + curState.nodeScheme + "']", panel).text();
+    var dropdownBtn = $('#nodeSchemeDropdown', panel);
+    dropdownBtn.attr("value", curState.nodeScheme);
+    dropdownBtn.html(scheme + ' <span class="caret"></span>')
+    var canvas1 = d3.select($("#schemePreview1", panel)[0]);
+    var canvas2 = d3.select($("#schemePreview2", panel)[0]);
+    if(curState.nodeScheme == 'dual') {
+        var palette1 = curState.palettes["dualPos"];
+        var palette2 = curState.palettes["dualNeg"];
+        renderPalette(canvas1, palette1.domain, palette1.range);
+        renderPalette(canvas2, palette2.domain, palette2.range);
+    } else {
+        var palette = curState.palettes[curState.nodeScheme];
+        renderPalette(canvas1, palette.domain, palette.range);
+        renderPalette(canvas2, palette.domain, palette.range);
+    }//
     $('#nodeScale', panel).slider().slider('setValue', curState.nodeScale);
     $("#nodeBorderColor", panel)[0].jscolor.fromString(curState.nodeBorderColor);
     $('#nodeBorderOpacity', panel).slider().slider('setValue', curState.nodeBorderOpacity);
@@ -183,17 +191,27 @@ initPanel = function(panel, title, elState) {
     $("#nodeShapeOption :input", panel).change(function() {
         elState.controller['nodeShape'](this.value);
     });
-    // $("#nodeSchemeBtns li a", panel).click(function() {
-    //     var selText = $(this).text();
-    //     var schemeId = $(this).attr('value');
-    //     var palette = fetchSchemeValues(schemeId);
-    //     var canvas = d3.select($("#schemePreview", panel)[0]);
-    //     var dropdownBtn = $("#nodeSchemeDropdown", panel);
-    //     dropdownBtn.attr('value', schemeId);
-    //     dropdownBtn.html(selText + ' <span class="caret"></span>');
-    //     renderPalette(canvas, palette.domain, palette.range);
-    //     elState.controller.nodeScheme(schemeId);
-    // });
+    $("#nodeSchemeBtns li a", panel).click(function() {
+        var selText = $(this).text();
+        var schemeId = $(this).attr('value');
+        var dropdownBtn = $("#nodeSchemeDropdown", panel);
+        dropdownBtn.attr('value', schemeId);
+        dropdownBtn.html(selText + ' <span class="caret"></span>');
+
+        var canvas1 = d3.select($("#schemePreview1", panel)[0]);
+        var canvas2 = d3.select($("#schemePreview2", panel)[0]);
+        if(schemeId == 'dual') {
+            var palette1 = fetchSchemeValues("dualPos");
+            var palette2 = fetchSchemeValues("dualNeg");
+            renderPalette(canvas1, palette1.domain, palette1.range);
+            renderPalette(canvas2, palette2.domain, palette2.range);
+        } else {
+            var palette = fetchSchemeValues(schemeId);
+            renderPalette(canvas1, palette.domain, palette.range);
+            renderPalette(canvas2, palette.domain, palette.range);
+        }
+        elState.controller.nodeScheme(schemeId);
+    });
     $('#nodeScale', panel).slider().on('slide', decorator('nodeScale'));
     $("#nodeBorderColor", panel).change(function() {
         elState.controller['nodeBorderColor']('#' + this.value);
@@ -223,16 +241,34 @@ initPanel = function(panel, title, elState) {
         return dict;
     }
 
+    var uniTextColors = function(schemeId) {
+        var txtColor1 = $("#nodeSchemes #" + schemeId + " #color1", panel).css("color");
+        var txtColor2 = $("#nodeSchemes #" + schemeId + " #color2", panel).css("color");
+        $("#nodeSchemes #" + schemeId + " #value1", panel).css("color", txtColor1);
+        $("#nodeSchemes #" + schemeId + " #value2", panel).css("color", txtColor2);
+    }
+
     var renderFunc = function(schemeId) {
         return function() {
             var values = fetchSchemeValues(schemeId);
             var canvas = d3.select($("#nodeSchemes #" + schemeId + " #palette", panel)[0]);
             elState.controller.changeScheme(schemeId, values.domain, values.range);
             renderPalette(canvas, values.domain, values.range);
+            uniTextColors(schemeId);
 
-            if(schemeId == $("#nodeSchemeDropdown", panel).attr('value')) {
-                var preview = d3.select($("#schemePreview", panel)[0]);
-                renderPalette(preview, values.domain, values.range);
+            if(schemeId.startsWith($("#nodeSchemeDropdown", panel).attr('value'))) {
+                var canvas1 = d3.select($("#schemePreview1", panel)[0]);
+                var canvas2 = d3.select($("#schemePreview2", panel)[0]);
+
+                if(schemeId.startsWith("dual")) {
+                    var palette1 = fetchSchemeValues("dualPos");
+                    var palette2 = fetchSchemeValues("dualNeg");
+                    renderPalette(canvas1, palette1.domain, palette1.range);
+                    renderPalette(canvas2, palette2.domain, palette2.range);
+                } else {
+                    renderPalette(canvas1, values.domain, values.range);
+                    renderPalette(canvas2, values.domain, values.range);
+                }
             }
         }
     }
@@ -243,6 +279,7 @@ initPanel = function(panel, title, elState) {
         var values = fetchSchemeValues(schemeId);
         var canvas = d3.select($("#nodeSchemes #" + schemeId + " #palette", panel)[0]);
         renderPalette(canvas, values.domain, values.range);
+        uniTextColors(schemeId);
         $("#nodeSchemes #" + schemeId+ " input", panel).change(renderFunc(schemeId));
     }
 

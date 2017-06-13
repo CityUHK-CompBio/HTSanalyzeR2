@@ -119,13 +119,14 @@
                                         <ul id="nodeSchemeBtns" class="dropdown-menu">
                                             <li><a value="linear2">Linear-2</a></li>
                                             <li><a value="linear3">Linear-3</a></li>
-                                            <li><a value="dualPos">Dual-Pos</a></li>
-                                            <li><a value="dualNeg">Dual-Neg</a></li>
+                                            <li><a value="dual">Dual</a></li>
                                         </ul>
                                     </div>
                                     <div style="width: 100%">
-                                        <canvas id="schemePreview" width="100" height="1"
-                                                style="width: 100%; height: 45px; padding-top: 6px; padding-left: 8px; padding-bottom: 2px;"></canvas>
+                                        <canvas id="schemePreview1" width="100" height="1"
+                                                style="width: 100%; height: 22px; padding-top: 3px; padding-left: 8px; padding-bottom: 0px; display: block;"></canvas>
+                                        <canvas id="schemePreview2" width="100" height="1"
+                                                style="width: 100%; height: 22px; padding-bottom: 3px; padding-left: 8px; padding-top: 0px;display: block;"></canvas>
                                     </div>
                                 </div>
                                 <!-- /input-group -->
@@ -179,16 +180,19 @@
                 </div>
                 <div id="schemePanel" class="panel-collapse collapse">
                     <div id="nodeSchemes" class="panel-body">
+
                         <div id="linear2" class="form-group">
                             <h5>Linear-2: </h5>
-                            <canvas id="palette" width="100" height="1" style="width:100%; height:30px"></canvas>
+                            <div style="position:relative; width: 100%; height: 35px">
+                                <canvas id="palette" width="100" height="1" style="width:100%; height:30px"></canvas>
+                                <input id="value1" class="text" value="-1" style="position:absolute;width:80px; left:5px;top:5px;text-align:left; background:none;border:none;">
+                                <input id="value2" class="text" value="0" style="position:absolute;width:80px; right:5px;top:5px;text-align:right; background:none;border:none;">
+                            </div>
                             <div class="row" style="width:100%; margin-left:0px; margin-right:0px;">
                                 <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
-                                    <input id="value1" class="text" value="-1" style="width:100%; text-align: left;">
                                     <input id="color1" class="jscolor" value="0E0F7E" style="width:100%; text-align: left;">
                                 </div>
                                 <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
-                                    <input id="value2" class="text" value="0" style="width:100%; text-align: right;">
                                     <input id="color2" class="jscolor" value="EBEEED" style="width:100%; text-align: right;">
                                 </div>
                             </div>
@@ -196,47 +200,55 @@
 
                         <div id="linear3" class="form-group">
                             <h5>Linear-3: </h5>
-                            <canvas id="palette" width="100" height="1" style="width:100%; height:30px"></canvas>
+                            <div style="position:relative; width: 100%; height: 35px">
+                                <canvas id="palette" width="100" height="1" style="width:100%; height:30px"></canvas>
+                                <input id="value1" class="text" value="-1" style="position:absolute;width:80px; left:5px;top:5px;text-align:left; background:none;border:none;">
+                                <input id="value2" class="text" value="0" style="position:absolute;width:80px; left:50%;top:5px;text-align:center;margin-left:-40px; background:none;border:none;">
+                                <input id="value3" class="text" value="0" style="position:absolute;width:80px; right:5px;top:5px;text-align:right; background:none;border:none;">
+                            </div>
                             <div class="row" style="width:100%; margin-left:0px; margin-right:0px;">
                                 <div class="col-xs-4" style="padding-left:0px; padding-right:0px;">
-                                    <input id="value1" class="text" value="-1" style="width:100%; text-align: left;">
                                     <input id="color1" class="jscolor" value="0E0F7E" style="width:100%; text-align: left;">
                                 </div>
                                 <div class="col-xs-4" style="padding-left:0px; padding-right:0px;">
-                                    <input id="value2" class="text" value="0" style="width:100%; text-align: center;">
                                     <input id="color2" class="jscolor" value="FF0000" style="width:100%; text-align: center;">
                                 </div>
                                 <div class="col-xs-4" style="padding-left:0px; padding-right:0px;">
-                                    <input id="value3" class="text" value="1" style="width:100%; text-align: right;">
                                     <input id="color3" class="jscolor" value="BB0000" style="width:100%; text-align: right;">
                                 </div>
                             </div>
                         </div>
 
                         <div id="dualPos" class="form-group">
-                            <h5>Dual-Pos: </h5>
-                            <canvas id="palette" width="100" height="1" style="width:100%; height:30px"></canvas>
+                            <h5>Dual <small>Pos:</small></h5>
+                            <div style="position:relative; width: 100%; height: 35px">
+                                <canvas id="palette" width="100" height="1" style="width:100%; height:30px"></canvas>
+                                <input id="value1" class="text" value="-1" style="position:absolute;width:80px; left:5px;top:5px;text-align:left; background:none;border:none;">
+                                <input id="value2" class="text" value="0" style="position:absolute;width:80px; right:5px;top:5px;text-align:right; background:none;border:none;">
+                            </div>
+
                             <div class="row" style="width:100%; margin-left:0px; margin-right:0px;">
                                 <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
-                                    <input id="value1" class="text" value="-1" style="width:100%; text-align: left;">
                                     <input id="color1" class="jscolor" value="0E0F7E" style="width:100%; text-align: left;">
                                 </div>
                                 <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
-                                    <input id="value2" class="text" value="0" style="width:100%; text-align: right;">
                                     <input id="color2" class="jscolor" value="EBEEED" style="width:100%; text-align: right;">
                                 </div>
                             </div>
                         </div>
                         <div id="dualNeg" class="form-group">
-                            <h5>Dual-Neg: </h5>
-                            <canvas id="palette" width="100" height="1" style="width:100%; height:30px"></canvas>
+                            <h5>Dual <small>Neg:</small></h5>
+                            <div style="position:relative; width: 100%; height: 35px">
+                                <canvas id="palette" width="100" height="1" style="width:100%; height:30px"></canvas>
+                                <input id="value1" class="text" value="-1" style="position:absolute;width:80px; left:5px;top:5px;text-align:left; background:none;border:none;">
+                                <input id="value2" class="text" value="0" style="position:absolute;width:80px; right:5px;top:5px;text-align:right; background:none;border:none;">
+                            </div>
+
                             <div class="row" style="width:100%; margin-left:0px; margin-right:0px;">
                                 <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
-                                    <input id="value1" class="text" value="-1" style="width:100%; text-align: left;">
                                     <input id="color1" class="jscolor" value="0E0F7E" style="width:100%; text-align: left;">
                                 </div>
                                 <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
-                                    <input id="value2" class="text" value="0" style="width:100%; text-align: right;">
                                     <input id="color2" class="jscolor" value="EBEEED" style="width:100%; text-align: right;">
                                 </div>
                             </div>
