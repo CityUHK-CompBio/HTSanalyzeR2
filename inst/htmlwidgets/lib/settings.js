@@ -82,13 +82,23 @@ refreshValues = function(panel, elState) {
     var nodeOptions = $("#nodeShapeOption", panel);
     nodeOptions.find("label").removeClass("active");
     nodeOptions.find("label[value='"+ curState.nodeShape +"']").addClass("active");
+    // Node - Scheme
     var scheme = $("#nodeSchemeBtns li a[value='" + curState.nodeScheme + "']", panel).text();
     var dropdownBtn = $('#nodeSchemeDropdown', panel);
     dropdownBtn.attr("value", curState.nodeScheme);
     dropdownBtn.html(scheme + ' <span class="caret"></span>')
-    var canvas = d3.select($("#schemePreview", panel)[0]);
-    var palette = curState.palettes[curState.nodeScheme];
-    renderPalette(canvas, palette.domain, palette.range);
+    var canvas1 = d3.select($("#schemePreview1", panel)[0]);
+    var canvas2 = d3.select($("#schemePreview2", panel)[0]);
+    if(curState.nodeScheme == 'dual') {
+        var palette1 = curState.palettes["dualPos"];
+        var palette2 = curState.palettes["dualNeg"];
+        renderPalette(canvas1, palette1.domain, palette1.range);
+        renderPalette(canvas2, palette2.domain, palette2.range);
+    } else {
+        var palette = curState.palettes[curState.nodeScheme];
+        renderPalette(canvas1, palette.domain, palette.range);
+        renderPalette(canvas2, palette.domain, palette.range);
+    }//
     $('#nodeScale', panel).slider().slider('setValue', curState.nodeScale);
     $("#nodeBorderColor", panel)[0].jscolor.fromString(curState.nodeBorderColor);
     $('#nodeBorderOpacity', panel).slider().slider('setValue', curState.nodeBorderOpacity);
@@ -98,16 +108,18 @@ refreshValues = function(panel, elState) {
     $('#edgeOpacity', panel).slider().slider('setValue', curState.edgeOpacity);
     $('#edgeScale', panel).slider().slider('setValue', curState.edgeScale);
     // ColorScheme
-    var ids = ["default", "scheme1", "scheme2"];
+    var ids = ["linear2", "linear3", "dualPos", "dualNeg"];
     for(var i in ids) {
         var schemeId = ids[i];
         var palette = curState.palettes[schemeId];
         $("#nodeSchemes #" + schemeId + " #value1", panel).val(palette.domain[0]);
         $("#nodeSchemes #" + schemeId + " #value2", panel).val(palette.domain[1]);
-        $("#nodeSchemes #" + schemeId + " #value3", panel).val(palette.domain[2]);
         $("#nodeSchemes #" + schemeId + " #color1", panel)[0].jscolor.fromString(palette.range[0]);
         $("#nodeSchemes #" + schemeId + " #color2", panel)[0].jscolor.fromString(palette.range[1]);
-        $("#nodeSchemes #" + schemeId + " #color3", panel)[0].jscolor.fromString(palette.range[2]);
+        if(schemeId == "linear3") {
+            $("#nodeSchemes #" + schemeId + " #value3", panel).val(palette.domain[2]);
+            $("#nodeSchemes #" + schemeId + " #color3", panel)[0].jscolor.fromString(palette.range[2]);
+        }
     }
 }
 
@@ -182,12 +194,22 @@ initPanel = function(panel, title, elState) {
     $("#nodeSchemeBtns li a", panel).click(function() {
         var selText = $(this).text();
         var schemeId = $(this).attr('value');
-        var palette = fetchSchemeValues(schemeId);
-        var canvas = d3.select($("#schemePreview", panel)[0]);
         var dropdownBtn = $("#nodeSchemeDropdown", panel);
         dropdownBtn.attr('value', schemeId);
         dropdownBtn.html(selText + ' <span class="caret"></span>');
-        renderPalette(canvas, palette.domain, palette.range);
+
+        var canvas1 = d3.select($("#schemePreview1", panel)[0]);
+        var canvas2 = d3.select($("#schemePreview2", panel)[0]);
+        if(schemeId == 'dual') {
+            var palette1 = fetchSchemeValues("dualPos");
+            var palette2 = fetchSchemeValues("dualNeg");
+            renderPalette(canvas1, palette1.domain, palette1.range);
+            renderPalette(canvas2, palette2.domain, palette2.range);
+        } else {
+            var palette = fetchSchemeValues(schemeId);
+            renderPalette(canvas1, palette.domain, palette.range);
+            renderPalette(canvas2, palette.domain, palette.range);
+        }
         elState.controller.nodeScheme(schemeId);
     });
     $('#nodeScale', panel).slider().on('slide', decorator('nodeScale'));
@@ -208,12 +230,22 @@ initPanel = function(panel, title, elState) {
     var fetchSchemeValues = function(schemeId) {
         var val1 = parseFloat($("#nodeSchemes #" + schemeId + " #value1", panel).val());
         var val2 = parseFloat($("#nodeSchemes #" + schemeId + " #value2", panel).val());
-        var val3 = parseFloat($("#nodeSchemes #" + schemeId + " #value3", panel).val());
         var color1 = "#" + $("#nodeSchemes #" + schemeId + " #color1", panel).val();
         var color2 = "#" + $("#nodeSchemes #" + schemeId + " #color2", panel).val();
-        var color3 = "#" + $("#nodeSchemes #" + schemeId + " #color3", panel).val();
 
-        return {domain: [val1, val2, val3], range: [color1, color2, color3]};
+        var dict = {domain: [val1, val2], range: [color1, color2]};
+        if(schemeId == "linear3") {
+            dict.domain.push(parseFloat($("#nodeSchemes #" + schemeId + " #value3", panel).val()));
+            dict.range.push("#" + $("#nodeSchemes #" + schemeId + " #color3", panel).val());
+        }
+        return dict;
+    }
+
+    var uniTextColors = function(schemeId) {
+        var txtColor1 = $("#nodeSchemes #" + schemeId + " #color1", panel).css("color");
+        var txtColor2 = $("#nodeSchemes #" + schemeId + " #color2", panel).css("color");
+        $("#nodeSchemes #" + schemeId + " #value1", panel).css("color", txtColor1);
+        $("#nodeSchemes #" + schemeId + " #value2", panel).css("color", txtColor2);
     }
 
     var renderFunc = function(schemeId) {
@@ -222,20 +254,32 @@ initPanel = function(panel, title, elState) {
             var canvas = d3.select($("#nodeSchemes #" + schemeId + " #palette", panel)[0]);
             elState.controller.changeScheme(schemeId, values.domain, values.range);
             renderPalette(canvas, values.domain, values.range);
+            uniTextColors(schemeId);
 
-            if(schemeId == $("#nodeSchemeDropdown", panel).attr('value')) {
-                var preview = d3.select($("#schemePreview", panel)[0]);
-                renderPalette(preview, values.domain, values.range);
+            if(schemeId.startsWith($("#nodeSchemeDropdown", panel).attr('value'))) {
+                var canvas1 = d3.select($("#schemePreview1", panel)[0]);
+                var canvas2 = d3.select($("#schemePreview2", panel)[0]);
+
+                if(schemeId.startsWith("dual")) {
+                    var palette1 = fetchSchemeValues("dualPos");
+                    var palette2 = fetchSchemeValues("dualNeg");
+                    renderPalette(canvas1, palette1.domain, palette1.range);
+                    renderPalette(canvas2, palette2.domain, palette2.range);
+                } else {
+                    renderPalette(canvas1, values.domain, values.range);
+                    renderPalette(canvas2, values.domain, values.range);
+                }
             }
         }
     }
 
-    var ids = ["default", "scheme1", "scheme2"];
+    var ids = ["linear2", "linear3", "dualPos", "dualNeg"];
     for(var i in ids) {
         var schemeId = ids[i];
         var values = fetchSchemeValues(schemeId);
         var canvas = d3.select($("#nodeSchemes #" + schemeId + " #palette", panel)[0]);
         renderPalette(canvas, values.domain, values.range);
+        uniTextColors(schemeId);
         $("#nodeSchemes #" + schemeId+ " input", panel).change(renderFunc(schemeId));
     }
 

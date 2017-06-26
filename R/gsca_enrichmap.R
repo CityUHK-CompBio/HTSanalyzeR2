@@ -263,16 +263,19 @@ setMethod("extractEnrichMap", signature = "GSCA",
             }
 
             ## add an user-defined attribute 'geneSetSize' to igraph
-            ## "Node size" controlled by the "size of gene set"
+            # "Node size" controlled by the "size of gene set"
+            # "Node color" controlled by the "Adjusted Pvalue" and "Observed.score"
             V(g)$geneSetSize <- map.diag
             V(g)$adjPvalue <- tempdf[, "Adjusted.Pvalue"]
             V(g)$obsPvalue <- tempdf[, "Observed.score"]
+            V(g)$colorScheme <- "Pos"
+            V(g)$colorScheme[tempdf[, "Observed.score"] < 0] <- "Neg"
 
-            V(g)$colorPvalue <- 1 - tempdf[, "Adjusted.Pvalue"]
-            if (resultName == "GSEA.results") {
-              negIds <- which(tempdf[, "Observed.score"] < 0)
-              V(g)$colorPvalue[negIds] <- -V(g)$colorPvalue[negIds]
-            }
+            # V(g)$colorPvalue <- 1 - tempdf[, "Adjusted.Pvalue"]
+            # if (resultName == "GSEA.results") {
+            #   negIds <- which(tempdf[, "Observed.score"] < 0)
+            #   V(g)$colorPvalue[negIds] <- -V(g)$colorPvalue[negIds]
+            # }
 
             ##labels attributes
             if (gsNameType == "id") {
@@ -363,7 +366,8 @@ setMethod("viewEnrichMap", signature = "GSCA",
             em_nodes <- as_data_frame(g, "vertices")
             em_links <- as_data_frame(g, "edge")
 
-            nMappings <- list(id = "name", size = "geneSetSize", color = "colorPvalue", label = "label", label_id = "label_id", label_term = "label_term")
+            nMappings <- list(id = "name", size = "geneSetSize", color = "adjPvalue", scheme = "colorScheme",
+                              label = "label", label_id = "label_id", label_term = "label_term")
             lMappings <- list(source = "from",target = "to", weight = "weight")
 
             title <- "Enrichment Map of"
@@ -373,6 +377,7 @@ setMethod("viewEnrichMap", signature = "GSCA",
               title <- paste(title, "Hypergeometric tests on", paste(gscs, collapse =", "))
             }
 
+            options$nodeScheme = "dual"
             defaultOptions = list(charge = -300, distance = 200,
                                   title = title, label = gsNameType, legendTitle = "Adjusted p-values")
             graphOptions <- modifyList(defaultOptions, options)
@@ -396,7 +401,7 @@ setMethod("viewEnrichMap", signature = "GSCA",
 # labelScale: 1,
 #
 # nodeScale: 1,
-# nodeScheme: "default",
+# ~~ nodeScheme: "default" ~~
 # nodeShape: "circle",
 # nodeBorderColor: "#808080", // grey
 # nodeBorderWidth: 1,

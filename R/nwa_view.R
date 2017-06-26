@@ -61,6 +61,7 @@ setMethod("viewSubNet", signature = "NWA",
               nMappings <- c(nMappings, ticks)
             }
 
+            options$nodeScheme = "linear3"
             defaultOptions = list(charge = -300, distance = 200)
             graphOptions <- modifyList(defaultOptions, options)
 

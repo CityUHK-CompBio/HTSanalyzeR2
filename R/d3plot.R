@@ -3,13 +3,14 @@
 forceGraph <- function(nodes, links, nMappings, lMappings, options,
                        width = NULL, height = NULL, seriesData = NULL) {
 
-  # nMappings: "id", "size", "color", "label", "desc", "seq"
+  # nMappings: "id", "size", "color", "label", "desc", "seq", "scheme"
   # lMappings: "source", "target", "label", "weight"
 
   node.size <- list(min = 6, max = 20, default = 8)
   link.weight <- list(min = 1, max = 6, default = 2)
   color.default <- 0.5
-  color.domain.default <- c(-1, 0, 1)
+  color.domain.default <- c(0, 1)
+  scheme.default <- ""
 
   nodesDF = nodes[unlist(nMappings)]
   linksDF = links[unlist(lMappings)]
@@ -26,18 +27,28 @@ forceGraph <- function(nodes, links, nMappings, lMappings, options,
     nodesDF$color <- color.default;
   }
 
+  if(is.null(nodesDF$scheme)) {
+    nodesDF$scheme <- scheme.default;
+  }
+
   if(is.null(linksDF$weight)){
     linksDF$weight <- link.weight$default
   } else {
     linksDF$weight <- norm(linksDF$weight, link.weight$min, link.weight$max, link.weight$default)
   }
 
-  maxAbs <- max(abs(nodesDF$color))
-  if(maxAbs <= 1) {
+  if(0 < min(nodesDF$color) && max(nodesDF$color) < 1) {
     colorDomain <- color.domain.default
   } else {
-    colorDomain <- c(-maxAbs, 0, maxAbs)
+    colorDomain <- range(nodesDF$color)
   }
+  # maxAbs <- max(abs(nodesDF$color))
+  # if(maxAbs <= 1) {
+  #   colorDomain <- color.domain.default
+  # } else {
+  #   colorDomain <- c(-maxAbs, 0, maxAbs)
+  # }
+
 
   # create options
   # colorDomain must be three nums
