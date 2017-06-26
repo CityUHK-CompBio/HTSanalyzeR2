@@ -105,10 +105,14 @@ setMethod("initialize",
 #' \code{\link[HTSanalyzeR2]{report}}
 #'
 #' @export
+
+
+## constructed function
 GSCA <- function(listOfGeneSetCollections, geneList, hits) {
   paraCheck("GSCAClass", "gscs", listOfGeneSetCollections)
-  paraCheck("GSCAClass", "genelist", geneList)
-  paraCheck("GSCAClass", "hits", hits)
+  if(length(geneList) > 0)  paraCheck("GSCAClass", "genelist", geneList)
+  if(length(hits) > 0)  paraCheck("GSCAClass", "hits", hits)
+  if(length(geneList) == 0 && length(hits) == 0)  stop("Either 'geneList' or 'hits' are needed!\n")
 
   object <- new(
     Class = "GSCA",
