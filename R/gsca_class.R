@@ -26,7 +26,7 @@ setMethod("initialize",
           function(.Object,
                    listOfGeneSetCollections,
                    geneList,
-                   hits) {
+                   hits = character()) {
             .Object@listOfGeneSetCollections <- listOfGeneSetCollections
             .Object@geneList <- geneList
             .Object@hits <- hits
@@ -108,11 +108,11 @@ setMethod("initialize",
 
 
 ## constructed function
-GSCA <- function(listOfGeneSetCollections, geneList, hits) {
+GSCA <- function(listOfGeneSetCollections, geneList, hits = character()) {
   paraCheck("GSCAClass", "gscs", listOfGeneSetCollections)
-  if(length(geneList) > 0)  paraCheck("GSCAClass", "genelist", geneList)
+  paraCheck("GSCAClass", "genelist", geneList)
   if(length(hits) > 0)  paraCheck("GSCAClass", "hits", hits)
-  if(length(geneList) == 0 && length(hits) == 0)  stop("Either 'geneList' or 'hits' are needed!\n")
+
 
   object <- new(
     Class = "GSCA",

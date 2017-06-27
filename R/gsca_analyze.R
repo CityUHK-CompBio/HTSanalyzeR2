@@ -79,7 +79,7 @@ setMethod("analyze",
                      exponent = 1
                    ),
                    verbose = TRUE,
-                   doGSOA = TRUE,
+                   doGSOA = FALSE,
                    doGSEA = TRUE) {
 
             paraCheck("General", "verbose", verbose)
@@ -91,7 +91,7 @@ setMethod("analyze",
 
 
             object@para <- para
-
+            ## update summary information
             object@summary$para$hypergeo[1, ] <- c(
               object@para$minGeneSetSize,
               object@para$pValueCutoff,
@@ -180,7 +180,7 @@ analyzeGeneSetCollections <-
 
     numGeneSetCollections <- length(listOfGeneSetCollections)
 
-    ## filter 'istOfGeneSetCollections' by 'minGeneSetSize'
+    ## filter 'listOfGeneSetCollections' by 'minGeneSetSize'
     maxOverlap <- 0
     for (i in seq_along(listOfGeneSetCollections)) {
       gs.size <- vapply(listOfGeneSetCollections[[i]],

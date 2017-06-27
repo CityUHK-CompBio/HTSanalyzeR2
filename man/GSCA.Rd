@@ -4,7 +4,7 @@
 \alias{GSCA}
 \title{An S4 class for Gene Set Collection Analyses on high-throughput screens}
 \usage{
-GSCA(listOfGeneSetCollections, geneList, hits)
+GSCA(listOfGeneSetCollections, geneList, hits = character())
 }
 \description{
 This S4 class includes a series of methods to do gene set enrichment analysis

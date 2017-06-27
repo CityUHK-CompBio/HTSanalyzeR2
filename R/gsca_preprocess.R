@@ -96,7 +96,9 @@ setMethod("preprocess", signature = "GSCA",
             ## preprocessing
             cat("-Preprocessing for input gene list and hit list ...\n")
 
+            ## genelist preprocessing
             genelist <- object@geneList
+
             ## remove NA in geneList
             if (verbose)
               cat("--Removing genes without values in geneList ...\n")
@@ -117,20 +119,26 @@ setMethod("preprocess", signature = "GSCA",
               duplicateRemover(geneList = genelist, method = duplicateRemoverMethod)
 
             ## genes after removing duplicates
-            object@summary$gl[, "duplicate removed"] <-
-              length(genelist)
-            hits <- object@hits[object@hits != "" & !is.na(object@hits)]
-            if (length(hits) == 0)
-              stop("Input 'hits' contains no useful data!\n")
-            hits <- unique(hits)
-            hits.vec <- genelist[names(genelist) %in% hits]
-            if (length(hits.vec) == 0)
-              stop("Hits and geneList have no overlaps!\n")
+            object@summary$gl[, "duplicate removed"] <- length(genelist)
+
+            ## hits preprocessing
+            if(length(object@hits) > 0){
+                  hits <- object@hits[object@hits != "" & !is.na(object@hits)]
+                  if (length(hits) == 0)
+                    stop("test Input 'hits' contains no useful data!\n")
+
+                  hits <- unique(hits)
+                  hits.vec <- genelist[names(genelist) %in% hits]
+                  if (length(hits.vec) == 0)
+                    stop("Hits and geneList have no overlaps!\n")
+            }  ## finish hits preprocessing
+
 
             ## annotation convertor
             if (initialIDs != "ENTREZID") {
               if (verbose)
                 cat("--Converting annotations ...\n")
+
               genelist <- annotationConvertor(
                 geneList = genelist,
                 species = species,
@@ -139,34 +147,37 @@ setMethod("preprocess", signature = "GSCA",
                 keepMultipleMappings = keepMultipleMappings,
                 verbose = verbose
               )
-              hits.vec <- annotationConvertor(
-                geneList = hits.vec,
-                species = species,
-                initialIDs = initialIDs,
-                finalIDs = "ENTREZID",
-                keepMultipleMappings = keepMultipleMappings,
-                verbose = verbose
-              )
+
+              if(length(object@hits) > 0){
+                hits.vec <- annotationConvertor(
+                  geneList = hits.vec,
+                  species = species,
+                  initialIDs = initialIDs,
+                  finalIDs = "ENTREZID",
+                  keepMultipleMappings = keepMultipleMappings,
+                  verbose = verbose
+                )}
             }
 
             ## genes after annotation conversion
             object@summary$gl[, "converted to entrez"] <-
               length(genelist)
 
+            ## update genelist and hits, and return objects
             if (verbose)
               cat("--Ordering Gene List decreasingly ...\n")
             if (!orderAbsValue)
               genelist <- genelist[order(genelist, decreasing = TRUE)]
             else
               genelist <- abs(genelist)[order(abs(genelist), decreasing = TRUE)]
-            hits <- names(hits.vec)
-
-            ## hits after preprocessed
-            object@summary$hits[, "preprocessed"] <- length(hits)
-
-            ## update genelist and hits, and return object
             object@geneList <- genelist
-            object@hits <- hits
+
+            if (length(object@hits) > 0) {
+              hits <- names(hits.vec)
+              object@summary$hits[, "preprocessed"] <- length(hits)
+              object@hits <- hits
+            }
+
             object@preprocessed <- TRUE
 
             cat("-Preprocessing complete!\n\n")
