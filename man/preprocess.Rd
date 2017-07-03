@@ -6,9 +6,9 @@
 \alias{preprocess,NWA-method}
 \title{A preprocessing method for objects of class GSCA or NWA}
 \usage{
-\S4method{preprocess}{GSCA}(object, species = "Dm",
-  initialIDs = "FLYBASECG", keepMultipleMappings = TRUE,
-  duplicateRemoverMethod = "max", orderAbsValue = FALSE, verbose = TRUE)
+\S4method{preprocess}{GSCA}(object, species = "Hs", initialIDs = "SYMBOL",
+  keepMultipleMappings = TRUE, duplicateRemoverMethod = "max",
+  orderAbsValue = FALSE, verbose = TRUE)
 
 \S4method{preprocess}{NWA}(object, species = "Dm",
   duplicateRemoverMethod = "max", initialIDs = "FLYBASECG",
