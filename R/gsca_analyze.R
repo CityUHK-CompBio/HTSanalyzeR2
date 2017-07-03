@@ -250,7 +250,7 @@ analyzeGeneSetCollections <-
           pAdjustMethod,
           verbose
         )
-      cat("-Gene set enrichment analysis complete \n")
+      cat("-Gene set enrichment analysis complete \n\n")
     } else {
       GSEA.results.list = NULL
     }
@@ -473,6 +473,7 @@ calcGSEA <-
     #     sum(geneSet %in% listNames) >= minGeneSetSize)
     tagGeneSets <- sapply(combinedGeneSets, function(geneSet)
         sum(geneSet %in% listNames) >= minGeneSetSize)
+
     combinedGeneSets <- combinedGeneSets[tagGeneSets]
 
     overlaps <-

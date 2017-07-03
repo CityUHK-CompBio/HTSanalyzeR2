@@ -78,8 +78,8 @@ if (!isGeneric("preprocess")) {
 #' @include gsca_class.R
 setMethod("preprocess", signature = "GSCA",
           function(object,
-                   species = "Dm",
-                   initialIDs = "FLYBASECG",
+                   species = "Hs",
+                   initialIDs = "SYMBOL",
                    keepMultipleMappings = TRUE,
                    duplicateRemoverMethod = "max",
                    orderAbsValue = FALSE,
