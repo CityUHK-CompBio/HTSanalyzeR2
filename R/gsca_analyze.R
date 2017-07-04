@@ -68,8 +68,7 @@ if (!isGeneric("analyze")) {
 #' # NetWork Analysis
 
 
-setMethod("analyze",
-          "GSCA",
+setMethod("analyze", signature = "GSCA",
           function(object,
                    para = list(
                      pValueCutoff = 0.05,
@@ -121,7 +120,7 @@ setMethod("analyze",
                 doGSEA = doGSEA
               )
 
-            ## update summary information
+            ## update summary information(first analyze and then update summary)
             cols <- colnames(object@summary$results)
             object@summary$results[1:3, ] <- NA
             if (doGSOA) {
@@ -147,7 +146,7 @@ setMethod("analyze",
             object
           })
 
-
+#=====================================================================================
 ##This function takes a list of gene set collections, a named phenotype
 ##vector (with names(phenotype vector)=GeneUniverse), a vector of hits
 ##(names only) and returns the results of hypergeometric and gene set
@@ -250,7 +249,7 @@ analyzeGeneSetCollections <-
           pAdjustMethod,
           verbose
         )
-      cat("-Gene set enrichment analysis complete \n")
+      cat("-Gene set enrichment analysis complete \n\n")
     } else {
       GSEA.results.list = NULL
     }
@@ -346,7 +345,7 @@ analyzeGeneSetCollections <-
     return(final.results)
   }
 
-
+#================================================================================
 calcHyperGeo <- function (listOfGeneSetCollections,
                           geneList,
                           hits,
@@ -473,6 +472,7 @@ calcGSEA <-
     #     sum(geneSet %in% listNames) >= minGeneSetSize)
     tagGeneSets <- sapply(combinedGeneSets, function(geneSet)
         sum(geneSet %in% listNames) >= minGeneSetSize)
+
     combinedGeneSets <- combinedGeneSets[tagGeneSets]
 
     overlaps <-

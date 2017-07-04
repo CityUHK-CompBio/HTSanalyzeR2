@@ -4,8 +4,8 @@
 \alias{annotationConvertor}
 \title{Convert between different types of gene identifiers}
 \usage{
-annotationConvertor(geneList, species="Dm", initialIDs="FLYBASE",
-finalIDs="Entrez.gene", keepMultipleMappings=TRUE, verbose=TRUE)
+annotationConvertor(geneList, species="Hs", initialIDs="SYMBOL",
+finalIDs="ENTREZID", keepMultipleMappings=TRUE, verbose=TRUE)
 }
 \arguments{
 \item{geneList}{A named integer or numeric vector, or a matrix with

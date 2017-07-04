@@ -311,7 +311,34 @@ paraCheck <- function(group, paraName, para) {
            if (paraName == "species" &&
                (!is.character(para) || length(para) != 1))
              stop("'species' should be a character!\n")
-         })
+         },
+         gscaTS = {
+           if(paraName == "geneListTS" &&
+              (!is.list(para) || length(para) < 2))
+           {stop("'geneListTS' should be a list with length more than 1!\n")}
+
+           if(paraName == "hitsTS" &&
+              (!is.list(para) || length(para) < 2 ))
+           {stop("'hitsTS' should be a list with length more than 1!\n")}
+
+         },
+         preprocessTS = {
+           if(paraName == "gscaList" &&   # need to check each element of gscaList should be GSCA object?
+              (!is.list(para) || length(para) < 2))
+           {stop("'gscaList' should be a list of GSCA objects with length more than 1!\n")}
+         },
+         analyzeTS = {
+           if(paraName == "gscaList" &&
+              (!is.list(para) || length(para) < 2))
+           {stop("'gscaList' should be a list of GSCA objects with length more than 1!\n")}
+         }
+         # ,
+         # summarizeTS = {
+         #   if(paraName == "gscaList" &&
+         #      (!is.list(para) || length(para) < 2))
+         #   {stop("'gscaList' should be a list of GSCA objects with length more than 1!\n")}
+         # }
+         )
 }
 
 

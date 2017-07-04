@@ -40,5 +40,9 @@ test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn,annotationColumn="GeneID"
 library(BioNet)
 }
 \seealso{
-\code{\link[HTSanalyzeR2]{preprocess}} \code{\link[HTSanalyzeR2]{analyze}} \code{\link[HTSanalyzeR2]{summarize}} \code{\link[HTSanalyzeR2]{interactome}} \code{\link[HTSanalyzeR2]{report}}
+\code{\link[HTSanalyzeR2]{preprocess}},
+ \code{\link[HTSanalyzeR2]{analyze}},
+  \code{\link[HTSanalyzeR2]{summarize}},
+   \code{\link[HTSanalyzeR2]{interactome}},
+    \code{\link[HTSanalyzeR2]{report}}
 }

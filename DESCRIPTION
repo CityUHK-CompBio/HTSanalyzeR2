@@ -33,6 +33,7 @@ Collate:
     'backup.R'
     'class_union.R'
     'd3plot.R'
+    'gscaTS.R'
     'utils.R'
     'gsca_class.R'
     'gsca_analyze.R'
