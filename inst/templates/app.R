@@ -11,7 +11,7 @@ library(HTSanalyzeR2)
 results <- readRDS(file = "./results.RData")
 gsca <- results$gsca
 nwa <- results$nwa
-gscaObjs <- results$gsca
+gscaObjs <- NULL
 
 ## ============================================ Preprocessing ==============================================
 gscaTS <- !is.null(gsca) && class(gsca) == "list"
@@ -22,9 +22,10 @@ if(!is.null(gsca)) {
   gscaSeriesTickInput <- NULL
   gscaProcessSlider <- NULL
   if(gscaTS) {
+    gscaObjs <- gsca
     gscaSeriesTicks <- names(gscaObjs)
     gscaSeriesTickInput <- selectInput('series_tick_res', 'Series Tick', gscaSeriesTicks)
-    gscaProcessSlider <- sliderInput("process_map", h3("Process"), 1, length(gscaSeriesTicks), value = 1, step = 1, animate = animationOptions(interval=500))
+    gscaProcessSlider <- sliderInput("process_map", h3("Process"), 1, length(gscaSeriesTicks), value = 1, step = 1, animate = animationOptions(interval=1000))
     for(name in gscaSeriesTicks) {
       gscaObjs[[name]] <- HTSanalyzeR2:::appendLinks(gscaObjs[[name]])
       gscaObjs[[name]] <- HTSanalyzeR2:::combineResults(gscaObjs[[name]])
@@ -44,7 +45,7 @@ if(!is.null(nwa)) {
   nwaProcessSlider <- NULL
   if(nwaTS) {
     seriesTicks <- colnames(nwa@phenotypes)
-    nwaProcessSlider <- sliderInput("process_net", h3("Process"), 0, length(seriesTicks), value = length(seriesTicks), step = 1, animate = animationOptions(interval=1000))
+    nwaProcessSlider <- sliderInput("process_net", h3("Process"), 1, length(seriesTicks), value = 1, step = 1, animate = animationOptions(interval=1000))
   }
 }
 
@@ -128,12 +129,12 @@ create_panel <- function(name) {
            h3("Enrichment Map"),
            selectInput('analysis_map', 'Analysis', availableAnalysis[-3]),
            selectInput('genesets_map', 'Gene Sets Collection', availableGeneSets),
-           hr(), gscaProcessSlider),
+           gscaProcessSlider),
          enrich_map_content = forceGraphOutput("map_output"),
 
          network_sidebar = wellPanel(
            includeMarkdown("nwa_summary.md"),
-           hr(), nwaProcessSlider),
+           nwaProcessSlider),
          network_content = forceGraphOutput("network_output")
   )
 }
@@ -162,7 +163,7 @@ server <- function(input, output, session) {
     })
 
   observeEvent(input$process_map, {
-    output$map_output <- updateForceGraph(list(process = input$process_map))
+    output$map_output <- updateForceGraph(list(process_map = input$process_map))
   })
 
   observeEvent({input$analysis_map
@@ -171,7 +172,7 @@ server <- function(input, output, session) {
     })
 
   observeEvent(input$process_net, {
-    output$network_output <- updateForceGraph(list(process = input$process_net))
+    output$network_output <- updateForceGraph(list(process_net = input$process_net))
   })
 
   ## TODO: undefined behavior

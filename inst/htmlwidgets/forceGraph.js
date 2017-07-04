@@ -713,10 +713,9 @@ HTMLWidgets.widget(global = {
         var curState = elState[elState.currentSubId];
         var schemeId = curState.nodeScheme;
 
-        // TODO: index < 0, zero value
-        if ('process' in x) {
+        if ('process_map' in x) {
             var series = curState.seriesData;
-            var index = JSON.parse(x.process) - 1;
+            var index = JSON.parse(x.process_map) - 1;
 
             if(series == null) {
                 return;
@@ -728,9 +727,8 @@ HTMLWidgets.widget(global = {
             var sel_polygon = global.getSelection(elState, 'polygon');
 
             node.each(function(d) {d.color = d["color." + series[index]] });
-            if(schemeId == "dual") {
-                node.each(function(d) { d.scheme = d["scheme." + series[index]] });
-            }
+            node.each(function(d) { d.scheme = d["scheme." + series[index]] });
+            link.each(function(d) {d.weight = d["weight." + series[index]] });
 
             node.transition().duration(300).attr("opacity", 1)
                 .filter(function(d){return d.color == null}).attr("opacity", 0);
@@ -740,13 +738,36 @@ HTMLWidgets.widget(global = {
             sel_polygon.transition().duration(300).attr("fill", function(d) {
                 return curState.scalers.wrapper(schemeId, d.color, d.scheme);
             })
-
-            link.each(function(d) {d.weight = d["weight." + series[index]] });
-             link.transition().duration(300).attr("stroke-width", function(d) {
+            link.transition().duration(300).attr("stroke-width", function(d) {
                 return d.weight * curState.edgeScale;
             });
-
         }
+
+        if ('process_net' in x) {
+            var series = curState.seriesData;
+            var index = JSON.parse(x.process_net) - 1;
+
+            if(series == null) {
+                return;
+            }
+
+            var node = global.getSelection(elState, 'node');
+            var link = global.getSelection(elState, 'edge');
+            var sel_circle = global.getSelection(elState, 'circle');
+            var sel_polygon = global.getSelection(elState, 'polygon');
+
+            node.each(function(d) {d.color = d["color." + series[index]] });
+
+            node.transition().duration(300).attr("opacity", 1)
+                .filter(function(d){return d.color == null}).attr("opacity", 0);
+            sel_circle.transition().duration(300).attr("fill", function(d) {
+                return curState.scalers.wrapper(schemeId, d.color, d.scheme);
+            })
+            sel_polygon.transition().duration(300).attr("fill", function(d) {
+                return curState.scalers.wrapper(schemeId, d.color, d.scheme);
+            })
+        }
+
     }
 }
 );
