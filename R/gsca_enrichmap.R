@@ -166,8 +166,10 @@ appendMSigDBTerm <- function(df) {
   data.frame(Gene.Set.Term = row.names(df), df, stringsAsFactors = FALSE)
 }
 
-
-
+#' Extract the enrichment map result from GSCA object
+#'
+#' This is a generic function.
+#' @export
 #' @importFrom igraph V graph.adjacency simplify
 setMethod("extractEnrichMap", signature = "GSCA",
           function(object,
@@ -359,7 +361,8 @@ setMethod("viewEnrichMap", signature = "GSCA",
                    ntop = NULL,
                    allSig = TRUE,
                    gsNameType = "id",
-                   options = list(charge = -300, distance = 200)
+                   options = list(charge = -300, distance = 200),
+                   seriesObjs = NULL
           ) {
             g <- extractEnrichMap(object, resultName, gscs, ntop, allSig, gsNameType)
 
@@ -377,13 +380,35 @@ setMethod("viewEnrichMap", signature = "GSCA",
               title <- paste(title, "Hypergeometric tests on", paste(gscs, collapse =", "))
             }
 
+            series <- NULL
+            if(!is.null(seriesObjs)) {
+              ## TODO: paraCheck of seriesObj
+              series <- names(seriesObjs)
+              defaultKey <- series[1]
+              # seriesDF: (nodes = nodeDF, edges = edgeDF, nodeSeriesCols = nodeCols, edgeSeriesCols = edgeCols)
+              seriesDF <- fetchGSCASeriesValues(seriesObjs, resultName, gscs, ntop, allSig, gsNameType)
+              # Create series mappings
+              nodeCols <- seriesDF$nodeSeriesCols
+              nodeColNames <- sub("adjPvalue", "color", nodeCols)
+              nodeColNames <- sub("colorScheme", "scheme", nodeColNames)
+              names(nodeCols) <- nodeColNames
+              edgeCols <- seriesDF$edgeSeriesCols
+              names(edgeCols) <- edgeCols
+              # Append series data
+              nMappings <- c(nMappings, nodeCols)
+              lMappings <- c(lMappings, edgeCols)
+              nMappings[c("color", "scheme")] <- paste(nMappings[c("color", "scheme")], defaultKey, sep=".")
+              lMappings[c("weight")] <- paste(lMappings[c("weight")], defaultKey, sep=".")
+              em_nodes <- seriesDF$nodes
+              em_links <- seriesDF$edges
+            }
+
             options$nodeScheme = "dual"
             defaultOptions = list(charge = -300, distance = 200,
                                   title = title, label = gsNameType, legendTitle = "Adjusted p-values")
             graphOptions <- modifyList(defaultOptions, options)
 
-            forceGraph(em_nodes, em_links, nMappings, lMappings, graphOptions)
-
+            forceGraph(em_nodes, em_links, nMappings, lMappings, graphOptions, seriesData = series)
           })
 
 ## Available graphOptions:
@@ -410,3 +435,46 @@ setMethod("viewEnrichMap", signature = "GSCA",
 # edgeScale: 1,
 # edgeColor: "#808080",  // grey
 # edgeOpacity: 0.6,
+
+
+#' FetchGSCASeriesValues
+#' @importFrom igraph as_data_frame
+fetchGSCASeriesValues <- function(gscaObjs, resultName = "GSEA.results", gscs,
+                            ntop = NULL, allSig = TRUE, gsNameType = "id") {
+  # TODO: check the objs
+  extractedValues <- lapply(seq_along(gscaObjs), function(i) {
+    g <- extractEnrichMap(gscaObjs[[i]], resultName, gscs, ntop, allSig, gsNameType)
+    dfList <- igraph::as_data_frame(g, "both")
+    # Vertices - ("name", "geneSetSize", "adjPvalue", "obsPvalue", "colorScheme", "label", "label_id", "label_term")
+    colsToAppend <- colnames(dfList$vertices) %in% c("adjPvalue", "obsPvalue", "colorScheme")
+    colnames(dfList$vertices)[colsToAppend] <- paste(colnames(dfList$vertices), names(gscaObjs)[i], sep=".")[colsToAppend]
+    # Edges - ("from", "to", "weight")
+    colsToAppend <- colnames(dfList$edges) %in% c("weight")
+    colnames(dfList$edges)[colsToAppend] <- paste(colnames(dfList$edges), names(gscaObjs)[i], sep=".")[colsToAppend]
+    rownames(dfList$edges) <- paste0(dfList$edges$from, dfList$edges$to)
+    dfList
+  })
+
+  #Combine nodes
+  colsInCommon <- c("name", "label", "label_id", "label_term")
+  nodeCols <- setdiff(unlist(lapply(extractedValues, function(li) {colnames(li$vertices)})), colsInCommon)
+  nodeDF <- unique(Reduce(rbind, lapply(extractedValues, function(li){li$vertices[colsInCommon]})))
+  nodeDF[, nodeCols] <- NA
+  for(li in extractedValues) {
+    cols <- setdiff(colnames(li$vertices), colsInCommon)
+    nodeDF[rownames(li$vertices), cols] <- li$vertices[, cols]
+  }
+
+  #Combine edges
+  colsInCommon <- c("from", "to")
+  edgeCols <- setdiff(unlist(lapply(extractedValues, function(li) {colnames(li$edges)})), colsInCommon)
+  edgeDF <- unique(Reduce(rbind, lapply(extractedValues, function(li){li$edges[colsInCommon]})))
+  edgeDF[, edgeCols] <- NA
+  for(li in extractedValues) {
+    cols <- setdiff(colnames(li$edges), colsInCommon)
+    edgeDF[rownames(li$edges), cols] <- li$edges[, cols]
+  }
+  rownames(edgeDF) <- NULL
+
+  list(nodes = nodeDF, edges = edgeDF, nodeSeriesCols = nodeCols, edgeSeriesCols = edgeCols)
+}

@@ -4,19 +4,12 @@
 \alias{reportAll}
 \title{Write HTML reports for both enrichment and network analyses}
 \usage{
-reportAll(gsca, nwa, gscaNodeOptions = NULL, nwaNodeOptions = NULL,
-  reportDir = "AnalysisReport")
+reportAll(gsca, nwa, reportDir = "AnalysisReport")
 }
 \arguments{
-\item{gsca}{an object of class GSCA}
+\item{gsca}{a GSCA object or a list of GSCA objects}
 
 \item{nwa}{an object of class NWA}
-
-\item{gscaNodeOptions}{a list of interested gene set terms which can be edited in the shiny report such as
-changing the shape of this set, etc.}
-
-\item{nwaNodeOptions}{a list of interested phenotypes which can be edited in the shiny report such as
-changing the shape of this set, etc.}
 
 \item{reportDir}{a single character value specifying the directory to store reports. For default both the
 enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport"}

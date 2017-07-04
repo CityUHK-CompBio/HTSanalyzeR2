@@ -1,9 +1,8 @@
 if (!isGeneric("report")) {
   setGeneric("report",
-             function(object, nodeOptions = list(), reportDir = "GSCAReport")
+             function(object, reportDir = "GSCAReport")
     standardGeneric("report"), package = "HTSanalyzeR2")
 }
-
 
 #' Write HTML reports for enrichment or network analyses
 #'
@@ -15,8 +14,6 @@ if (!isGeneric("report")) {
 #' @param object  an object. When this function is implemented as the S4
 #' method of class 'GSCA' or 'NWA', this argument is an object of class
 #' 'GSCA' or 'NWA'.
-#' @param nodeOptions a list of interested gene set terms which can be edited in the shiny report such as
-#' changing the shape of this set, etc.
 #' @param reportDir a single character value specifying the directory to store reports. For default
 #' the enrichment analysis reports will be stored in the directory called "GSCAReport"
 #'
@@ -54,51 +51,44 @@ if (!isGeneric("report")) {
 #'
 #' @export
 setMethod("report", signature = "GSCA",
-          function(object, nodeOptions = list(), reportDir = "GSCAReport") {
-            reportAll(gsca = object, nwa = NULL,
-                      gscaNodeOptions = nodeOptions, nwaNodeOptions = NULL,
-                      reportDir)
+          function(object, reportDir = "GSCAReport") {
+            reportAll(gsca = object, nwa = NULL, reportDir)
           }
 )
+
 
 #' Write HTML reports for both enrichment and network analyses
 #'
 #'This function can create HTML reports for both gene sets enrichment analysis and network analysis using
 #'shiny.
 #'
-#'@param gsca an object of class GSCA
+#'@param gsca a GSCA object or a list of GSCA objects
 #'@param nwa an object of class NWA
-#'@param gscaNodeOptions a list of interested gene set terms which can be edited in the shiny report such as
-#' changing the shape of this set, etc.
-#'@param nwaNodeOptions a list of interested phenotypes which can be edited in the shiny report such as
-#' changing the shape of this set, etc.
-#'
 #'@param reportDir a single character value specifying the directory to store reports. For default both the
 #'  enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport"
 #'
 #'
-#'
 #' @export
-reportAll <- function(gsca, nwa, gscaNodeOptions = NULL, nwaNodeOptions = NULL,
-                      reportDir = "AnalysisReport") {
+reportAll <- function(gsca, nwa, reportDir = "AnalysisReport") {
   if(!is.null(gsca) && class(gsca) != "GSCA") {
-    stop("the object gsca should be a GSCA object\n")
+    if(class(gsca) != "list" || any(sapply(gsca, class) != "GSCA")) {
+      stop("the parameter gsca should be a GSCA object or a list of GSCA objects\n")
+    }
   }
+
   if(!is.null(nwa) && class(nwa) != "NWA") {
-    stop("the object nwa should be a NWA object\n")
+    stop("the parameter nwa should be a NWA object\n")
   }
 
   if(file.exists(reportDir)) {
-    reportDir <- paste(reportDir, format(Sys.time(), "%H%M%S"))
+    reportDir <- paste(reportDir, format(Sys.time(), "%y%m%d-%H%M%S"), sep="-")
   }
   dir.create(reportDir)
 
   templateDir <- dir(system.file("templates", package="HTSanalyzeR2"), full.names=TRUE)
   file.copy(from = templateDir, to = reportDir, overwrite = TRUE)
 
-  results <- list(gsca = gsca, nwa = nwa,
-                  gscaNodeOptions = gscaNodeOptions,
-                  nwaNodeOptions = nwaNodeOptions)
+  results <- list(gsca = gsca, nwa = nwa)
   saveRDS(results, file = file.path(reportDir, "results.RData"))
 
   shiny::runApp(reportDir)

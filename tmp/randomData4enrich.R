@@ -25,3 +25,14 @@ data4enrichMat
 
 saveRDS(list(pvalues =pvalues, data4enrich = data4enrich, data4enrichMat = data4enrichMat), "./data4enrich.RData")
 saveRDS(list(nwa = nwa, nwam = nwam, gsca = gsca, nwaOpts = nwaOpts, gscaOpts = gscaOpts), "objects.RData")
+
+
+
+
+gscaTS <- list('1h'=gsca, '2h'=gsca, '3h'=gsca, '4h'=gsca)
+for (name in names(gscaTS)) {
+  res <- gscaTS[[name]]@result
+  res$GSEA.results$GO_MF[, "Adjusted.Pvalue"] = res$GSEA.results$GO_MF[, "Adjusted.Pvalue"] + runif(nrow(res$GSEA.results$GO_MF), -0.1, 0.1)
+  gscaTS[[name]]@result <- res
+}
+

@@ -7,26 +7,47 @@ library(HTSanalyzeR2)
 
 
 ## ============================================ Loading results ============================================
-## results: list(gsca = gsca, nwa = nwa, gscaNodeOptions = list(), nwaNodeOptions = list())
+## results: list(gsca = gsca, nwa = nwa)
 results <- readRDS(file = "./results.RData")
 gsca <- results$gsca
 nwa <- results$nwa
+gscaObjs <- results$gsca
 
 ## ============================================ Preprocessing ==============================================
+gscaTS <- !is.null(gsca) && class(gsca) == "list"
+nwaTS <- !is.null(nwa) && is.matrix(nwa@phenotypes)
+
 if(!is.null(gsca)) {
-  gsca <- HTSanalyzeR2:::appendLinks(gsca)
-  gsca <- HTSanalyzeR2:::combineResults(gsca)
+  gscaSeriesTicks <- NULL
+  gscaSeriesTickInput <- NULL
+  gscaProcessSlider <- NULL
+  if(gscaTS) {
+    gscaSeriesTicks <- names(gscaObjs)
+    gscaSeriesTickInput <- selectInput('series_tick_res', 'Series Tick', gscaSeriesTicks)
+    gscaProcessSlider <- sliderInput("process_map", h3("Process"), 1, length(gscaSeriesTicks), value = 1, step = 1, animate = animationOptions(interval=500))
+    for(name in gscaSeriesTicks) {
+      gscaObjs[[name]] <- HTSanalyzeR2:::appendLinks(gscaObjs[[name]])
+      gscaObjs[[name]] <- HTSanalyzeR2:::combineResults(gscaObjs[[name]])
+    }
+    gsca <- gscaObjs[[1]]
+  } else {
+    gsca <- HTSanalyzeR2:::appendLinks(gsca)
+    gsca <- HTSanalyzeR2:::combineResults(gsca)
+  }
 
   availableAnalysis <- HTSanalyzeR2:::availableResults(gsca@summary$results, TRUE)
   availableGeneSets <- HTSanalyzeR2:::availableResults(gsca@summary$results, FALSE)
 }
+
 if(!is.null(nwa)) {
-  processSlider <- sliderInput("process_net", "", 0, 1, 1, step = 1, animate = animationOptions(interval=800))
-  if(is.matrix(nwa@phenotypes)) {
+  # sliderInput("process_net", h3("Process"), 0, 1, 1, step = 1, animate = animationOptions(interval=800))
+  nwaProcessSlider <- NULL
+  if(nwaTS) {
     seriesTicks <- colnames(nwa@phenotypes)
-    processSlider <- sliderInput("process_net", "", 0, length(seriesTicks), value = length(seriesTicks), step = 1, animate = animationOptions(interval=1000))
+    nwaProcessSlider <- sliderInput("process_net", h3("Process"), 0, length(seriesTicks), value = length(seriesTicks), step = 1, animate = animationOptions(interval=1000))
   }
 }
+
 file.remove(dir(".", pattern = "*\\.md", full.names = TRUE))
 if (!is.null(gsca))  knitr::knit("gsca_summary.Rmd", "gsca_summary.md")
 if (!is.null(nwa))  knitr::knit("nwa_summary.Rmd", "nwa_summary.md")
@@ -56,12 +77,12 @@ trim_result <- function(result, digits = 3) {
   result
 }
 
-create_data_table <- function(gsca, analysis, genesets) {
+create_data_table <- function(gscaObj, analysis, genesets) {
   jsRender <- JS("function(data, type, row, meta) { return type === 'display' && Number(data) < 0.001 ? '<0.001' : data }")
   jsCallback <- JS("table.page(0).draw(false)")
 
   analysis_to_show <- ifelse(analysis == "Significant in both", "Sig.adj.pvals.in.both", paste0(analysis, ".results"))
-  res <- gsca@result[[analysis_to_show]][[genesets]]
+  res <- gscaObj@result[[analysis_to_show]][[genesets]]
   res <- trim_result(res, digits = 3)
 
   target_cols <- c("HyperGeo.Adj.Pvalue", "GSEA.Adj.Pvalue", "Pvalue", "Adjusted.Pvalue")
@@ -70,24 +91,25 @@ create_data_table <- function(gsca, analysis, genesets) {
 
   dt <- DT::datatable(res, filter = 'top', rownames = FALSE, escape = FALSE, options = dt_options, callback = jsCallback)
   if (analysis != "Significant in both") {
-    dt <- formatStyle(dt, 'Adjusted.Pvalue', target = "row", fontWeight = styleInterval(gsca@para$pValueCutoff, c('bold', 'weight')))
+    dt <- formatStyle(dt, 'Adjusted.Pvalue', target = "row", fontWeight = styleInterval(gscaObj@para$pValueCutoff, c('bold', 'weight')))
   }
   dt
 }
 
-create_enrich_map <- function(gsca, input) {
+create_enrich_map <- function(gscaObj, input) {
   options <- list(charge = -400, distance = 200)
-  viewEnrichMap(gsca,
+  viewEnrichMap(gscaObj,
                 resultName=paste0(input$analysis_map, ".results"),
                 gscs = c(input$genesets_map),
                 allSig=TRUE,
                 gsNameType="id",
-                options = options)
+                options = options,
+                seriesObjs = gscaObjs)
 }
 
-create_network <- function(nwa) {
+create_network <- function(nwaObj) {
   options <- list(charge = -200, distance = 150)
-  viewSubNet(nwa, options = options)
+  viewSubNet(nwaObj, options = options)
 }
 
 
@@ -96,7 +118,7 @@ create_panel <- function(name) {
   switch(name,
          enrich_res_sidebar = wellPanel(
            includeMarkdown("gsca_summary.md"),
-           hr(),
+           hr(), gscaSeriesTickInput,
            selectInput('analysis_res', 'Analysis', availableAnalysis),
            selectInput('genesets_res', 'Gene Sets Collection', c(availableGeneSets, "ALL"))),
          enrich_res_content = dataTableOutput("gsca_output"),
@@ -105,13 +127,13 @@ create_panel <- function(name) {
          enrich_map_sidebar = wellPanel(
            h3("Enrichment Map"),
            selectInput('analysis_map', 'Analysis', availableAnalysis[-3]),
-           selectInput('genesets_map', 'Gene Sets Collection', availableGeneSets)),
+           selectInput('genesets_map', 'Gene Sets Collection', availableGeneSets),
+           hr(), gscaProcessSlider),
          enrich_map_content = forceGraphOutput("map_output"),
 
          network_sidebar = wellPanel(
            includeMarkdown("nwa_summary.md"),
-           hr(), h3("Progress"),
-           processSlider),
+           hr(), nwaProcessSlider),
          network_content = forceGraphOutput("network_output")
   )
 }
@@ -129,10 +151,19 @@ ui <- do.call(navbarPage, c(list(title="HTSanalyzeR2", fluid = TRUE, theme = shi
 
 ## ============================================ Define server ==============================================
 server <- function(input, output, session) {
-  observeEvent({input$analysis_res
+  observeEvent({input$series_tick_res
+    input$analysis_res
     input$genesets_res}, {
-      output$gsca_output <- renderDataTable(create_data_table(gsca, input$analysis_res, input$genesets_res))
+      obj <- gsca
+      if(gscaTS) {
+        obj <- gscaObjs[[input$series_tick_res]]
+      }
+      output$gsca_output <- renderDataTable(create_data_table(obj, input$analysis_res, input$genesets_res))
     })
+
+  observeEvent(input$process_map, {
+    output$map_output <- updateForceGraph(list(process = input$process_map))
+  })
 
   observeEvent({input$analysis_map
     input$genesets_map}, {

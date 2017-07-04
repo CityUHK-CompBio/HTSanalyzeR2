@@ -42,6 +42,9 @@ HTMLWidgets.widget(global = {
         },
         scalers: {
             wrapper: function(schemeId, color, scheme) {
+                if(color == null) {
+                    return "#FFFFFF"
+                }
                 if(schemeId == "dual") {
                     return this[schemeId+scheme](color);
                 } else {
@@ -111,6 +114,8 @@ HTMLWidgets.widget(global = {
     getSelection: function(elState, type) {
         var svg = elState.svg;
         switch (type) {
+            case 'node':
+                return svg.selectAll(".node");
             case 'circle':
                 return svg.selectAll(".node > .shape-circle");
             case 'polygon':
@@ -146,6 +151,7 @@ HTMLWidgets.widget(global = {
 
     construct: function(elState, x, simulation) {
         // TODO: use smarter loader, check proverty available.
+        // console.log(x)
         var options = x.options;
         var curState = elState[elState.currentSubId];
 
@@ -274,6 +280,8 @@ HTMLWidgets.widget(global = {
             .text(function(d) {
                 return d["label_" + curState.label];
             });
+
+        node.filter(function(d){return d.color == null}).attr("opacity", 0)
 
         simulation.nodes(nodes)
             .on("tick", ticked);
@@ -703,31 +711,41 @@ HTMLWidgets.widget(global = {
     update: function(elState, x, simulation) {
         // update interface for R
         var curState = elState[elState.currentSubId];
+        var schemeId = curState.nodeScheme;
 
         // TODO: index < 0, zero value
         if ('process' in x) {
             var series = curState.seriesData;
             var index = JSON.parse(x.process) - 1;
 
-            if(series) {
-                var sel_circle = global.getSelection(elState, 'circle');
-                var sel_polygon = global.getSelection(elState, 'polygon');
-
-                if(index < 0) {
-                    sel_circle.each(function(d) { d.color = 0 });
-                    sel_polygon.each(function(d) { d.color = 0 });
-                } else {
-                    sel_circle.each(function(d) { d.color = d["color." + series[index]] });
-                    sel_polygon.each(function(d) { d.color = d["color." + series[index]] });
-                }
-
-                sel_circle.transition().duration(300).attr("fill", function(d) {
-                    return curState.scalers.wrapper(schemeId, d.color, d.scheme);
-                })
-                sel_polygon.transition().duration(300).attr("fill", function(d) {
-                    return curState.scalers.wrapper(schemeId, d.color, d.scheme);
-                })
+            if(series == null) {
+                return;
             }
+
+            var node = global.getSelection(elState, 'node');
+            var link = global.getSelection(elState, 'edge');
+            var sel_circle = global.getSelection(elState, 'circle');
+            var sel_polygon = global.getSelection(elState, 'polygon');
+
+            node.each(function(d) {d.color = d["color." + series[index]] });
+            if(schemeId == "dual") {
+                node.each(function(d) { d.scheme = d["scheme." + series[index]] });
+            }
+
+            node.transition().duration(300).attr("opacity", 1)
+                .filter(function(d){return d.color == null}).attr("opacity", 0);
+            sel_circle.transition().duration(300).attr("fill", function(d) {
+                return curState.scalers.wrapper(schemeId, d.color, d.scheme);
+            })
+            sel_polygon.transition().duration(300).attr("fill", function(d) {
+                return curState.scalers.wrapper(schemeId, d.color, d.scheme);
+            })
+
+            link.each(function(d) {d.weight = d["weight." + series[index]] });
+             link.transition().duration(300).attr("stroke-width", function(d) {
+                return d.weight * curState.edgeScale;
+            });
+
         }
     }
 }

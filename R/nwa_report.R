@@ -1,9 +1,8 @@
 if (!isGeneric("report")) {
   setGeneric("report",
-             function(object, nodeOptions = list(), reportDir = "NWAReport")
+             function(object, reportDir = "NWAReport")
     standardGeneric("report"), package = "HTSanalyzeR2")
 }
-
 
 #' @rdname report
 #' @examples
@@ -29,9 +28,7 @@ if (!isGeneric("report")) {
 #' @export
 setMethod("report",
           "NWA",
-          function(object, nodeOptions = list(), reportDir = "NWAReport") {
-            reportAll(gsca = NULL, nwa = object,
-                      gscaNodeOptions = NULL, nwaNodeOptions = nodeOptions,
-                      reportDir)
+          function(object, reportDir = "NWAReport") {
+            reportAll(gsca = NULL, nwa = object, reportDir)
           }
         )

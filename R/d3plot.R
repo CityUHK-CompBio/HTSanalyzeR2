@@ -20,7 +20,10 @@ forceGraph <- function(nodes, links, nMappings, lMappings, options,
   if(is.null(nodesDF$size)){
     nodesDF$size <- node.size$default
   } else {
-    nodesDF$size <- norm(nodesDF$size, node.size$min, node.size$max, node.size$default)
+    keys <- grep("^size($|\\.)", colnames(nodesDF), value = TRUE)
+    for(key in keys) {
+      nodesDF[key] <- norm(nodesDF[key], node.size$min, node.size$max, node.size$default)
+    }
   }
 
   if(is.null(nodesDF$color)) {
@@ -34,21 +37,17 @@ forceGraph <- function(nodes, links, nMappings, lMappings, options,
   if(is.null(linksDF$weight)){
     linksDF$weight <- link.weight$default
   } else {
-    linksDF$weight <- norm(linksDF$weight, link.weight$min, link.weight$max, link.weight$default)
+    keys <- grep("^weight($|\\.)", colnames(linksDF), value = TRUE)
+    for(key in keys) {
+      linksDF[key] <- norm(linksDF[key], link.weight$min, link.weight$max, link.weight$default)
+    }
   }
 
-  if(0 < min(nodesDF$color) && max(nodesDF$color) < 1) {
+  if(0 < min(nodesDF$color, na.rm = TRUE) && max(nodesDF$color, na.rm = TRUE) < 1) {
     colorDomain <- color.domain.default
   } else {
     colorDomain <- range(nodesDF$color)
   }
-  # maxAbs <- max(abs(nodesDF$color))
-  # if(maxAbs <= 1) {
-  #   colorDomain <- color.domain.default
-  # } else {
-  #   colorDomain <- c(-maxAbs, 0, maxAbs)
-  # }
-
 
   # create options
   # colorDomain must be three nums
@@ -91,11 +90,12 @@ updateForceGraph <- function(options) {
 
 norm <- function(df, minValue, maxValue, defaultValue) {
   # colnames(df) <- newName
-  if(min(df) == max(df)) {
+  ran = range(df, na.rm = TRUE)
+  if(ran[1] == ran[2]) {
     df <- defaultValue
     return(df)
   }
-  tmp <- (df - min(df)) / (max(df) - min(df))
+  tmp <- (df - ran[1]) / (ran[2] - ran[1])
   tmp * (maxValue - minValue) + minValue
 }
 

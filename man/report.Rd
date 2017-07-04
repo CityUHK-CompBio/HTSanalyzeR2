@@ -6,19 +6,14 @@
 \alias{report,NWA-method}
 \title{Write HTML reports for enrichment or network analyses}
 \usage{
-\S4method{report}{GSCA}(object, nodeOptions = list(),
-  reportDir = "GSCAReport")
+\S4method{report}{GSCA}(object, reportDir = "GSCAReport")
 
-\S4method{report}{NWA}(object, nodeOptions = list(),
-  reportDir = "NWAReport")
+\S4method{report}{NWA}(object, reportDir = "NWAReport")
 }
 \arguments{
 \item{object}{an object. When this function is implemented as the S4
 method of class 'GSCA' or 'NWA', this argument is an object of class
 'GSCA' or 'NWA'.}
-
-\item{nodeOptions}{a list of interested gene set terms which can be edited in the shiny report such as
-changing the shape of this set, etc.}
 
 \item{reportDir}{a single character value specifying the directory to store reports. For default
 the enrichment analysis reports will be stored in the directory called "GSCAReport"}
