@@ -204,7 +204,7 @@ setMethod("getTopGeneSets", signature = "GSCA",
             return(filenames)
           })
 
-setMethod("show", signature = "GSCA", function(object) {
+setMethod("show", signature = "GSCA", function(object) {                ##why need this function?
   cat("A GSCA (Gene Set Collection Analysis) object:\n")
   summarize(object, what = c("GSC", "GeneList", "Hits", "Para"))
 })

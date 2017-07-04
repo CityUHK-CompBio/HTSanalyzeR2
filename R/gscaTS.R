@@ -46,4 +46,13 @@ analyzeTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
 }
 
 
+# summarizeTS -------------------------------------------------------------
+## @export
+#'
+# summarizeTS <- function(gscaList, what = "ALL"){
+#         paraCheck("summarizeTS", "gscaList", gscaList)
+#         lapply(gscaList, function(x){
+#           HTSanalyzeR2::summarize(x, what = what)
+#         })
+# }
 

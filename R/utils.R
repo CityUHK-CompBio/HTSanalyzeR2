@@ -331,7 +331,14 @@ paraCheck <- function(group, paraName, para) {
            if(paraName == "gscaList" &&
               (!is.list(para) || length(para) < 2))
            {stop("'gscaList' should be a list of GSCA objects with length more than 1!\n")}
-         })
+         }
+         # ,
+         # summarizeTS = {
+         #   if(paraName == "gscaList" &&
+         #      (!is.list(para) || length(para) < 2))
+         #   {stop("'gscaList' should be a list of GSCA objects with length more than 1!\n")}
+         # }
+         )
 }
 
 

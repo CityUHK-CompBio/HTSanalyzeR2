@@ -93,10 +93,10 @@ setMethod("preprocess", signature = "GSCA",
             paraCheck("Annotataion", "keepMultipleMappings", keepMultipleMappings)
 
 
-            ## preprocessing
+            ## preprocessing==============================================================
             cat("-Preprocessing for input gene list and hit list ...\n")
 
-            ## genelist preprocessing
+            ## genelist preprocessing-----------------------------------------------------
             genelist <- object@geneList
 
             ## remove NA in geneList
@@ -121,7 +121,7 @@ setMethod("preprocess", signature = "GSCA",
             ## genes after removing duplicates
             object@summary$gl[, "duplicate removed"] <- length(genelist)
 
-            ## hits preprocessing
+            ## hits preprocessing---------------------------------------------------------
             if(length(object@hits) > 0){
                   hits <- object@hits[object@hits != "" & !is.na(object@hits)]
                   if (length(hits) == 0)
@@ -134,7 +134,7 @@ setMethod("preprocess", signature = "GSCA",
             }  ## finish hits preprocessing
 
 
-            ## annotation convertor
+            ## annotation convertor=======================================================
             if (initialIDs != "ENTREZID") {
               if (verbose)
                 cat("--Converting annotations ...\n")
@@ -163,7 +163,7 @@ setMethod("preprocess", signature = "GSCA",
             object@summary$gl[, "converted to entrez"] <-
               length(genelist)
 
-            ## update genelist and hits, and return objects
+            ## update genelist and hits, and return objects================================
             if (verbose)
               cat("--Ordering Gene List decreasingly ...\n")
             if (!orderAbsValue)
@@ -263,8 +263,8 @@ duplicateRemover <- function(geneList, method = "max") {
 #' for which no mapping were found will be removed. This function can
 #' also take a matrix, with gene identifiers as row names.
 #'
-#' @usage annotationConvertor(geneList, species="Dm", initialIDs="FLYBASE",
-#' finalIDs="Entrez.gene", keepMultipleMappings=TRUE, verbose=TRUE)
+#' @usage annotationConvertor(geneList, species="Hs", initialIDs="SYMBOL",
+#' finalIDs="ENTREZID", keepMultipleMappings=TRUE, verbose=TRUE)
 #' @param geneList A named integer or numeric vector, or a matrix with
 #' rows named by gene identifiers
 #' @param species A single character value specifying the species for
@@ -297,8 +297,8 @@ duplicateRemover <- function(geneList, method = "max") {
 #' @export
 #' @importFrom AnnotationDbi mapIds columns
 annotationConvertor <- function(geneList,
-                                species = "Dm",
-                                initialIDs = "ENTREZID",
+                                species = "Hs",
+                                initialIDs = "SYMBOL",
                                 finalIDs = "ENTREZID",
                                 keepMultipleMappings = TRUE,
                                 verbose = TRUE) {
@@ -342,7 +342,7 @@ annotationConvertor <- function(geneList,
   geneListEntrez <- geneList
 
   ##if a named vector
-  if (!is.matrix(geneList)) {
+  if (!is.matrix(geneList)) {                      ##no need to judge???
     namesMapping <-
       AnnotationDbi::mapIds(
         annodb,
