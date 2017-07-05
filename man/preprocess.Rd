@@ -10,8 +10,8 @@
   keepMultipleMappings = TRUE, duplicateRemoverMethod = "max",
   orderAbsValue = FALSE, verbose = TRUE)
 
-\S4method{preprocess}{NWA}(object, species = "Dm",
-  duplicateRemoverMethod = "max", initialIDs = "FLYBASECG",
+\S4method{preprocess}{NWA}(object, species = "Hs",
+  duplicateRemoverMethod = "max", initialIDs = "SYMBOL",
   keepMultipleMappings = TRUE, verbose = TRUE)
 }
 \arguments{

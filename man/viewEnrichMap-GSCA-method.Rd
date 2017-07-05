@@ -7,7 +7,7 @@
 \usage{
 \S4method{viewEnrichMap}{GSCA}(object, resultName = "GSEA.results", gscs,
   ntop = NULL, allSig = TRUE, gsNameType = "id", options = list(charge =
-  -300, distance = 200))
+  -300, distance = 200), seriesObjs = NULL)
 }
 \arguments{
 \item{object}{an object. When this function is implemented as the S4 method

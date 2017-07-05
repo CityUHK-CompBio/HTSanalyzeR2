@@ -4,7 +4,7 @@
 \alias{reportAll}
 \title{Write HTML reports for both enrichment and network analyses}
 \usage{
-reportAll(gsca, nwa, reportDir = "AnalysisReport")
+reportAll(gsca = NULL, nwa = NULL, reportDir = "AnalysisReport")
 }
 \arguments{
 \item{gsca}{a GSCA object or a list of GSCA objects}

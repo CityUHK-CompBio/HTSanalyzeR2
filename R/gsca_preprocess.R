@@ -342,7 +342,7 @@ annotationConvertor <- function(geneList,
   geneListEntrez <- geneList
 
   ##if a named vector
-  if (!is.matrix(geneList)) {                      ##no need to judge???
+  if (!is.matrix(geneList)) {
     namesMapping <-
       AnnotationDbi::mapIds(
         annodb,

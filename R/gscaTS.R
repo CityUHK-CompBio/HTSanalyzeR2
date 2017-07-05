@@ -9,13 +9,16 @@ gscaList <- function(listOfGeneSetCollections, geneListTS, hitsTS = character())
    paraCheck("gscaTS", "hitsTS", hitsTS)
     if(length(hitsTS) != length(geneListTS))
     {stop("'hitsTS' must have the same length as 'geneListTS'")}
-   lapply(1:length(geneListTS), function(x) {
+
+    tmp <- lapply(1:length(geneListTS), function(x) {
     new("GSCA", listOfGeneSetCollections=listOfGeneSetCollections, geneList=geneListTS[[x]], hits=hitsTS[[x]])
    })} else{
-     lapply(geneListTS, function(x) {
+    tmp <-  lapply(geneListTS, function(x) {
        new("GSCA", listOfGeneSetCollections=listOfGeneSetCollections, geneList=x)
      })
-  }
+   }
+  names(tmp) <- names(geneListTS)
+  tmp
 }
 
 
@@ -26,11 +29,14 @@ preprocessTS <- function(gscaList, species="Hs", initialIDs="SYMBOL",
                          keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
                          orderAbsValue=FALSE){
     paraCheck("preprocessTS", "gscaList", gscaList)
-    lapply(gscaList, function(x){
+    tmpName <- names(gscaList)
+    tmp <- lapply(gscaList, function(x){
     preprocess(x, species=species, initialIDs=initialIDs,
                keepMultipleMappings=keepMultipleMappings, duplicateRemoverMethod=duplicateRemoverMethod,
                orderAbsValue=orderAbsValue)
   })
+    names(tmp) <- tmpName
+    tmp
 }
 
 # analyze -----------------------------------------------------------------
@@ -40,9 +46,12 @@ analyzeTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
                                       nPermutations=1000, minGeneSetSize=15,
                                       exponent=1), doGSOA = FALSE){
               paraCheck("analyzeTS", "gscaList", gscaList)
-              lapply(gscaList, function(x){
-                  analyze(x, para=para, doGSOA = T)
+              tmpName <- names(gscaList)
+              tmp <- lapply(gscaList, function(x){
+                  analyze(x, para=para, doGSOA = doGSOA)
                         })
+              names(tmp) <- tmpName
+              tmp
 }
 
 
@@ -55,4 +64,19 @@ analyzeTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
 #           HTSanalyzeR2::summarize(x, what = what)
 #         })
 # }
+
+
+# appendGSTermsTS ---------------------------------------------------------
+#' @export
+#'
+#'
+appendGSTermsTS <- function(gscaList, keggGSCs=NULL, goGSCs=NULL, msigdbGSCs=NULL){
+             paraCheck("appendGSTermsTS", "gscaList", gscaList)
+             tmpName <- names(gscaList)
+             tmp <- lapply(gscaList, function(x){
+             appendGSTerms(x, keggGSCs = keggGSCs, goGSCs = goGSCs, msigdbGSCs = msigdbGSCs)
+           })
+             names(tmp) <- tmpName
+             tmp
+}
 

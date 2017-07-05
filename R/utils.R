@@ -58,12 +58,17 @@ paraCheck <- function(group, paraName, para) {
 
          NWAClass = {
            if(paraName == "pvalues") {
-             if(!is.numeric(para) || length(para) == 0 || is.null(names(para)))
-               stop("'pvalues' should be a named numeric vector with length > 0!\n")
+             if(is.matrix(para)) {
+               if(nrow(para) == 0 || is.null(rownames(para)))
+                 stop("'pvalues' should be a named numeric matrix with rownum > 0!\n")
+             } else {
+               if(!(is.numeric(para) || is.integer(para)) || length(para) == 0 || is.null(names(para)))
+                 stop("'pvalues' should be a named numeric vector with length > 0!\n")
+             }
            }
            if(paraName == "phenotypes") {
              if(is.matrix(para)) {
-               if(!is.matrix(para) || nrow(para) == 0 || is.null(rownames(para)))
+               if(nrow(para) == 0 || is.null(rownames(para)))
                  stop("'phenotypes/phenotypeVector' should be a named numeric matrix with rownum > 0!\n")
              } else {
                if(!(is.numeric(para) || is.integer(para)) || length(para) == 0 || is.null(names(para)))
@@ -145,7 +150,7 @@ paraCheck <- function(group, paraName, para) {
            }
            if (paraName =="hits" &&
              (!is.character(para) || length(para)==0)) {
-               stop("'hits' should be a character vector with length > 0!\n")
+               stop("GSOA should have 'hits' and hits' should be a character vector with length > 0!\n")
            }
            if (paraName == "fdr") {
              if(!is.numeric(para) || para>1)
@@ -314,30 +319,30 @@ paraCheck <- function(group, paraName, para) {
          },
          gscaTS = {
            if(paraName == "geneListTS" &&
-              (!is.list(para) || length(para) < 2))
-           {stop("'geneListTS' should be a list with length more than 1!\n")}
+              (!is.list(para) || length(para) < 2) || is.null(names(para)) || any(is.na(names(para))))
+           {stop("'geneListTS' should be a named list with length more than 1!\n")}
 
            if(paraName == "hitsTS" &&
-              (!is.list(para) || length(para) < 2 ))
-           {stop("'hitsTS' should be a list with length more than 1!\n")}
+              (!is.list(para) || length(para) < 2 ) || is.null(names(para)) || any(is.na(names(para))))
+           {stop("'hitsTS' should be a named list with length more than 1!\n")}
 
          },
          preprocessTS = {
-           if(paraName == "gscaList" &&   # need to check each element of gscaList should be GSCA object?
-              (!is.list(para) || length(para) < 2))
-           {stop("'gscaList' should be a list of GSCA objects with length more than 1!\n")}
+           if(paraName == "gscaList" &&
+              (!is.list(para) || length(para) < 2) || is.null(names(para)) || any(is.na(names(para))))
+           {stop("'gscaList' should be a named list of GSCA objects with length more than 1!\n")}
          },
          analyzeTS = {
            if(paraName == "gscaList" &&
-              (!is.list(para) || length(para) < 2))
-           {stop("'gscaList' should be a list of GSCA objects with length more than 1!\n")}
+              (!is.list(para) || length(para) < 2) || is.null(names(para)) || any(is.na(names(para))))
+           {stop("'gscaList' should be a named list of GSCA objects with length more than 1!\n")}
          }
-         # ,
-         # summarizeTS = {
-         #   if(paraName == "gscaList" &&
-         #      (!is.list(para) || length(para) < 2))
-         #   {stop("'gscaList' should be a list of GSCA objects with length more than 1!\n")}
-         # }
+         ,
+         appendGSTermsTS = {
+           if(paraName == "gscaList" &&
+              (!is.list(para) || length(para) < 2) || is.null(names(para)) || any(is.na(names(para))))
+           {stop("'gscaList' should be a named list of GSCA objects with length more than 1!\n")}
+         }
          )
 }
 

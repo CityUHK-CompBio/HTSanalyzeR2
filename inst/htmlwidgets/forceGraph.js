@@ -36,9 +36,9 @@ HTMLWidgets.widget(global = {
         palettes: {
             linear2: { domain: [-1, 1], range: ["#0E0F7E", "#87420E"] },
             linear3: { domain: [-1, 0, 1], range: ["#69D2E7", "#E3E3E3", "#FA6900"] },
-            dual: { domain: [0, 1], range: ["#F03C18", "#BEC9E8"] },
-            dualPos: { domain: [0, 1], range: ["#F03C18", "#BEC9E8"] },
-            dualNeg: { domain: [0, 1], range: ["#517281", "#BEC9E8"] },
+            dual: { domain: [0, 1], range: ["#FF2209", "#FFFFFF"] },
+            dualPos: { domain: [0, 0.05], range: ["#FF0000", "#FFDEE2"] },
+            dualNeg: { domain: [0, 0.05], range: ["#4833FF", "#CAD3FF"] },
         },
         scalers: {
             wrapper: function(schemeId, color, scheme) {

@@ -69,7 +69,7 @@ setMethod("report", signature = "GSCA",
 #'
 #'
 #' @export
-reportAll <- function(gsca, nwa, reportDir = "AnalysisReport") {
+reportAll <- function(gsca = NULL, nwa = NULL, reportDir = "AnalysisReport") {
   if(!is.null(gsca) && class(gsca) != "GSCA") {
     if(class(gsca) != "list" || any(sapply(gsca, class) != "GSCA")) {
       stop("the parameter gsca should be a GSCA object or a list of GSCA objects\n")
