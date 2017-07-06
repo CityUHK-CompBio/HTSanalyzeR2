@@ -58,23 +58,13 @@ paraCheck <- function(group, paraName, para) {
 
          NWAClass = {
            if(paraName == "pvalues") {
-             if(is.matrix(para)) {
-               if(nrow(para) == 0 || is.null(rownames(para)))
-                 stop("'pvalues' should be a named numeric matrix with rownum > 0!\n")
-             } else {
                if(!(is.numeric(para) || is.integer(para)) || length(para) == 0 || is.null(names(para)))
                  stop("'pvalues' should be a named numeric vector with length > 0!\n")
              }
-           }
            if(paraName == "phenotypes") {
-             if(is.matrix(para)) {
-               if(nrow(para) == 0 || is.null(rownames(para)))
-                 stop("'phenotypes/phenotypeVector' should be a named numeric matrix with rownum > 0!\n")
-             } else {
                if(!(is.numeric(para) || is.integer(para)) || length(para) == 0 || is.null(names(para)))
-                 stop("'phenotypes/phenotypeVector' should be a named numeric vector with length > 0!\n")
+                 stop("'phenotypes' should be a named numeric vector with length > 0!\n")
              }
-           }
            if(paraName == "interactome") {
              if(!is.na(para) && (!is(para,"igraph") || igraph::vcount(para) == 0 || igraph::ecount(para) == 0))
                stop("Input 'interactome/graph' should be a igraph object with node and edge No > 0!\n")
@@ -326,24 +316,25 @@ paraCheck <- function(group, paraName, para) {
               (!is.list(para) || length(para) < 2 ) || is.null(names(para)) || any(is.na(names(para))))
            {stop("'hitsTS' should be a named list with length more than 1!\n")}
 
+           if(paraName == "gscaList" &&
+              (!is.list(para) || length(para) < 2) || is.null(names(para)) || any(is.na(names(para))))
+           {stop("'gscaList' should be a named list of GSCA objects with length more than 1!\n")}
+
          },
-         preprocessTS = {
-           if(paraName == "gscaList" &&
+         nwaTS = {
+           if(paraName == "pvaluesTS" &&
               (!is.list(para) || length(para) < 2) || is.null(names(para)) || any(is.na(names(para))))
-           {stop("'gscaList' should be a named list of GSCA objects with length more than 1!\n")}
-         },
-         analyzeTS = {
-           if(paraName == "gscaList" &&
+           {stop("'pvaluesTS' should be a named list with length more than 1!\n")}
+
+           if(paraName == "phenotypesTS" &&
+              (!is.list(para) || length(para) < 2 ) || is.null(names(para)) || any(is.na(names(para))))
+           {stop("'phenotypesTS' should be a named list with length more than 1!\n")}
+
+           if(paraName == "nwaList" &&
               (!is.list(para) || length(para) < 2) || is.null(names(para)) || any(is.na(names(para))))
-           {stop("'gscaList' should be a named list of GSCA objects with length more than 1!\n")}
-         }
-         ,
-         appendGSTermsTS = {
-           if(paraName == "gscaList" &&
-              (!is.list(para) || length(para) < 2) || is.null(names(para)) || any(is.na(names(para))))
-           {stop("'gscaList' should be a named list of GSCA objects with length more than 1!\n")}
-         }
-         )
+           {stop("'nwaList' should be a named list of NWA objects with length more than 1!\n")}
+
+         })
 }
 
 

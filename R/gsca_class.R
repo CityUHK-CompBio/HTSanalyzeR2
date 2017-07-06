@@ -27,6 +27,12 @@ setMethod("initialize",
                    listOfGeneSetCollections,
                    geneList,
                    hits = character()) {
+
+            ## check parameters
+            paraCheck("GSCAClass", "gscs", listOfGeneSetCollections)
+            paraCheck("GSCAClass", "genelist", geneList)
+            if(length(hits) > 0)  paraCheck("GSCAClass", "hits", hits)
+
             .Object@listOfGeneSetCollections <- listOfGeneSetCollections
             .Object@geneList <- geneList
             .Object@hits <- hits

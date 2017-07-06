@@ -20,19 +20,10 @@ setMethod("extractSubNet", signature = "NWA",
             V(subnw)$label <- unlist(object@result$labels[V(subnw)$name])
 
             phenotypes <- object@phenotypes
-            if(is.matrix(phenotypes)) {
-              diff.expr <- phenotypes[V(subnw)$name, ]
 
-              ticks <- colnames(diff.expr)
-              for (tick in ticks) {
-                vertex_attr(subnw, paste0("diff.", tick)) <- diff.expr[, tick]
-              }
-              V(subnw)$diff <- diff.expr[, ncol(diff.expr)]
-            } else {
               diff.expr <- phenotypes[V(subnw)$name]
               diff.expr[is.na(diff.expr)] <- 0
               V(subnw)$diff <- diff.expr
-            }
 
             subnw
           })

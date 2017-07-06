@@ -50,15 +50,13 @@ setMethod("analyze",
                                vertex_attr(object@interactome, "name")))
             object@summary$para[1, 1] <- fdr
 
-            if (!is.null(object@phenotypes)) {
-              if(is.matrix(object@phenotypes))
-                pnames <- rownames(object@phenotypes)
-              else
+            if (length(object@phenotypes) > 0) {
                 pnames <- names(object@phenotypes)
 
               object@summary$input[2, "in interactome"] <-
                 length(intersect(pnames, vertex_attr(object@interactome, "name")))
             }
+            #------------------------------------------------------------------------------
             if (length(object@pvalues) == 0 ||
                 object@summary$input[1, "in interactome"] == 0)
               stop("pvalues vector has length 0, or has no overlap ",
@@ -168,7 +166,7 @@ networkAnalysis <-
     if (verbose)
       cat("--Computing the optimal subnetwork", "\n")
     module <- runFastHeinz(network = graph, scores = scoreswMean)
-    cat("-Network analysis complete \n")
+    cat("-Network analysis complete \n\n")
     ## Return a igraph object consisting of the enriched sub-network
     module
   }

@@ -25,15 +25,15 @@ gscaList <- function(listOfGeneSetCollections, geneListTS, hitsTS = character())
 # preprocess --------------------------------------------------------------
 #' @export
 #'
-preprocessTS <- function(gscaList, species="Hs", initialIDs="SYMBOL",
+preprocessGscaTS <- function(gscaList, species="Hs", initialIDs="SYMBOL",
                          keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
-                         orderAbsValue=FALSE){
-    paraCheck("preprocessTS", "gscaList", gscaList)
+                         orderAbsValue=FALSE, verbose = TRUE){
+    paraCheck("gscaTS", "gscaList", gscaList)
     tmpName <- names(gscaList)
     tmp <- lapply(gscaList, function(x){
     preprocess(x, species=species, initialIDs=initialIDs,
                keepMultipleMappings=keepMultipleMappings, duplicateRemoverMethod=duplicateRemoverMethod,
-               orderAbsValue=orderAbsValue)
+               orderAbsValue=orderAbsValue, verbose=verbose)
   })
     names(tmp) <- tmpName
     tmp
@@ -42,10 +42,10 @@ preprocessTS <- function(gscaList, species="Hs", initialIDs="SYMBOL",
 # analyze -----------------------------------------------------------------
 #' @export
 #'
-analyzeTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
+analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
                                       nPermutations=1000, minGeneSetSize=15,
                                       exponent=1), doGSOA = FALSE){
-              paraCheck("analyzeTS", "gscaList", gscaList)
+              paraCheck("gscaTS", "gscaList", gscaList)
               tmpName <- names(gscaList)
               tmp <- lapply(gscaList, function(x){
                   analyze(x, para=para, doGSOA = doGSOA)
@@ -59,7 +59,7 @@ analyzeTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
 ## @export
 #'
 # summarizeTS <- function(gscaList, what = "ALL"){
-#         paraCheck("summarizeTS", "gscaList", gscaList)
+#         paraCheck("gscaTS", "gscaList", gscaList)
 #         lapply(gscaList, function(x){
 #           HTSanalyzeR2::summarize(x, what = what)
 #         })
@@ -71,7 +71,7 @@ analyzeTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
 #'
 #'
 appendGSTermsTS <- function(gscaList, keggGSCs=NULL, goGSCs=NULL, msigdbGSCs=NULL){
-             paraCheck("appendGSTermsTS", "gscaList", gscaList)
+             paraCheck("gscaTS", "gscaList", gscaList)
              tmpName <- names(gscaList)
              tmp <- lapply(gscaList, function(x){
              appendGSTerms(x, keggGSCs = keggGSCs, goGSCs = goGSCs, msigdbGSCs = msigdbGSCs)

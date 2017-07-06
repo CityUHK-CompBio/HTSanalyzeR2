@@ -1,9 +1,9 @@
 #' @include class_union.R utils.R
 setClass(
   Class = "NWA",
-  representation(
-    pvalues = "numeric",
-    phenotypes = "numeric_or_matrix",
+  slots = c(
+    pvalues = "numeric_or_integer",
+    phenotypes = "numeric_or_integer",
     interactome = "igraph_or_logical",
     fdr = "numeric",
     result = "list",
@@ -12,7 +12,7 @@ setClass(
   ),
   prototype = list(
     pvalues = numeric(),
-    phenotypes = as.numeric(NA),
+    phenotypes = numeric(),
     interactome = NA,
     fdr = 0.001,
     result = list(),
@@ -26,15 +26,21 @@ setMethod("initialize",
           signature = "NWA",
           function(.Object,
                    pvalues,
-                   phenotypes = NA,
+                   phenotypes = as.numeric(),
                    interactome = NA) {
+
             ## check input arguments
             paraCheck("NWAClass", "pvalues", pvalues)
-            if (!all(is.na(phenotypes)))
+            if (length(phenotypes) > 0){
               paraCheck("NWAClass", "phenotypes", phenotypes)
+              # if(!identical(names(pvalues), names(phenotypes))){
+              #   stop("'pvalues' and 'phenotypes' should have the same length and be one-to-one match!\n")
+              # }
+            }
             if (!is.na(interactome))
               paraCheck("NWAClass", "interactome", interactome)
 
+            ##
             .Object@pvalues <- pvalues
             .Object@phenotypes <- phenotypes
             .Object@interactome <- interactome
@@ -68,8 +74,9 @@ setMethod("initialize",
             )
             ## initialization of summary
             .Object@summary$input["p-values", "input"] <- length(pvalues)
-            .Object@summary$input["phenotypes", "input"] <-
-              ifelse(is.matrix(phenotypes), nrow(phenotypes), length(phenotypes))
+
+            .Object@summary$input["phenotypes", "input"] <- length(phenotypes)
+
             .Object@summary$db[1, "name"] <- "Unknown"
 
             if (!is.na(interactome)) {
@@ -86,7 +93,7 @@ setMethod("initialize",
 #' This class includes a series of methods to do network analysis for
 #' high-throughput screens.
 #'
-#' @slot pvalues a numeric vector of p-values.
+#' @slot pvalues a numeric or integer vector of p-values.
 #' @slot phenotypes a numeric or integer vector of phenotypes.
 #' @slot interactome an object of class igraph.
 #' @slot fdr one parameter for BioNet to score nodes in the interactome.
@@ -113,7 +120,19 @@ setMethod("initialize",
 # # Conducting the constrction of a S4 class data
 # nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
 #' @export
-NWA <- function(pvalues, phenotypes = as.numeric(NA), interactome = NA) {
+NWA <- function(pvalues, phenotypes = as.numeric(), interactome = NA) {
+  ## check input arguments
+  paraCheck("NWAClass", "pvalues", pvalues)
+  if (length(phenotypes) > 0){
+    paraCheck("NWAClass", "phenotypes", phenotypes)
+    # if(!identical(names(pvalues), names(phenotypes))){
+    #   stop("'pvalues' and 'phenotypes' should have the same length and be one-to-one match!\n")
+    # }
+  }
+  if (!is.na(interactome))
+    paraCheck("NWAClass", "interactome", interactome)
+
+  ##
   object <- new(
     Class = "NWA",
     pvalues = pvalues,

@@ -4,7 +4,7 @@
 \alias{NWA}
 \title{An S4 class for NetWork Analysis on high-throughput screens}
 \usage{
-NWA(pvalues, phenotypes = as.numeric(NA), interactome = NA)
+NWA(pvalues, phenotypes = as.numeric(), interactome = NA)
 }
 \description{
 This class includes a series of methods to do network analysis for
@@ -13,7 +13,7 @@ high-throughput screens.
 \section{Slots}{
 
 \describe{
-\item{\code{pvalues}}{a numeric vector of p-values.}
+\item{\code{pvalues}}{a numeric or integer vector of p-values.}
 
 \item{\code{phenotypes}}{a numeric or integer vector of phenotypes.}
 

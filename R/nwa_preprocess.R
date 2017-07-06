@@ -38,9 +38,9 @@ if (!isGeneric("interactome")) {
 #' @include gsca_class.R
 setMethod("preprocess", signature = "NWA",
   function(object,
-           species = "Dm",
+           species = "Hs",
            duplicateRemoverMethod = "max",
-           initialIDs = "FLYBASECG",
+           initialIDs = "SYMBOL",
            keepMultipleMappings = TRUE,
            verbose = TRUE) {
 
@@ -58,21 +58,17 @@ setMethod("preprocess", signature = "NWA",
 
     ## 1.remove NA
     if(verbose) cat("--Removing invalid p-values and phenotypes ...\n")
-    pvalues <- pvalues[which(!is.na(pvalues)
-                             & names(pvalues) != "" & !is.na(names(pvalues)))]
-    ## valid p-values
-    object@summary$input[1, "valid"] <- length(pvalues)
-    if(length(pvalues) == 0)
-      stop("Input 'pvalues' contains no useful data!\n")
-    if(!is.null(phenotypes)) {
-      if(is.matrix(phenotypes)) {
-        phenotypes <- phenotypes[apply(!is.na(phenotypes), 1, all) &
-                                   rownames(phenotypes) != "" &
-                                   !is.na(rownames(phenotypes)), ]
-        object@summary$input[2,"valid"] <- nrow(phenotypes)
-        if(nrow(phenotypes) == 0)
-          stop("Input 'phenotypes' contains no useful data!\n")
-      } else {
+
+      pvalues <- pvalues[which(!is.na(pvalues)
+                               & names(pvalues) != "" & !is.na(names(pvalues)))]
+      ## valid p-values
+      object@summary$input[1, "valid"] <- length(pvalues)
+      if(length(pvalues) == 0)
+        stop("Input 'pvalues' contains no useful data!\n")
+
+    #----------------------------------------------------------------------
+    if(length(phenotypes) > 0) {
+
         phenotypes <- phenotypes[which((!is.na(phenotypes)) &
                                          (names(phenotypes) != "" &
                                             !is.na(names(phenotypes))))]
@@ -80,7 +76,9 @@ setMethod("preprocess", signature = "NWA",
         object@summary$input[2,"valid"] <- length(phenotypes)
         if(length(phenotypes) == 0)
           stop("Input 'phenotypes' contains no useful data!\n")
-      }
+        # if(!identical(names(pvalues), names(phenotypes))){
+        #   stop("'pvalues' and 'phenotypes' should have the same length and be one-to-one match!\n")
+        # }
     }
 
     ## 2.duplicate remover
@@ -89,20 +87,12 @@ setMethod("preprocess", signature = "NWA",
                                 method = duplicateRemoverMethod)
     ## p-values after removing duplicates
     object@summary$input[1, "duplicate removed"] <- length(pvalues)
-
-    if(!is.null(phenotypes)) {
-      if(is.matrix(phenotypes)) {
-        # TODO
-        # phenotypes <- duplicateRemover(geneList = phenotypes,
-        #                                method = duplicateRemoverMethod)
-        ## phenotypes after removing duplicates
-        object@summary$input[2, "duplicate removed"] <- nrow(phenotypes)
-      } else {
+   #-----------------------------------------------------------------------
+    if(length(phenotypes) > 0) {
         phenotypes <- duplicateRemover(geneList = phenotypes,
                                        method = duplicateRemoverMethod)
         ## phenotypes after removing duplicates
         object@summary$input[2, "duplicate removed"] <- length(phenotypes)
-      }
     }
 
     ## 3.convert annotations in pvalues
@@ -116,7 +106,7 @@ setMethod("preprocess", signature = "NWA",
         keepMultipleMappings = keepMultipleMappings,
         verbose = verbose
       )
-      if(!is.null(phenotypes)) {
+      if(length(phenotypes) > 0) {
         phenotypes <- annotationConvertor(
           geneList = phenotypes,
           species = species,
@@ -130,9 +120,8 @@ setMethod("preprocess", signature = "NWA",
     ## p-values after annotation conversion
     object@summary$input[1, "converted to entrez"] <- length(pvalues)
     ## phenotypes after annotation conversion
-    if(!is.null(phenotypes))
-      object@summary$input[2,"converted to entrez"] <-
-        ifelse(is.matrix(phenotypes), nrow(phenotypes), length(phenotypes))
+    if(length(phenotypes) > 0)
+      object@summary$input[2,"converted to entrez"] <- length(phenotypes)
 
     ## 5.update genelist and hits, and return object
     object@pvalues <- pvalues

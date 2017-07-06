@@ -43,6 +43,7 @@ Collate:
     'gsca_report.R'
     'gsca_summarize.R'
     'gsca_view.R'
+    'nwaTS.R'
     'nwa_class.R'
     'nwa_analyze.R'
     'nwa_preprocess.R'
