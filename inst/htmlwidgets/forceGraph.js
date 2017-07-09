@@ -151,7 +151,7 @@ HTMLWidgets.widget(global = {
 
     construct: function(elState, x, simulation) {
         // TODO: use smarter loader, check proverty available.
-        // console.log(x)
+        console.log(x)
         var options = x.options;
         var curState = elState[elState.currentSubId];
 
@@ -757,6 +757,7 @@ HTMLWidgets.widget(global = {
             var sel_polygon = global.getSelection(elState, 'polygon');
 
             node.each(function(d) {d.color = d["color." + series[index]] });
+            link.each(function(d) {d.weight = d["weight." + series[index]] });
 
             node.transition().duration(300).attr("opacity", 1)
                 .filter(function(d){return d.color == null}).attr("opacity", 0);
@@ -766,6 +767,9 @@ HTMLWidgets.widget(global = {
             sel_polygon.transition().duration(300).attr("fill", function(d) {
                 return curState.scalers.wrapper(schemeId, d.color, d.scheme);
             })
+            link.transition().duration(300).attr("stroke-width", function(d) {
+                return d.weight * curState.edgeScale;
+            });
         }
 
     }

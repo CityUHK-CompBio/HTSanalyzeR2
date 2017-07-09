@@ -12,13 +12,13 @@ results <- readRDS(file = "./results.RData")
 gsca <- results$gsca
 nwa <- results$nwa
 gscaObjs <- NULL
+nwaObjs <- NULL
 
 ## ============================================ Preprocessing ==============================================
 gscaTS <- !is.null(gsca) && class(gsca) == "list"
-nwaTS <- !is.null(nwa) && is.matrix(nwa@phenotypes)
+nwaTS <- !is.null(nwa) && class(nwa) == "list"
 
 if(!is.null(gsca)) {
-  gscaSeriesTicks <- NULL
   gscaSeriesTickInput <- NULL
   gscaProcessSlider <- NULL
   if(gscaTS) {
@@ -41,11 +41,12 @@ if(!is.null(gsca)) {
 }
 
 if(!is.null(nwa)) {
-  # sliderInput("process_net", h3("Process"), 0, 1, 1, step = 1, animate = animationOptions(interval=800))
   nwaProcessSlider <- NULL
   if(nwaTS) {
-    seriesTicks <- colnames(nwa@phenotypes)
-    nwaProcessSlider <- sliderInput("process_net", h3("Process"), 1, length(seriesTicks), value = 1, step = 1, animate = animationOptions(interval=1000))
+    nwaObjs <- nwa
+    nwaSeriesTicks <- names(nwaObjs)
+    nwaProcessSlider <- sliderInput("process_net", h3("Process"), 1, length(nwaSeriesTicks), value = 1, step = 1, animate = animationOptions(interval=1000))
+    nwa <- nwaObjs[[1]]
   }
 }
 
@@ -64,7 +65,6 @@ create_sidebar_tab <- function(name, sidebar, content) {
 create_sidebar_setting_tab <- function(name, sidebar, settings, content) {
   tabPanel(name, fluidRow(column(width = 3, sidebar), column(width = 9, settings, content)))
 }
-
 
 trim_result <- function(result, digits = 3) {
   signif_cols <- c("Observed.score")
@@ -97,7 +97,7 @@ create_data_table <- function(gscaObj, analysis, genesets) {
   dt
 }
 
-create_enrich_map <- function(gscaObj, input) {
+create_enrich_map <- function(gscaObj, seriesObjs, input) {
   options <- list(charge = -400, distance = 200)
   viewEnrichMap(gscaObj,
                 resultName=paste0(input$analysis_map, ".results"),
@@ -105,12 +105,12 @@ create_enrich_map <- function(gscaObj, input) {
                 allSig=TRUE,
                 gsNameType="id",
                 options = options,
-                seriesObjs = gscaObjs)
+                seriesObjs)
 }
 
-create_network <- function(nwaObj) {
+create_network <- function(nwaObj, seriesObjs) {
   options <- list(charge = -200, distance = 150)
-  viewSubNet(nwaObj, options = options)
+  viewSubNet(nwaObj, options = options, seriesObjs)
 }
 
 
@@ -168,7 +168,7 @@ server <- function(input, output, session) {
 
   observeEvent({input$analysis_map
     input$genesets_map}, {
-      output$map_output <- renderForceGraph(create_enrich_map(gsca, input))
+      output$map_output <- renderForceGraph(create_enrich_map(gsca, gscaObjs, input))
     })
 
   observeEvent(input$process_net, {
@@ -177,7 +177,7 @@ server <- function(input, output, session) {
 
   ## TODO: undefined behavior
   observeEvent({42}, {
-    output$network_output <- renderForceGraph(create_network(nwa))
+    output$network_output <- renderForceGraph(create_network(nwa, nwaObjs))
   })
 }
 

@@ -63,7 +63,7 @@ setMethod("report", signature = "GSCA",
 #'shiny.
 #'
 #'@param gsca a GSCA object or a list of GSCA objects
-#'@param nwa an object of class NWA
+#'@param nwa a NWA object or a list of NWA objects
 #'@param reportDir a single character value specifying the directory to store reports. For default both the
 #'  enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport"
 #'
@@ -77,11 +77,14 @@ reportAll <- function(gsca = NULL, nwa = NULL, reportDir = "AnalysisReport") {
   }
 
   if(!is.null(nwa) && class(nwa) != "NWA") {
-    stop("the parameter nwa should be a NWA object\n")
+    if(class(nwa) != "list" || any(sapply(nwa, class) != "NWA")) {
+      stop("the parameter nwa should be a NWA object or a list of NWA objects\n")
+    }
   }
 
+  reportDir <- paste(reportDir, format(Sys.time(), "%y%m%d-%H%M%S"), sep="-")
   if(file.exists(reportDir)) {
-    reportDir <- paste(reportDir, format(Sys.time(), "%y%m%d-%H%M%S"), sep="-")
+    reportDir <- paste(reportDir, sample(0:65535, 1), sep="-")
   }
   dir.create(reportDir)
 

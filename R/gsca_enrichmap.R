@@ -362,8 +362,7 @@ setMethod("viewEnrichMap", signature = "GSCA",
                    allSig = TRUE,
                    gsNameType = "id",
                    options = list(charge = -300, distance = 200),
-                   seriesObjs = NULL
-          ) {
+                   seriesObjs = NULL) {
             g <- extractEnrichMap(object, resultName, gscs, ntop, allSig, gsNameType)
 
             em_nodes <- as_data_frame(g, "vertices")
@@ -448,9 +447,11 @@ fetchGSCASeriesValues <- function(gscaObjs, resultName = "GSEA.results", gscs,
     # Vertices - ("name", "geneSetSize", "adjPvalue", "obsPvalue", "colorScheme", "label", "label_id", "label_term")
     colsToAppend <- colnames(dfList$vertices) %in% c("adjPvalue", "obsPvalue", "colorScheme")
     colnames(dfList$vertices)[colsToAppend] <- paste(colnames(dfList$vertices), names(gscaObjs)[i], sep=".")[colsToAppend]
+    dfList$vertices <- unique(dfList$vertices)
     # Edges - ("from", "to", "weight")
     colsToAppend <- colnames(dfList$edges) %in% c("weight")
     colnames(dfList$edges)[colsToAppend] <- paste(colnames(dfList$edges), names(gscaObjs)[i], sep=".")[colsToAppend]
+    dfList$edges <- unique(dfList$edges)
     rownames(dfList$edges) <- paste0(dfList$edges$from, dfList$edges$to)
     dfList
   })

@@ -3,8 +3,8 @@
 forceGraph <- function(nodes, links, nMappings, lMappings, options,
                        width = NULL, height = NULL, seriesData = NULL) {
 
-  # nMappings: "id", "size", "color", "label", "desc", "seq", "scheme"
-  # lMappings: "source", "target", "label", "weight"
+  # nMappings: "id", "size", "color", "scheme", "label", "label_id", "label_term"
+  # lMappings: "source", "target", "weight"
 
   node.size <- list(min = 6, max = 20, default = 8)
   link.weight <- list(min = 1, max = 6, default = 2)
@@ -43,15 +43,8 @@ forceGraph <- function(nodes, links, nMappings, lMappings, options,
     }
   }
 
-  if(0 < min(nodesDF$color, na.rm = TRUE) && max(nodesDF$color, na.rm = TRUE) < 1) {
-    colorDomain <- color.domain.default
-  } else {
-    colorDomain <- range(nodesDF$color)
-  }
-
   # create options
-  # colorDomain must be three nums
-  argOptions <- modifyList(options, list(colorDomain = colorDomain, seriesData = seriesData))
+  argOptions <- modifyList(options, list(seriesData = seriesData))
 
   # create widget
   htmlwidgets::createWidget(
@@ -89,13 +82,11 @@ updateForceGraph <- function(options) {
 }
 
 norm <- function(df, minValue, maxValue, defaultValue) {
-  # colnames(df) <- newName
   ran = range(df, na.rm = TRUE)
   if(ran[1] == ran[2]) {
-    df <- defaultValue
+    df[!is.na(df)] <- defaultValue
     return(df)
   }
   tmp <- (df - ran[1]) / (ran[2] - ran[1])
   tmp * (maxValue - minValue) + minValue
 }
-
