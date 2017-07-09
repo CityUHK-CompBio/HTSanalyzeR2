@@ -12,6 +12,8 @@ HTMLWidgets.widget(global = {
         pause: false,
         charge: -400,
         distance: 200,
+        naOpacicy: 0.4,
+        naWidth: 0.1,
 
         title: "",
         titleSize: 22,
@@ -281,7 +283,8 @@ HTMLWidgets.widget(global = {
                 return d["label_" + curState.label];
             });
 
-        node.filter(function(d){return d.color == null}).attr("opacity", 0)
+        node.filter(function(d){return d.color == null}).attr("opacity", curState.naOpacicy);
+        link.filter(function(d){return d.weight == null}).attr("stroke-width", curState.naWidth);
 
         simulation.nodes(nodes)
             .on("tick", ticked);
@@ -730,17 +733,19 @@ HTMLWidgets.widget(global = {
             node.each(function(d) { d.scheme = d["scheme." + series[index]] });
             link.each(function(d) {d.weight = d["weight." + series[index]] });
 
-            node.transition().duration(300).attr("opacity", 1)
-                .filter(function(d){return d.color == null}).attr("opacity", 0);
+            node.attr("opacity", 1).filter(function(d){return d.color == null})
+                .attr("opacity", curState.naOpacicy);
             sel_circle.transition().duration(300).attr("fill", function(d) {
                 return curState.scalers.wrapper(schemeId, d.color, d.scheme);
             })
             sel_polygon.transition().duration(300).attr("fill", function(d) {
                 return curState.scalers.wrapper(schemeId, d.color, d.scheme);
             })
-            link.transition().duration(300).attr("stroke-width", function(d) {
-                return d.weight * curState.edgeScale;
-            });
+            link.transition().duration(200).attr("stroke-width", curState.naWidth)
+                .filter(function(d){return d.weight != null})
+                .attr("stroke-width", function(d) {
+                    return d.weight * curState.edgeScale;
+            })
         }
 
         if ('process_net' in x) {
@@ -759,19 +764,20 @@ HTMLWidgets.widget(global = {
             node.each(function(d) {d.color = d["color." + series[index]] });
             link.each(function(d) {d.weight = d["weight." + series[index]] });
 
-            node.transition().duration(300).attr("opacity", 1)
-                .filter(function(d){return d.color == null}).attr("opacity", 0);
+            node.attr("opacity", 1).filter(function(d){return d.color == null})
+                .attr("opacity", curState.naOpacicy);
             sel_circle.transition().duration(300).attr("fill", function(d) {
                 return curState.scalers.wrapper(schemeId, d.color, d.scheme);
             })
             sel_polygon.transition().duration(300).attr("fill", function(d) {
                 return curState.scalers.wrapper(schemeId, d.color, d.scheme);
             })
-            link.transition().duration(300).attr("stroke-width", function(d) {
-                return d.weight * curState.edgeScale;
-            });
+            link.transition().duration(200).attr("stroke-width", curState.naWidth)
+                .filter(function(d){return d.weight != null})
+                .attr("stroke-width", function(d) {
+                    return d.weight * curState.edgeScale;
+            })
         }
-
     }
 }
 );
