@@ -105,12 +105,12 @@ create_enrich_map <- function(gscaObj, seriesObjs, input) {
                 allSig=TRUE,
                 gsNameType="id",
                 options = options,
-                seriesObjs)
+                seriesObjs = seriesObjs)
 }
 
 create_network <- function(nwaObj, seriesObjs) {
   options <- list(charge = -200, distance = 150)
-  viewSubNet(nwaObj, options = options, seriesObjs)
+  viewSubNet(nwaObj, options = options, seriesObjs = seriesObjs)
 }
 
 

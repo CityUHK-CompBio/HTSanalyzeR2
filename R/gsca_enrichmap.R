@@ -180,7 +180,6 @@ setMethod("extractEnrichMap", signature = "GSCA",
                    gsNameType = "id") {
 
             paraCheck("Report", "gsNameType", gsNameType)
-
             ## get top gene sets
             topGS <-
               getTopGeneSets(object, resultName, gscs, ntop, allSig)
@@ -269,15 +268,13 @@ setMethod("extractEnrichMap", signature = "GSCA",
             # "Node color" controlled by the "Adjusted Pvalue" and "Observed.score"
             V(g)$geneSetSize <- map.diag
             V(g)$adjPvalue <- tempdf[, "Adjusted.Pvalue"]
-            V(g)$obsPvalue <- tempdf[, "Observed.score"]
-            V(g)$colorScheme <- "Pos"
-            V(g)$colorScheme[tempdf[, "Observed.score"] < 0] <- "Neg"
-
-            # V(g)$colorPvalue <- 1 - tempdf[, "Adjusted.Pvalue"]
-            # if (resultName == "GSEA.results") {
-            #   negIds <- which(tempdf[, "Observed.score"] < 0)
-            #   V(g)$colorPvalue[negIds] <- -V(g)$colorPvalue[negIds]
-            # }
+            if(resultName=="GSEA.results") {
+              V(g)$obsPvalue <- tempdf[, "Observed.score"]
+              V(g)$colorScheme <- "Pos"
+              V(g)$colorScheme[tempdf[, "Observed.score"] < 0] <- "Neg"
+            } else if (resultName=="HyperGeo.results") {
+              V(g)$colorScheme <- "Pos"
+            }
 
             ##labels attributes
             if (gsNameType == "id") {
