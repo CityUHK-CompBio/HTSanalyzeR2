@@ -32,3 +32,26 @@ setMethod("report",
             reportAll(gsca = NULL, nwa = object, reportDir)
           }
         )
+
+
+## helper functions for shiny app
+generateNWASummary <- function(nwa) {
+  tagList(
+    tags$h3("Summary"),
+    tags$p(),
+    tags$p("Interaction dataset:"),
+    tags$ul(
+      tags$li(paste("Database:", nwa@summary$db[, "name"])),
+      tags$li(paste("Species:", nwa@summary$db[, "species"])),
+      tags$li(paste("Node Number:", nwa@summary$db[, "node No"])),
+      tags$li(paste("Edge Number:", nwa@summary$db[, "edge No"]))
+    ),
+    tags$p(),
+    tags$p(paste("FDR for score calculation:", nwa@summary$para[, "FDR"])),
+    tags$p("Subnetwork identified:"),
+    tags$ul(
+      tags$li(paste("Node Number:", length(V(nwa@result$subnw)))),
+      tags$li(paste("Edge Number:", length(E(nwa@result$subnw))))
+    )
+  )
+}

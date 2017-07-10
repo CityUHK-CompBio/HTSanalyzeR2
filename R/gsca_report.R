@@ -99,33 +99,44 @@ reportAll <- function(gsca = NULL, nwa = NULL, reportDir = "AnalysisReport") {
 
 
 ## helper functions for shiny app
-generateGSCSummary <- function(gsca) {
-  paste(sapply(1:length(gsca@listOfGeneSetCollections), function(i){
-    (paste("- ", names(gsca@listOfGeneSetCollections)[i],
-           " ( ", length(gsca@listOfGeneSetCollections[[i]]),
-           " gene sets, of which ", gsca@summary$gsc[i, 2],
-           " were above the minimum size )", sep=""))
-  }), collapse = "\n")
+generateGSCASummary <- function(gsca) {
+  title <- tags$h3("Summary")
+  desc  <- tags$p(paste("The enrichment analysis was performed using the phenotype vector including",
+                        gsca@summary$gl[, "input"], "genes and", gsca@summary$gl[, "converted to entrez"],
+                        "genes used after filtering."))
+  p1 <- tags$p("This analysis was performed using the gene set collection(s):")
+  analysis <- tags$ul(lapply(1:length(gsca@listOfGeneSetCollections), function(i){
+    tags$li(paste(names(gsca@listOfGeneSetCollections)[i], "(", length(gsca@listOfGeneSetCollections[[i]]),
+                  "gene sets, of which", gsca@summary$gsc[i, 2], "were above the minimum size )"))}))
+  p2 <- tags$p("The following methods were used:")
+  hypgeo <- NULL
+  if(!is.null(gsca@result$HyperGeo.results)) {
+    hypgeo <- tags$li(list(
+      tags$p("Hypergeometric test"),
+      tags$ul(
+        tags$li(paste("Significant gene set cutoff p-value (adjusted):", gsca@summary$para$hypergeo[, "pValueCutoff"])),
+        tags$li(paste("MHT correction method:", gsca@summary$para$hypergeo[, "pAdjustMethod"])),
+        tags$li(paste("Minimum gene set size:", gsca@summary$para$hypergeo[, "minGeneSetSize"]))
+      )
+    ))
+  }
+  gsea <- NULL
+  if(!is.null(gsca@result$GSEA.results)) {
+    gsea <- tags$li(list(
+      tags$p("Gene Set Enrichment Analysis"),
+      tags$ul(
+        tags$li(paste("Significant gene set cutoff p-value (adjusted):", gsca@summary$para$gsea[, "pValueCutoff"])),
+        tags$li(paste("Minimum gene set size:", gsca@summary$para$gsea[, "minGeneSetSize"])),
+        tags$li(paste("MHT correction method:", gsca@summary$para$gsea[, "pAdjustMethod"])),
+        tags$li(paste("Number of permutations:", gsca@summary$para$gsea[, "nPermutations"])),
+        tags$li(paste("Exponent:", gsca@summary$para$gsea[, "exponent"]))
+      )
+    ))
+  }
+  method <- tags$ul(hypgeo, gsea)
+  tagList(title, desc, p1, analysis, p2, method)
 }
 
-generateMethodsSummary <- function(gsca) {
-  summ <- ""
-  if(!is.null(gsca@result$HyperGeo.results)) {
-    summ <- paste(summ, "- Hypergeometric test",
-                  "\n + Significant gene set cutoff p-value (adjusted): ", gsca@summary$para$hypergeo[, "pValueCutoff"],
-                  "\n + MHT correction method: ", gsca@summary$para$hypergeo[, "pAdjustMethod"],
-                  "\n + Minimum gene set size: ", gsca@summary$para$hypergeo[, "minGeneSetSize"], sep = "")
-  }
-  if(!is.null(gsca@result$GSEA.results)) {
-    summ <- paste(summ, "\n\n- Gene Set Enrichment Analysis",
-                  "\n + Significant gene set cutoff p-value (adjusted): ", gsca@summary$para$gsea[, "pValueCutoff"],
-                  "\n + Minimum gene set size: ", gsca@summary$para$gsea[, "minGeneSetSize"],
-                  "\n + MHT correction method: ", gsca@summary$para$gsea[, "pAdjustMethod"],
-                  "\n + Number of permutations: ", gsca@summary$para$gsea[, "nPermutations"],
-                  "\n + Exponent: ", gsca@summary$para$gsea[, "exponent"], sep = "")
-  }
-  summ
-}
 
 createLink <- function(val) {
   sprintf('<a href="https://www.google.com/#q=%s" target="_blank" class="btn btn-primary">Info</a>',val)

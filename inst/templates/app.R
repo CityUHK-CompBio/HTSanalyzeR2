@@ -50,12 +50,7 @@ if(!is.null(nwa)) {
   }
 }
 
-file.remove(dir(".", pattern = "*\\.md", full.names = TRUE))
-if (!is.null(gsca))  knitr::knit("gsca_summary.Rmd", "gsca_summary.md")
-if (!is.null(nwa))  knitr::knit("nwa_summary.Rmd", "nwa_summary.md")
-
 namesToList <- HTSanalyzeR2:::namesToList
-
 
 ## =========================================== Helper functions ============================================
 create_sidebar_tab <- function(name, sidebar, content) {
@@ -113,12 +108,19 @@ create_network <- function(nwaObj, seriesObjs) {
   viewSubNet(nwaObj, options = options, seriesObjs = seriesObjs)
 }
 
+create_gsca_summary <- function(gscaObj) {
+  HTSanalyzeR2:::generateGSCASummary(gscaObj)
+}
+
+create_nwa_summary <- function(nwaObj) {
+  HTSanalyzeR2:::generateNWASummary(nwaObj)
+}
 
 ## ============================================ Define ui ==================================================
 create_panel <- function(name) {
   switch(name,
          enrich_res_sidebar = wellPanel(
-           includeMarkdown("gsca_summary.md"),
+           htmlOutput("gsca_summary"),
            hr(), gscaSeriesTickInput,
            selectInput('analysis_res', 'Analysis', availableAnalysis),
            selectInput('genesets_res', 'Gene Sets Collection', c(availableGeneSets, "ALL"))),
@@ -133,7 +135,7 @@ create_panel <- function(name) {
          enrich_map_content = forceGraphOutput("map_output"),
 
          network_sidebar = wellPanel(
-           includeMarkdown("nwa_summary.md"),
+           htmlOutput("nwa_summary"),
            nwaProcessSlider),
          network_content = forceGraphOutput("network_output")
   )
@@ -160,6 +162,7 @@ server <- function(input, output, session) {
         obj <- gscaObjs[[input$series_tick_res]]
       }
       output$gsca_output <- renderDataTable(create_data_table(obj, input$analysis_res, input$genesets_res))
+      output$gsca_summary <- renderUI(create_gsca_summary(obj))
     })
 
   observeEvent(input$process_map, {
@@ -173,11 +176,13 @@ server <- function(input, output, session) {
 
   observeEvent(input$process_net, {
     output$network_output <- updateForceGraph(list(process_net = input$process_net))
+    output$nwa_summary <- renderUI(create_nwa_summary(nwaObjs[[input$process_net]]))
   })
 
   ## TODO: undefined behavior
   observeEvent({42}, {
     output$network_output <- renderForceGraph(create_network(nwa, nwaObjs))
+    output$nwa_summary <- renderUI(create_nwa_summary(nwa))
   })
 }
 
