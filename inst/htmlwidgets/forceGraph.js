@@ -633,7 +633,7 @@ HTMLWidgets.widget(global = {
 
 	        var axis = d3.axisRight(legendScale)
 	            .tickSize(10)
-	            .tickFormat(d3.format("+.1f"));
+	            .tickFormat(d3.format("+.2f"));
 
 	        var legend = global.getSelection(elState, "legend");
 	        legend.selectAll("*").remove();
@@ -684,7 +684,7 @@ HTMLWidgets.widget(global = {
 		            .nice();
 		        var axis = d3.axisRight(legendScale)
 		            .tickSize(10)
-		            .tickFormat(d3.format("+.1f"));
+		            .tickFormat(d3.format(".3f"));
 				legendSc.selectAll("rect")
 		            .data(pair(legendScale.ticks(10)))
 		            .enter().append("rect")
