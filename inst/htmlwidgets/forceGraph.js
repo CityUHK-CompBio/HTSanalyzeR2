@@ -36,9 +36,9 @@ HTMLWidgets.widget(global = {
         edgeOpacity: 0.6,
 
         palettes: {
-            linear2: { domain: [-1, 1], range: ["#0E0F7E", "#87420E"] },
-            linear3: { domain: [-1, 0, 1], range: ["#69D2E7", "#E3E3E3", "#FA6900"] },
-            dual: { domain: [0, 1], range: ["#FF2209", "#FFFFFF"] },
+            linear2: { domain: [-1, 1], range: ["#FF0000", "#FFDEE2"] },
+            linear3: { domain: [-1, 0, 1], range: ["#4833FF", "#FFFFFF", "#FF0000"] },
+            dual: { domain: [0, 0.05], range: ["#FF0000", "#FFDEE2"] },
             dualPos: { domain: [0, 0.05], range: ["#FF0000", "#FFDEE2"] },
             dualNeg: { domain: [0, 0.05], range: ["#4833FF", "#CAD3FF"] },
         },
@@ -136,7 +136,7 @@ HTMLWidgets.widget(global = {
     },
 
     renderValue: function(el, x, simulation) {
-        // console.log(x);
+        console.log(x);
         var elState = global.getElementState(el);
 
         if (x.update) {
@@ -153,7 +153,6 @@ HTMLWidgets.widget(global = {
 
     construct: function(elState, x, simulation) {
         // TODO: use smarter loader, check proverty available.
-        console.log(x)
         var options = x.options;
         var curState = elState[elState.currentSubId];
 
@@ -173,6 +172,14 @@ HTMLWidgets.widget(global = {
                 if(options.hasOwnProperty(key)) {
                     curState[key] = options[key];
                 }
+            }
+
+            if(options.hasOwnProperty("colorDomain")) {
+                var dom = options["colorDomain"];
+                for (var scheme in curState.palettes) {
+                    curState.palettes[scheme].domain = dom.slice();
+                }
+                curState.palettes.linear3.domain.splice(1, 0, (dom[0] + dom[1])/2);
             }
 
             curState.modified = true;
@@ -612,6 +619,7 @@ HTMLWidgets.widget(global = {
         }
     },
 
+
     drawLegend: function(elState) {
         var curState = elState[elState.currentSubId];
 
@@ -660,8 +668,8 @@ HTMLWidgets.widget(global = {
         	// curState.nodeScheme == 'dual'
             var domPos = curState.palettes["dualPos"]["domain"];
             var domNeg = curState.palettes["dualNeg"]["domain"];
-            var posBar = legend.append("g").attr("transform", "translate(40, 0)");
-            var negBar = legend.append("g").attr("transform", "translate(0, 0)");
+            var posBar = legend.append("g").attr("transform", "translate(45, 0)");
+            var negBar = legend.append("g").attr("transform", "translate(3, 0)");
             drawScaleBar(posBar, [domPos[1], domPos[0]], curState.scalers["dualPos"], ".3f");
             drawScaleBar(negBar, [domNeg[1], domNeg[0]], curState.scalers["dualNeg"], ".3f");
         }
@@ -673,6 +681,7 @@ HTMLWidgets.widget(global = {
             .style("fill", "black")
             .text(curState.legendTitle);
     },
+
 
     update: function(elState, x, simulation) {
         // update interface for R

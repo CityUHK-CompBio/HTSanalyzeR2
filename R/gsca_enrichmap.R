@@ -273,7 +273,7 @@ setMethod("extractEnrichMap", signature = "GSCA",
               V(g)$colorScheme <- "Pos"
               V(g)$colorScheme[tempdf[, "Observed.score"] < 0] <- "Neg"
             } else if (resultName=="HyperGeo.results") {
-              V(g)$colorScheme <- "Pos"
+              V(g)$colorScheme <- ""
             }
 
             ##labels attributes
@@ -372,8 +372,10 @@ setMethod("viewEnrichMap", signature = "GSCA",
             title <- "Enrichment Map of"
             if (resultName=="GSEA.results") {
               title <- paste(title, "GSEA on", paste(gscs, collapse =", "))
+              scheme = "dual"
             } else if (resultName=="HyperGeo.results") {
               title <- paste(title, "Hypergeometric tests on", paste(gscs, collapse =", "))
+              scheme = "linear2"
             }
 
             series <- NULL
@@ -399,7 +401,7 @@ setMethod("viewEnrichMap", signature = "GSCA",
               em_links <- seriesDF$edges
             }
 
-            options$nodeScheme = "dual"
+            options$nodeScheme = scheme
             defaultOptions = list(charge = -300, distance = 200,
                                   title = title, label = gsNameType, legendTitle = "Adjusted p-values")
             graphOptions <- modifyList(defaultOptions, options)
@@ -422,7 +424,7 @@ setMethod("viewEnrichMap", signature = "GSCA",
 # labelScale: 1,
 #
 # nodeScale: 1,
-# ~~ nodeScheme: "default" ~~
+# ~~ nodeScheme: "linear2" ~~
 # nodeShape: "circle",
 # nodeBorderColor: "#808080", // grey
 # nodeBorderWidth: 1,

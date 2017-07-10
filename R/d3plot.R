@@ -27,11 +27,12 @@ forceGraph <- function(nodes, links, nMappings, lMappings, options,
   }
 
   if(is.null(nodesDF$color)) {
-    nodesDF$color <- color.default;
+    nodesDF$color <- color.default
   }
+  colorDomain <- niceDomain(nodesDF$color)
 
   if(is.null(nodesDF$scheme)) {
-    nodesDF$scheme <- scheme.default;
+    nodesDF$scheme <- scheme.default
   }
 
   if(is.null(linksDF$weight)){
@@ -44,7 +45,7 @@ forceGraph <- function(nodes, links, nMappings, lMappings, options,
   }
 
   # create options
-  argOptions <- modifyList(options, list(seriesData = seriesData))
+  argOptions <- modifyList(options, list(colorDomain = colorDomain, seriesData = seriesData))
 
   # create widget
   htmlwidgets::createWidget(
@@ -81,12 +82,20 @@ updateForceGraph <- function(options) {
   renderForceGraph(expr, quoted = FALSE)
 }
 
-norm <- function(df, minValue, maxValue, defaultValue) {
-  ran = range(df, na.rm = TRUE)
+norm <- function(arr, minValue, maxValue, defaultValue) {
+  ran = range(arr, na.rm = TRUE)
   if(ran[1] == ran[2]) {
-    df[!is.na(df)] <- defaultValue
-    return(df)
+    arr[!is.na(arr)] <- defaultValue
+    return(arr)
   }
-  tmp <- (df - ran[1]) / (ran[2] - ran[1])
+  tmp <- (arr - ran[1]) / (ran[2] - ran[1])
   tmp * (maxValue - minValue) + minValue
+}
+
+niceDomain <- function(arr) {
+  ran = round(range(arr, na.rm = TRUE), 3)
+  if(ran[1] == ran[2]) {
+    ran[2] = ran[2] + 0.05
+  }
+  ran
 }
