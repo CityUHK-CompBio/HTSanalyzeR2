@@ -615,100 +615,63 @@ HTMLWidgets.widget(global = {
     drawLegend: function(elState) {
         var curState = elState[elState.currentSubId];
 
-        function pair(array) {
-            return array.slice(1).map(function(b, i) {
-                return [array[i], b];
-            });
+        function drawScaleBar(g, domain, color, axisFormat) {
+            function pair(array) {
+                return array.slice(1).map(function(b, i) {
+                    return [array[i], b];
+                });
+            }
+            var scaler = d3.scaleLinear()
+                .domain(domain)
+                .range([0, 200])
+                .nice();
+            var axis = d3.axisRight(scaler)
+                .tickSize(10)
+                .tickFormat(d3.format(axisFormat));
+
+            g.selectAll("*").remove();
+            g.selectAll("rect")
+                .data(pair(scaler.ticks(10)))
+                .enter().append("rect")
+                .attr("width", 8)
+                .attr("y", function(d) {
+                    return scaler(d[0]);
+                })
+                .attr("height", function(d) {
+                    return scaler(d[1]) - scaler(d[0]);
+                })
+                .style("fill", function(d) {
+                    return color(d[1]);
+                });
+            g.call(axis);
         }
+
+        var legend = global.getSelection(elState, "legend");
+        legend.selectAll("*").remove();
 
         if(curState.nodeScheme != "dual") {
         	palette = curState.palettes[curState.nodeScheme];
 	        colorFunc = curState.scalers[curState.nodeScheme];
 	        colorDomain = [palette.domain[palette.domain.length - 1], palette.domain[0]];
 
-	        var legendScale = d3.scaleLinear()
-	            .domain(colorDomain)
-	            .range([0, 200])
-	            .nice();
-
-	        var axis = d3.axisRight(legendScale)
-	            .tickSize(10)
-	            .tickFormat(d3.format("+.2f"));
-
-	        var legend = global.getSelection(elState, "legend");
-	        legend.selectAll("*").remove();
-	        legend.selectAll("rect")
-	            .data(pair(legendScale.ticks(10)))
-	            .enter().append("rect")
-	            .attr("width", 8)
-	            .attr("y", function(d) {
-	                return legendScale(d[0]);
-	            })
-	            .attr("height", function(d) {
-	                return legendScale(d[1]) - legendScale(d[0]);
-	            })
-	            .style("fill", function(d) {
-	                return colorFunc(d[1]);
-	            });
-	        legend.call(axis);
-
-	        legend.append("text")
-	            .attr("transform", "translate(10, 215)")
-	            .attr("font-size", 10)
-	            .attr("text-anchor", "middle")
-	            .style("fill", "black")
-	            .text(curState.legendTitle);
+            var legendBar = legend.append("g").attr("transform", "translate(25, 0)");
+            drawScaleBar(legendBar, colorDomain, colorFunc, "+.2f");
         } else {
         	// curState.nodeScheme == 'dual'
-        	var colorFunc = {Pos: curState.scalers["dualPos"], Neg: curState.scalers["dualNeg"]};
-        	var colorDomain = {};
-			var domPos = curState.palettes["dualPos"]["domain"];
-			var domNeg = curState.palettes["dualNeg"]["domain"];
-			colorDomain.Pos = [domPos[1], domPos[0]];
-			colorDomain.Neg = [domNeg[1], domNeg[0]];
-
-	        var legend = global.getSelection(elState, "legend");
-	        legend.selectAll("*").remove();
-
-	        var subClasses = ["Pos", "Neg"];
-	        for(var i in subClasses) {
-	        	i = JSON.parse(i);
-	        	var sc = subClasses[i];
-	        	var legendSc = legend.append("g")
-	        		.attr("class", "dual" + sc)
-	        		.attr("transform", "translate(" + (1 - i) * 40 + ", 0)");
-
-	        	var legendScale = d3.scaleLinear()
-		            .domain(colorDomain[sc])
-		            .range([0, 200])
-		            .nice();
-		        var axis = d3.axisRight(legendScale)
-		            .tickSize(10)
-		            .tickFormat(d3.format(".3f"));
-				legendSc.selectAll("rect")
-		            .data(pair(legendScale.ticks(10)))
-		            .enter().append("rect")
-		            .attr("width", 8)
-		            .attr("y", function(d) {
-		                return legendScale(d[0]);
-		            })
-		            .attr("height", function(d) {
-		                return legendScale(d[1]) - legendScale(d[0]);
-		            })
-		            .style("fill", function(d) {
-		                return colorFunc[sc](d[1]);
-		            });
-		        legendSc.call(axis);
-	        }
-
-	        legend.append("text")
-	            .attr("transform", "translate(10, 215)")
-	            .attr("font-size", 10)
-	            .attr("text-anchor", "middle")
-	            .style("fill", "black")
-	            .text(curState.legendTitle);
+            var domPos = curState.palettes["dualPos"]["domain"];
+            var domNeg = curState.palettes["dualNeg"]["domain"];
+            var posBar = legend.append("g").attr("transform", "translate(40, 0)");
+            var negBar = legend.append("g").attr("transform", "translate(0, 0)");
+            drawScaleBar(posBar, [domPos[1], domPos[0]], curState.scalers["dualPos"], ".3f");
+            drawScaleBar(negBar, [domNeg[1], domNeg[0]], curState.scalers["dualNeg"], ".3f");
         }
 
+        var legendTitle = legend.append("text")
+            .attr("font-size", 11)
+            .attr("text-anchor", "middle")
+            .attr("transform", "translate(35, 220)")
+            .style("fill", "black")
+            .text(curState.legendTitle);
     },
 
     update: function(elState, x, simulation) {
