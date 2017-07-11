@@ -88,8 +88,8 @@ reportAll <- function(gsca = NULL, nwa = NULL, reportDir = "AnalysisReport") {
   }
   dir.create(reportDir)
 
-  templateDir <- dir(system.file("templates", package="HTSanalyzeR2"), full.names=TRUE)
-  file.copy(from = templateDir, to = reportDir, overwrite = TRUE)
+  shinyApp <- system.file("templates/app.R", package="HTSanalyzeR2")
+  file.copy(from = shinyApp, to = reportDir, overwrite = TRUE)
 
   results <- list(gsca = gsca, nwa = nwa)
   saveRDS(results, file = file.path(reportDir, "results.RData"))

@@ -50,6 +50,7 @@ if(!is.null(nwa)) {
   }
 }
 
+HTMLSettings <- system.file("templates/settings.html", package="HTSanalyzeR2")
 namesToList <- HTSanalyzeR2:::namesToList
 
 ## =========================================== Helper functions ============================================
@@ -126,7 +127,7 @@ create_panel <- function(name) {
            selectInput('genesets_res', 'Gene Sets Collection', c(availableGeneSets, "ALL"))),
          enrich_res_content = dataTableOutput("gsca_output"),
 
-         settings = includeHTML("settings.html"),
+         settings = includeHTML(HTMLSettings),
          enrich_map_sidebar = wellPanel(
            h3("Enrichment Map"),
            selectInput('analysis_map', 'Analysis', availableAnalysis[-3]),
