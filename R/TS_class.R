@@ -27,7 +27,7 @@ setMethod("initialize",
             paraCheck("TSImport", "experimentName", experimentName)
             paraCheck("TSImport", "phenotypeTS", phenotypeTS)
             if(length(experimentName) != length(phenotypeTS)){
-              stop("length of 'experimentName' should equal to the column number of 'phenotypeTS'!\n")
+              stop("length of 'experimentName' should equal to the length of 'phenotypeTS'!\n")
             }
             .Object@experimentName <- experimentName
             .Object@phenotypeTS <- phenotypeTS
@@ -38,14 +38,13 @@ setMethod("initialize",
             #----------------------------------------------------------------------
             ## package hitsTS
             .Object@DoGSOA <- DoGSOA
+          if(.Object@DoGSOA){
            if(any(!is.na(GSOADesign.matrix))){
-             if(!.Object@DoGSOA){
-               warning("Please set DoGSOA as TRUE, otherwise hypergeometric test analysis would not be conducted!\n")
-             }
              paraCheck("TSImport", "GSOADesign.matrix", GSOADesign.matrix)
-              if(all(!is.na(GSOADesign.matrix))){
-                warning("both metrics have value, would only use 'phenotype' to choose hits!\n")
-              } else if(!is.na(GSOADesign.matrix[, "phenotype"])){
+                if(!is.na(GSOADesign.matrix[, "phenotype"])){
+                  if(all(!is.na(GSOADesign.matrix))){
+                    warning("Both metrics have value, would only use 'phenotype' to choose hits!\n")
+                  }
                 tmphitsTS <- lapply(phenotypeTS, function(x){
                   tmp1 <- x[which(abs(x) > GSOADesign.matrix[, "phenotype"])]
                   names(tmp1)
@@ -62,7 +61,7 @@ setMethod("initialize",
                 } ## END else
              names(tmphitsTS) <- experimentName
              .Object@results$hitsTS <- tmphitsTS
-           }  ## END IF
+           }}  ## END IF
             .Object@GSOADesign.matrix <- GSOADesign.matrix
            #-----------------------------------------------------------------------------
           ## package pvaluesTS
@@ -105,8 +104,6 @@ TSImport <- function(experimentName, phenotypeTS, pvaluesTS = list(),
                      GSOADesign.matrix = matrix(NA, nrow = 1, ncol = 2, dimnames = list(c("cutoff"), c("phenotype", "pvalues")))) {
   paraCheck("TSImport", "experimentName", experimentName)
   paraCheck("TSImport", "phenotypeTS", phenotypeTS)
-
-
   object <- new(
     Class = "TSImport",
     experimentName = experimentName,

@@ -344,7 +344,7 @@ paraCheck <- function(group, paraName, para) {
            if(paraName == "GSOADesign.matrix" &&
               (rownames(para) != "cutoff" ||  any(!colnames(para) %in% c("phenotype", "pvalues")) ||
                !is.numeric(para[, "phenotype"]) || !is.numeric(para[, "pvalues"]) )){
-            stop("'GSOADesign.matrix' should be a numeric matrix with rownames named as 'cutoff' and colnames named as 'phenotype' and 'pvalue'!\n")
+            stop("'GSOADesign.matrix' should be a numeric matrix with rownames named as 'cutoff' and colnames named as 'phenotype' and 'pvalues'!\n")
            }
          })
 }
