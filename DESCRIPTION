@@ -30,11 +30,12 @@ Imports:
 Collate: 
     'HTSanalyzeR2.R'
     'RcppExports.R'
+    'utils.R'
+    'TS_class.R'
     'backup.R'
     'class_union.R'
     'd3plot.R'
     'gscaTS.R'
-    'utils.R'
     'gsca_class.R'
     'gsca_analyze.R'
     'gsca_enrichmap.R'

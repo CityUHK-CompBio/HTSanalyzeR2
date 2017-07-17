@@ -249,7 +249,8 @@ analyzeGeneSetCollections <-
           pAdjustMethod,
           verbose
         )
-      cat("-Gene set enrichment analysis complete \n\n")
+      cat("-Gene set enrichment analysis complete \n")
+      cat("==============================================\n\n")
     } else {
       GSEA.results.list = NULL
     }

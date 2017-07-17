@@ -9,7 +9,7 @@ reportAll(gsca = NULL, nwa = NULL, reportDir = "AnalysisReport")
 \arguments{
 \item{gsca}{a GSCA object or a list of GSCA objects}
 
-\item{nwa}{an object of class NWA}
+\item{nwa}{a NWA object or a list of NWA objects}
 
 \item{reportDir}{a single character value specifying the directory to store reports. For default both the
 enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport"}

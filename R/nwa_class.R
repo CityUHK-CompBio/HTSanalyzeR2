@@ -93,8 +93,8 @@ setMethod("initialize",
 #' This class includes a series of methods to do network analysis for
 #' high-throughput screens.
 #'
-#' @slot pvalues a numeric or integer vector of p-values.
-#' @slot phenotypes a numeric or integer vector of phenotypes.
+#' @slot pvalues a numeric or integer vector of p-values named by gene identifiers.
+#' @slot phenotypes a numeric or integer vector of phenotypes named by gene identifiers.
 #' @slot interactome an object of class igraph.
 #' @slot fdr one parameter for BioNet to score nodes in the interactome.
 #' @slot result a list consisting of subnetwork module identified by BioNet

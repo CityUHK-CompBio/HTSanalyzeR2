@@ -13,9 +13,9 @@ high-throughput screens.
 \section{Slots}{
 
 \describe{
-\item{\code{pvalues}}{a numeric or integer vector of p-values.}
+\item{\code{pvalues}}{a numeric or integer vector of p-values named by gene identifiers.}
 
-\item{\code{phenotypes}}{a numeric or integer vector of phenotypes.}
+\item{\code{phenotypes}}{a numeric or integer vector of phenotypes named by gene identifiers.}
 
 \item{\code{interactome}}{an object of class igraph.}
 
