@@ -8,7 +8,7 @@
 #' It should be one of the following character strings: 'h'(hallmark gene sets),
 #' 'c1'(positional gene sets), 'c2'(curated gene sets), 'c3'(motif gene sets),
 #' 'c4'(computational gene sets), 'c5'(GO gene sets), 'c6'(oncogenic signatures),
-#' 'c7'(immunologic signatures)
+#' 'c7'(immunologic signatures).
 #'
 #' @return Return A list of gene sets.
 #'

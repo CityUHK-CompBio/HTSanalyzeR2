@@ -18,9 +18,6 @@ gscaTS <- function(object, listOfGeneSetCollections){
   hitsTS <- object@results$hitsTS
 
   if(length(hitsTS) > 0){
-   # paraCheck("gscaTS", "hitsTS", hitsTS)
-   #  if(length(hitsTS) != length(geneListTS))
-   #  {stop("'hitsTS' must have the same length as 'geneListTS'")}
     tmp <- lapply(1:length(geneListTS), function(x) {
     new("GSCA", listOfGeneSetCollections=listOfGeneSetCollections, geneList=geneListTS[[x]], hits=hitsTS[[x]])
    })} else{

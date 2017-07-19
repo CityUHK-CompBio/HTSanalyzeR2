@@ -5,12 +5,12 @@ setClass("TSImport",
          experimentName = "character",
          phenotypeTS = "list",
          pvaluesTS = "list",
-         DoGSOA = "logical",
+         doGSOA = "logical",
          GSOADesign.matrix = "matrix",
          results = "list"
          ),
          prototype = prototype(
-         DoGSOA = FALSE
+           doGSOA = FALSE
          ))
 
 
@@ -20,7 +20,7 @@ setMethod("initialize",
                    experimentName,
                    phenotypeTS,
                    pvaluesTS = list(),
-                   DoGSOA = FALSE,
+                   doGSOA = FALSE,
                    GSOADesign.matrix = matrix(NA, nrow = 1, ncol = 2, dimnames = list(c("cutoff"), c("phenotype", "pvalues")))) {
             #------------------------------------------------------------------
             ## check parameters
@@ -37,8 +37,8 @@ setMethod("initialize",
             .Object@results$phenotypeTS <- phenotypeTS
             #----------------------------------------------------------------------
             ## package hitsTS
-            .Object@DoGSOA <- DoGSOA
-          if(.Object@DoGSOA){
+            .Object@doGSOA <- doGSOA
+          if(.Object@doGSOA){
            if(any(!is.na(GSOADesign.matrix))){
              paraCheck("TSImport", "GSOADesign.matrix", GSOADesign.matrix)
                 if(!is.na(GSOADesign.matrix[, "phenotype"])){
@@ -88,10 +88,10 @@ setMethod("initialize",
 #' identifiers for each time point. Note: the order of each element of this list must match the experimentName.
 #' @slot pvaluesTS A list of pvalues, each element of this list is a numeric vector pvalues named by gene
 #' identifiers for each time point. Note: the order of each element of this list must match the experimentName.
-#' @slot DoGSOA a single logical value specifying to perform gene set
-#' overrepresentation analysis (when DoGSOA=TRUE) or not (when DoGSOA=FALSE),
+#' @slot doGSOA a single logical value specifying to perform gene set
+#' overrepresentation analysis (when doGSOA=TRUE) or not (when doGSOA=FALSE),
 #' default is FALSE.
-#' @slot GSOADesign.matrix A numeric matrix to specify how to choose hits when DoGSOA = TRUE. It must be a 1*2 matrix
+#' @slot GSOADesign.matrix A numeric matrix to specify how to choose hits when doGSOA = TRUE. It must be a 1*2 matrix
 #' with rownames named as "cutoff" and colnames named as "phenotype" and "pvalues"
 #'
 #' @slot results A list of packaged Time Series import data. It contains phenotypeTS, pvaluesTS and hitsTS.
@@ -100,7 +100,7 @@ setMethod("initialize",
 
 
 TSImport <- function(experimentName, phenotypeTS, pvaluesTS = list(),
-                     DoGSOA = FALSE,
+                     doGSOA = FALSE,
                      GSOADesign.matrix = matrix(NA, nrow = 1, ncol = 2, dimnames = list(c("cutoff"), c("phenotype", "pvalues")))) {
   paraCheck("TSImport", "experimentName", experimentName)
   paraCheck("TSImport", "phenotypeTS", phenotypeTS)
@@ -109,7 +109,7 @@ TSImport <- function(experimentName, phenotypeTS, pvaluesTS = list(),
     experimentName = experimentName,
     phenotypeTS = phenotypeTS,
     pvaluesTS = pvaluesTS,
-    DoGSOA = DoGSOA,
+    doGSOA = doGSOA,
     GSOADesign.matrix = GSOADesign.matrix
   )
 }
@@ -136,14 +136,14 @@ setMethod("show", signature = "TSImport", function(object) {
     print(matrix(pvaluesTSLenght, nrow = 1, dimnames = list(c("length"), c(object@experimentName))), quote = F)
     cat("\n\n")
   }
-  ## DoGSOA
-  cat("-DoGSOA:\n", object@DoGSOA, "\n\n")
+  ## doGSOA
+  cat("-doGSOA:\n", object@doGSOA, "\n\n")
   ## GSOADesign.matrix
   cat("-GSOADesign.matrix\n")
   print(object@GSOADesign.matrix, quote = F)
   cat("\n\n")
   ## hitsTS
-  if(!object@DoGSOA){
+  if(!object@doGSOA){
     cat("-hitsTS:", NA, "\n")
   } else{
     hitsTSLenght <- unlist(lapply(object@results$hitsTS, length))

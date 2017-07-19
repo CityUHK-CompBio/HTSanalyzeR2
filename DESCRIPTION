@@ -29,6 +29,7 @@ Imports:
     shinythemes
 Collate: 
     'HTSanalyzeR2.R'
+    'HTSanalyzeR4MAGeCK.R'
     'RcppExports.R'
     'utils.R'
     'TS_class.R'

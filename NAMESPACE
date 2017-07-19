@@ -2,6 +2,7 @@
 
 export(GOGeneSets)
 export(GSCA)
+export(HTSanalyzeR4MAGeCK)
 export(KeggGeneSets)
 export(MSigDBGeneSets)
 export(NWA)
