@@ -65,10 +65,12 @@ setMethod(
       stop("'gsc' is not a gene set collection in 'listOfGeneSetCollections'!\n")
 
     test <- gseaScores(geneList = object@geneList, geneSet = object@listOfGeneSetCollections[[gscName]][[gsName]],
-                       exponent = object@para$exponent, mode = "graph")
+                       exponent = object@para$exponent, mode = "graph", GSEA.results = object@result$GSEA.results[[gscName]],
+                      gsName = gsName)
     gseaPlots(runningScore = test[['runningScore']],
               enrichmentScore = test[['enrichmentScore']],
-              positions = test[['positions']], geneList = object@geneList)
+              positions = test[['positions']], geneList = object@geneList,
+              Adjust.P.value = test[['Adjust.P.value']])
   }
 )
 
@@ -121,7 +123,7 @@ setMethod(
 setMethod(
   "plotGSEA",
   "GSCA",
-  function(object, gscs, ntop=NULL, allSig=FALSE, filepath=".", output="png", ...) {
+  function(object, gscs, ntop=NULL, allSig=FALSE, filepath=".", output="pdf", ...) {
     ##check arguments
     paraCheck("Report", "filepath", filepath)
     paraCheck("Report", "output", output)
@@ -137,7 +139,9 @@ setMethod(
         for(gs.name in gs.names){
           makeGSEAplots(geneList=object@geneList, geneSet=object@listOfGeneSetCollections[[gsc]][[gs.name]],
                         exponent=object@para$exponent, filepath=filepath,
-                        filename=gsub("/", "_", gs.name), output=output, ...=...)
+                        filename=gsub("/", "_", gs.name), output=output,
+                        GSEA.results = object@result$GSEA.results[[gsc]],
+                        gsName = gs.name, ...=...)
         }
       }
     }
@@ -146,7 +150,7 @@ setMethod(
 
 
 
-gseaPlots <- function(runningScore, enrichmentScore, positions, geneList) {
+gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust.P.value) {
   ##check arguments
   paraCheck("GSCAClass", "genelist", geneList)
   # paraCheck("Report", "filepath", filepath)
@@ -171,47 +175,83 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList) {
   ##if(output == "png" )
   ##    png(file.path(filepath, paste("gsea_plots", filename, ".png", sep="")))
   ##set the graphical parameters
-  par(pin=c(5, 1.5), mfrow=c(2, 1), lwd=1, mai=c(0.2, 1, 1, 1))
-  ##Plot the phenotypes along the geneList, and add a vertical line
-  ##for each match between geneList and gene set
-  ##this is done using the 'positions' output of gseaScores,
-  ##which stores a one for each match position and a zero otherwise
-  plot(x=seq(1, length(geneList)), type="l", y=geneList,
-       ylab="Phenotypes", xlab=NA, col="red3", lwd=2, xaxt="n")
+  gsea.layout <- layout(matrix(c(1, 2, 3)), heights = c(4, 2, 1))
+  layout.show(gsea.layout)
+  par(mai=c(0.5, 1, 1, 0.5))
+  ##Plot the running score and add a vertical line at the position of
+  ##the enrichment score (maximal absolute value of the running score)
+  plot(x=c(1:length(runningScore)), y=runningScore,type="l",
+       xlab="Position in the ranked list of genes", ylab="Enrichment score", lwd=2, col="darkgreen",
+       cex.lab = 1.25, bg = "aliceblue")
+  abline(h=0, lty = 3)
+  abline(v=which(runningScore == enrichmentScore), lty=3, col="red3", lwd=1.75)
+  # plot.coordinates <- par("usr")
+  if(enrichmentScore > 0){
+  text(x = length(geneList)/7*6, y = (enrichmentScore)/4*3,
+       labels = paste("ES:", signif(enrichmentScore, 3), "\nAdjust.P.value:", signif(Adjust.P.value, 3)),
+       cex = 1.5)} else {
+         text(x = length(geneList)/8, y = (enrichmentScore)/4*3,
+              labels = paste("ES:", signif(enrichmentScore, 3), "\nAdjust.P.value:", signif(Adjust.P.value, 3)),
+              cex = 1.5)
+       }
+  #-------------------## plot a color barplot indicating the phenotypes
+  par(mai=c(0, 1, 0.5, 0.5))
+  plot(x=seq(1, length(geneList)), type="l", y=geneList,  bg = "aliceblue",
+       ylab="Phenotypes", xlab=NA, col="red3", lwd=2, xaxt="n", cex.lab = 1.25)
   abline(v=which(positions == 1))
   abline(h=0)
   lines(x=seq(1, length(geneList)), type="l", y=geneList,
         ylab="Phenotypes", xlab=NA, col="red3", lwd=2, xaxt="n")
-  ##Plot the running score and add a vertical line at the position of
-  ##the enrichment score (maximal absolute value of the running score)
-  par(mai=c(1, 1, 0.1, 1))
-  plot(x=c(1:length(runningScore)), y=runningScore,type="l",
-       xlab="Position in the ranked list of genes", ylab="Running enrichment score", lwd=4, col="darkgreen")
-  abline(h=0)
-  abline(v=which(runningScore == enrichmentScore), lty=3, col="red3", lwd=3)
+
+  #------------------------------------------------------------------
+  ##Plot the phenotypes along the geneList, and add a vertical line
+  ##for each match between geneList and gene set
+  ##this is done using the 'positions' output of gseaScores,
+  ##which stores a one for each match position and a zero otherwise
+
+  par(mai = c(0.5, 1, 0, 0.5))
+  ticks = 1000
+  ran <- range(geneList, na.rm = TRUE)
+  offset <- ceiling(ticks * ran[1] / (ran[1] - ran[2]))
+  palette <- c(colorRampPalette(c("darkgreen", "white"))(offset),
+               colorRampPalette(c("white", "red3"))(ticks - offset))
+  rank.colors <- palette[ceiling((geneList - ran[1]) / (ran[2] - ran[1]) * ticks)]
+
+  rank.colors <- rle(rank.colors)
+  barplot(matrix(rank.colors$lengths), col = rank.colors$values,
+          border = NA, horiz = TRUE,xaxt = "n", xlim = c(1, length(geneList)))
+  box()
+  text(length(geneList) * 0.01, 0.7, "Positive", adj = c(0, NA))
+  text(length(geneList) * 0.99, 0.7, "Negative", adj = c(1, NA))
 }
 
 
 ##Write html reports
 makeGSEAplots <- function(geneList, geneSet, exponent, filepath,
-                          filename, output='png', ...) {
+                          filename, output,
+                          GSEA.results,
+                          gsName, ...) {
   test <- gseaScores(geneList = geneList, geneSet = geneSet,
-                     exponent = exponent, mode = "graph")
+                     exponent = exponent, mode = "graph", GSEA.results = GSEA.results,
+                     gsName = gsName)
   filename<-sub("\\W","_", filename, perl=TRUE)
   if(output == "pdf" )
-    pdf(file=file.path(filepath, paste("gsea_plots", filename, ".pdf", sep="")), ...=...)
+    pdf(file=file.path(filepath, paste("gsea_plots", filename, ".pdf", sep="")),
+        onefile = FALSE, ...=...)
   if(output == "png" )
     png(filename=file.path(filepath, paste("gsea_plots", filename, ".png", sep="")), ...=...)
   gseaPlots(runningScore = test[['runningScore']],
             enrichmentScore = test[['enrichmentScore']],
-            positions = test[['positions']], geneList = geneList)
+            positions = test[['positions']], geneList = geneList,
+            Adjust.P.value = test[['Adjust.P.value']])
   dev.off()
 }
 
 
 ##This function computes enrichment scores for GSEA, running score and
 ##position of hits for a gene set.
-gseaScores <- function(geneList, geneSet, exponent=1, mode="score") {
+gseaScores <- function(geneList, geneSet, exponent=1, mode="score", gsName = gsName,
+                       GSEA.results = GSEA.results) {
   paraCheck("GSCAClass", "genelist", geneList)
   paraCheck("Analyze", "exponent", exponent)
   paraCheck("Report", "gs", geneSet)
@@ -243,10 +283,12 @@ gseaScores <- function(geneList, geneSet, exponent=1, mode="score") {
       ES<-ifelse(abs(ESmin)>abs(ESmax), ESmin, ESmax)
     }
   }
+  ## get GSEA adjust pvalues
+  adjust.p.value <- GSEA.results[which(rownames(GSEA.results) == gsName), "Adjusted.Pvalue"]
   ##Return the relevant information according to mode
   if(mode=="score")
     return(ES)
   if(mode=="graph")
     return(list("enrichmentScore"=ES, "runningScore"=runningES,
-                "positions"=as.integer(hits)))
+                "positions"=as.integer(hits), "Adjust.P.value" = adjust.p.value))
 }
