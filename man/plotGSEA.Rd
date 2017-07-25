@@ -6,7 +6,7 @@
 \title{Plot and save figures of GSEA results for top significant gene sets}
 \usage{
 \S4method{plotGSEA}{GSCA}(object, gscs, ntop = NULL, allSig = FALSE,
-  filepath = ".", output = "png", ...)
+  filepath = ".", output = "pdf", ...)
 }
 \arguments{
 \item{object}{an object. When this function is implemented as the S4 method of class GSCA,

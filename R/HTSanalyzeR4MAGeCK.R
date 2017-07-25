@@ -1,10 +1,61 @@
 
 # HTSanalyzeR4MAGeCK ------------------------------------------------------
-#' A pipeline function for MAGeCK data.
+#' An analysis pipeline for MAGeCK data.
 #'
-#' A pipeline function for MAGeCK data gene set enrichment analysis, hypergeometric analysis and network analysis.
+#' This function writes an html report following a complete analyses of
+#' a dataset based on the two classes GSCA (Gene Set Collection Analysis) and
+#' NWA (NetWork Analysis) of this package.
 #'
-#' @export
+#' @param file A result file for CRISPR data using MAGeCK to do preprocessing.
+#' @param selection.dir A character specifying which direction to choose form MAGeCK result, should be either
+#' 'positive' or 'negative'.
+#' @param doGSOA A logic value specifying whether to do hypergeometric test or not, default is FALSE.
+#' @param doGSEA A logic value specifying whether to do gene set enrichment analysis or not, default is TRUE.
+#' @param GSOADesign.matrix A numeric matrix to specify how to choose hits when doGSOA = TRUE. It must be a 1*2 matrix
+#' with rownames named as "cutoff" and colnames named as "phenotype" and "pvalues".
+#' @param listOfGeneSetCollections A list of gene set collections (a 'gene
+#' set collection' is a list of gene sets).
+#' @param species A single character value specifying the species for which the
+#'   data should be read.
+#' @param initialIDs A single character value specifying the type of initial
+#'   identifiers for input geneList
+#'   
+#' @param keepMultipleMappings A single logical value. If TRUE, the function
+#'   keeps the entries with multiple mappings (first mapping is kept). If FALSE,
+#'   the entries with multiple mappings will be discarded.
+#' @param duplicateRemoverMethod A single character value specifying the method
+#'   to remove the duplicates. See duplicateRemover for details.
+#' @param orderAbsValue A single logical value indicating whether the values
+#'   should be converted to absolute values and then ordered (if TRUE), or
+#'   ordered as they are (if FALSE).
+#' @param verbose A single logical value specifying to display detailed messages
+#'   (when verbose=TRUE) or not (when verbose=FALSE)
+#' @param pValueCutoff a single numeric value specifying the cutoff for p-values considered
+#' significant
+#' @param pAdjustMethod a single character value specifying the p-value adjustment method to be used
+#' (see 'p.adjust' for details)
+#' @param nPermutations a single integer or numeric value specifying the number of permutations for
+#' deriving p-values in GSEA
+#' @param minGeneSetSize a single integer or numeric value specifying the minimum number of elements
+#' in a gene set that must map to elements of the gene universe. Gene sets with
+#' fewer than this number are removed from both hypergeometric analysis and GSEA.
+#' @param exponent a single integer or numeric value used in weighting phenotypes in GSEA.
+#' @param keggGSCs a character vector of names of all KEGG gene set collections
+#' @param goGSCs a character vector of names of all GO gene set collections
+#' @param msigdbGSCs a character vector of names of all MSigDB gene set collections
+#' @param interactionMatrix an interaction matrix including columns
+#' 'InteractionType', 'InteractorA' and 'InteractorB'. If this matrix
+#' is available, the interactome can be directly built based on it.
+#' @param reportDir reportDir a single character value specifying the directory to store reports. For default
+#' the enrichment analysis reports will be stored in the directory called "GSCAReport".
+#' @param nwAnalysisGenetic a single logical value. If TRUE, genetic interactions
+#' will be kept; otherwise, they will be removed from the data set.
+#' @param nwAnalysisFdr a single numeric value specifying the false discovery for the scoring of nodes
+#' (see BioNet::scoreNodes and Dittrich et al., 2008 for details)
+#' 
+#' 
+#' 
+#' @export 
 #'
 HTSanalyzeR4MAGeCK <- function(file,
                                selection.dir = "negative",

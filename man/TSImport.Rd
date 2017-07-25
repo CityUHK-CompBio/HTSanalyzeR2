@@ -4,9 +4,9 @@
 \alias{TSImport}
 \title{An S4 class for Time Series data import.}
 \usage{
-TSImport(experimentName, phenotypeTS, pvaluesTS = list(), DoGSOA = FALSE,
-  GSOADesign.matrix = matrix(NA, nrow = 1, ncol = 2, dimnames =
-  list(c("cutoff"), c("phenotype", "pvalues"))))
+TSImport(experimentName, phenotypeTS, pvaluesTS = list(), hitsTS = list(),
+  doGSOA = FALSE, GSOADesign.matrix = matrix(NA, nrow = 1, ncol = 2,
+  dimnames = list(c("cutoff"), c("phenotype", "pvalues"))))
 }
 \description{
 This S4 class packages time-series data for further GSCA and network analysis.
@@ -19,14 +19,18 @@ This S4 class packages time-series data for further GSCA and network analysis.
 \item{\code{phenotypeTS}}{A list of phenotypes, each element of this list is a numeric vector phenotypes named by gene
 identifiers for each time point. Note: the order of each element of this list must match the experimentName.}
 
+\item{\code{hitsTS}}{A list of hits, each element is a character vector of the gene identifiers (used as hits in
+the hypergeometric tests). Note: user can either input a list of hits or design a 'GSOADesign.matrix' to
+get hits based on phenotypes or pvalues.}
+
 \item{\code{pvaluesTS}}{A list of pvalues, each element of this list is a numeric vector pvalues named by gene
 identifiers for each time point. Note: the order of each element of this list must match the experimentName.}
 
-\item{\code{DoGSOA}}{a single logical value specifying to perform gene set
-overrepresentation analysis (when DoGSOA=TRUE) or not (when DoGSOA=FALSE),
+\item{\code{doGSOA}}{a single logical value specifying to perform gene set
+overrepresentation analysis (when doGSOA=TRUE) or not (when doGSOA=FALSE),
 default is FALSE.}
 
-\item{\code{GSOADesign.matrix}}{A numeric matrix to specify how to choose hits when DoGSOA = TRUE. It must be a 1*2 matrix
+\item{\code{GSOADesign.matrix}}{A numeric matrix to specify how to choose hits when doGSOA = TRUE. It must be a 1*2 matrix
 with rownames named as "cutoff" and colnames named as "phenotype" and "pvalues"}
 
 \item{\code{results}}{A list of packaged Time Series import data. It contains phenotypeTS, pvaluesTS and hitsTS.}
