@@ -337,6 +337,10 @@ paraCheck <- function(group, paraName, para) {
               (is.null(names(unlist(para))) || any(!is.numeric(unlist(para))) )){
              stop("'phenotypeTS' should be a list, each element should be a numeric vector named with gene identifier!\n")
            }
+           if (paraName == "hitsTS" &&
+               (any(!is.character(unlist(para))) || length(para) == 0 || any(unlist(lapply(para, length)) == 0) )) {
+             stop("'hitsTS' should be a list, each element should be a character vector with length > 0!\n")
+           }
            if(paraName == "pvaluesTS" &&
               (is.null(names(unlist(para))) || any(!is.numeric(unlist(para))) )){
              stop("'pvaluesTS' should be a list, each element should be a numeric vector named with gene identifier!\n")
@@ -344,7 +348,8 @@ paraCheck <- function(group, paraName, para) {
            if(paraName == "GSOADesign.matrix" &&
               (rownames(para) != "cutoff" ||  any(!colnames(para) %in% c("phenotype", "pvalues")) ||
                !is.numeric(para[, "phenotype"]) || !is.numeric(para[, "pvalues"]) )){
-            stop("'GSOADesign.matrix' should be a numeric matrix with rownames named as 'cutoff' and colnames named as 'phenotype' and 'pvalues'!\n")
+            stop("'GSOADesign.matrix' must be a numeric matrix with rownames named as
+                 'cutoff' and colnames named as 'phenotype' and 'pvalues'!\n")
            }
          })
 }

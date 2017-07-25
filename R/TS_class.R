@@ -4,6 +4,7 @@ setClass("TSImport",
          slot = c(
          experimentName = "character",
          phenotypeTS = "list",
+         hitsTS = "list",  ## allow user to upload hitsTS
          pvaluesTS = "list",
          doGSOA = "logical",
          GSOADesign.matrix = "matrix",
@@ -20,6 +21,7 @@ setMethod("initialize",
                    experimentName,
                    phenotypeTS,
                    pvaluesTS = list(),
+                   hitsTS = list(),
                    doGSOA = FALSE,
                    GSOADesign.matrix = matrix(NA, nrow = 1, ncol = 2, dimnames = list(c("cutoff"), c("phenotype", "pvalues")))) {
             #------------------------------------------------------------------
@@ -38,8 +40,17 @@ setMethod("initialize",
             #----------------------------------------------------------------------
             ## package hitsTS
             .Object@doGSOA <- doGSOA
+            .Object@hitsTS <- hitsTS
           if(.Object@doGSOA){
-           if(any(!is.na(GSOADesign.matrix))){
+            ## allow user to upload hitsTS
+            if(length(hitsTS) > 0){
+              paraCheck("TSImport", "hitsTS", hitsTS)
+              if(length(experimentName) != length(hitsTS)){
+                stop("length of 'experimentName' should equal to the length of 'hitsTS'!\n")
+              }
+              names(hitsTS) <- experimentName
+              .Object@results$hitsTS <- hitsTS
+            } else if(any(!is.na(GSOADesign.matrix))){  ## define hits based on GSOADesign.matrix
              paraCheck("TSImport", "GSOADesign.matrix", GSOADesign.matrix)
                 if(!is.na(GSOADesign.matrix[, "phenotype"])){
                   if(all(!is.na(GSOADesign.matrix))){
@@ -61,7 +72,10 @@ setMethod("initialize",
                 } ## END else
              names(tmphitsTS) <- experimentName
              .Object@results$hitsTS <- tmphitsTS
-           }}  ## END IF
+            } else {
+            stop("GSOA need user either input 'hitsTS' or design a 'GSOADesign.matrix'!\n" )
+           } ## END GSOA design
+            }  ## END GSOA judge
             .Object@GSOADesign.matrix <- GSOADesign.matrix
            #-----------------------------------------------------------------------------
           ## package pvaluesTS
@@ -86,6 +100,9 @@ setMethod("initialize",
 #' @slot experimentName A character vector specifying the experiment name for each time point.
 #' @slot phenotypeTS A list of phenotypes, each element of this list is a numeric vector phenotypes named by gene
 #' identifiers for each time point. Note: the order of each element of this list must match the experimentName.
+#' @slot hitsTS A list of hits, each element is a character vector of the gene identifiers (used as hits in
+#' the hypergeometric tests). Note: user can either input a list of hits or design a 'GSOADesign.matrix' to
+#' get hits based on phenotypes or pvalues.
 #' @slot pvaluesTS A list of pvalues, each element of this list is a numeric vector pvalues named by gene
 #' identifiers for each time point. Note: the order of each element of this list must match the experimentName.
 #' @slot doGSOA a single logical value specifying to perform gene set
@@ -100,8 +117,9 @@ setMethod("initialize",
 
 
 TSImport <- function(experimentName, phenotypeTS, pvaluesTS = list(),
-                     doGSOA = FALSE,
-                     GSOADesign.matrix = matrix(NA, nrow = 1, ncol = 2, dimnames = list(c("cutoff"), c("phenotype", "pvalues")))) {
+                     hitsTS = list(), doGSOA = FALSE,
+                     GSOADesign.matrix = matrix(NA, nrow = 1, ncol = 2,
+                                                dimnames = list(c("cutoff"), c("phenotype", "pvalues")))) {
   paraCheck("TSImport", "experimentName", experimentName)
   paraCheck("TSImport", "phenotypeTS", phenotypeTS)
   object <- new(
@@ -109,6 +127,7 @@ TSImport <- function(experimentName, phenotypeTS, pvaluesTS = list(),
     experimentName = experimentName,
     phenotypeTS = phenotypeTS,
     pvaluesTS = pvaluesTS,
+    hitsTS = hitsTS,
     doGSOA = doGSOA,
     GSOADesign.matrix = GSOADesign.matrix
   )
@@ -127,21 +146,6 @@ setMethod("show", signature = "TSImport", function(object) {
   cat("-phenotypeTS:\n")
   print(phenotypeTSLength, quote = F)
   cat("\n")
-  ## pvaluesTS
-  pvaluesTSLenght <- unlist(lapply(object@pvaluesTS, length))
-  if(is.null(pvaluesTSLenght)){
-    cat("-pvaluesTS:\n", NA, "\n\n")
-  } else{
-    cat("-pvaluesTS:\n")
-    print(matrix(pvaluesTSLenght, nrow = 1, dimnames = list(c("length"), c(object@experimentName))), quote = F)
-    cat("\n\n")
-  }
-  ## doGSOA
-  cat("-doGSOA:\n", object@doGSOA, "\n\n")
-  ## GSOADesign.matrix
-  cat("-GSOADesign.matrix\n")
-  print(object@GSOADesign.matrix, quote = F)
-  cat("\n\n")
   ## hitsTS
   if(!object@doGSOA){
     cat("-hitsTS:", NA, "\n")
@@ -151,6 +155,22 @@ setMethod("show", signature = "TSImport", function(object) {
     print(matrix(hitsTSLenght, nrow = 1, dimnames = list(c("length"), c(object@experimentName))), quote = F)
     cat("\n")
   }
+  ## pvaluesTS
+  pvaluesTSLength <- unlist(lapply(object@pvaluesTS, length))
+  if(is.null(pvaluesTSLength)){
+    cat("-pvaluesTS:\n", NA, "\n\n")
+  } else{
+    cat("-pvaluesTS:\n")
+    print(matrix(pvaluesTSLength, nrow = 1, dimnames = list(c("length"), c(object@experimentName))), quote = F)
+    cat("\n\n")
+  }
+  ## doGSOA
+  cat("-doGSOA:\n", object@doGSOA, "\n\n")
+  ## GSOADesign.matrix
+  cat("-GSOADesign.matrix\n")
+  print(object@GSOADesign.matrix, quote = F)
+  cat("\n\n")
+
 })
 
 
