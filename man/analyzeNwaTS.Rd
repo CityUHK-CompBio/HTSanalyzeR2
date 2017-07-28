@@ -18,7 +18,7 @@ analyzeNwaTS(nwaList, fdr = 0.001, species, verbose = TRUE)
 (when verbose=TRUE) or not (when verbose=FALSE), default is TRUE.}
 }
 \value{
-In the end, this function will return an updated list of NWA object.
+In the end, this function will return an updated list of NWA objects.
 }
 \description{
 For each NWA object in 'nwaList', this function will store the subnetwork module identified

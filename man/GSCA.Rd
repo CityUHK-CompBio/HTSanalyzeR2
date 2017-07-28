@@ -20,7 +20,7 @@ set collection' is a list of gene sets).}
 identifiers.}
 
 \item{\code{hits}}{A character vector of the gene identifiers (used as hits in
-the hypergeometric tests).}
+the hypergeometric tests).It's needed if you want do GSOA.}
 
 \item{\code{para}}{a list of parameters for hypergeometric tests and GSEA. These
 parameters are pValueCutoff, pAdjustMethod, nPermutations, minGeneSetSize

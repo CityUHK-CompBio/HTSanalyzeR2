@@ -2,14 +2,14 @@
 % Please edit documentation in R/nwaTS.R
 \name{preprocessNwaTS}
 \alias{preprocessNwaTS}
-\title{A preprocessing method for a list of NWA object of Time-series data}
+\title{A preprocessing method for a GSCABatch object of Time-series data Network Analyses}
 \usage{
-preprocessNwaTS(nwaList, species = "Hs", initialIDs = "SYMBOL",
+preprocessNwaTS(object, species = "Hs", initialIDs = "SYMBOL",
   keepMultipleMappings = TRUE, duplicateRemoverMethod = "max",
   verbose = TRUE)
 }
 \arguments{
-\item{nwaList}{A named list of NWA object}
+\item{object}{A NWABatch object}
 
 \item{species}{A single character value specifying the species for which the
 data should be read.}
@@ -24,7 +24,7 @@ the entries with multiple mappings will be discarded.}
 \item{duplicateRemoverMethod}{A single character value specifying the method
 to remove the duplicates. See duplicateRemover for details.}
 
-\item{verbose}{A single logical value specifying to display detailed messages
+\item{verbose}{A single logical value specifying whether to display detailed messages
 (when verbose=TRUE) or not (when verbose=FALSE), default is TRUE.}
 }
 \value{

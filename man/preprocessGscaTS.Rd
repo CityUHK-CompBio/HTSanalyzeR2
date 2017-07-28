@@ -2,14 +2,14 @@
 % Please edit documentation in R/gscaTS.R
 \name{preprocessGscaTS}
 \alias{preprocessGscaTS}
-\title{A preprocessing method for a list of GSCA object of Time-series data}
+\title{A preprocessing method for a GSCABatch object of Time-series data Gene Set Collection Analyses}
 \usage{
-preprocessGscaTS(gscaList, species = "Hs", initialIDs = "SYMBOL",
+preprocessGscaTS(object, species = "Hs", initialIDs = "SYMBOL",
   keepMultipleMappings = TRUE, duplicateRemoverMethod = "max",
   orderAbsValue = FALSE, verbose = TRUE)
 }
 \arguments{
-\item{gscaList}{A named list of GSCA object}
+\item{object}{A GSCABatch object.}
 
 \item{species}{A single character value specifying the species for which the
 data should be read.}
@@ -35,7 +35,7 @@ ordered as they are (if FALSE).}
 In the end, this function will return an updated list of GSCA object.
 }
 \description{
-This function will do basic preprocessing for each GSCA object of 'gscaList'.
+This function will do basic preprocessing for each GSCA object of 'GSCABatch'.
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{preprocess}}
