@@ -93,7 +93,7 @@ setMethod("initialize",
 #' @slot geneList A numeric or integer vector of phenotypes named by gene
 #' identifiers.
 #' @slot hits A character vector of the gene identifiers (used as hits in
-#' the hypergeometric tests).
+#' the hypergeometric tests).It's needed if you want do GSOA.
 #' @slot para a list of parameters for hypergeometric tests and GSEA. These
 #' parameters are pValueCutoff, pAdjustMethod, nPermutations, minGeneSetSize
 #' and exponent.

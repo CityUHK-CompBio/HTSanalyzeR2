@@ -28,13 +28,13 @@ Imports:
     shiny,
     shinythemes
 Collate: 
+    'utils.R'
+    'class_union.R'
+    'Batch_class.R'
     'HTSanalyzeR2.R'
     'HTSanalyzeR4MAGeCK.R'
     'RcppExports.R'
-    'utils.R'
-    'TS_class.R'
     'backup.R'
-    'class_union.R'
     'd3plot.R'
     'gscaTS.R'
     'gsca_class.R'

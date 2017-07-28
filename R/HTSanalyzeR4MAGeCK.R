@@ -1,25 +1,33 @@
 
-# HTSanalyzeR4MAGeCK ------------------------------------------------------
+
+
+
+
 #' An analysis pipeline for MAGeCK data.
 #'
 #' This function writes an html report following a complete analyses of
 #' a dataset based on the two classes GSCA (Gene Set Collection Analysis) and
 #' NWA (NetWork Analysis) of this package.
 #'
+#' @include  utils.R
 #' @param file A result file for CRISPR data using MAGeCK to do preprocessing.
-#' @param selection.dir A character specifying which direction to choose form MAGeCK result, should be either
+#' @param selectDirection A character specifying which direction to choose form MAGeCK result, should either be
 #' 'positive' or 'negative'.
 #' @param doGSOA A logic value specifying whether to do hypergeometric test or not, default is FALSE.
 #' @param doGSEA A logic value specifying whether to do gene set enrichment analysis or not, default is TRUE.
-#' @param GSOADesign.matrix A numeric matrix to specify how to choose hits when doGSOA = TRUE. It must be a 1*2 matrix
-#' with rownames named as "cutoff" and colnames named as "phenotype" and "pvalues".
+#' @param hitsCutoffLogFC A numeric value as cutoff to choose hits based on log2fold change when doing GSOA. Genes with absolute
+#' log2fold change greater than this cutoff would be choosen as hits. Either
+#' 'hitsCutoffLogFC' or 'hitsCutoffPval' is needed when doing GSOA.
+#' @param hitsCutoffPval A numeric value as cutoff to choose hits based on pvalue when doing GSOA.
+#' Genes with pvalues less than this cutoff would be choosen as hits.
+#' Either 'hitsCutoffLogFC' or 'hitsCutoffPval' is needed when doing GSOA.
 #' @param listOfGeneSetCollections A list of gene set collections (a 'gene
 #' set collection' is a list of gene sets).
 #' @param species A single character value specifying the species for which the
 #'   data should be read.
 #' @param initialIDs A single character value specifying the type of initial
 #'   identifiers for input geneList
-#'   
+#'
 #' @param keepMultipleMappings A single logical value. If TRUE, the function
 #'   keeps the entries with multiple mappings (first mapping is kept). If FALSE,
 #'   the entries with multiple mappings will be discarded.
@@ -31,9 +39,9 @@
 #' @param verbose A single logical value specifying to display detailed messages
 #'   (when verbose=TRUE) or not (when verbose=FALSE)
 #' @param pValueCutoff a single numeric value specifying the cutoff for p-values considered
-#' significant
+#' significant in gene set collection analysis
 #' @param pAdjustMethod a single character value specifying the p-value adjustment method to be used
-#' (see 'p.adjust' for details)
+#' (see 'p.adjust' for details) in gene set collection analysis
 #' @param nPermutations a single integer or numeric value specifying the number of permutations for
 #' deriving p-values in GSEA
 #' @param minGeneSetSize a single integer or numeric value specifying the minimum number of elements
@@ -52,17 +60,17 @@
 #' will be kept; otherwise, they will be removed from the data set.
 #' @param nwAnalysisFdr a single numeric value specifying the false discovery for the scoring of nodes
 #' (see BioNet::scoreNodes and Dittrich et al., 2008 for details)
-#' 
-#' 
-#' 
-#' @export 
+#'
+#'
+#'
+#' @export
 #'
 HTSanalyzeR4MAGeCK <- function(file,
-                               selection.dir = "negative",
+                               selectDirection = "negative",
                                doGSOA = FALSE,
                                doGSEA = TRUE,
-                               GSOADesign.matrix = matrix(NA, nrow = 1, ncol = 2,
-                                                          dimnames = list(c("cutoff"),c("phenotype", "pvalues"))),
+                               hitsCutoffLogFC = NULL,
+                               hitsCutoffPval = NULL,
                                listOfGeneSetCollections,
                                species = "Hs",
                                initialIDs = "SYMBOL",
@@ -84,11 +92,48 @@ HTSanalyzeR4MAGeCK <- function(file,
                                nwAnalysisFdr = 0.001
                                ){
   #------------------------------------------------------------------
+  ## check common parameter
+  paraCheck("Analyze", "doGSOA", doGSOA)
+  paraCheck("Analyze", "doGSEA", doGSEA)
+  if(!is.null(hitsCutoffLogFC)){
+  paraCheck("Pipeline", "hitsCutoffLogFC", hitsCutoffLogFC)
+  }
+  if(!is.null(hitsCutoffPval)) {
+  paraCheck("Pipeline", "hitsCutoffPval", hitsCutoffPval)
+  }
+  paraCheck("GSCAClass", "gscs", listOfGeneSetCollections)
+  paraCheck("General", "species", species)
+  paraCheck("Annotataion", "initialIDs", initialIDs)
+  paraCheck("Annotataion", "keepMultipleMappings", keepMultipleMappings)
+  paraCheck("PreProcess", "duplicateRemoverMethod", duplicateRemoverMethod)
+  paraCheck("PreProcess", "orderAbsValue", orderAbsValue)
+  if(!is.null(keggGSCs)) {
+    paraCheck("Report", "keggGSCs", keggGSCs)
+  }
+  if(!is.null(goGSCs)) {
+    paraCheck("Report", "goGSCs", goGSCs)
+  }
+  if(!is.null(msigdbGSCs)) {
+    paraCheck("Report", "msigdbGSCs", msigdbGSCs)
+  }
+  paraCheck("Analyze", "fdr", nwAnalysisFdr)
+  paraCheck("PreProcess", "genetic", nwAnalysisGenetic)
+  paraCheck("General", "verbose", verbose)
+  #----------------------------------------------------------------------
+  ## check file
+  if(any(!(c("neg.lfc", "neg.p.value", "pos.lfc", "pos.p.value") %in% colnames(file) ))){
+    stop("'file' should be a result file directly from MAGecCK!\n")
+  }
+  file <- as.data.frame(file, stringsAsFactors = F)
+  file$neg.p.value <- as.numeric(file$neg.p.value)
+  file$neg.lfc <- as.numeric(file$neg.lfc)
+  file$pos.p.value <- as.numeric(file$pos.p.value)
+  file$pos.lfc <- as.numeric(file$pos.lfc)
   ## get phenotypes and pvalues
-  if(selection.dir != "negative" && selection.dir != "positive"){
+  if(selectDirection != "negative" && selectDirection != "positive"){
     stop("Please specify CRISPR selection direction:either 'positive' or 'negative'!\n")
   }
-  if(selection.dir == "negative"){
+  if(selectDirection == "negative"){
     data4enrich <- file$neg.lfc
     pvalues <- file$neg.p.value
   }else{
@@ -99,28 +144,17 @@ HTSanalyzeR4MAGeCK <- function(file,
   names(pvalues) <- file$id
   #--------------------------------------------------------------------
   ## GSOA
-  if(!is.logical(doGSOA)){
-    stop("'doGSOA' must be a logical value specifying whether to do Hypergeometric analysis or not!\n")
-  }
+  hits = character()  ## initialize hits
   if(doGSOA){
-   if(any(!is.na(GSOADesign.matrix))){
-    if(rownames(GSOADesign.matrix) != "cutoff" ||  any(!colnames(GSOADesign.matrix) %in% c("phenotype", "pvalues")) ||
-       !is.numeric(GSOADesign.matrix[, "phenotype"]) || !is.numeric(GSOADesign.matrix[, "pvalues"]) ){
-      stop("'GSOADesign.matrix' must be a numeric matrix with rownames named as 'cutoff'
-           and colnames named as 'phenotype' and 'pvalues'!\n")
-    }  ## check GSOADesign.matrix
-    if(!is.na(GSOADesign.matrix[, "phenotype"])){
-      if(all(!is.na(GSOADesign.matrix))){
-        warning("Both metrics have value, would only use 'phenotype' to choose hits!\n")
-      }
-      hits <- names(data4enrich[which(abs(data4enrich) > GSOADesign.matrix[, "phenotype"])])
-    }else{
-      hits <- names(pvalues[which(pvalues < GSOADesign.matrix[, "pvalues"])])
-    }
-   }else{
-    hits = character()
-  }
-    }  ## END GSOA set
+    if(is.null(hitsCutoffLogFC) && is.null(hitsCutoffPval)){
+      stop("Please define either 'hitsCutoffLogFC' or 'hitsCutoffPval' to do GSOA!\n")
+    }else if(!is.null(hitsCutoffLogFC) && !is.null(hitsCutoffPval)){
+      warning("both 'hitsCutoffLogFC' and 'hitsCutoffPval' have vaule, would only use 'hitsCutoffLogFC' to choose hits!\n")
+    }else if(!is.null(hitsCutoffLogFC)){
+      hits <- names(data4enrich[which(abs(data4enrich) > hitsCutoffLogFC)])
+    }else {
+      hits <- names(pvalues[which(pvalues < hitsCutoffPval)])
+    }}  ## END GSOA set
   #---------------------------------------------------------------------
   ## Gene set enrichment analysis and hypergeometric analysis
   ##create a GSCA object

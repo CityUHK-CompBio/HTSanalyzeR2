@@ -4,28 +4,33 @@
 \alias{HTSanalyzeR4MAGeCK}
 \title{An analysis pipeline for MAGeCK data.}
 \usage{
-HTSanalyzeR4MAGeCK(file, selection.dir = "negative", doGSOA = FALSE,
-  doGSEA = TRUE, GSOADesign.matrix = matrix(NA, nrow = 1, ncol = 2, dimnames
-  = list(c("cutoff"), c("phenotype", "pvalues"))), listOfGeneSetCollections,
-  species = "Hs", initialIDs = "SYMBOL", keepMultipleMappings = TRUE,
-  duplicateRemoverMethod = "max", orderAbsValue = FALSE,
-  pValueCutoff = 0.05, pAdjustMethod = "BH", nPermutations = 1000,
-  minGeneSetSize = 15, exponent = 1, verbose = TRUE, keggGSCs, goGSCs,
-  msigdbGSCs, interactionMatrix = NULL, reportDir = "HTSanalyzerReport",
-  nwAnalysisGenetic = FALSE, nwAnalysisFdr = 0.001)
+HTSanalyzeR4MAGeCK(file, selectDirection = "negative", doGSOA = FALSE,
+  doGSEA = TRUE, hitsCutoffLogFC = NULL, hitsCutoffPval = NULL,
+  listOfGeneSetCollections, species = "Hs", initialIDs = "SYMBOL",
+  keepMultipleMappings = TRUE, duplicateRemoverMethod = "max",
+  orderAbsValue = FALSE, pValueCutoff = 0.05, pAdjustMethod = "BH",
+  nPermutations = 1000, minGeneSetSize = 15, exponent = 1,
+  verbose = TRUE, keggGSCs, goGSCs, msigdbGSCs, interactionMatrix = NULL,
+  reportDir = "HTSanalyzerReport", nwAnalysisGenetic = FALSE,
+  nwAnalysisFdr = 0.001)
 }
 \arguments{
 \item{file}{A result file for CRISPR data using MAGeCK to do preprocessing.}
 
-\item{selection.dir}{A character specifying which direction to choose form MAGeCK result, should be either
+\item{selectDirection}{A character specifying which direction to choose form MAGeCK result, should either be
 'positive' or 'negative'.}
 
 \item{doGSOA}{A logic value specifying whether to do hypergeometric test or not, default is FALSE.}
 
 \item{doGSEA}{A logic value specifying whether to do gene set enrichment analysis or not, default is TRUE.}
 
-\item{GSOADesign.matrix}{A numeric matrix to specify how to choose hits when doGSOA = TRUE. It must be a 1*2 matrix
-with rownames named as "cutoff" and colnames named as "phenotype" and "pvalues".}
+\item{hitsCutoffLogFC}{A numeric value as cutoff to choose hits based on log2fold change when doing GSOA. Genes with absolute
+log2fold change greater than this cutoff would be choosen as hits. Either
+'hitsCutoffLogFC' or 'hitsCutoffPval' is needed when doing GSOA.}
+
+\item{hitsCutoffPval}{A numeric value as cutoff to choose hits based on pvalue when doing GSOA.
+Genes with pvalues less than this cutoff would be choosen as hits.
+Either 'hitsCutoffLogFC' or 'hitsCutoffPval' is needed when doing GSOA.}
 
 \item{listOfGeneSetCollections}{A list of gene set collections (a 'gene
 set collection' is a list of gene sets).}
@@ -48,10 +53,10 @@ should be converted to absolute values and then ordered (if TRUE), or
 ordered as they are (if FALSE).}
 
 \item{pValueCutoff}{a single numeric value specifying the cutoff for p-values considered
-significant}
+significant in gene set collection analysis}
 
 \item{pAdjustMethod}{a single character value specifying the p-value adjustment method to be used
-(see 'p.adjust' for details)}
+(see 'p.adjust' for details) in gene set collection analysis}
 
 \item{nPermutations}{a single integer or numeric value specifying the number of permutations for
 deriving p-values in GSEA}

@@ -307,51 +307,79 @@ paraCheck <- function(group, paraName, para) {
                (!is.character(para) || length(para) != 1))
              stop("'species' should be a character!\n")
          },
-         extractTS = {
-           if (paraName == "fileList" && (!is.list(para) || length(para) < 2 ||
-                                          is.null(names(para)) || any(is.na(names(para))) ))
-             stop("'fileList' should be a named list with length more than 1!\n")
-         },
-
          gscaTS = {
-           if(paraName == "object" && class(para) != "TSImport"){
-             stop("'TSImportData' should be an object of class TSImport!\n")
+           if(paraName == "object" && class(para) != "GSCABatch"){
+             stop("'object' should be an object of class GSCABatch!\n")
            }
            if(paraName == "gscaList" && (!is.list(para) || length(para) < 2 || is.null(names(para)) || any(is.na(names(para)))))
            {stop("'gscaList' should be a named list of GSCA objects with length more than 1!\n")}
 
          },
          nwaTS = {
-           if(paraName == "object" && class(para) != "TSImport"){
-             stop("'TSImportData' should be an object of class TSImport!\n")
+           if(paraName == "object" && class(para) != "NWABatch"){
+             stop("'object' should be an object of class NWABatch!\n")
            }
            if(paraName == "nwaList" &&
               (!is.list(para) || length(para) < 2 || is.null(names(para)) || any(is.na(names(para)))))
            {stop("'nwaList' should be a named list of NWA objects with length more than 1!\n")}
 
          },
-         TSImport = {
-           if(paraName == "experimentName" && length(para) < 2){
-           stop("'experimentName' should be a character vector specifying each experiment names with length more than 1!\n")}
+         GSCABatch = {
+           if(paraName == "expInfor"){
+             if(nrow(para) < 2){
+               stop("'expInfor' should be a matrix specifying each experiment ID and descriptions with nrow more than 1!\n")}
+             if(any(!(c("ID", "Description") %in% colnames(para) ))){
+               stop("'expInfor' should have at least 2 columns named as 'ID' and 'Description',
+                    each row refers to an individual experiment!\n")
+             }
+             if(!(is.character(para[, "ID"])) || !(is.character(para[, "Description"]))){
+               stop("'ID' and 'Description' column of 'expInfor' should be a character vector!\n")
+             } }
+
            if(paraName == "phenotypeTS" &&
-              (is.null(names(unlist(para))) || any(!is.numeric(unlist(para))) )){
+              (is.null(names(unlist(para))) || any(!is.numeric(unlist(para))) || any(unlist(lapply(para, length)) == 0) )){
              stop("'phenotypeTS' should be a list, each element should be a numeric vector named with gene identifier!\n")
            }
            if (paraName == "hitsTS" &&
-               (any(!is.character(unlist(para))) || length(para) == 0 || any(unlist(lapply(para, length)) == 0) )) {
+               (any(!is.character(unlist(para))) || any(unlist(lapply(para, length)) == 0) )) {
              stop("'hitsTS' should be a list, each element should be a character vector with length > 0!\n")
            }
-           if(paraName == "pvaluesTS" &&
-              (is.null(names(unlist(para))) || any(!is.numeric(unlist(para))) )){
-             stop("'pvaluesTS' should be a list, each element should be a numeric vector named with gene identifier!\n")
+         },
+
+       NWABatch = {
+         if(paraName == "expInfor"){
+           if(nrow(para) < 2){
+             stop("'expInfor' should be a matrix specifying each experiment ID and descriptions with nrow more than 1!\n")}
+           if(any(!(c("ID", "Description") %in% colnames(para) ))){
+             stop("'expInfor' should have at least 2 columns named as 'ID' and 'Description',
+                    each row refers to an individual experiment!\n")
            }
-           if(paraName == "GSOADesign.matrix" &&
-              (rownames(para) != "cutoff" ||  any(!colnames(para) %in% c("phenotype", "pvalues")) ||
-               !is.numeric(para[, "phenotype"]) || !is.numeric(para[, "pvalues"]) )){
-            stop("'GSOADesign.matrix' must be a numeric matrix with rownames named as
-                 'cutoff' and colnames named as 'phenotype' and 'pvalues'!\n")
-           }
-         })
+           if(!(is.character(para[, "ID"])) || !(is.character(para[, "Description"]))){
+             stop("'ID' and 'Description' column of expInfor should be a character vactor!\n")
+           } }
+
+         if(paraName == "pvalueTS" &&
+            (is.null(names(unlist(para))) || any(!is.numeric(unlist(para))) || any(unlist(lapply(para, length)) == 0) )){
+           stop("'pvalueTS' should be a list, each element should be a numeric vector named with gene identifier!\n")
+         }
+         if(paraName == "interactome") {
+           if(!is.na(para) && (!is(para,"igraph") || igraph::vcount(para) == 0 || igraph::ecount(para) == 0))
+             stop("Input 'interactome/graph' should be a igraph object with node and edge No > 0!\n")
+         }
+         if(paraName == "phenotypeTS" &&
+            (is.null(names(unlist(para))) || any(!is.numeric(unlist(para))) )){
+           stop("'phenotypeTS' should be a list, each element should be a numeric vector named with gene identifier!\n")
+         }
+       },
+       Pipeline = {
+         if(paraName == "hitsCutoffLogFC" && !is.numeric(para)){
+           stop("'hitsCutoffLogFC' should be a numeric value to choose hits based on cutoff of log2fold change!\n")
+         }
+         if(paraName == "hitsCutoffPval" && !is.numeric(para)){
+           stop("'hitsCutoffPval' should be a numeric value to choose hits based on cutoff of pvalue!\n")
+         }
+
+       })
 }
 
 
