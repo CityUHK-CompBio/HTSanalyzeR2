@@ -1,8 +1,4 @@
 
-
-
-
-
 #' An analysis pipeline for MAGeCK data.
 #'
 #' This function writes an html report following a complete analyses of
@@ -83,9 +79,9 @@ HTSanalyzeR4MAGeCK <- function(file,
                                minGeneSetSize = 15,
                                exponent = 1,
                                verbose  = TRUE,
-                               keggGSCs,
-                               goGSCs,
-                               msigdbGSCs,
+                               keggGSCs = NULL,
+                               goGSCs = NULL,
+                               msigdbGSCs = NULL,
                                interactionMatrix = NULL,
                                reportDir = "HTSanalyzerReport",
                                nwAnalysisGenetic = FALSE,

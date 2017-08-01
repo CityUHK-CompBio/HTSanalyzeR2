@@ -64,21 +64,39 @@ setMethod("report", signature = "GSCA",
 #'
 #'@param gsca a GSCA object or a list of GSCA objects
 #'@param nwa a NWA object or a list of NWA objects
+#'@param TSOrder A character specifying the visulization order of 'Time Series' data in shiny report. Only useful
+#'report for 'Time Series' data, default is the ID order in 'expInfor'
 #'@param reportDir a single character value specifying the directory to store reports. For default both the
 #'  enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport"
 #'
 #'
 #' @export
-reportAll <- function(gsca = NULL, nwa = NULL, reportDir = "AnalysisReport") {
+reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL, reportDir = "AnalysisReport") {
   if(!is.null(gsca) && class(gsca) != "GSCA") {
     if(class(gsca) != "list" || any(sapply(gsca, class) != "GSCA")) {
       stop("the parameter gsca should be a GSCA object or a list of GSCA objects\n")
+    }
+    if(!is.null(TSOrder)){
+      ## check TSOrder
+      if(length(intersect(TSOrder, names(gsca))) < length(names(gsca))){
+        stop("'TSOrder' is not valid, should be experiment ID in 'expInfor'!\n")
+      }else{
+        gsca <- gsca[TSOrder]
+      }
     }
   }
 
   if(!is.null(nwa) && class(nwa) != "NWA") {
     if(class(nwa) != "list" || any(sapply(nwa, class) != "NWA")) {
       stop("the parameter nwa should be a NWA object or a list of NWA objects\n")
+    }
+    if(!is.null(TSOrder)){
+      ## check TSOrder
+      if(length(intersect(TSOrder, names(nwa))) < length(names(nwa))){
+        stop("'TSOrder' is not valid, should be experiment ID in 'expInfor'!\n")
+      }else{
+        nwa <- nwa[TSOrder]
+      }
     }
   }
 

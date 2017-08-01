@@ -4,12 +4,16 @@
 \alias{reportAll}
 \title{Write HTML reports for both enrichment and network analyses}
 \usage{
-reportAll(gsca = NULL, nwa = NULL, reportDir = "AnalysisReport")
+reportAll(gsca = NULL, nwa = NULL, TSOrder = NULL,
+  reportDir = "AnalysisReport")
 }
 \arguments{
 \item{gsca}{a GSCA object or a list of GSCA objects}
 
 \item{nwa}{a NWA object or a list of NWA objects}
+
+\item{TSOrder}{A character specifying the visulization order of 'Time Series' data in shiny report. Only useful
+report for 'Time Series' data, default is the ID order in 'expInfor'}
 
 \item{reportDir}{a single character value specifying the directory to store reports. For default both the
 enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport"}
