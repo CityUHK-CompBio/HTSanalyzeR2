@@ -229,16 +229,18 @@ setMethod("extractEnrichMap", signature = "GSCA",
             colnames(map.mat) <- rownames(tempdf)
 
             if (nrow(tempdf) >= 2) {
+              gsID <- as.character(tempdf[["gsID"]])
+              gscID <- as.character(tempdf[["gscID"]])
               sapply(1:(nrow(tempdf) - 1), function(i) {
+                a <- gsInUni[[gscID[i]]][[gsID[i]]]
                 map.mat[i, (i + 1):nrow(tempdf)] <<-
-                  sapply((i + 1):nrow(tempdf), function(j) {
-                    length(intersect(gsInUni[[as.character(tempdf[i, "gscID"])]][[as.character(tempdf[i, "gsID"])]],
-                                     gsInUni[[as.character(tempdf[j, "gscID"])]][[as.character(tempdf[j, "gsID"])]])) /
-                      length(union(gsInUni[[as.character(tempdf[i, "gscID"])]][[as.character(tempdf[i, "gsID"])]],
-                                   gsInUni[[as.character(tempdf[j, "gscID"])]][[as.character(tempdf[j, "gsID"])]]))
-                  })
-                map.mat[(i + 1):nrow(tempdf), i] <<-
-                  map.mat[i, (i + 1):nrow(tempdf)]
+                  sapply((i + 1):nrow(tempdf),
+                         function(j) {
+                           b <- gsInUni[[gscID[j]]][[gsID[j]]]
+                           length(intersect(a, b)) / length(union(a,b))
+                         }
+                  )
+                map.mat[(i + 1):nrow(tempdf), i] <<- map.mat[i, (i + 1):nrow(tempdf)]
               })
 
               ## generate igraph from adjacency matrix
