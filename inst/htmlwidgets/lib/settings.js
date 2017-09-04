@@ -51,7 +51,7 @@ renderPalette = function(canvas, domain, range) {
     var color = d3.scaleLinear()
         .domain(domainMapping)
         .range(range)
-        .interpolate(d3.interpolateHcl);
+        .interpolate(d3.interpolateCubehelix.gamma(3.0));
 
     for (var i = 0, j = -1, c; i < width; ++i) {
         c = d3.rgb(color(i));

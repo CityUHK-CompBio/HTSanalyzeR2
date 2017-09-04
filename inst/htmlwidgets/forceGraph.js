@@ -78,7 +78,7 @@ HTMLWidgets.widget(global = {
             }
         },
         rgba: {},
-        labelFont: 14 // for display
+        labelFont: "14px Arial" // for display
     },
 
     getElementState: function(el) {
@@ -98,7 +98,7 @@ HTMLWidgets.widget(global = {
             var config = state[state.currentKey];
             // Load X
             var options = x.options;
-            var keys = ["charge","distance", "seriesData",
+            var keys = ["distance", "seriesData",
                 "title","titleSize","legendTitle",
                 "edgeScale","edgeColor","edgeOpacity",
                 "label","labelColor","labelOpacity","labelScale",
@@ -119,7 +119,7 @@ HTMLWidgets.widget(global = {
                 config.palettes.linear3.domain.splice(1, 0, (dom[0] + dom[1])/2);
             }
 
-            config.labelFont = 14 * config.labelScale * state.ratio + "px serif";
+            config.labelFont = 14 * config.labelScale * state.ratio + "px Arial";
 
             global.generateColorScalers(config);
             global.generateRGBAColors(config);
@@ -134,7 +134,7 @@ HTMLWidgets.widget(global = {
             config.scalers[scheme] = d3.scaleLinear()
                 .domain(palette.domain)
                 .range(palette.range)
-                .interpolate(d3.interpolateHcl);
+                .interpolate(d3.interpolateCubehelix.gamma(3.0));
         }
     },
 
@@ -266,6 +266,7 @@ HTMLWidgets.widget(global = {
             context.font = config.labelFont;
             context.lineWidth = config.nodeBorderWidth * state.ratio;
             context.strokeStyle = config.rgba['node'];
+            context.textBaseline="middle";
             nodes.forEach(drawNode);
 
             context.restore();
@@ -291,7 +292,7 @@ HTMLWidgets.widget(global = {
             context.stroke();
 
             context.fillStyle = config.rgba['label'];
-            context.fillText(d.label, d.x + d.vsize + 2, d.y + 3);
+            context.fillText(d.label, d.x + d.vsize + 2, d.y);
         }
 
 
@@ -420,7 +421,7 @@ HTMLWidgets.widget(global = {
 
         state.controller.labelScale = function(val) {
             config.labelScale = val;
-            config.labelFont = 14 * config.labelScale * state.ratio + "px serif";
+            config.labelFont = 14 * config.labelScale * state.ratio + "px Arial";
         }
 
         // Node
