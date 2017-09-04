@@ -333,12 +333,12 @@ HTMLWidgets.widget(global = {
         var simulation = state.simulation;
         var config = state[state.currentKey];
         var series = config.seriesData;
-        var index = JSON.parse(x.process_map) - 1;
         if(series == null) {
             return;
         }
 
         if ('process_map' in x) {
+            var index = JSON.parse(x.process_map) - 1;
             var nodes = simulation.nodes();
             for(idx in nodes) {
                 nodes[idx].color = nodes[idx]['color.' + series[index]];
@@ -354,6 +354,7 @@ HTMLWidgets.widget(global = {
         }
 
         if ('process_net' in x) {
+            var index = JSON.parse(x.process_net) - 1;
             var nodes = simulation.nodes();
             for(idx in nodes) {
                 nodes[idx].color = nodes[idx]['color.' + series[index]];
