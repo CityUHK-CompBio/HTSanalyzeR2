@@ -1,4 +1,4 @@
-addCustomBtns = function(panel, elState) {
+addCustomBtns = function(panel, state) {
     var dropdown = panel.find('div .dropdown');
     var menu = dropdown.find('.dropdown-menu');
 
@@ -19,12 +19,12 @@ addCustomBtns = function(panel, elState) {
         return $('<li></li>').append(control);
     }
 
-    menu.prepend(createButton("glyphicon glyphicon-pause", "pause", elState.controller.pause));
-    menu.prepend(createButton("glyphicon glyphicon-floppy-disk", "save", elState.controller.saveSvg));
+    menu.prepend(createButton("glyphicon glyphicon-pause", "pause", state.controller.pause));
+    menu.prepend(createButton("glyphicon glyphicon-floppy-disk", "save", state.controller.saveImg));
 }
 
-appendPanelId = function(panel, elState) {
-    var panelId = elState.elId;
+appendPanelId = function(panel, state) {
+    var panelId = state.elId;
     $("#accordion", panel).attr("id", "accordion" + panelId);
 
     $("[data-toggle='collapse']", panel).each(function() {
@@ -63,8 +63,8 @@ renderPalette = function(canvas, domain, range) {
     context.putImageData(image, 0, 0);
 }
 
-refreshValues = function(panel, elState) {
-    var curState = elState[elState.currentSubId];
+refreshValues = function(panel, state) {
+    var curState = state[state.currentKey];
     // General
     $("#generalTitle", panel).val(curState.title);
     $('#generalTitleSize', panel).slider().slider('setValue', curState.titleSize)
@@ -123,7 +123,7 @@ refreshValues = function(panel, elState) {
     }
 }
 
-initPanel = function(panel, title, elState) {
+initPanel = function(panel, title, state) {
     if("undefined" != typeof title) {
         $("#settingPanelTitle", panel).text("Settings (" + title + ")");
     }
@@ -162,34 +162,35 @@ initPanel = function(panel, title, elState) {
 
     var decorator = function(funcName) {
         return function(obj) {
-            elState.controller[funcName](obj.value)
+            state.controller[funcName](obj.value);
+            state.controller.refresh();
         }
     }
 
     //General
     $("#generalTitle", panel).change(function() {
-        elState.controller['title'](this.value);
+        state.controller['title'](this.value);
     });
     $('#generalTitleSize', panel).slider().on('slide', decorator('titleSize'));
     $("#generalLegendTitle", panel).change(function() {
-        elState.controller['legendTitle'](this.value);
+        state.controller['legendTitle'](this.value);
     });
     $('#generalCharge', panel).slider().on('slide', decorator('charge'));
     $('#generalDistance', panel).slider().on('slide', decorator('distance'));
 
     //Label
     $("#labelOption :input", panel).change(function() {
-        elState.controller['labelOption'](this.value);
+        state.controller['labelOption'](this.value);
     });
     $("#labelColor", panel).change(function() {
-        elState.controller['labelColor']("#" + this.value);
+        state.controller['labelColor']("#" + this.value);
     });
     $('#labelOpacity', panel).slider().on('slide', decorator('labelOpacity'));
     $('#labelScale', panel).slider().on('slide', decorator('labelScale'));
 
     // Node
     $("#nodeShapeOption :input", panel).change(function() {
-        elState.controller['nodeShape'](this.value);
+        state.controller['nodeShape'](this.value);
     });
     $("#nodeSchemeBtns li a", panel).click(function() {
         var selText = $(this).text();
@@ -210,18 +211,18 @@ initPanel = function(panel, title, elState) {
             renderPalette(canvas1, palette.domain, palette.range);
             renderPalette(canvas2, palette.domain, palette.range);
         }
-        elState.controller.nodeScheme(schemeId);
+        state.controller.nodeScheme(schemeId);
     });
     $('#nodeScale', panel).slider().on('slide', decorator('nodeScale'));
     $("#nodeBorderColor", panel).change(function() {
-        elState.controller['nodeBorderColor']('#' + this.value);
+        state.controller['nodeBorderColor']('#' + this.value);
     });
     $('#nodeBorderOpacity', panel).slider().on('slide', decorator('nodeBorderOpacity'));
     $('#nodeBorderWidth', panel).slider().on('slide', decorator('nodeBorderWidth'));
 
     // Edge
     $("#edgeColor", panel).change(function() {
-        elState.controller.edgeColor('#' + this.value);
+        state.controller.edgeColor('#' + this.value);
     });
     $('#edgeOpacity', panel).slider().on('slide', decorator('edgeOpacity'));
     $('#edgeScale', panel).slider().on('slide', decorator('edgeScale'));
@@ -252,7 +253,7 @@ initPanel = function(panel, title, elState) {
         return function() {
             var values = fetchSchemeValues(schemeId);
             var canvas = d3.select($("#nodeSchemes #" + schemeId + " #palette", panel)[0]);
-            elState.controller.changeScheme(schemeId, values.domain, values.range);
+            state.controller.changeScheme(schemeId, values.domain, values.range);
             renderPalette(canvas, values.domain, values.range);
             uniTextColors(schemeId);
 
@@ -283,12 +284,12 @@ initPanel = function(panel, title, elState) {
         $("#nodeSchemes #" + schemeId+ " input", panel).change(renderFunc(schemeId));
     }
 
-    addCustomBtns(panel, elState);
+    addCustomBtns(panel, state);
     panel.removeClass("hidden");
 }
 
-configureSettingPanel = function(elState) {
-    var elParent = $('#' + elState.elId).parent();
+configureSettingPanel = function(state) {
+    var elParent = $('#' + state.elId).parent();
     var title = elParent.parents(".tab-pane").data("value");
     var panel = elParent.children(":first");
     var innerId = elParent.data("lobipanel-child-inner-id");
@@ -296,11 +297,11 @@ configureSettingPanel = function(elState) {
         panel = $("[data-inner-id='" + innerId + "']")
     }
 
-    refreshValues(panel, elState);
+    refreshValues(panel, state);
 
     var lobiInited = panel.hasClass('lobipanel') && "undefined" != typeof panel.data('inner-id');
     if(!lobiInited) {
-        appendPanelId(panel, elState);
-        initPanel(panel, title, elState);
+        appendPanelId(panel, state);
+        initPanel(panel, title, state);
     }
 }

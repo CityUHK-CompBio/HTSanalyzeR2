@@ -1,19 +1,13 @@
 HTMLWidgets.widget(global = {
     name: "forceGraph",
     type: "output",
-
-    // storeFormat:
-    // store: {elementId1: elementState1, elementId2: elementState2, ...}
-    // elementState: {width, height, svg, simulation, controllers, currentSubId, hashId1: subState1, hashId2: Substate2, ...}
-    // subState: {pause, charge, distance, title, ...}
     store: {},
 
-    defaultState: {
+    // defaultState
+    defaultConfig: {
         pause: false,
-        charge: -400,
         distance: 200,
-        naOpacicy: 0.4,
-        naWidth: 0.1,
+        strength: 0.05,
 
         title: "",
         titleSize: 22,
@@ -28,12 +22,15 @@ HTMLWidgets.widget(global = {
         nodeScheme: "linear2",
         nodeShape: "circle",
         nodeBorderColor: "#808080", // grey
-        nodeBorderWidth: 1,
         nodeBorderOpacity: 1,
+        nodeBorderWidth: 1,
 
         edgeScale: 1,
         edgeColor: "#808080",  // grey
         edgeOpacity: 0.6,
+
+        naOpacicy: 0.6,
+        naWidth: 0.1,
 
         palettes: {
             linear2: { domain: [-1, 1], range: ["#FF0000", "#FFDEE2"] },
@@ -45,7 +42,7 @@ HTMLWidgets.widget(global = {
         scalers: {
             wrapper: function(schemeId, color, scheme) {
                 if(color == null) {
-                    return "#FFFFFF"
+                    return "rgba(255,255,255,0.6)"
                 }
                 if(schemeId == "dual") {
                     return this[schemeId+scheme](color);
@@ -53,56 +50,35 @@ HTMLWidgets.widget(global = {
                     return this[schemeId](color);
                 }
             }
-            //generated from palettes when constructing views.
+            //generated from palettes in getCurrentConfig.
         },
-
-        modified: false
-    },
-
-    initialize: function(el, width, height) {
-        el.style.height = "90vh";
-
-        var state = global.getElementState(el);
-
-        var svg = d3.select(el).append("svg")
-            .attr("width", width)
-            .attr("height", height);
-
-        var simulation = d3.forceSimulation()
-            .force("link", d3.forceLink())
-            .force("charge", d3.forceManyBody())
-            .force("collide", d3.forceCollide())
-            .force("center", d3.forceCenter())
-            .force("forceX", d3.forceX())
-            .force("forceY", d3.forceY());
-
-        simulation.force("center")
-            .x(width / 2)
-            .y(height / 2);
-
-        $.extend(state, { svg: svg, width: width, height: height, simulation: simulation })
-
-        return simulation;
-    },
-
-    resize: function(el, width, height, simulation) {
-        var state = global.getElementState(el);
-        $.extend(state, { width: width, height: height });
-
-        d3.select(el).select("svg")
-            .attr("width", width)
-            .attr("height", height);
-
-        d3.select(el).select("svg")
-            .select(".title")
-            .attr("transform", "translate(" + (state.width / 2) + ", 40)");
-
-        d3.select(el).select("svg")
-            .select(".legend")
-            .attr("transform", "translate(" + (state.width - 100) + ", 50)");
-
-        simulation
-            .force("center", d3.forceCenter(width / 2, height / 2));
+        shaper : {
+            circle: function(context, d) {
+                context.moveTo(d.x + d.vsize, d.y);
+                context.arc(d.x, d.y, d.vsize, 0, 2 * Math.PI);
+            },
+            triangle: function(context, d) {
+                context.moveTo(d.x, d.y - d.vsize * 1.15);
+                context.lineTo(d.x + d.vsize, d.y + d.vsize * 0.577);
+                context.lineTo(d.x - d.vsize, d.y + d.vsize * 0.577);
+            },
+            rectangle: function(context, d) {
+                // context.fillRect(d.x - d.vsize, d.y - d.vsize, d.vsize * 2, d.vsize * 2);
+                // context.strokeRect(d.x - d.vsize, d.y - d.vsize, d.vsize * 2, d.vsize * 2)
+                context.moveTo(d.x - d.vsize, d.y - d.vsize);
+                context.lineTo(d.x + d.vsize, d.y - d.vsize);
+                context.lineTo(d.x + d.vsize, d.y + d.vsize);
+                context.lineTo(d.x - d.vsize, d.y + d.vsize);
+            },
+            diamond: function(context, d) {
+                context.moveTo(d.x, d.y - d.vsize);
+                context.lineTo(d.x + d.vsize, d.y);
+                context.lineTo(d.x, d.y + d.vsize);
+                context.lineTo(d.x - d.vsize, d.y);
+            }
+        },
+        rgba: {},
+        size: {}
     },
 
     getElementState: function(el) {
@@ -113,643 +89,441 @@ HTMLWidgets.widget(global = {
         return global.store[elId];
     },
 
-    getSelection: function(elState, type) {
-        var svg = elState.svg;
-        switch (type) {
-            case 'node':
-                return svg.selectAll(".node");
-            case 'circle':
-                return svg.selectAll(".node > .shape-circle");
-            case 'polygon':
-                return svg.selectAll(".node > .shape-polygon");
-            case 'label':
-                return svg.selectAll(".node > text");
-            case 'edge':
-                return svg.selectAll(".link");
-            case 'title':
-                return svg.selectAll(".title > text");
-            case 'legend':
-                return svg.select(".legend");
-            case 'legendTitle':
-                return svg.select(".legend > text");
-        }
-    },
+    getCurrentConfig: function(state, x) {
+        if(x) { state.currentKey = JSON.stringify(x).hashCode().toString(); }
 
-    renderValue: function(el, x, simulation) {
-        console.log(x);
-        var elState = global.getElementState(el);
-
-        if (x.update) {
-            global.update(elState, x, simulation);
-        } else {
-            var hashKey = JSON.stringify(x).hashCode().toString();
-            if(!(hashKey in elState)) {
-                elState[hashKey] = $.extend({}, global.defaultState);
-            }
-            elState.currentSubId = hashKey;
-            global.construct(elState, x, simulation);
-        }
-    },
-
-    construct: function(elState, x, simulation) {
-        // TODO: use smarter loader, check proverty available.
-        var options = x.options;
-        var curState = elState[elState.currentSubId];
-
-        if(!curState.modified) {
-        //     curState.palettes.default.domain = options.colorDomain;
-        //     curState.palettes.scheme1.domain = options.colorDomain;
-        //     curState.palettes.scheme2.domain = options.colorDomain;
-
+        if(!(state.currentKey in state)) {
+            // Default configuration
+            state[state.currentKey] = $.extend({}, global.defaultConfig);
+            var config = state[state.currentKey];
+            // Load X
+            var options = x.options;
             var keys = ["charge","distance", "seriesData",
                 "title","titleSize","legendTitle",
-                "label","labelColor","labelOpacity","labelScale",
                 "edgeScale","edgeColor","edgeOpacity",
+                "label","labelColor","labelOpacity","labelScale",
                 "nodeScale","nodeScheme","nodeShape","nodeBorderColor","nodeBorderWidth","nodeBorderOpacity"]
 
             for(var i in keys) {
                 var key = keys[i]
                 if(options.hasOwnProperty(key)) {
-                    curState[key] = options[key];
+                    config[key] = options[key];
                 }
             }
 
             if(options.hasOwnProperty("colorDomain")) {
                 var dom = options["colorDomain"];
-                for (var scheme in curState.palettes) {
-                    curState.palettes[scheme].domain = dom.slice();
+                for (var scheme in config.palettes) {
+                    config.palettes[scheme].domain = dom.slice();
                 }
-                curState.palettes.linear3.domain.splice(1, 0, (dom[0] + dom[1])/2);
+                config.palettes.linear3.domain.splice(1, 0, (dom[0] + dom[1])/2);
             }
 
-            curState.modified = true;
+            global.generateColorScalers(config);
+            global.generateRGBAColors(config);
+            global.generateScaledSizes(config);
         }
 
-        var nodes = HTMLWidgets.dataframeToD3(x.nodes);
-        var links = HTMLWidgets.dataframeToD3(x.links);
+        return state[state.currentKey];
+    },
 
-        var svg = elState.svg;
-        svg.selectAll("*").remove();
-        var view = svg.append("g").attr("class", "view");
-
-        var zoomHandler = d3.zoom()
-            .scaleExtent([1 / 4, 8])
-            .on("zoom", function() {
-                view.attr("transform", d3.event.transform);
-            });
-        svg.call(zoomHandler).on("dblclick.zoom", null);
-
-        for (var scheme in curState.palettes) {
-            var palette = curState.palettes[scheme];
-            curState.scalers[scheme] = d3.scaleLinear()
+    generateColorScalers: function(config) {
+        for (var scheme in config.palettes) {
+            var palette = config.palettes[scheme];
+            config.scalers[scheme] = d3.scaleLinear()
                 .domain(palette.domain)
                 .range(palette.range)
                 .interpolate(d3.interpolateHcl);
         }
-        curState.scalers["dual"] = curState.scalers["dualPos"];
-
-        // Start
-        var title = svg.append("g")
-            .attr("class", "title")
-            .attr("transform", "translate(" + (elState.width / 2) + ", 40)")
-            .append("text")
-            .attr("font-size", curState.titleSize)
-            .attr("text-anchor", "middle")
-            .attr("font-weight", "bold")
-            .style("fill", "black")
-            .text(curState.title);
-
-        var legend = svg.append("g")
-            .attr("class", "legend")
-            .attr("transform", "translate(" + (elState.width - 100) + ", 50)");
-
-        global.drawLegend(elState);
-
-        var link = view.append("g")
-            .attr("class", "links")
-            .selectAll("line")
-            .data(links)
-            .enter().append("line")
-            .attr("class", "link")
-            .attr("stroke", curState.edgeColor)
-            .attr("opacity", curState.edgeOpacity)
-            .attr("stroke-width", function(d) {
-                return d.weight * curState.edgeScale;
-            });
-
-        var node = view.append("g")
-            .attr("class", "nodes")
-            .selectAll("g")
-            .data(nodes)
-            .enter().append("g")
-            .attr("class", "node")
-            .on("mouseover", mouseover)
-            .on("mouseout", mouseout)
-            .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended));
-
-        node.append("circle")
-            .attr("class", "shape-circle")
-            .attr("r", function(d) {
-                return d.size * curState.nodeScale;
-            })
-            .attr("fill", function(d) {
-                return curState.scalers.wrapper(curState.nodeScheme, d.color, d.scheme);
-            })
-            .attr("stroke", curState.nodeBorderColor)
-            .attr("stroke-width", curState.nodeBorderWidth)
-            .attr("stroke-opacity", curState.nodeBorderOpacity)
-            .attr("visibility", curState.nodeShape == "circle" ? "visible" : "hidden");
-
-        node.append("polygon")
-            .attr("class", "shape-polygon")
-            .attr("points", function(d) {
-                return d3ForceCalc.points(curState.nodeShape, d.size * curState.nodeScale);
-            })
-            .attr("fill", function(d) {
-                return curState.scalers.wrapper(curState.nodeScheme, d.color, d.scheme);
-            })
-            .attr("stroke", curState.nodeBorderColor)
-            .attr("stroke-width", curState.nodeBorderWidth)
-            .attr("stroke-opacity", curState.nodeBorderOpacity)
-            .attr("visibility", curState.nodeShape != "circle" ? "visible" : "hidden");
-
-        node.append("text")
-            .attr("fill", curState.labelColor)
-            .attr("dx", function(d) {
-                return d.size * curState.nodeScale + 2;
-            })
-            .attr("dy", ".35em")
-            .style("font", function(d) {
-                return (d.size * curState.nodeScale * curState.labelScale / 2 + 7) + "px serif"
-            })
-            .style("opacity", curState.labelOpacity)
-            .text(function(d) {
-                return d["label_" + curState.label];
-            });
-
-        node.filter(function(d){return d.color == null}).attr("opacity", curState.naOpacicy);
-        link.filter(function(d){return d.weight == null}).attr("stroke-width", curState.naWidth);
-
-        simulation.nodes(nodes)
-            .on("tick", ticked);
-        simulation.force("charge")
-            .strength(curState.charge);
-        simulation.force("link")
-            .id(function(d) {
-                return d.id;
-            })
-            .distance(curState.distance)
-            .links(links);
-
-        // simulation.alpha(1).restart();
-        simulation.alphaTarget(0.3).restart();
-
-        function ticked() {
-            link
-                .attr("x1", function(d) {
-                    return d.source.x;
-                })
-                .attr("y1", function(d) {
-                    return d.source.y;
-                })
-                .attr("x2", function(d) {
-                    return d.target.x;
-                })
-                .attr("y2", function(d) {
-                    return d.target.y;
-                });
-            node
-                .attr("transform", function(d) {
-                    return "translate(" + d.x + "," + d.y + ")"
-                })
-        }
-
-        function dragstarted(d) {
-            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
-        }
-
-        function dragged(d) {
-            d.fx = d3.event.x;
-            d.fy = d3.event.y;
-        }
-
-        function dragended(d) {
-            if (!d3.event.active) simulation.alphaTarget(0);
-            if (!d.fixed) {
-                d.fx = null;
-                d.fy = null;
-            } else {
-                d.fx = d.x;
-                d.fy = d.y;
-            }
-            if (curState.pause) {
-                simulation.stop();
-            }
-        }
-
-        function mouseover() {
-            d3.select(this).select("circle").transition()
-                .duration(300)
-                .attr("r", function(d) {
-                    return (d.size * curState.nodeScale + 8)
-                });
-            d3.select(this).select("polygon").transition()
-                .duration(300)
-                .attr("points", function(d) {
-                    return d3ForceCalc.points(curState.nodeShape, d.size * curState.nodeScale * 1.5);
-                });
-            d3.select(this).select("text")
-                .transition().duration(300)
-                .attr("dx", function(d) {
-                    return d.size * curState.nodeScale + 10
-                })
-                .style("font", function(d) {
-                    return (d.size * curState.nodeScale * curState.labelScale / 2 + 11) + "px serif"
-                })
-                .style("opacity", 1);
-        }
-
-        function mouseout() {
-            d3.select(this).select("circle").transition()
-                .duration(500)
-                .attr("r", function(d) {
-                    return (d.size * curState.nodeScale)
-                })
-            d3.select(this).select("polygon").transition()
-                .duration(300)
-                .attr("points", function(d) {
-                    return d3ForceCalc.points(curState.nodeShape, d.size * curState.nodeScale);
-                });
-            d3.select(this).select("text").transition()
-                .duration(500)
-                .attr("dx", function(d) {
-                    return d.size * curState.nodeScale + 2;
-                })
-                .style("font", function(d) {
-                    return (d.size * curState.nodeScale * curState.labelScale / 2 + 7) + "px serif"
-                })
-                .style("opacity", curState.labelOpacity);
-        }
-
-        // For setting panel
-        global.generateControllers(elState);
-        configureSettingPanel(elState);
     },
 
-    generateControllers: function(elState) {
-        var simulation = elState.simulation;
-        var curState = elState[elState.currentSubId];
+    generateRGBAColors: function(config) {
+        function hexToRGBA(hex, alpha){
+            var c;
+            if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+                c= hex.substring(1).split('');
+                if(c.length== 3){
+                    c= [c[0], c[0], c[1], c[1], c[2], c[2]];
+                }
+                c= '0x'+c.join('');
+                return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+',' + alpha + ')';
+            }
+        }
+        config.rgba.edge = hexToRGBA(config.edgeColor, config.edgeOpacity);
+        config.rgba.label = hexToRGBA(config.labelColor, config.labelOpacity);
+        config.rgba.node = hexToRGBA(config.nodeBorderColor, config.nodeBorderOpacity);
+    },
+
+    generateScaledSizes: function(config) {
+        config.size.node = config.nodeScale;
+        config.size.edge = config.edgeScale;
+        config.size.label = 14 * config.labelScale + "px serif";
+    },
+
+    initialize: function(el, width, height) {
+        // console.log("====================   initialize   ========================");
+
+        el.style.height = "90vh";
+
+        var size = {width: el.offsetWidth, height: el.offsetHeight};
+        var state = global.getElementState(el);
+
+        var canvas = d3.select(el).append("canvas")
+            .attr("width", size.width)
+            .attr("height", size.height);
+
+        var simulation = d3.forceSimulation()
+            .force("charge", d3.forceManyBody())
+            .force("x", d3.forceX())
+            .force("y", d3.forceY())
+            .force("center", d3.forceCenter(size.width / 2, size.height / 2));
+
+        $.extend(state, size);
+        $.extend(state, { canvas: canvas, simulation: simulation })
+
+        return simulation;
+    },
+
+
+    resize: function(el, width, height, simulation) {
+        // console.log("====================   resize   ========================");
+        var state = global.getElementState(el);
+        var size = {width: el.offsetWidth, height: el.offsetHeight};
+
+        $.extend(state, size);
+
+        d3.select(el).select("canvas")
+            .attr("width", size.width)
+            .attr("height", size.height);
+
+        simulation.force("center", d3.forceCenter(size.width / 2, size.height / 2));
+        simulation.alphaTarget(0).restart();
+    },
+
+
+    renderValue: function(el, x, simulation) {
+        // console.log("====================   renderValue   ========================");
+        // console.log(el);
+        // console.log(x);
+        // console.log("=============================================================");
+
+        var state = global.getElementState(el);
+
+        if (x.update) {
+            global.update(state, x);
+        } else {
+            var config = global.getCurrentConfig(state, x);
+            global.construct(state, config, x);
+        }
+    },
+
+
+    construct: function(state, config, x) {
+        // console.log("======================   construct   ========================");
+        // console.log(state);
+        // console.log(config);
+        // console.log("=============================================================");
+
+        var canvas = state.canvas;
+        var simulation = state.simulation;
+        var context = canvas.node().getContext("2d");
+
+        var nodes = HTMLWidgets.dataframeToD3(x.nodes);
+        var links = HTMLWidgets.dataframeToD3(x.links);
+
+        for(idx in nodes) {
+            nodes[idx].vsize = config.nodeScale * nodes[idx].size;
+            nodes[idx].fill = config.scalers.wrapper(config.nodeScheme, nodes[idx].color, nodes[idx].scheme);
+        }
+
+        trLinks = links.filter(function(d){return d.weight != null});
+        naLinks = links.filter(function(d){return d.weight == null});
+
+        simulation.alphaTarget(0.3).restart();
+        simulation.nodes(nodes);
+        simulation.force("link", d3.forceLink(links).distance(config.distance).strength(config.strength).id(function(d) {return d.id;}));
+        simulation.on("tick", ticked);
+
+        canvas.call(d3.drag()
+            .container(canvas.node())
+            .subject(dragsubject)
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended));
+
+        // drawTitleAndLegend();
+
+        function ticked() {
+            context.clearRect(0, 0, state.width, state.height);
+            context.save();
+
+            context.strokeStyle = config.rgba['edge'];
+
+            context.beginPath();
+            context.lineWidth = config.naWidth;
+            naLinks.forEach(drawLink);
+            context.stroke();
+
+            context.beginPath();
+            context.lineWidth = config.edgeScale;
+            trLinks.forEach(drawLink);
+            context.stroke();
+
+            context.font = config.size.label;
+            context.lineWidth = config.nodeBorderWidth;
+            context.strokeStyle = config.rgba['node'];
+            nodes.forEach(drawNode);
+
+            context.restore();
+        }
+
+
+        function drawLink(d) {
+            context.moveTo(d.source.x, d.source.y);
+            context.lineTo(d.target.x, d.target.y);
+        }
+
+
+        function drawNode(d) {
+            var dx = d.x < 0 ? 0 : (d.x > state.width ? state.width : d.x)
+            var dy = d.y < 0 ? 0 : (d.y > state.height ? state.height : d.y)
+
+            context.beginPath();
+
+            config.shaper[config.nodeShape](context, d);
+
+            context.fillStyle = d.fill;
+            context.fill();
+            context.stroke();
+
+            context.fillStyle = config.rgba['label'];
+            context.fillText(d.label, d.x + d.vsize + 2, d.y + 3);
+        }
+
+
+        function dragsubject() {
+            return simulation.find(d3.event.x, d3.event.y, 10);
+        }
+
+
+        function dragstarted() {
+            if (!d3.event.active) simulation.alphaTarget(0.2).restart();
+            d3.event.subject.fx = d3.event.x;
+            d3.event.subject.fy = d3.event.y;
+        }
+
+        function dragged() {
+            // d3.event.subject.fx = d3.event.x;
+            // d3.event.subject.fy = d3.event.y;
+            dx = d3.event.x < 0 ? 0 : (d3.event.x > state.width ? state.width : d3.event.x);
+            dy = d3.event.y < 0 ? 0 : (d3.event.y > state.height ? state.height : d3.event.y);
+            d3.event.subject.fx = dx;
+            d3.event.subject.fy = dy;
+        }
+
+        function dragended() {
+            if (!d3.event.active) simulation.alphaTarget(0);
+            d3.event.subject.fx = null;
+            d3.event.subject.fy = null;
+        }
+
+
+        function mousemove() {
+            var m = d3.mouse(this);
+            var d = simulation.find(m[0], m[1], 10);
+        }
+
+
+        function drawTitleAndLegend(context) {
+            title = "ABC TITLE TITLE TITLE TITLE TITLE";
+            console.log(title);
+        }
+
+        global.generateControllers(state);
+        configureSettingPanel(state);
+    },
+
+    update: function(state, x) {
+        var simulation = state.simulation;
+        var config = state[state.currentKey];
+        var series = config.seriesData;
+        var index = JSON.parse(x.process_map) - 1;
+        if(series == null) {
+            return;
+        }
+
+        if ('process_map' in x) {
+            var nodes = simulation.nodes();
+            for(idx in nodes) {
+                nodes[idx].color = nodes[idx]['color.' + series[index]];
+                nodes[idx].scheme = nodes[idx]['scheme.' + series[index]];
+                nodes[idx].fill = config.scalers.wrapper(config.nodeScheme, nodes[idx].color, nodes[idx].scheme);
+            }
+
+            // var links = simulation.force("link").links();
+            // for(idx in links) {
+            //     links[idx].weight = links[idx]['weight.' + series[index]];
+            // }
+        }
+
+        if ('process_net' in x) {
+            var nodes = simulation.nodes();
+            for(idx in nodes) {
+                nodes[idx].color = nodes[idx]['color.' + series[index]];
+                nodes[idx].fill = config.scalers.wrapper(config.nodeScheme, nodes[idx].color, nodes[idx].scheme);
+            }
+
+            // var links = simulation.force("link").links();
+            // for(idx in links) {
+            //     links[idx].weight = links[idx]['weight.' + series[index]];
+            // }
+        }
+
+    },
+
+    generateControllers: function(state) {
+    	var simulation = state.simulation;
+        var config = state[state.currentKey];
+
+        state.controller.refresh = function() {
+            simulation.alphaTarget(0.3).restart();
+        }
 
         // General
-        elState.controller.title = function(val) {
-            curState.title = val;
-            var title = global.getSelection(elState, 'title');
+        state.controller.title = function(val) {
+            config.title = val;
+            var title = global.getSelection(state, 'title');
             title.text(curState.title);
         }
 
-        elState.controller.titleSize = function(val) {
-            curState.titleSize = val;
-            var title = global.getSelection(elState, 'title');
-            title.style("font-size", curState.titleSize);
+        state.controller.titleSize = function(val) {
+            config.titleSize = val;
         }
 
-        elState.controller.legendTitle = function(val) {
-            curState.legendTitle = val;
-            var legendTitle = global.getSelection(elState, 'legendTitle');
-            legendTitle.text(curState.legendTitle);
+        state.controller.legendTitle = function(val) {
+            config.legendTitle = val;
         }
 
-        elState.controller.charge = function(val) {
-            curState.charge = val;
-            simulation.force("charge").strength(curState.charge);
-            simulation.alphaTarget(0.3).restart();
-            if (curState.pause) {
-                setTimeout(function() { simulation.stop(); }, 600);
-            }
+        state.controller.charge = function(val) {
+            config.charge = val;
+            simulation.force("charge").strength(config.charge);
         }
-        elState.controller.distance = function(val) {
-            curState.distance = val;
-            simulation.force("link").distance(curState.distance);
-            simulation.alphaTarget(0.3).restart();
-            if (curState.pause) {
-                setTimeout(function() { simulation.stop(); }, 600);
-            }
+
+        state.controller.distance = function(val) {
+            config.distance = val;
+            simulation.force("link").distance(config.distance);
         }
 
         //Label
-        elState.controller.labelOption = function(type) {
+        state.controller.labelOption = function(type) {
             // type == id, term, none
-            curState.label = type;
-            var sel = global.getSelection(elState, 'label');
-            if (curState.label == 'none') {
-                sel.transition().duration(300).attr("visibility", "hidden");
-            } else {
-                var key = "label_" + curState.label;
-                sel.transition().duration(300).attr("visibility", "visible").text(function(d) {
-                    return key in d ? d[key] : d.label;
-                });
+            config.label = type;
+            var nodes = simulation.nodes();
+            for(idx in nodes) {
+                nodes[idx].label = config.label == 'none'? "" : nodes[idx]["label_" + config.label];
             }
         }
 
-        elState.controller.labelColor = function(color) {
-            curState.labelColor = color;
-            var sel = global.getSelection(elState, 'label');
-            sel.transition().duration(300).attr("fill", curState.labelColor)
+        state.controller.labelColor = function(color) {
+            config.labelColor = color;
+            global.generateRGBAColors(config);
         }
 
-        elState.controller.labelOpacity = function(val) {
-            curState.labelOpacity = val;
-            var sel = global.getSelection(elState, 'label');
-            sel.transition().duration(300).style("opacity", curState.labelOpacity)
+        state.controller.labelOpacity = function(val) {
+            config.labelOpacity = val;
+            global.generateRGBAColors(config);
         }
 
-        elState.controller.labelScale = function(val) {
-            curState.labelScale = val;
-            var sel = global.getSelection(elState, 'label');
-            sel.transition().duration(300).style("font", function(d) {
-                return (d.size * curState.nodeScale * curState.labelScale / 2 + 7) + "px serif"
-            })
+        state.controller.labelScale = function(val) {
+            config.labelScale = val;
+            global.generateScaledSizes(config);
         }
 
         // Node
-        elState.controller.nodeShape = function(shape) {
+        state.controller.nodeShape = function(shape) {
             // shape == circle, triangle, rectangle, diamond
-            curState.nodeShape = shape;
-            var sel_circle = global.getSelection(elState, 'circle');
-            var sel_polygon = global.getSelection(elState, 'polygon');
+            config.nodeShape = shape;
+        }
 
-            if (shape == 'circle') {
-                sel_circle.transition().duration(300).attr('visibility', 'visible');
-                sel_polygon.transition().duration(300).attr('visibility', 'hidden');
-            } else {
-                sel_circle.transition().duration(300).attr('visibility', 'hidden');
-                sel_polygon.transition().duration(300).attr('visibility', 'visible')
-                    .attr("points", function(d) {
-                        return d3ForceCalc.points(curState.nodeShape, d.size * curState.nodeScale);
-                    })
+        state.controller.nodeScale = function(val) {
+            config.nodeScale = val;
+            var nodes = simulation.nodes();
+            for(idx in nodes) {
+                nodes[idx].vsize = config.nodeScale * nodes[idx].size;
             }
         }
 
-        elState.controller.nodeScale = function(val) {
-            curState.nodeScale = val;
-            var sel_circle = global.getSelection(elState, 'circle');
-            var sel_polygon = global.getSelection(elState, 'polygon');
-            sel_circle.attr("r", function(d) {
-                return d.size * curState.nodeScale;
-            })
-            sel_polygon.attr("points", function(d) {
-                return d3ForceCalc.points(curState.nodeShape, d.size * curState.nodeScale);
-            })
-        }
-
-        elState.controller.nodeScheme = function(schemeId) {
+        state.controller.nodeScheme = function(schemeId) {
             // scheme: "linear2", "linear3", "dual"
-            curState.nodeScheme = schemeId;
-            var sel_circle = global.getSelection(elState, 'circle');
-            var sel_polygon = global.getSelection(elState, 'polygon');
-            sel_circle.transition().duration(300).attr("fill", function(d) {
-                return curState.scalers.wrapper(schemeId, d.color, d.scheme);
-            })
-            sel_polygon.transition().duration(300).attr("fill", function(d) {
-                return curState.scalers.wrapper(schemeId, d.color, d.scheme);
-            })
-            global.drawLegend(elState);
+            config.nodeScheme = schemeId;
+            var nodes = simulation.nodes();
+            for(idx in nodes) {
+                nodes[idx].fill = config.scalers.wrapper(config.nodeScheme, nodes[idx].color, nodes[idx].scheme);
+            }
+            // global.drawLegend(state);
         }
 
-        elState.controller.nodeBorderColor = function(color) {
-            curState.nodeBorderColor = color;
-            var sel_circle = global.getSelection(elState, 'circle');
-            var sel_polygon = global.getSelection(elState, 'polygon');
-            sel_circle.transition().duration(300).attr("stroke", function(d) {
-                return curState.nodeBorderColor
-            })
-            sel_polygon.transition().duration(300).attr("stroke", function(d) {
-                return curState.nodeBorderColor
-            })
+        state.controller.nodeBorderColor = function(color) {
+            config.nodeBorderColor = color;
+            global.generateRGBAColors(config);
         }
 
-        elState.controller.nodeBorderOpacity = function(val) {
-            curState.nodeBorderOpacity = val;
-            var sel_circle = global.getSelection(elState, 'circle');
-            var sel_polygon = global.getSelection(elState, 'polygon');
-            sel_circle.transition().duration(300).attr("stroke-opacity", function(d) {
-                return curState.nodeBorderOpacity
-            })
-            sel_polygon.transition().duration(300).attr("stroke-opacity", function(d) {
-                return curState.nodeBorderOpacity
-            })
+        state.controller.nodeBorderOpacity = function(val) {
+            config.nodeBorderOpacity = val;
+            global.generateRGBAColors(config);
         }
 
-        elState.controller.nodeBorderWidth = function(val) {
-            curState.nodeBorderWidth = val;
-            var sel_circle = global.getSelection(elState, 'circle');
-            var sel_polygon = global.getSelection(elState, 'polygon');
-            sel_circle.transition().duration(300).attr("stroke-width", function(d) {
-                return curState.nodeBorderWidth
-            })
-            sel_polygon.transition().duration(300).attr("stroke-width", function(d) {
-                return curState.nodeBorderWidth
-            })
+        state.controller.nodeBorderWidth = function(val) {
+            config.nodeBorderWidth = val;
         }
 
 
         // Edge
-        elState.controller.edgeColor = function(color) {
-            curState.edgeColor = color;
-            var sel = global.getSelection(elState, 'edge');
-            sel.transition().duration(300).attr('stroke', curState.edgeColor);
+        state.controller.edgeColor = function(color) {
+            config.edgeColor = color;
+            global.generateRGBAColors(config);
+
         }
 
-        elState.controller.edgeOpacity = function(val) {
-            curState.edgeOpacity = val;
-            var sel = global.getSelection(elState, 'edge');
-            sel.transition().duration(300).attr('opacity', curState.edgeOpacity);
+        state.controller.edgeOpacity = function(val) {
+            config.edgeOpacity = val;
+            global.generateRGBAColors(config);
         }
 
-        elState.controller.edgeScale = function(val) {
-            curState.edgeScale = val;
-            var sel = global.getSelection(elState, 'edge');
-            sel.transition().duration(300).attr('stroke-width', function(d) {
-                return d.weight * curState.edgeScale;
-            });
+        state.controller.edgeScale = function(val) {
+            config.edgeScale = val;
         }
 
         //Schemes
-        elState.controller.changeScheme = function(schemeId, domain, range) {
+        state.controller.changeScheme = function(schemeId, domain, range) {
             // schemeId: "linear2", "linear3", "dualPos", "dualNeg"
             var palette = { domain: domain, range: range };
-            curState.palettes[schemeId] = palette;
-            var scaler = curState.scalers[schemeId];
+            config.palettes[schemeId] = palette;
+            var scaler = config.scalers[schemeId];
             scaler.domain(palette.domain).range(palette.range);
-
-            // TODO: revise needed
             scaler['dual'] = scaler['dualPos'];
 
-            if (schemeId.startsWith(curState.nodeScheme)) {
-                elState.controller.nodeScheme(curState.nodeScheme);
-                global.drawLegend(elState);
+            if (schemeId.startsWith(config.nodeScheme)) {
+                state.controller.nodeScheme(config.nodeScheme);
             }
         }
 
-        // BorderButtons
-        elState.controller.pause = function() {
-            curState.pause = !curState.pause;
-            curState.pause ? simulation.stop() : simulation.restart();
-        }
+     //    // BorderButtons
+     //    state.controller.pause = function() {
+     //        curState.pause = !curState.pause;
+     //        curState.pause ? simulation.stop() : simulation.restart();
+     //    }
 
-        elState.controller.saveSvg = function() {
-            var svg = elState.svg;
-            var svgData = svg.attr("version", 1.1)
-                .attr("xmlns", "http://www.w3.org/2000/svg")
-                .node().parentNode.outerHTML;
-
-            var svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
-            var svgUrl = URL.createObjectURL(svgBlob);
+        state.controller.saveImg = function() {
+            var canvas = state.canvas.node();
+            var dt = canvas.toDataURL('image/png');
             var tmpLink = document.createElement("a");
-            tmpLink.href = svgUrl;
-            tmpLink.download = "network.svg";
+            tmpLink.href = dt;
+            tmpLink.download = "network.png";
             document.body.appendChild(tmpLink);
             tmpLink.click();
             document.body.removeChild(tmpLink);
         }
-    },
-
-
-    drawLegend: function(elState) {
-        var curState = elState[elState.currentSubId];
-
-        function drawScaleBar(g, domain, color, axisFormat) {
-            function pair(array) {
-                return array.slice(1).map(function(b, i) {
-                    return [array[i], b];
-                });
-            }
-            var scaler = d3.scaleLinear()
-                .domain(domain)
-                .range([0, 200])
-                .nice();
-            var axis = d3.axisRight(scaler)
-                .tickSize(10)
-                .tickFormat(d3.format(axisFormat));
-
-            g.selectAll("*").remove();
-            g.selectAll("rect")
-                .data(pair(scaler.ticks(10)))
-                .enter().append("rect")
-                .attr("width", 8)
-                .attr("y", function(d) {
-                    return scaler(d[0]);
-                })
-                .attr("height", function(d) {
-                    return scaler(d[1]) - scaler(d[0]);
-                })
-                .style("fill", function(d) {
-                    return color(d[1]);
-                });
-            g.call(axis);
-        }
-
-        var legend = global.getSelection(elState, "legend");
-        legend.selectAll("*").remove();
-
-        if(curState.nodeScheme != "dual") {
-        	palette = curState.palettes[curState.nodeScheme];
-	        colorFunc = curState.scalers[curState.nodeScheme];
-	        colorDomain = [palette.domain[palette.domain.length - 1], palette.domain[0]];
-
-            var legendBar = legend.append("g").attr("transform", "translate(25, 0)");
-            drawScaleBar(legendBar, colorDomain, colorFunc, "+.2f");
-        } else {
-        	// curState.nodeScheme == 'dual'
-            var domPos = curState.palettes["dualPos"]["domain"];
-            var domNeg = curState.palettes["dualNeg"]["domain"];
-            var posBar = legend.append("g").attr("transform", "translate(45, 0)");
-            var negBar = legend.append("g").attr("transform", "translate(3, 0)");
-            drawScaleBar(posBar, [domPos[1], domPos[0]], curState.scalers["dualPos"], ".3f");
-            drawScaleBar(negBar, [domNeg[1], domNeg[0]], curState.scalers["dualNeg"], ".3f");
-        }
-
-        var legendTitle = legend.append("text")
-            .attr("font-size", 11)
-            .attr("text-anchor", "middle")
-            .attr("transform", "translate(35, 220)")
-            .style("fill", "black")
-            .text(curState.legendTitle);
-    },
-
-
-    update: function(elState, x, simulation) {
-        // update interface for R
-        var curState = elState[elState.currentSubId];
-        var schemeId = curState.nodeScheme;
-
-        if ('process_map' in x) {
-            var series = curState.seriesData;
-            var index = JSON.parse(x.process_map) - 1;
-
-            if(series == null) {
-                return;
-            }
-
-            var node = global.getSelection(elState, 'node');
-            var link = global.getSelection(elState, 'edge');
-            var sel_circle = global.getSelection(elState, 'circle');
-            var sel_polygon = global.getSelection(elState, 'polygon');
-
-            node.each(function(d) {d.color = d["color." + series[index]] });
-            node.each(function(d) { d.scheme = d["scheme." + series[index]] });
-            link.each(function(d) {d.weight = d["weight." + series[index]] });
-
-            node.attr("opacity", 1).filter(function(d){return d.color == null})
-                .attr("opacity", curState.naOpacicy);
-            sel_circle.transition().duration(300).attr("fill", function(d) {
-                return curState.scalers.wrapper(schemeId, d.color, d.scheme);
-            })
-            sel_polygon.transition().duration(300).attr("fill", function(d) {
-                return curState.scalers.wrapper(schemeId, d.color, d.scheme);
-            })
-            link.transition().duration(200).attr("stroke-width", curState.naWidth)
-                .filter(function(d){return d.weight != null})
-                .attr("stroke-width", function(d) {
-                    return d.weight * curState.edgeScale;
-            })
-        }
-
-        if ('process_net' in x) {
-            var series = curState.seriesData;
-            var index = JSON.parse(x.process_net) - 1;
-
-            if(series == null) {
-                return;
-            }
-
-            var node = global.getSelection(elState, 'node');
-            var link = global.getSelection(elState, 'edge');
-            var sel_circle = global.getSelection(elState, 'circle');
-            var sel_polygon = global.getSelection(elState, 'polygon');
-
-            node.each(function(d) {d.color = d["color." + series[index]] });
-            link.each(function(d) {d.weight = d["weight." + series[index]] });
-
-            node.attr("opacity", 1).filter(function(d){return d.color == null})
-                .attr("opacity", curState.naOpacicy);
-            sel_circle.transition().duration(300).attr("fill", function(d) {
-                return curState.scalers.wrapper(schemeId, d.color, d.scheme);
-            })
-            sel_polygon.transition().duration(300).attr("fill", function(d) {
-                return curState.scalers.wrapper(schemeId, d.color, d.scheme);
-            })
-            link.transition().duration(200).attr("stroke-width", curState.naWidth)
-                .filter(function(d){return d.weight != null})
-                .attr("stroke-width", function(d) {
-                    return d.weight * curState.edgeScale;
-            })
-        }
     }
-}
-);
+
+});
