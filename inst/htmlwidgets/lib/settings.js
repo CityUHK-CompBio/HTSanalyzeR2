@@ -69,7 +69,6 @@ refreshValues = function(panel, state) {
     $("#generalTitle", panel).val(curState.title);
     $('#generalTitleSize', panel).slider().slider('setValue', curState.titleSize)
     $("#generalLegendTitle", panel).val(curState.legendTitle);
-    $('#generalCharge', panel).slider().slider('setValue', curState.charge)
     $('#generalDistance', panel).slider().slider('setValue', curState.distance)
     // Label
     var labelOptions = $("#labelOption", panel);
@@ -175,7 +174,6 @@ initPanel = function(panel, title, state) {
     $("#generalLegendTitle", panel).change(function() {
         state.controller['legendTitle'](this.value);
     });
-    $('#generalCharge', panel).slider().on('slide', decorator('charge'));
     $('#generalDistance', panel).slider().on('slide', decorator('distance'));
 
     //Label

@@ -3,10 +3,9 @@ HTMLWidgets.widget(global = {
     type: "output",
     store: {},
 
-    // defaultState
     defaultConfig: {
         pause: false,
-        distance: 200,
+        distance: 400,
         strength: 0.05,
 
         title: "",
@@ -61,30 +60,31 @@ HTMLWidgets.widget(global = {
                 context.moveTo(d.x, d.y - d.vsize * 1.15);
                 context.lineTo(d.x + d.vsize, d.y + d.vsize * 0.577);
                 context.lineTo(d.x - d.vsize, d.y + d.vsize * 0.577);
+                context.lineTo(d.x, d.y - d.vsize * 1.15);
             },
             rectangle: function(context, d) {
-                // context.fillRect(d.x - d.vsize, d.y - d.vsize, d.vsize * 2, d.vsize * 2);
-                // context.strokeRect(d.x - d.vsize, d.y - d.vsize, d.vsize * 2, d.vsize * 2)
                 context.moveTo(d.x - d.vsize, d.y - d.vsize);
                 context.lineTo(d.x + d.vsize, d.y - d.vsize);
                 context.lineTo(d.x + d.vsize, d.y + d.vsize);
                 context.lineTo(d.x - d.vsize, d.y + d.vsize);
+                context.lineTo(d.x - d.vsize, d.y - d.vsize);
             },
             diamond: function(context, d) {
                 context.moveTo(d.x, d.y - d.vsize);
                 context.lineTo(d.x + d.vsize, d.y);
                 context.lineTo(d.x, d.y + d.vsize);
                 context.lineTo(d.x - d.vsize, d.y);
+                context.lineTo(d.x, d.y - d.vsize);
             }
         },
         rgba: {},
-        size: {}
+        labelFont: 14 // for display
     },
 
     getElementState: function(el) {
         var elId = el.id;
         if (!(elId in global.store)) {
-            global.store[elId] = {elId: elId, controller: {}};
+            global.store[elId] = {elId: elId, controller: {}, ratio: 1};
         }
         return global.store[elId];
     },
@@ -119,9 +119,10 @@ HTMLWidgets.widget(global = {
                 config.palettes.linear3.domain.splice(1, 0, (dom[0] + dom[1])/2);
             }
 
+            config.labelFont = 14 * config.labelScale * state.ratio + "px serif";
+
             global.generateColorScalers(config);
             global.generateRGBAColors(config);
-            global.generateScaledSizes(config);
         }
 
         return state[state.currentKey];
@@ -154,32 +155,22 @@ HTMLWidgets.widget(global = {
         config.rgba.node = hexToRGBA(config.nodeBorderColor, config.nodeBorderOpacity);
     },
 
-    generateScaledSizes: function(config) {
-        config.size.node = config.nodeScale;
-        config.size.edge = config.edgeScale;
-        config.size.label = 14 * config.labelScale + "px serif";
-    },
-
     initialize: function(el, width, height) {
         // console.log("====================   initialize   ========================");
-
         el.style.height = "90vh";
 
-        var size = {width: el.offsetWidth, height: el.offsetHeight};
+        var ratio = window.devicePixelRatio || 1;
+        var size = {width: el.offsetWidth * ratio, height: el.offsetHeight * ratio};
         var state = global.getElementState(el);
+        $.extend(state, size);
 
-        var canvas = d3.select(el).append("canvas")
-            .attr("width", size.width)
-            .attr("height", size.height);
-
+        var canvas = d3.select(el).append("canvas");
         var simulation = d3.forceSimulation()
             .force("charge", d3.forceManyBody())
             .force("x", d3.forceX())
             .force("y", d3.forceY())
-            .force("center", d3.forceCenter(size.width / 2, size.height / 2));
-
-        $.extend(state, size);
-        $.extend(state, { canvas: canvas, simulation: simulation })
+            .force("center", d3.forceCenter(state.width / 2, state.height / 2));
+        $.extend(state, { canvas: canvas, simulation: simulation, ratio: ratio});
 
         return simulation;
     },
@@ -187,16 +178,16 @@ HTMLWidgets.widget(global = {
 
     resize: function(el, width, height, simulation) {
         // console.log("====================   resize   ========================");
+
         var state = global.getElementState(el);
-        var size = {width: el.offsetWidth, height: el.offsetHeight};
+        var canvas = state.canvas;
+        state.ratio = window.devicePixelRatio || 1;
+        $.extend(state, {width: el.offsetWidth * state.ratio, height: el.offsetHeight * state.ratio});
 
-        $.extend(state, size);
+        canvas.attr('width', state.width).attr('height', state.height);
+        canvas.style('transform', "scale(" + 1.0 / state.ratio + ")").style('transform-origin', "left top 0px");
 
-        d3.select(el).select("canvas")
-            .attr("width", size.width)
-            .attr("height", size.height);
-
-        simulation.force("center", d3.forceCenter(size.width / 2, size.height / 2));
+        simulation.force("center", d3.forceCenter(state.width / 2, state.height / 2));
         simulation.alphaTarget(0).restart();
     },
 
@@ -228,11 +219,14 @@ HTMLWidgets.widget(global = {
         var simulation = state.simulation;
         var context = canvas.node().getContext("2d");
 
+        canvas.attr('width', state.width).attr('height', state.height * state.ratio);
+        canvas.style('transform', "scale(" + 1.0 / state.ratio + ")").style('transform-origin', "left top 0px");
+
         var nodes = HTMLWidgets.dataframeToD3(x.nodes);
         var links = HTMLWidgets.dataframeToD3(x.links);
 
         for(idx in nodes) {
-            nodes[idx].vsize = config.nodeScale * nodes[idx].size;
+            nodes[idx].vsize = config.nodeScale * nodes[idx].size * state.ratio;
             nodes[idx].fill = config.scalers.wrapper(config.nodeScheme, nodes[idx].color, nodes[idx].scheme);
         }
 
@@ -241,7 +235,7 @@ HTMLWidgets.widget(global = {
 
         simulation.alphaTarget(0.3).restart();
         simulation.nodes(nodes);
-        simulation.force("link", d3.forceLink(links).distance(config.distance).strength(config.strength).id(function(d) {return d.id;}));
+        simulation.force("link", d3.forceLink(links).distance(config.distance * state.ratio).strength(config.strength).id(function(d) {return d.id;}));
         simulation.on("tick", ticked);
 
         canvas.call(d3.drag()
@@ -260,17 +254,17 @@ HTMLWidgets.widget(global = {
             context.strokeStyle = config.rgba['edge'];
 
             context.beginPath();
-            context.lineWidth = config.naWidth;
+            context.lineWidth = config.naWidth * state.ratio;
             naLinks.forEach(drawLink);
             context.stroke();
 
             context.beginPath();
-            context.lineWidth = config.edgeScale;
+            context.lineWidth = config.edgeScale * state.ratio;
             trLinks.forEach(drawLink);
             context.stroke();
 
-            context.font = config.size.label;
-            context.lineWidth = config.nodeBorderWidth;
+            context.font = config.labelFont;
+            context.lineWidth = config.nodeBorderWidth * state.ratio;
             context.strokeStyle = config.rgba['node'];
             nodes.forEach(drawNode);
 
@@ -302,23 +296,22 @@ HTMLWidgets.widget(global = {
 
 
         function dragsubject() {
-            return simulation.find(d3.event.x, d3.event.y, 10);
+            return simulation.find(d3.event.x * state.ratio, d3.event.y * state.ratio, 20);
         }
 
 
         function dragstarted() {
             if (!d3.event.active) simulation.alphaTarget(0.2).restart();
-            d3.event.subject.fx = d3.event.x;
-            d3.event.subject.fy = d3.event.y;
+            d3.event.subject.fx = d3.event.subject.x;
+            d3.event.subject.fy = d3.event.subject.y;
         }
 
         function dragged() {
-            // d3.event.subject.fx = d3.event.x;
-            // d3.event.subject.fy = d3.event.y;
-            dx = d3.event.x < 0 ? 0 : (d3.event.x > state.width ? state.width : d3.event.x);
-            dy = d3.event.y < 0 ? 0 : (d3.event.y > state.height ? state.height : d3.event.y);
-            d3.event.subject.fx = dx;
-            d3.event.subject.fy = dy;
+            coordinates = d3.mouse(this);
+            fx = coordinates[0] * state.ratio;
+            fy = coordinates[1] * state.ratio;
+            d3.event.subject.fx = fx < 0 ? 0 : (fx > state.width ? state.width : fx );
+            d3.event.subject.fy = fy < 0 ? 0 : (fy > state.width ? state.width : fy );
         }
 
         function dragended() {
@@ -326,13 +319,6 @@ HTMLWidgets.widget(global = {
             d3.event.subject.fx = null;
             d3.event.subject.fy = null;
         }
-
-
-        function mousemove() {
-            var m = d3.mouse(this);
-            var d = simulation.find(m[0], m[1], 10);
-        }
-
 
         function drawTitleAndLegend(context) {
             title = "ABC TITLE TITLE TITLE TITLE TITLE";
@@ -364,6 +350,7 @@ HTMLWidgets.widget(global = {
             // for(idx in links) {
             //     links[idx].weight = links[idx]['weight.' + series[index]];
             // }
+            simulation.alphaTarget(0.3).restart();
         }
 
         if ('process_net' in x) {
@@ -377,6 +364,7 @@ HTMLWidgets.widget(global = {
             // for(idx in links) {
             //     links[idx].weight = links[idx]['weight.' + series[index]];
             // }
+            simulation.alphaTarget(0.3).restart();
         }
 
     },
@@ -404,14 +392,9 @@ HTMLWidgets.widget(global = {
             config.legendTitle = val;
         }
 
-        state.controller.charge = function(val) {
-            config.charge = val;
-            simulation.force("charge").strength(config.charge);
-        }
-
         state.controller.distance = function(val) {
             config.distance = val;
-            simulation.force("link").distance(config.distance);
+            simulation.force("link").distance(config.distance * state.ratio);
         }
 
         //Label
@@ -436,7 +419,7 @@ HTMLWidgets.widget(global = {
 
         state.controller.labelScale = function(val) {
             config.labelScale = val;
-            global.generateScaledSizes(config);
+            config.labelFont = 14 * config.labelScale * state.ratio + "px serif";
         }
 
         // Node
@@ -449,7 +432,7 @@ HTMLWidgets.widget(global = {
             config.nodeScale = val;
             var nodes = simulation.nodes();
             for(idx in nodes) {
-                nodes[idx].vsize = config.nodeScale * nodes[idx].size;
+                nodes[idx].vsize = config.nodeScale * nodes[idx].size * state.ratio;
             }
         }
 
