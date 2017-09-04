@@ -360,7 +360,7 @@ setMethod("viewEnrichMap", signature = "GSCA",
                    ntop = NULL,
                    allSig = TRUE,
                    gsNameType = "id",
-                   options = list(charge = -300, distance = 200),
+                   options = list(distance = 400),
                    seriesObjs = NULL) {
             g <- extractEnrichMap(object, resultName, gscs, ntop, allSig, gsNameType)
 
@@ -404,8 +404,7 @@ setMethod("viewEnrichMap", signature = "GSCA",
             }
 
             options$nodeScheme = scheme
-            defaultOptions = list(charge = -300, distance = 200,
-                                  title = title, label = gsNameType, legendTitle = "Adjusted p-values")
+            defaultOptions = list(distance = 400, title = title, label = gsNameType, legendTitle = "Adjusted p-values")
             graphOptions <- modifyList(defaultOptions, options)
 
             forceGraph(em_nodes, em_links, nMappings, lMappings, graphOptions, seriesData = series)
@@ -413,7 +412,6 @@ setMethod("viewEnrichMap", signature = "GSCA",
 
 ## Available graphOptions:
 #
-# charge: -400,
 # distance: 200,
 #
 # title: "title",
