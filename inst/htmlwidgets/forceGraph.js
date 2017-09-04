@@ -84,7 +84,7 @@ HTMLWidgets.widget(global = {
     getElementState: function(el) {
         var elId = el.id;
         if (!(elId in global.store)) {
-            global.store[elId] = {elId: elId, controller: {}, ratio: 1};
+            global.store[elId] = {elId: elId, controller: {}, ratio: 1, padding: [100, 60, 40, 40]};
         }
         return global.store[elId];
     },
@@ -158,10 +158,12 @@ HTMLWidgets.widget(global = {
     initialize: function(el, width, height) {
         // console.log("====================   initialize   ========================");
         el.style.height = "90vh";
+        var state = global.getElementState(el);
+        var padding = state.padding;
 
         var ratio = window.devicePixelRatio || 1;
         var size = {width: el.offsetWidth * ratio, height: el.offsetHeight * ratio};
-        var state = global.getElementState(el);
+        size.boundary = [padding[0], size.width - padding[1], size.height - padding[2], padding[3]];
         $.extend(state, size);
 
         var canvas = d3.select(el).append("canvas");
@@ -181,8 +183,12 @@ HTMLWidgets.widget(global = {
 
         var state = global.getElementState(el);
         var canvas = state.canvas;
+        var padding = state.padding;
+
         state.ratio = window.devicePixelRatio || 1;
-        $.extend(state, {width: el.offsetWidth * state.ratio, height: el.offsetHeight * state.ratio});
+        var size = {width: el.offsetWidth * state.ratio, height: el.offsetHeight * state.ratio};
+        size.boundary = [padding[0], size.width - padding[1], size.height - padding[2], padding[3]];
+        $.extend(state, size);
 
         canvas.attr('width', state.width).attr('height', state.height);
         canvas.style('transform', "scale(" + 1.0 / state.ratio + ")").style('transform-origin', "left top 0px");
@@ -245,7 +251,6 @@ HTMLWidgets.widget(global = {
             .on("drag", dragged)
             .on("end", dragended));
 
-        // drawTitleAndLegend();
 
         function ticked() {
             context.clearRect(0, 0, state.width, state.height);
@@ -269,6 +274,7 @@ HTMLWidgets.widget(global = {
             context.textBaseline="middle";
             nodes.forEach(drawNode);
 
+            drawTitleAndLegend();
             context.restore();
         }
 
@@ -280,8 +286,8 @@ HTMLWidgets.widget(global = {
 
 
         function drawNode(d) {
-            var dx = d.x < 0 ? 0 : (d.x > state.width ? state.width : d.x)
-            var dy = d.y < 0 ? 0 : (d.y > state.height ? state.height : d.y)
+            var dx = d.x < state.boundary[3] ? state.boundary[3] : (d.x > state.boundary[1] ? state.boundary[1] : d.x);
+            var dy = d.y < state.boundary[0] ? state.boundary[0] : (d.y > state.boundary[2] ? state.boundary[2] : d.y);
 
             context.beginPath();
 
@@ -311,8 +317,8 @@ HTMLWidgets.widget(global = {
             coordinates = d3.mouse(this);
             fx = coordinates[0] * state.ratio;
             fy = coordinates[1] * state.ratio;
-            d3.event.subject.fx = fx < 0 ? 0 : (fx > state.width ? state.width : fx );
-            d3.event.subject.fy = fy < 0 ? 0 : (fy > state.width ? state.width : fy );
+            d3.event.subject.fx = fx < state.boundary[3] ? state.boundary[3] : (fx > state.boundary[1] ? state.boundary[1] : fx );
+            d3.event.subject.fy = fy < state.boundary[0] ? state.boundary[0] : (fy > state.boundary[2] ? state.boundary[2] : fy );
         }
 
         function dragended() {
@@ -321,9 +327,15 @@ HTMLWidgets.widget(global = {
             d3.event.subject.fy = null;
         }
 
-        function drawTitleAndLegend(context) {
-            title = "ABC TITLE TITLE TITLE TITLE TITLE";
-            console.log(title);
+        function drawTitleAndLegend() {
+            // Draw Title
+            context.textAlign="center";
+            context.font = config.titleSize * state.ratio + "px Arial";
+            context.fillText(config.title ,state.width / 2, 60);
+
+            // Draw Legend
+
+
         }
 
         global.generateControllers(state);
@@ -382,8 +394,6 @@ HTMLWidgets.widget(global = {
         // General
         state.controller.title = function(val) {
             config.title = val;
-            var title = global.getSelection(state, 'title');
-            title.text(curState.title);
         }
 
         state.controller.titleSize = function(val) {
@@ -493,11 +503,11 @@ HTMLWidgets.widget(global = {
             }
         }
 
-     //    // BorderButtons
-     //    state.controller.pause = function() {
-     //        curState.pause = !curState.pause;
-     //        curState.pause ? simulation.stop() : simulation.restart();
-     //    }
+        // BorderButtons
+        state.controller.pause = function() {
+            // TODO
+            console.log("Pause clicked.")
+        }
 
         state.controller.saveImg = function() {
             var canvas = state.canvas.node();
