@@ -155,6 +155,28 @@ HTMLWidgets.widget(global = {
         config.rgba.node = hexToRGBA(config.nodeBorderColor, config.nodeBorderOpacity);
     },
 
+    partition: function(config, links, size, key) {
+        var result = {};
+        var values = [];
+        links.forEach(function(d) {if (d[key] != null) values.push(d[key]) });
+        var min = Math.min.apply(null, values);
+        var max = Math.max.apply(null, values) + 0.001;
+        var step = (max - min) / size;
+        var naWidth = "" + config.naWidth;
+        result[naWidth] = [];
+        for (var val = min; val <= max; val += step) { result["" + val.toFixed(2)] = [] }
+
+        for (var idx in links) {
+            if(links[idx][key] == null) {
+                result[naWidth].push(links[idx]);
+            } else {
+                var k = Math.floor((links[idx][key] - min) / step)
+                result["" + (min + k * step).toFixed(2)].push(links[idx]);
+            }
+        }
+        return result;
+    },
+
     initialize: function(el, width, height) {
         // console.log("====================   initialize   ========================");
         el.style.height = "90vh";
@@ -236,8 +258,9 @@ HTMLWidgets.widget(global = {
             nodes[idx].fill = config.scalers.wrapper(config.nodeScheme, nodes[idx].color, nodes[idx].scheme);
         }
 
-        trLinks = links.filter(function(d){return d.weight != null});
-        naLinks = links.filter(function(d){return d.weight == null});
+        // var naLinks = links.filter(function(d){return d.weight == null});
+        // var trLinks = links.filter(function(d){return d.weight != null});
+        config.parLinks = global.partition(config, links, 5, "weight");
 
         simulation.alphaTarget(0.3).restart();
         simulation.nodes(nodes);
@@ -258,15 +281,22 @@ HTMLWidgets.widget(global = {
 
             context.strokeStyle = config.rgba['edge'];
 
-            context.beginPath();
-            context.lineWidth = config.naWidth * state.ratio;
-            naLinks.forEach(drawLink);
-            context.stroke();
+            // context.beginPath();
+            // context.lineWidth = config.naWidth * state.ratio;
+            // naLinks.forEach(drawLink);
+            // context.stroke();
 
-            context.beginPath();
-            context.lineWidth = config.edgeScale * state.ratio;
-            trLinks.forEach(drawLink);
-            context.stroke();
+            // context.beginPath();
+            // context.lineWidth = config.edgeScale * state.ratio;
+            // trLinks.forEach(drawLink);
+            // context.stroke();
+
+            for(var w in config.parLinks) {
+                context.beginPath();
+                context.lineWidth = w * config.edgeScale * state.ratio;
+                config.parLinks[w].forEach(drawLink);
+                context.stroke();
+            }
 
             context.font = config.labelFont;
             context.lineWidth = config.nodeBorderWidth * state.ratio;
@@ -334,8 +364,6 @@ HTMLWidgets.widget(global = {
             context.fillText(config.title ,state.width / 2, 60);
 
             // Draw Legend
-
-
         }
 
         global.generateControllers(state);
@@ -359,10 +387,11 @@ HTMLWidgets.widget(global = {
                 nodes[idx].fill = config.scalers.wrapper(config.nodeScheme, nodes[idx].color, nodes[idx].scheme);
             }
 
-            // var links = simulation.force("link").links();
-            // for(idx in links) {
-            //     links[idx].weight = links[idx]['weight.' + series[index]];
-            // }
+            var links = simulation.force("link").links();
+            for(idx in links) {
+                links[idx].weight = links[idx]['weight.' + series[index]];
+            }
+            config.parLinks = global.partition(config, links, 5, "weight");
             simulation.alphaTarget(0.3).restart();
         }
 
@@ -374,17 +403,18 @@ HTMLWidgets.widget(global = {
                 nodes[idx].fill = config.scalers.wrapper(config.nodeScheme, nodes[idx].color, nodes[idx].scheme);
             }
 
-            // var links = simulation.force("link").links();
-            // for(idx in links) {
-            //     links[idx].weight = links[idx]['weight.' + series[index]];
-            // }
+            var links = simulation.force("link").links();
+            for(idx in links) {
+                links[idx].weight = links[idx]['weight.' + series[index]];
+            }
+            config.parLinks = global.partition(config, links, 1, "weight");
             simulation.alphaTarget(0.3).restart();
         }
 
     },
 
     generateControllers: function(state) {
-    	var simulation = state.simulation;
+        var simulation = state.simulation;
         var config = state[state.currentKey];
 
         state.controller.refresh = function() {
