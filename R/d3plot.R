@@ -35,12 +35,14 @@ forceGraph <- function(nodes, links, nMappings, lMappings, options,
     nodesDF$scheme <- scheme.default
   }
 
-  if(is.null(linksDF$weight)){
-    linksDF$weight <- link.weight$default
-  } else {
-    keys <- grep("^weight($|\\.)", colnames(linksDF), value = TRUE)
-    for(key in keys) {
-      linksDF[key] <- norm(linksDF[key], link.weight$min, link.weight$max, link.weight$default)
+  if(nrow(linksDF) > 0) {
+    if(is.null(linksDF$weight)){
+      linksDF$weight <- link.weight$default
+    } else {
+      keys <- grep("^weight($|\\.)", colnames(linksDF), value = TRUE)
+      for(key in keys) {
+        linksDF[key] <- norm(linksDF[key], link.weight$min, link.weight$max, link.weight$default)
+      }
     }
   }
 

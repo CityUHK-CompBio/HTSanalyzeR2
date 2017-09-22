@@ -178,14 +178,15 @@ setMethod("extractEnrichMap", signature = "GSCA",
                    ntop = NULL,
                    allSig = TRUE,
                    gsNameType = "id") {
-
             paraCheck("Report", "gsNameType", gsNameType)
             ## get top gene sets
             topGS <-
               getTopGeneSets(object, resultName, gscs, ntop, allSig)
 
-            if (length(unlist(topGS, recursive = FALSE)) == 0)
-              stop("No significant gene sets found!\n")
+            if (length(unlist(topGS, recursive = FALSE)) == 0) {
+              warning("No significant gene sets found!\n")
+              return(NULL)
+            }
 
             gsInUni <- list()
             tempList <- list()
@@ -263,6 +264,7 @@ setMethod("extractEnrichMap", signature = "GSCA",
                   weighted = NULL,
                   diag = FALSE
                 )
+              E(g)$weight <- 2
             }
 
             ## add an user-defined attribute 'geneSetSize' to igraph
@@ -362,6 +364,7 @@ setMethod("viewEnrichMap", signature = "GSCA",
                    gsNameType = "id",
                    options = list(distance = 400),
                    seriesObjs = NULL) {
+
             g <- extractEnrichMap(object, resultName, gscs, ntop, allSig, gsNameType)
 
             em_nodes <- as_data_frame(g, "vertices")
@@ -442,7 +445,12 @@ fetchGSCASeriesValues <- function(gscaObjs, resultName = "GSEA.results", gscs,
   # TODO: check the objs
   extractedValues <- lapply(seq_along(gscaObjs), function(i) {
     g <- extractEnrichMap(gscaObjs[[i]], resultName, gscs, ntop, allSig, gsNameType)
-    dfList <- igraph::as_data_frame(g, "both")
+    dfList <- list( edges = data.frame(from=character(0), to=character(0), weight=numeric(0)),
+           vertices=data.frame(name=character(0), geneSetSize=numeric(0), adjPvalue=numeric(0), obsPvalue=numeric(0),
+                              colorScheme=character(0), label=character(0), label_id=character(0), label_term=character(0)))
+    if (!is.null(g)) {
+      dfList <- igraph::as_data_frame(g, "both")
+    }
     # Vertices - ("name", "geneSetSize", "adjPvalue", "obsPvalue", "colorScheme", "label", "label_id", "label_term")
     colsToAppend <- colnames(dfList$vertices) %in% c("adjPvalue", "obsPvalue", "colorScheme")
     colnames(dfList$vertices)[colsToAppend] <- paste(colnames(dfList$vertices), names(gscaObjs)[i], sep=".")[colsToAppend]
