@@ -18,11 +18,11 @@ if (!isGeneric("viewEnrichMap"))
 #'
 #' @rdname appendGSTerms
 #'
-#' @param object an object. When this function is implemented as the S4 method
+#' @param object An object. When this function is implemented as the S4 method
 #' of class 'GSCA', this argument is an object of class 'GSCA'.
-#' @param keggGSCs a character vector of names of all KEGG gene set collections
-#' @param goGSCs a character vector of names of all GO gene set collections
-#' @param msigdbGSCs a character vector of names of all MSigDB gene set collections
+#' @param keggGSCs A character vector of names of all KEGG gene set collections
+#' @param goGSCs A character vector of names of all GO gene set collections
+#' @param msigdbGSCs A character vector of names of all MSigDB gene set collections
 #'
 #'
 #' @return In the end, this function will return an updated object of class GSCA.

@@ -153,7 +153,7 @@ networkAnalysis <-
     #  model will produce a diagnostic plot on the screen, to check the
     #  fitting
     dataForNw <- pvalues[scoredNodes]
-    fb <- fitBumModel(dataForNw)
+    fb <- fitBumModel(dataForNw, plot = F)
     ## Score the nodes of the network
     #  The nodes without pvalues will get a NA value instead of a score
     scores <- scoreNodes(graph, fb = fb, fdr = fdr)
@@ -166,7 +166,8 @@ networkAnalysis <-
     if (verbose)
       cat("--Computing the optimal subnetwork", "\n")
     module <- runFastHeinz(network = graph, scores = scoreswMean)
-    cat("-Network analysis complete \n\n")
+    cat("-Network analysis complete \n")
+    cat("==============================================\n\n")
     ## Return a igraph object consisting of the enriched sub-network
     module
   }

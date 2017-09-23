@@ -14,7 +14,7 @@ if (!isGeneric("preprocess")) {
 #' @param species A single character value specifying the species for which the
 #'   data should be read.
 #' @param initialIDs A single character value specifying the type of initial
-#'   identifiers for input geneList
+#'   identifiers for input geneList.
 #' @param keepMultipleMappings A single logical value. If TRUE, the function
 #'   keeps the entries with multiple mappings (first mapping is kept). If FALSE,
 #'   the entries with multiple mappings will be discarded.
@@ -54,17 +54,17 @@ if (!isGeneric("preprocess")) {
 #' This function will do the following preprocessing steps:
 #'
 #' 1:filter out p-values (the slot **pvalues** of class NWA), phenotypes
-#'  (the slot phenotypes of class NWA) and data for enrichment (the slot
-#'  geneList of class GSCA) with NA values or without valid names, and invalid
-#'   gene names (the slot hits of class GSCA);
+#'  (the slot **phenotypes** of class NWA) and data for enrichment (the slot
+#'  **geneList** of class GSCA) with NA values or without valid names, and invalid
+#'   gene names (the slot **hits** of class GSCA);
 #'
-#' 2:invoke function duplicateRemover to remove duplicated genes in the slot pvalues,
-#'  phenotypes of class NWA, and the slot geneList and hits of class GSCA;
+#' 2:invoke function duplicateRemover to remove duplicated genes in the slot **pvalues**,
+#'  **phenotypes** of class NWA, and the slot **geneList** and **hits** of class GSCA;
 #'
 #' 3:invoke function annotationConvertor to convert annotations from initialIDs
-#' to Entrez identifiers. Please note that the slot hits and the names of the slot
-#' geneList of class GSCA, the names of the slot pvalues and the names of the slot
-#' phenotypes of class NWA must have the same type of gene annotation specified by
+#' to Entrez identifiers. Please note that the slot **hits** and the names of the slot
+#' **geneList** of class GSCA, the names of the slot **pvalues** and the names of the slot
+#' **phenotypes** of class NWA must have the same type of gene annotation specified by
 #' initialIDs;
 #'
 #' 4:order the data for enrichment decreasingly for objects of class GSCA.
@@ -131,6 +131,7 @@ setMethod("preprocess", signature = "GSCA",
                   hits.vec <- genelist[names(genelist) %in% hits]
                   if (length(hits.vec) == 0)
                     stop("Hits and geneList have no overlaps!\n")
+                  object@hits <- hits.vec   ## toMakeSure!
             }  ## finish hits preprocessing
 
 
@@ -189,7 +190,7 @@ setMethod("preprocess", signature = "GSCA",
 #'
 #' This function gets rid of the duplicates in a vector of phenotypes
 #' with gene identifiers as names. It is used to prepare the named vector
-#' of phenotypes for the over-representation and enrichment analysis.
+#' of phenotypes for the over-representation and gene set enrichment analysis.
 #'
 #' @param geneList A single named numeric or integer vector with gene
 #' identifiers as names

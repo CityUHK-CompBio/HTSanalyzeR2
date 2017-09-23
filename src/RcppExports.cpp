@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // calcGScoreCPP
 double calcGScoreCPP(IntegerVector Set, NumericVector Eso, double exponent);
-RcppExport SEXP HTSanalyzeR2_calcGScoreCPP(SEXP SetSEXP, SEXP EsoSEXP, SEXP exponentSEXP) {
+RcppExport SEXP _HTSanalyzeR2_calcGScoreCPP(SEXP SetSEXP, SEXP EsoSEXP, SEXP exponentSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -20,7 +20,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"HTSanalyzeR2_calcGScoreCPP", (DL_FUNC) &HTSanalyzeR2_calcGScoreCPP, 3},
+    {"_HTSanalyzeR2_calcGScoreCPP", (DL_FUNC) &_HTSanalyzeR2_calcGScoreCPP, 3},
     {NULL, NULL, 0}
 };
 

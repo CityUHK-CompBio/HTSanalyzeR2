@@ -67,7 +67,7 @@ paraCheck <- function(group, paraName, para) {
              }
            if(paraName == "interactome") {
              if(!is.na(para) && (!is(para,"igraph") || igraph::vcount(para) == 0 || igraph::ecount(para) == 0))
-               stop("Input 'interactome/graph' should be a igraph object with node and edge No > 0!\n")
+               stop("Input 'interactome/graph' should be an igraph object with node and edge No > 0!\n")
            }
          },
 
@@ -334,7 +334,11 @@ paraCheck <- function(group, paraName, para) {
              }
              if(!(is.character(para[, "ID"])) || !(is.character(para[, "Description"]))){
                stop("'ID' and 'Description' column of 'expInfor' should be a character vector!\n")
-             } }
+             }
+             if(any(duplicated(para[, "ID"]))){
+               stop("'ID' in expInfor should not have duplicated value!\n")
+             }
+               }
 
            if(paraName == "phenotypeTS" &&
               (is.null(names(unlist(para))) || any(!is.numeric(unlist(para))) || any(unlist(lapply(para, length)) == 0) )){
@@ -356,6 +360,9 @@ paraCheck <- function(group, paraName, para) {
            }
            if(!(is.character(para[, "ID"])) || !(is.character(para[, "Description"]))){
              stop("'ID' and 'Description' column of expInfor should be a character vactor!\n")
+           }
+           if(any(duplicated(para[, "ID"]))){
+             stop("'ID' in expInfor should not have duplicated value!\n")
            } }
 
          if(paraName == "pvalueTS" &&

@@ -83,25 +83,25 @@ setMethod("initialize",
           })
 
 
-#' An S4 class for Gene Set Collection Analyses on high-throughput screens
+#' An S4 class for Gene Set Collection Analyses on high-throughput data
 #'
 #' This S4 class includes a series of methods to do gene set enrichment analysis
-#' and hypergeometric tests for high-throughput screens.
+#' and hypergeometric test for high-throughput data.
 #'
 #' @slot listOfGeneSetCollections A list of gene set collections (a 'gene
 #' set collection' is a list of gene sets).
 #' @slot geneList A numeric or integer vector of phenotypes named by gene
 #' identifiers.
 #' @slot hits A character vector of the gene identifiers (used as hits in
-#' the hypergeometric tests).It's needed if you want do GSOA.
-#' @slot para a list of parameters for hypergeometric tests and GSEA. These
+#' the hypergeometric tests).It's needed if you want to do GSOA.
+#' @slot para A list of parameters for hypergeometric test and GSEA. These
 #' parameters are pValueCutoff, pAdjustMethod, nPermutations, minGeneSetSize
-#' and exponent.
-#' @slot result a list of results.
+#' and exponent. 
+#' @slot result A list of results.
 #'
-#' @slot summary a list of summary information for listOfGeneSetCollections,
+#' @slot summary A list of summary information for listOfGeneSetCollections,
 #'  geneList, hits, para, and result.
-#' @slot preprocessed a single logical value specifying whether or not the
+#' @slot preprocessed A single logical value specifying whether or not the
 #' input data has been preprocessed.
 #'
 #' @seealso \code{\link[HTSanalyzeR2]{preprocess}},

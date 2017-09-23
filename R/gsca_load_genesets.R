@@ -1,7 +1,7 @@
 #' Create a list of gene sets based on MSigDB collection terms
 #'
 #' This function creates gene set collections based on MSigDB.
-#' It is collection-specific, and returns a GeneSetCollection objects with
+#' It is collection-specific, and returns a GeneSetCollection object with
 #' the elements of the gene sets represented by Entrez Gene IDs.
 #'
 #' @param collection A single character value specifying a choice of collection.
@@ -10,7 +10,7 @@
 #' 'c4'(computational gene sets), 'c5'(GO gene sets), 'c6'(oncogenic signatures),
 #' 'c7'(immunologic signatures).
 #'
-#' @return Return A list of gene sets.
+#' @return Return a list of gene sets.
 #'
 #' @seealso \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{KeggGeneSets}}
 #'

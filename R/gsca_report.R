@@ -64,8 +64,8 @@ setMethod("report", signature = "GSCA",
 #'
 #'@param gsca a GSCA object or a list of GSCA objects
 #'@param nwa a NWA object or a list of NWA objects
-#'@param TSOrder A character specifying the visulization order of 'Time Series' data in shiny report. Only useful
-#'report for 'Time Series' data, default is the ID order in 'expInfor'
+#'@param TSOrder A character specifying the visulization order of 'Time Series' data in shiny report. Only works when
+#'reporting for 'Time Series' data, default is the ID order in 'expInfor'
 #'@param reportDir a single character value specifying the directory to store reports. For default both the
 #'  enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport"
 #'
@@ -78,7 +78,8 @@ reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL, reportDir = "Anal
     }
     if(!is.null(TSOrder)){
       ## check TSOrder
-      if(length(intersect(TSOrder, names(gsca))) < length(names(gsca))){
+      if(length(intersect(TSOrder, names(gsca))) < length(names(gsca)) ||
+         length(TSOrder) != length(names(gsca))){
         stop("'TSOrder' is not valid, should be experiment ID in 'expInfor'!\n")
       }else{
         gsca <- gsca[TSOrder]
@@ -92,7 +93,8 @@ reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL, reportDir = "Anal
     }
     if(!is.null(TSOrder)){
       ## check TSOrder
-      if(length(intersect(TSOrder, names(nwa))) < length(names(nwa))){
+      if(length(intersect(TSOrder, names(nwa))) < length(names(nwa)) ||
+         length(TSOrder) != length(names(gsca))){
         stop("'TSOrder' is not valid, should be experiment ID in 'expInfor'!\n")
       }else{
         nwa <- nwa[TSOrder]
@@ -194,7 +196,9 @@ combineResults <- function(gsca) {
   }
   if(!is.null(gsca@result$Sig.adj.pvals.in.both)){
     gsca@result$Sig.adj.pvals.in.both$ALL <- do.call(rbind, gsca@result$Sig.adj.pvals.in.both)
-    gsca@result$Sig.adj.pvals.in.both$ALL <- gsca@result$Sig.adj.pvals.in.both$ALL[order(gsca@result$Sig.adj.pvals.in.both$ALL$HyperGeo.Adj.Pvalue, gsca@result$Sig.adj.pvals.in.both$ALL$GSEA.Adj.Pvalue), ]
+    gsca@result$Sig.adj.pvals.in.both$ALL <- gsca@result$Sig.adj.pvals.in.both$ALL[
+      order(gsca@result$Sig.adj.pvals.in.both$ALL$HyperGeo.Adj.Pvalue,
+            gsca@result$Sig.adj.pvals.in.both$ALL$GSEA.Adj.Pvalue), ]
   }
   gsca
 }

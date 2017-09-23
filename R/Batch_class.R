@@ -54,7 +54,8 @@ setMethod("initialize",
 
 #' An S4 class for Time series data package in Gene Set Collection Analyses on high-throughput screens
 #'
-#' This S4 class packages time-series data for further GSCA.
+#' This S4 class packages time-series data for further GSCA. To put it more clearly, it'll finally generate a list of
+#' GSCA objects for further analyses.
 #'
 #' @slot expInfor A character matrix contains experiment information with each experiment in row and information in column.
 #' Should at least contain two columns named as 'ID' and 'Desription'.
@@ -171,7 +172,8 @@ setMethod("initialize",
 ## constructed function
 #'  An S4 class for Time series data package in NetWork Analysis on high-throughput screens
 #'
-#' This S4 class packages time-series data for further NWA.
+#' This S4 class packages time-series data for further NWA. To put it more clearly, it'll finally generate a list of
+#' NWA objects for further analyses.
 #'
 #' @slot expInfor A character matrix contains experiment information with each experiment in row and information in column.
 #' At least contains two columns named as 'ID' and 'Desription'.

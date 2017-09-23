@@ -1,21 +1,24 @@
 #' HTSanalyzeR2 Package Overview
 #'
 #' This package provides classes and methods for gene set over-representation,
-#' enrichment and network analyses on high-throughput screens. The over-
-#' representation analysis is performed based on hypergeometric tests. The
+#' enrichment and network analyses on various high-throughput data generated from RNAi,
+#' microarray, RNA-seq and CRISPR. The over-representation analysis is performed based on hypergeometric tests. The
 #' enrichment analysis is based on the GSEA algorithm (Subramanian et al. PNAS
 #' 2005). The network analysis identifies enriched subnetworks based on
-#' algorithms from the BioNet package (Beisser et al., Bioinformatics 2010). A
-#' pipeline is also specifically designed for cellHTS2 object to perform
-#' integrative network analyses of high-throughput RNA interference screens. The
-#' users can build their own analysis pipeline for their own data set based on
+#' algorithms from the BioNet package (Beisser et al., Bioinformatics 2010). A shiny point of
+#' this package compared to other similar packages lies in that it can deal with "Time series" data
+#' with high efficiency. A pipeline is also specifically designed for CRISPR data pre-processed
+#' by MAGeCK to perform integrative analyses of genome-wide CRISPR knockout. The
+#' users can also build their own analysis pipeline for their own data set based on
 #' this package.
 #'
 #' @section Details:
 #' The most important classes in this package are 'GSCA' (Gene Set Collection
-#' Analyses) and 'NWA' (NetWork Analyses). As an example, a pipeline (see function
-#' 'HTSanalyzeR4cellHTS2') is developed in this package for cellHTS2 screen
-#' analyses. Based on these two classes and other functions, users can design
+#' Analyses), 'NWA' (NetWork Analyses), 'GSCABatch' (Gene Set Collection
+#' Analyses for time-series data) and 'NWABatch' (NetWork Analyses for time-series data).
+#' As an example, a pipeline (see function
+#' 'HTSanalyzeR4MAGeCK') is developed in this package for CRISPR data.
+#' Based on these four classes and other functions, users can design
 #' their own pipelines specifically for their own data sets.
 #'
 #' Full help on classes and associated functions is available from within class

@@ -12,8 +12,8 @@ reportAll(gsca = NULL, nwa = NULL, TSOrder = NULL,
 
 \item{nwa}{a NWA object or a list of NWA objects}
 
-\item{TSOrder}{A character specifying the visulization order of 'Time Series' data in shiny report. Only useful
-report for 'Time Series' data, default is the ID order in 'expInfor'}
+\item{TSOrder}{A character specifying the visulization order of 'Time Series' data in shiny report. Only works when
+reporting for 'Time Series' data, default is the ID order in 'expInfor'}
 
 \item{reportDir}{a single character value specifying the directory to store reports. For default both the
 enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport"}
