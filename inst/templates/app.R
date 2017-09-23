@@ -94,7 +94,7 @@ create_data_table <- function(gscaObj, analysis, genesets) {
 }
 
 create_enrich_map <- function(gscaObj, seriesObjs, input) {
-  options <- list(charge = -400, distance = 200)
+  options <- list(distance = 400)
   viewEnrichMap(gscaObj,
                 resultName=paste0(input$analysis_map, ".results"),
                 gscs = c(input$genesets_map),
@@ -105,7 +105,7 @@ create_enrich_map <- function(gscaObj, seriesObjs, input) {
 }
 
 create_network <- function(nwaObj, seriesObjs) {
-  options <- list(charge = -200, distance = 150)
+  options <- list(distance = 400)
   viewSubNet(nwaObj, options = options, seriesObjs = seriesObjs)
 }
 
