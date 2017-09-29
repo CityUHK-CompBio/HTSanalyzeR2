@@ -180,6 +180,10 @@ paraCheck <- function(group, paraName, para) {
              if(!is.character(para) || length(para)!=1)
                stop("'resultName' should be a character!\n")
            }
+           if(paraName == "specificGeneset"){
+             if(!is.list(para) || length(para) < 1 || is.null(names(para)))
+               stop("'specificGeneset' should be a names list with length > 0!\n")
+           }
          },
          Report = {
            if (paraName == "filepath" &&

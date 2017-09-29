@@ -177,11 +177,26 @@ setMethod("extractEnrichMap", signature = "GSCA",
                    gscs,
                    ntop = NULL,
                    allSig = TRUE,
-                   gsNameType = "id") {
+                   gsNameType = "id",
+                   specificGeneset = NULL) {
             paraCheck("Report", "gsNameType", gsNameType)
             ## get top gene sets
+            if(is.null(specificGeneset)){
             topGS <-
               getTopGeneSets(object, resultName, gscs, ntop, allSig)
+            }else{
+              paraCheck("Summarize", "specificGeneset", specificGeneset)
+              topGSTMP <- getTopGeneSets(object, resultName, gscs, ntop = NULL, allSig = TRUE)
+              if (!all(names(specificGeneset) %in% gscs))
+                stop("Wrong Gene Set Collection name(s) in 'specificGeneset'! \n")
+              for(i in 1:length(specificGeneset)){
+                topGSTMP1 <- topGSTMP[[names(specificGeneset)[i]]]
+                if(!all(specificGeneset[[i]] %in% topGSTMP1)){
+                  stop("'specificGeneset' should be a subset of all significant genesets!\n")
+                }
+              }
+              topGS <- specificGeneset
+            }
 
             if (length(unlist(topGS, recursive = FALSE)) == 0) {
               warning("No significant gene sets found!\n")
@@ -362,10 +377,11 @@ setMethod("viewEnrichMap", signature = "GSCA",
                    ntop = NULL,
                    allSig = TRUE,
                    gsNameType = "id",
+                   specificGeneset = NULL,
                    options = list(distance = 400),
                    seriesObjs = NULL) {
 
-            g <- extractEnrichMap(object, resultName, gscs, ntop, allSig, gsNameType)
+            g <- extractEnrichMap(object, resultName, gscs, ntop, allSig, gsNameType, specificGeneset)
 
             em_nodes <- as_data_frame(g, "vertices")
             em_links <- as_data_frame(g, "edge")
