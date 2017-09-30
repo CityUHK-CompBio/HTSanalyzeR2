@@ -177,14 +177,14 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust
   ##set the graphical parameters
   gsea.layout <- layout(matrix(c(1, 2, 3)), heights = c(4, 2, 1))
   layout.show(gsea.layout)
-  par(mai=c(0.5, 1, 1, 0.5))
+  par(mai=c(0, 1, 0.5, 0.5))
   ##Plot the running score and add a vertical line at the position of
   ##the enrichment score (maximal absolute value of the running score)
-  plot(x=c(1:length(runningScore)), y=runningScore,type="l",
-       xlab="Position in the ranked list of genes", ylab="Enrichment score", lwd=2, col="darkgreen",
-       cex.lab = 1.25, bg = "aliceblue")
-  abline(h=0, lty = 3)
-  abline(v=which(runningScore == enrichmentScore), lty=3, col="red3", lwd=1.75)
+  plot(x=c(1:length(runningScore)), y=runningScore, type="l", ylab="Enrichment score(ES)", lwd=4, col="green",
+       cex.lab = 1.25, bg = "aliceblue", xaxt = "n", las = 1)
+  abline(h=0, lty = 1)
+  # abline(v=which(runningScore == enrichmentScore), lty=3, col="red3", lwd=1.75)
+  grid(NULL, NULL, lwd = 1)
   # plot.coordinates <- par("usr")
   if(enrichmentScore > 0){
   text(x = length(geneList)/7*6, y = (enrichmentScore)/4*3,
@@ -195,13 +195,13 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust
               cex = 1.5)
        }
   #-------------------## plot a color barplot indicating the phenotypes
-  par(mai=c(0, 1, 0.5, 0.5))
-  plot(x=seq(1, length(geneList)), type="l", y=geneList,  bg = "aliceblue",
-       ylab="Phenotypes", xlab=NA, col="red3", lwd=2, xaxt="n", cex.lab = 1.25)
+  par(mai=c(0, 1, 0, 0.5))
+  plot(x=seq(1, length(geneList)), type="l", y=geneList,  bg = "aliceblue", yaxt="n",
+   xlab=NA, col="red", lwd=2, xaxt="n", cex.lab = 1.25, ylab = NA)
   abline(v=which(positions == 1))
-  abline(h=0)
-  lines(x=seq(1, length(geneList)), type="l", y=geneList,
-        ylab="Phenotypes", xlab=NA, col="red3", lwd=2, xaxt="n")
+  # abline(h=0)
+  # lines(x=seq(1, length(geneList)), type="l", y=geneList,
+  #       xlab=NA, col="red3", lwd=2, xaxt="n")
 
   #------------------------------------------------------------------
   ##Plot the phenotypes along the geneList, and add a vertical line
@@ -213,8 +213,8 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust
   ticks = 1000
   ran <- range(geneList, na.rm = TRUE)
   offset <- ceiling(ticks * ran[1] / (ran[1] - ran[2]))
-  palette <- c(colorRampPalette(c("darkgreen", "white"))(offset),
-               colorRampPalette(c("white", "red3"))(ticks - offset))
+  palette <- c(colorRampPalette(c("purple3", "white"))(offset),
+               colorRampPalette(c("white", "red"))(ticks - offset))
   rank.colors <- palette[ceiling((geneList - ran[1]) / (ran[2] - ran[1]) * ticks)]
 
   rank.colors <- rle(rank.colors)
