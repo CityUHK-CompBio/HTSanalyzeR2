@@ -131,7 +131,7 @@ setMethod("preprocess", signature = "GSCA",
                   hits.vec <- genelist[names(genelist) %in% hits]
                   if (length(hits.vec) == 0)
                     stop("Hits and geneList have no overlaps!\n")
-                  object@hits <- hits.vec   ## toMakeSure!
+                  # object@hits <- hits.vec   ## toMakeSure!
             }  ## finish hits preprocessing
 
 
