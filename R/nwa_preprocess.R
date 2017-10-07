@@ -282,7 +282,7 @@ biogridDataDownload <- function(link, species = "Hs", dataDirectory = ".",
 
   biogridSpecies <- fread(
     file.path(dataDirectory, grep(bionet.species[species],
-            listfiles, value = TRUE)), header = T, skip=0, data.table = F)
+            listfiles, value = TRUE)), header = T, skip=0, data.table = F, stringsAsFactors = F)
 
   ## Extract the relevant columns from the tab-delimited file that was read
   source <- as.character(biogridSpecies[, "Entrez Gene Interactor A"])
@@ -291,7 +291,16 @@ biogridDataDownload <- function(link, species = "Hs", dataDirectory = ".",
   ## Create a matrix from the data, and names its columns accordingly
   interactions <- cbind(source, target, interac.type)
   colnames(interactions) <- c("InteractorA", "InteractorB", "InteractionType")
-
+  ## pre-process network: duplication removing(same interactions from different experiment)
+  ## and single node edge
+  interactions <- unique(interactions)
+  dupRow <- unlist(sapply(1:nrow(interactions), function(x) {
+    if(interactions[x, 1] == interactions[x, 2]){
+      x
+    }
+  }))
+  interactions <- interactions[-dupRow, ]
+  #--------------------------------------------
   interactions
 }
 
