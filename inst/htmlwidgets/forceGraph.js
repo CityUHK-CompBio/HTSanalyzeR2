@@ -19,37 +19,15 @@ HTMLWidgets.widget(global = {
         }
 
         if(!(state.currentKey in state)) {
-            // Default configuration
-            state[state.currentKey] = {};
-            // state[state.currentKey] = $.extend({}, global.defaultConfig);
-            // var config = state[state.currentKey];
-            // // Load X
-            // var options = x.options;
-            // var keys = ["distance", "seriesData",
-            //     "title","titleSize","legendTitle",
-            //     "edgeScale","edgeColor","edgeOpacity",
-            //     "label","labelColor","labelOpacity","labelScale",
-            //     "nodeScale","nodeScheme","nodeShape","nodeBorderColor","nodeBorderWidth","nodeBorderOpacity"]
-
-            // for(var i in keys) {
-            //     var key = keys[i]
-            //     if(options.hasOwnProperty(key)) {
-            //         config[key] = options[key];
-            //     }
-            // }
-
-            // if(options.hasOwnProperty("colorDomain")) {
-            //     var dom = options["colorDomain"];
-            //     for (var scheme in config.palettes) {
-            //         config.palettes[scheme].domain = dom.slice();
-            //     }
-            //     config.palettes.linear3.domain.splice(1, 0, (dom[0] + dom[1])/2);
-            // }
-
-            // config.labelFont = 14 * config.labelScale * state.ratio + "px Arial";
-
-            // global.generateColorScalers(config);
-            // global.generateRGBAColors(config);
+            state[state.currentKey] = {
+                colors: {
+	            	red: [158, 22, 23],
+	            	blue: [0, 106, 156],
+	            	grey: [200,200,200],
+	            	white: [255,255,255],
+	            	edge: [46, 219, 86]
+	            }
+            };
         }
 
         return state[state.currentKey];
@@ -58,35 +36,18 @@ HTMLWidgets.widget(global = {
     initialize: function(el, width, height) {
         // console.log("====================   initialize   ========================");
         el.style.height = "90vh";
-        var state = global.getElementState(el);
-        // var canvas = $(el).append($("<canvas />", {id: "graph"}));
-        // $.extend(state, { canvas: canvas });
+        // var state = global.getElementState(el);
     },
 
     resize: function(el, width, height) {
         // console.log("====================   resize   ========================");
-
         // var state = global.getElementState(el);
-        // var canvas = state.canvas;
-        // var padding = state.padding;
-
-        // state.ratio = window.devicePixelRatio || 1;
-        // var size = {width: el.offsetWidth * state.ratio, height: el.offsetHeight * state.ratio};
-        // size.boundary = [padding[0], size.width - padding[1], size.height - padding[2], padding[3]];
-        // $.extend(state, size);
-
-        // canvas.attr('width', state.width).attr('height', state.height);
-        // canvas.style('transform', "scale(" + 1.0 / state.ratio + ")").style('transform-origin', "left top 0px");
-
-        // simulation.force("center", d3.forceCenter(state.width / 2, state.height / 2));
-        // simulation.alphaTarget(0).restart();
     },
 
     renderValue: function(el, x, simulation) {
         // console.log("====================   renderValue   ========================");
         // console.log(el);
         console.log(x);
-        // console.log("=============================================================");
 
         var state = global.getElementState(el);
 
@@ -97,59 +58,42 @@ HTMLWidgets.widget(global = {
         }
     },
 
-
     construct: function(state, x) {
         console.log("======================   construct   ========================");
         // console.log(state);
-        // console.log(config);
-        // console.log("=============================================================");
-
-        // var canvas = state.canvas;
 
         var current = global.getCurrentConfig(state)
         if ("sigma" in current) {
             s = current.sigma;
-
             s.kill();
         }
 
         var current = global.getCurrentConfig(state, x)
-
-        // var canvas = $("canvas#graph");
         var container = document.getElementById("map_output");
         container.innerHTML = '';
 
-        var g = {
-              nodes: [],
-              edges: []
-            };
+        var colors = current.colors;
+
+        var g = { nodes: [], edges: [] };
 
         if ("graph" in current) {
             g = current.graph;
         } else {
-            var i, s, o, cs = [];
-            cs.push({
-              color: 'rgba(200,200,200,0.9)'
-            });
+            var i, s;
 
-            cs.push({
-              color: 'rgba(158, 22, 23,0.9)'
-            });
-
-            cs.push({
-              color: 'rgba(0,106,156,0.9)'
-            });
-
-            cs.push({
-              color: 'rgba(208,215,217, 0.2)'
-            });
-
-            N = x.nodes.id.length
-            E = x.links.source.length
+            N = x.nodes.id.length;
+            E = x.links.source.length;
 
             // x.nodes.label = x.nodes["label_term"];
 
             for(i =0; i < N; i++) {
+            	var c = colors.grey;
+            	if(x.nodes.scheme[i] == 'Pos') {
+                    c = _interpolateColor(colors.red, colors.white, x.nodes.color[i] / 0.02);
+                } else if (x.nodes.scheme[i] == 'Neg') {
+                    c = _interpolateColor(colors.blue, colors.white, x.nodes.color[i] / 0.02);
+                }
+
                 g.nodes.push({
                     id: x.nodes.id[i],
                     label : x.nodes.label[i],
@@ -159,16 +103,9 @@ HTMLWidgets.widget(global = {
                     // y : Math.cos(2 * Math.random() * N * Math.PI / N),
                     size: 0 + x.nodes.size[i],
                     scheme: x.nodes.scheme[i],
-                    color: cs[0].color
+                    color: r2rgba(c, 0.9),
               });
-            }
 
-            for(i =0; i < g.nodes.length; i++) {
-                if(g.nodes[i].scheme == 'Pos') {
-                    g.nodes[i].color = cs[1].color;
-                } else if (g.nodes[i].scheme == 'Neg') {
-                    g.nodes[i].color = cs[2].color;
-                }
             }
 
             for(i = 0; i < E; i++) {
@@ -176,8 +113,8 @@ HTMLWidgets.widget(global = {
                     id: 'e' + i,
                     source: x.links.source[i],
                     target: x.links.target[i],
-                    size: x.links.weight[i] / 1.5,
-                    color: cs[3].color
+                    size: x.links.weight[i] / 2,
+                    color: r2rgba(colors.edge, 0.2)
                 });
             }
         }
@@ -205,43 +142,31 @@ HTMLWidgets.widget(global = {
           }
         });
 
-        // var config = {
-        //     autoArea: true,
-        //     area: 1,
-        //     gravity: 200,
-        //     speed: 1,
-        //     iterations: 1000,
-        //     easing: 'quadraticInOut',
-        //     duration: 8000,
-        // }
-
-        // s.refresh();
-        // sigma.layouts.fruchtermanReingold.start(s, config);
-
-
-        var config = {  
-          linLogMode:true,
-          outboundAttractionDistribution: false,
-          strongGravityMode:false,
-          gravity:4,
-          barnesHutTheta:3,
-            edgeWeightInfluence:0,
-            adjustSizes:false,
-            barnesHutOptimize: false,
-            startingIterations: 1,
-            iterationsPerRender: 1,
-            slowDown: 50,
-            autoStop:true,
-            avgDistanceThreshold:1e-8,
-            // maxIterations:200000,
-            // nodeSiblingsScale: 1.5,
-            easing:'quadraticInOut'
-        }
-
+		var config = {  
+			linLogMode:true,
+			outboundAttractionDistribution: false,
+			strongGravityMode:false,
+			gravity:4,
+			barnesHutTheta:5,
+			edgeWeightInfluence:0,
+			adjustSizes:false,
+			barnesHutOptimize: false,
+			startingIterations: 1,
+			iterationsPerRender: 1,
+			slowDown: 50,
+			autoStop:true,
+			avgDistanceThreshold:1e-7,
+			// maxIterations:100000,
+			easing:'quadraticInOut'
+        };
         sigma.layouts.startForceLink(s, config);
 
+        setTimeout(function(){
+        	sigma.layouts.configForceLink(s, {slowDown: 100}) 
+        }, 2000);
+
+
         // LASSO
-        // Instanciate the ActiveState plugin:
         var activeState = sigma.plugins.activeState(s);
         var keyboard = sigma.plugins.keyboard(s, s.renderers[0]);
 
@@ -291,9 +216,6 @@ HTMLWidgets.widget(global = {
           }, 0);
         });
 
-
-
-
         current.sigma = s;
         current.graph = g;
         current.data = x;
@@ -302,18 +224,8 @@ HTMLWidgets.widget(global = {
     update: function(state, x) {
         var current = global.getCurrentConfig(state)
 
-        var i, s, o, cs = [];
-        cs.push({
-          color: 'rgba(200, 200, 200, 0.9)'
-        });
-
-        cs.push({
-          color: 'rgba(158, 22, 23,0.9)'
-        });
-
-        cs.push({
-          color: 'rgba(0,106,156,0.9)'
-        });
+        var i, s;
+        var colors = current.colors
 
         g = current.graph;
         s = current.sigma;
@@ -323,19 +235,79 @@ HTMLWidgets.widget(global = {
         for (i = 0; i < g.nodes.length; i++) {
             g.nodes[i].scheme = data.nodes["scheme." + tick][i];
             if(g.nodes[i].scheme == 'Pos') {
-                g.nodes[i].color = cs[1].color;
+                c = _interpolateColor(colors.red, colors.white, data.nodes["color." + tick][i] / 0.02);
             } else if (g.nodes[i].scheme == 'Neg') {
-                g.nodes[i].color = cs[2].color;
+                c = _interpolateColor(colors.blue, colors.white, data.nodes["color." + tick][i] / 0.02);
             } else {
-                g.nodes[i].color = cs[0].color;
+                c = colors.grey;
             }
+
+            g.nodes[i].color = r2rgba(c, 0.9);
         }
 
-        if (!sigma.layouts.fruchtermanReingold.isRunning(s)) {
-            // sigma.layouts.fruchtermanReingold.start(s, config);
-            s.refresh();
+        if (!sigma.layouts.isForceLinkRunning()) {
+        //     sigma.layouts.startForceLink(s, config);
+        	s.refresh();	
         }
         
     },
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // Config for fruchtermanReingold
+// var config = {
+//     autoArea: true,
+//     area: 1,
+//     gravity: 200,
+//     speed: 1,
+//     iterations: 1000,
+//     easing: 'quadraticInOut',
+//     duration: 8000,
+// }
+// s.refresh();
+// sigma.layouts.fruchtermanReingold.start(s, config);
+// if (!sigma.layouts.fruchtermanReingold.isRunning(s)) {
+//     s.refresh();
+// }
+
+
+// // Config for layoutForce
+// var config = {  
+// 	linLogMode:true,
+// 	outboundAttractionDistribution: false,
+// 	strongGravityMode:false,
+// 	gravity:4,
+// 	barnesHutTheta:3,
+// 	edgeWeightInfluence:0,
+// 	adjustSizes:false,
+// 	barnesHutOptimize: false,
+// 	startingIterations: 1,
+// 	iterationsPerRender: 1,
+// 	slowDown: 50,
+// 	autoStop:true,
+// 	avgDistanceThreshold:1e-8,
+// 	// maxIterations:200000,
+// 	// nodeSiblingsScale: 1.5,
+// 	easing:'quadraticInOut'
+// }
+
+// sigma.layouts.startForceLink(s, config);
