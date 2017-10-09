@@ -3,19 +3,83 @@ dependencies:
     version: 1.12.4
     src: "htmlwidgets/lib"
     script: js/jquery-1.12.4.min.js
-  - name: d3netlib
-    version: 4.0
-    src: "htmlwidgets/lib"
+  - name: linkurious
+    version: 1.5
+    src: "htmlwidgets/lib3"
     script:
-      - js/d3.js
-      - js/jscolor.js
-      - js/bootstrap-slider.js
-      - js/jquery-ui.min.js
-      - js/lobipanel.js
-      - settings.js
+      - /src/sigma.core.js
+      - /src/conrad.js
+      - /src/utils/sigma.utils.js
+      - /src/utils/sigma.polyfills.js
+      - /src/sigma.settings.js
+      - /src/classes/sigma.classes.dispatcher.js
+      - /src/classes/sigma.classes.configurable.js
+      - /src/classes/sigma.classes.graph.js
+      - /src/classes/sigma.classes.camera.js
+      - /src/classes/sigma.classes.quad.js
+      - /src/captors/sigma.captors.mouse.js
+      - /src/captors/sigma.captors.touch.js
+      - /src/renderers/sigma.renderers.canvas.js
+      - /src/renderers/sigma.renderers.webgl.js
+      - /src/renderers/sigma.renderers.svg.js
+      - /src/renderers/sigma.renderers.def.js
+      - /src/renderers/webgl/sigma.webgl.nodes.def.js
+      - /src/renderers/webgl/sigma.webgl.nodes.fast.js
+      - /src/renderers/webgl/sigma.webgl.edges.def.js
+      - /src/renderers/webgl/sigma.webgl.edges.fast.js
+      - /src/renderers/webgl/sigma.webgl.edges.arrow.js
+      - /src/renderers/canvas/sigma.canvas.labels.def.js
+      - /src/renderers/canvas/sigma.canvas.hovers.def.js
+      - /src/renderers/canvas/sigma.canvas.nodes.def.js
+      - /src/renderers/canvas/sigma.canvas.edges.def.js
+      - /src/renderers/canvas/sigma.canvas.edges.curve.js
+      - /src/renderers/canvas/sigma.canvas.edges.arrow.js
+      - /src/renderers/canvas/sigma.canvas.edges.curvedArrow.js
+      - /src/renderers/canvas/sigma.canvas.edgehovers.def.js
+      - /src/renderers/canvas/sigma.canvas.edgehovers.curve.js
+      - /src/renderers/canvas/sigma.canvas.edgehovers.arrow.js
+      - /src/renderers/canvas/sigma.canvas.edgehovers.curvedArrow.js
+      - /src/renderers/canvas/sigma.canvas.extremities.def.js
+      - /src/renderers/svg/sigma.svg.utils.js
+      - /src/renderers/svg/sigma.svg.nodes.def.js
+      - /src/renderers/svg/sigma.svg.edges.def.js
+      - /src/renderers/svg/sigma.svg.edges.curve.js
+      - /src/renderers/svg/sigma.svg.edges.curvedArrow.js
+      - /src/renderers/svg/sigma.svg.labels.def.js
+      - /src/renderers/svg/sigma.svg.hovers.def.js
+      - /src/middlewares/sigma.middlewares.rescale.js
+      - /src/middlewares/sigma.middlewares.copy.js
+      - /src/misc/sigma.misc.animation.js
+      - /src/misc/sigma.misc.bindEvents.js
+      - /src/misc/sigma.misc.bindDOMEvents.js
+      - /src/misc/sigma.misc.drawHovers.js
+      - /plugins/sigma.layouts.forceAtlas2/worker.js
+      - /plugins/sigma.layouts.forceAtlas2/supervisor.js
+      - /plugins/sigma.plugins.animate/sigma.plugins.animate.js
+      - /plugins/sigma.layouts.fruchtermanReingold/sigma.layout.fruchtermanReingold.js
+      - /plugins/sigma.renderers.halo/settings.js
+      - /plugins/sigma.renderers.halo/sigma.renderers.halo.js
+      - /plugins/sigma.plugins.dragNodes/sigma.plugins.dragNodes.js
+      - /plugins/sigma.helpers.graph/sigma.helpers.graph.js
+      - /plugins/sigma.plugins.keyboard/sigma.plugins.keyboard.js
+      - /plugins/sigma.plugins.activeState/sigma.plugins.activeState.js
+      - /plugins/sigma.plugins.select/sigma.plugins.select.js
+      - /plugins/sigma.plugins.lasso/sigma.plugins.lasso.js
+      - /plugins/sigma.renderers.linkurious/settings.js
+      - /plugins/sigma.renderers.linkurious/canvas/sigma.canvas.labels.def.js
+      - /plugins/sigma.renderers.linkurious/canvas/sigma.canvas.hovers.def.js
+      - /plugins/sigma.renderers.linkurious/canvas/sigma.canvas.nodes.def.js
+      - /plugins/sigma.renderers.linkurious/canvas/sigma.canvas.nodes.cross.js
+      - /plugins/sigma.renderers.linkurious/canvas/sigma.canvas.nodes.diamond.js
+      - /plugins/sigma.renderers.linkurious/canvas/sigma.canvas.nodes.equilateral.js
+      - /plugins/sigma.renderers.linkurious/canvas/sigma.canvas.nodes.square.js
+      - /plugins/sigma.renderers.linkurious/canvas/sigma.canvas.nodes.star.js
+      - /plugins/sigma.renderers.linkurious/canvas/sigma.canvas.edges.def.js
+      - /plugins/sigma.renderers.linkurious/canvas/sigma.canvas.edges.curve.js
+      - /plugins/sigma.renderers.linkurious/canvas/sigma.canvas.edges.arrow.js
+      - /plugins/sigma.renderers.linkurious/canvas/sigma.canvas.edges.curvedArrow.js
+      - /plugins/sigma.layouts.forceLink/worker.js
+      - /plugins/sigma.layouts.forceLink/supervisor.js
       - common.js
     stylesheet:
-      - css/bootstrap-slider.css
-      - css/lobipanel.css
-      - css/jquery-ui.min.css
-      - css/d3force.css
+      - css/common.css

@@ -1,38 +1,3 @@
-d3ForceCalc = {
-    triangle: [
-        [0, -1.538],
-        [1.33, 0.77],
-        [-1.33, 0.77]
-    ],
-
-    rectangle: [
-        [-1, -1],
-        [1, -1],
-        [1, 1],
-        [-1, 1]
-    ],
-
-    diamond: [
-        [0, -1.25],
-        [1.25, 0],
-        [0, 1.25],
-        [-1.25, 0]
-    ],
-
-    circle: [],
-
-    points: function(shape, factor) {
-        var pts = d3ForceCalc[shape];
-        pts = pts.map(function(arr) {
-            return arr.map(function(x) {
-                return x * factor;
-            });
-        });
-        return pts.join(' ');
-    }
-};
-
-
 // http://werxltd.com/wp/2010/05/13/javascript-implementation-of-javas-string-hashcode-method/
 String.prototype.hashCode = function() {
   var hash = 0, i, chr;

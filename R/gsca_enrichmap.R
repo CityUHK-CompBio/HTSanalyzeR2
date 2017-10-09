@@ -417,7 +417,7 @@ setMethod("viewEnrichMap", signature = "GSCA",
               nMappings <- c(nMappings, nodeCols)
               lMappings <- c(lMappings, edgeCols)
               nMappings[c("color", "scheme")] <- paste(nMappings[c("color", "scheme")], defaultKey, sep=".")
-              lMappings[c("weight")] <- paste(lMappings[c("weight")], defaultKey, sep=".")
+              # lMappings[c("weight")] <- paste(lMappings[c("weight")], defaultKey, sep=".")
               em_nodes <- seriesDF$nodes
               em_links <- seriesDF$edges
             }
@@ -472,7 +472,7 @@ fetchGSCASeriesValues <- function(gscaObjs, resultName = "GSEA.results", gscs,
     colnames(dfList$vertices)[colsToAppend] <- paste(colnames(dfList$vertices), names(gscaObjs)[i], sep=".")[colsToAppend]
     dfList$vertices <- unique(dfList$vertices)
     # Edges - ("from", "to", "weight")
-    colsToAppend <- colnames(dfList$edges) %in% c("weight")
+    colsToAppend <- colnames(dfList$edges) %in% c()
     colnames(dfList$edges)[colsToAppend] <- paste(colnames(dfList$edges), names(gscaObjs)[i], sep=".")[colsToAppend]
     dfList$edges <- unique(dfList$edges)
     rownames(dfList$edges) <- paste0(dfList$edges$from, dfList$edges$to)
@@ -490,7 +490,7 @@ fetchGSCASeriesValues <- function(gscaObjs, resultName = "GSEA.results", gscs,
   }
 
   #Combine edges
-  colsInCommon <- c("from", "to")
+  colsInCommon <- c("from", "to", "weight")
   edgeCols <- setdiff(unlist(lapply(extractedValues, function(li) {colnames(li$edges)})), colsInCommon)
   edgeDF <- unique(Reduce(rbind, lapply(extractedValues, function(li){li$edges[colsInCommon]})))
   edgeDF[, edgeCols] <- NA
