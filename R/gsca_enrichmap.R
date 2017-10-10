@@ -186,13 +186,13 @@ setMethod("extractEnrichMap", signature = "GSCA",
               getTopGeneSets(object, resultName, gscs, ntop, allSig)
             }else{
               paraCheck("Summarize", "specificGeneset", specificGeneset)
-              topGSTMP <- getTopGeneSets(object, resultName, gscs, ntop = NULL, allSig = TRUE)
+              topGSTMP <- getTopGeneSets(object, resultName, gscs, ntop = 20000, allSig = FALSE)
               if (!all(names(specificGeneset) %in% gscs))
                 stop("Wrong Gene Set Collection name(s) in 'specificGeneset'! \n")
               for(i in 1:length(specificGeneset)){
                 topGSTMP1 <- topGSTMP[[names(specificGeneset)[i]]]
                 if(!all(specificGeneset[[i]] %in% topGSTMP1)){
-                  stop("'specificGeneset' should be a subset of all significant genesets!\n")
+                  stop("'specificGeneset' should be a subset of all genesets in result!\n")
                 }
               }
               topGS <- specificGeneset
