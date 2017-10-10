@@ -1,6 +1,6 @@
 if (!isGeneric("report")) {
   setGeneric("report",
-             function(object, reportDir = "GSCAReport")
+             function(object, specificGeneset = NULL, reportDir = "GSCAReport")
     standardGeneric("report"), package = "HTSanalyzeR2")
 }
 
@@ -51,8 +51,8 @@ if (!isGeneric("report")) {
 #'
 #' @export
 setMethod("report", signature = "GSCA",
-          function(object, reportDir = "GSCAReport") {
-            reportAll(gsca = object, nwa = NULL, reportDir)
+          function(object, specificGeneset = NULL, reportDir = "GSCAReport") {
+            reportAll(gsca = object, nwa = NULL, specificGeneset = specificGeneset, reportDir = reportDir)
           }
 )
 
@@ -71,7 +71,7 @@ setMethod("report", signature = "GSCA",
 #'
 #'
 #' @export
-reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL, reportDir = "AnalysisReport") {
+reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL, specificGeneset = NULL, reportDir = "AnalysisReport") {
   if(!is.null(gsca) && class(gsca) != "GSCA") {
     if(class(gsca) != "list" || any(sapply(gsca, class) != "GSCA")) {
       stop("the parameter gsca should be a GSCA object or a list of GSCA objects\n")
@@ -111,7 +111,7 @@ reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL, reportDir = "Anal
   shinyApp <- system.file("templates/app.R", package="HTSanalyzeR2")
   file.copy(from = shinyApp, to = reportDir, overwrite = TRUE)
 
-  results <- list(gsca = gsca, nwa = nwa)
+  results <- list(gsca = gsca, nwa = nwa, specificGeneset = specificGeneset)
   saveRDS(results, file = file.path(reportDir, "results.RData"))
 
   shiny::runApp(reportDir)

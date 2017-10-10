@@ -1,6 +1,6 @@
 if (!isGeneric("report")) {
   setGeneric("report",
-             function(object, reportDir = "NWAReport")
+             function(object, specificGeneset = NULL, reportDir = "NWAReport")
     standardGeneric("report"), package = "HTSanalyzeR2")
 }
 
@@ -29,7 +29,7 @@ if (!isGeneric("report")) {
 setMethod("report",
           "NWA",
           function(object, reportDir = "NWAReport") {
-            reportAll(gsca = NULL, nwa = object, reportDir)
+            reportAll(gsca = NULL, nwa = object, reportDir = reportDir)
           }
         )
 

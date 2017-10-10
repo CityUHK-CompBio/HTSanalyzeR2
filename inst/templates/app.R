@@ -13,6 +13,7 @@ gsca <- results$gsca
 nwa <- results$nwa
 gscaObjs <- NULL
 nwaObjs <- NULL
+specificGeneset = results$specificGeneset
 
 ## ============================================ Preprocessing ==============================================
 gscaTS <- !is.null(gsca) && class(gsca) == "list"
@@ -38,6 +39,10 @@ if(!is.null(gsca)) {
 
   availableAnalysis <- HTSanalyzeR2:::availableResults(gsca@summary$results, TRUE)
   availableGeneSets <- HTSanalyzeR2:::availableResults(gsca@summary$results, FALSE)
+  if(!is.null(specificGeneset)) {
+    availableGeneSets <- c("SpecificGeneset", availableGeneSets)
+  }
+
 }
 
 if(!is.null(nwa)) {
@@ -95,11 +100,13 @@ create_data_table <- function(gscaObj, analysis, genesets) {
 
 create_enrich_map <- function(gscaObj, seriesObjs, input) {
   options <- list(distance = 400)
+  genesets <- ifelse(is.null(specificGeneset), input$genesets_map, names(gscaObj@listOfGeneSetCollections))
   viewEnrichMap(gscaObj,
                 resultName=paste0(input$analysis_map, ".results"),
-                gscs = c(input$genesets_map),
+                gscs = genesets,
                 allSig=TRUE,
                 gsNameType="id",
+                specificGeneset = specificGeneset,
                 options = options,
                 seriesObjs = seriesObjs)
 }
@@ -124,7 +131,7 @@ create_panel <- function(name) {
            htmlOutput("gsca_summary"),
            hr(), gscaSeriesTickInput,
            selectInput('analysis_res', 'Analysis', availableAnalysis),
-           selectInput('genesets_res', 'Gene Sets Collection', c(availableGeneSets, "ALL"))),
+           selectInput('genesets_res', 'Gene Sets Collection', c(availableGeneSets[-1], "ALL"))),
          enrich_res_content = dataTableOutput("gsca_output"),
 
          settings = includeHTML(HTMLSettings),

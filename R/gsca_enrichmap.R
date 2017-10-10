@@ -405,7 +405,7 @@ setMethod("viewEnrichMap", signature = "GSCA",
               series <- names(seriesObjs)
               defaultKey <- series[1]
               # seriesDF: (nodes = nodeDF, edges = edgeDF, nodeSeriesCols = nodeCols, edgeSeriesCols = edgeCols)
-              seriesDF <- fetchGSCASeriesValues(seriesObjs, resultName, gscs, ntop, allSig, gsNameType)
+              seriesDF <- fetchGSCASeriesValues(seriesObjs, resultName, gscs, ntop, allSig, gsNameType, specificGeneset)
               # Create series mappings
               nodeCols <- seriesDF$nodeSeriesCols
               nodeColNames <- sub("adjPvalue", "color", nodeCols)
@@ -457,10 +457,10 @@ setMethod("viewEnrichMap", signature = "GSCA",
 #' FetchGSCASeriesValues
 #' @importFrom igraph as_data_frame
 fetchGSCASeriesValues <- function(gscaObjs, resultName = "GSEA.results", gscs,
-                            ntop = NULL, allSig = TRUE, gsNameType = "id") {
+                            ntop = NULL, allSig = TRUE, gsNameType = "id", specificGeneset = NULL) {
   # TODO: check the objs
   extractedValues <- lapply(seq_along(gscaObjs), function(i) {
-    g <- extractEnrichMap(gscaObjs[[i]], resultName, gscs, ntop, allSig, gsNameType)
+    g <- extractEnrichMap(gscaObjs[[i]], resultName, gscs, ntop, allSig, gsNameType, specificGeneset)
     dfList <- list( edges = data.frame(from=character(0), to=character(0), weight=numeric(0)),
            vertices=data.frame(name=character(0), geneSetSize=numeric(0), adjPvalue=numeric(0), obsPvalue=numeric(0),
                               colorScheme=character(0), label=character(0), label_id=character(0), label_term=character(0)))
