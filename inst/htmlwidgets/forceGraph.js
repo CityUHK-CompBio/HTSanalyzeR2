@@ -21,12 +21,12 @@ HTMLWidgets.widget(global = {
         if(!(state.currentKey in state)) {
             state[state.currentKey] = {
                 colors: {
-	            	red: [158, 22, 23],
-	            	blue: [0, 106, 156],
-	            	grey: [200,200,200],
-	            	white: [255,255,255],
-	            	edge: [46, 219, 86]
-	            }
+                    red: [158, 22, 23],
+                    blue: [0, 106, 156],
+                    grey: [200,200,200],
+                    white: [255,255,255],
+                    edge: [46, 219, 86]
+                }
             };
         }
 
@@ -90,11 +90,11 @@ HTMLWidgets.widget(global = {
             // x.nodes.label = x.nodes["label_term"];
 
             for(i =0; i < N; i++) {
-            	var c = colors.grey;
-            	if(x.nodes.scheme[i] == 'Pos') {
-                    c = _interpolateColor(colors.red, colors.white, x.nodes.color[i] / 0.02);
+                var c = colors.grey;
+                if(x.nodes.scheme[i] == 'Pos') {
+                    c = _interpolateColor(colors.red, colors.white, x.nodes.color[i] / 0.05);
                 } else if (x.nodes.scheme[i] == 'Neg') {
-                    c = _interpolateColor(colors.blue, colors.white, x.nodes.color[i] / 0.02);
+                    c = _interpolateColor(colors.blue, colors.white, x.nodes.color[i] / 0.05);
                 }
 
                 g.nodes.push({
@@ -135,37 +135,41 @@ HTMLWidgets.widget(global = {
             maxEdgeSize: 8,
             minEdgeSize: 1,
 
+            nodeOuterBorderColor: 'default',
+            nodeOuterBorderSize: 1,
+            defaultNodeOuterBorderColor: '#eee',
+
             enableEdgeHovering: false,
             borderSize: 2,
             outerBorderSize: 3,
-            defaultNodeBorderColor: '#fff',
-            defaultNodeOuterBorderColor: 'rgb(236, 81, 72)',
+            // defaultNodeBorderColor: '#fff',
+            // defaultNodeOuterBorderColor: 'rgb(236, 81, 72)',
             nodeHaloColor: 'rgba(236, 81, 72, 0.1)',
             nodeHaloSize: 30,
           }
         });
 
-		var config = {  
-			linLogMode:true,
-			outboundAttractionDistribution: false,
-			strongGravityMode:false,
-			gravity:4,
-			barnesHutTheta:5,
-			edgeWeightInfluence:0,
-			adjustSizes:false,
-			barnesHutOptimize: false,
-			startingIterations: 1,
-			iterationsPerRender: 1,
-			slowDown: 50,
-			autoStop:true,
-			avgDistanceThreshold:1e-7,
-			// maxIterations:100000,
-			easing:'quadraticInOut'
+        var config = {  
+            linLogMode:true,
+            outboundAttractionDistribution: false,
+            strongGravityMode:false,
+            gravity:4,
+            barnesHutTheta:5,
+            edgeWeightInfluence:0,
+            adjustSizes:false,
+            barnesHutOptimize: false,
+            startingIterations: 1,
+            iterationsPerRender: 1,
+            slowDown: 50,
+            autoStop:true,
+            avgDistanceThreshold:1e-7,
+            // maxIterations:100000,
+            easing:'quadraticInOut'
         };
         sigma.layouts.startForceLink(s, config);
 
         setTimeout(function(){
-        	sigma.layouts.configForceLink(s, {slowDown: 100}) 
+            sigma.layouts.configForceLink(s, {slowDown: 100}) 
         }, 2000);
 
 
@@ -250,7 +254,7 @@ HTMLWidgets.widget(global = {
 
         if (!sigma.layouts.isForceLinkRunning()) {
         //     sigma.layouts.startForceLink(s, config);
-        	s.refresh();	
+            s.refresh();    
         }
         
     },
@@ -295,22 +299,22 @@ HTMLWidgets.widget(global = {
 
 // // Config for layoutForce
 // var config = {  
-// 	linLogMode:true,
-// 	outboundAttractionDistribution: false,
-// 	strongGravityMode:false,
-// 	gravity:4,
-// 	barnesHutTheta:3,
-// 	edgeWeightInfluence:0,
-// 	adjustSizes:false,
-// 	barnesHutOptimize: false,
-// 	startingIterations: 1,
-// 	iterationsPerRender: 1,
-// 	slowDown: 50,
-// 	autoStop:true,
-// 	avgDistanceThreshold:1e-8,
-// 	// maxIterations:200000,
-// 	// nodeSiblingsScale: 1.5,
-// 	easing:'quadraticInOut'
+//  linLogMode:true,
+//  outboundAttractionDistribution: false,
+//  strongGravityMode:false,
+//  gravity:4,
+//  barnesHutTheta:3,
+//  edgeWeightInfluence:0,
+//  adjustSizes:false,
+//  barnesHutOptimize: false,
+//  startingIterations: 1,
+//  iterationsPerRender: 1,
+//  slowDown: 50,
+//  autoStop:true,
+//  avgDistanceThreshold:1e-8,
+//  // maxIterations:200000,
+//  // nodeSiblingsScale: 1.5,
+//  easing:'quadraticInOut'
 // }
 
 // sigma.layouts.startForceLink(s, config);
