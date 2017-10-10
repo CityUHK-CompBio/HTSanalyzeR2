@@ -50,6 +50,7 @@ HTMLWidgets.widget(global = {
         console.log(x);
 
         var state = global.getElementState(el);
+        state.container = el;
 
         if (x.update) {
             global.update(state, x);
@@ -69,7 +70,9 @@ HTMLWidgets.widget(global = {
         }
 
         var current = global.getCurrentConfig(state, x)
-        var container = document.getElementById("map_output");
+        // var container = document.getElementById("map_output");
+        // var container = document.getElementsByClassName("forceGraph")[0];
+        var container = state.container;
         container.innerHTML = '';
 
         var colors = current.colors;
