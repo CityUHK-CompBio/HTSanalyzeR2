@@ -45,7 +45,7 @@
 
                         <div class="form-group">
                             <h5 for="layoutSlowDown">SlowDown</h5>
-                            <input id="layoutSlowDown" data-slider-id='layoutSlowDownSlider' type="text" data-slider-min="1" data-slider-max="500" data-slider-step="10" data-slider-value="50" />
+                            <input id="layoutSlowDown" data-slider-id='layoutSlowDownSlider' type="text" data-slider-min="50" data-slider-max="1000" data-slider-step="10" data-slider-value="200" />
                         </div>
                     </div>
 
@@ -93,56 +93,14 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#nodePanel">
-                        Node</a>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#nodePanel">Node</a>
                 </h4>
                 </div>
                 <div id="nodePanel" class="panel-collapse collapse">
                     <div class="panel-body">
                         <div class="form-group">
-                            <h5>Shape:</h5>
-                            <div id="nodeShapeOption" class="btn-group btn-group-justified" data-toggle="buttons">
-                                <label class="btn btn-default" value='circle'>
-                                    <input type="radio" name='nodeShapeOption' value='circle' autocomplete="off" checked>Circle
-                                </label>
-                                <label class="btn btn-default" value='triangle'>
-                                    <input type="radio" name='nodeShapeOption' value='triangle' autocomplete="off">Triangle
-                                </label>
-                                <label class="btn btn-default" value='rectangle'>
-                                    <input type="radio" name='nodeShapeOption' value='rectangle' autocomplete="off">Rectangle
-                                </label>
-                                <label class="btn btn-default" value='diamond'>
-                                    <input type="radio" name='nodeShapeOption' value='diamond' autocomplete="off">Diamond
-                                </label>
-                            </div>
-                        </div>
-                        <div class="form-group">
                             <h5>Scale:</h5>
                             <input id="nodeScale" data-slider-id='nodeScaleSlider' type="text" data-slider-min="0.1" data-slider-max="10" data-slider-step="0.1" data-slider-value="1" />
-                        </div>
-                        <div class="form-group">
-                            <h5>Color Scheme:</h5>
-                            <div>
-                                <div class="input-group">
-                                    <div class="input-group-btn">
-                                        <button id="nodeSchemeDropdown" value="default" type="button" class="btn btn-default dropdown-toggle"
-                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Linear-2<span class="caret"></span>
-                                        </button>
-                                        <ul id="nodeSchemeBtns" class="dropdown-menu">
-                                            <li><a value="linear2">Linear-2</a></li>
-                                            <li><a value="linear3">Linear-3</a></li>
-                                            <li><a value="dual">Dual</a></li>
-                                        </ul>
-                                    </div>
-                                    <div style="width: 100%">
-                                        <canvas id="schemePreview1" width="100" height="1"
-                                                style="width: 100%; height: 22px; padding-top: 3px; padding-left: 8px; padding-bottom: 0px; display: block;"></canvas>
-                                        <canvas id="schemePreview2" width="100" height="1"
-                                                style="width: 100%; height: 22px; padding-bottom: 3px; padding-left: 8px; padding-top: 0px;display: block;"></canvas>
-                                    </div>
-                                </div>
-                                <!-- /input-group -->
-                            </div>
                         </div>
                         <div class="form-group">
                             <h5>Border Color/Opacity:</h5>
@@ -162,9 +120,8 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#edgePanel">
-                        Edge</a>
-                </h4>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#edgePanel">Edge</a>
+                    </h4>
                 </div>
                 <div id="edgePanel" class="panel-collapse collapse">
                     <div class="panel-body">

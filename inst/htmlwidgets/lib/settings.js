@@ -182,72 +182,36 @@ initPanel = function(panel, title, state) {
     $("#layoutBarnesHutOptimize", panel).change(function() {
         state.controller['barnesHutOptimize'](this.checked);
     });
-
-
     $('#layoutGravity', panel).slider().on('slide', decorator('gravity'));
     $('#layoutBarnesHutTheta', panel).slider().on('slide', decorator('barnesHutTheta'));
     $('#layoutEdgeWeightInfluence', panel).slider().on('slide', decorator('edgeWeightInfluence'));
     $('#layoutSlowDown', panel).slider().on('slide', decorator('slowDown'));
 
 
-    // //General
-    // $("#generalTitle", panel).change(function() {
-    //     state.controller['title'](this.value);
-    // });
-    // $('#generalTitleSize', panel).slider().on('slide', decorator('titleSize'));
-    // $("#generalLegendTitle", panel).change(function() {
-    //     state.controller['legendTitle'](this.value);
-    // });
-    // $('#generalDistance', panel).slider().on('slide', decorator('distance'));
+    //Label
+    $("#labelOption :input", panel).change(function() {
+        state.controller['labelOption'](this.value);
+    });
+    $("#labelColor", panel).change(function() {
+        state.controller['labelColor']("#" + this.value);
+    });
+    $('#labelOpacity', panel).slider().on('slide', decorator('labelOpacity'));
+    $('#labelScale', panel).slider().on('slide', decorator('labelScale'));
 
-    // //Label
-    // $("#labelOption :input", panel).change(function() {
-    //     state.controller['labelOption'](this.value);
-    // });
-    // $("#labelColor", panel).change(function() {
-    //     state.controller['labelColor']("#" + this.value);
-    // });
-    // $('#labelOpacity', panel).slider().on('slide', decorator('labelOpacity'));
-    // $('#labelScale', panel).slider().on('slide', decorator('labelScale'));
+    // Node
+    $('#nodeScale', panel).slider().on('slide', decorator('nodeScale'));
+    $("#nodeBorderColor", panel).change(function() {
+        state.controller['nodeBorderColor']("#" + this.value);
+    });
+    $('#nodeBorderOpacity', panel).slider().on('slide', decorator('nodeBorderOpacity'));
+    $('#nodeBorderWidth', panel).slider().on('slide', decorator('nodeBorderWidth'));
 
-    // // Node
-    // $("#nodeShapeOption :input", panel).change(function() {
-    //     state.controller['nodeShape'](this.value);
-    // });
-    // $("#nodeSchemeBtns li a", panel).click(function() {
-    //     var selText = $(this).text();
-    //     var schemeId = $(this).attr('value');
-    //     var dropdownBtn = $("#nodeSchemeDropdown", panel);
-    //     dropdownBtn.attr('value', schemeId);
-    //     dropdownBtn.html(selText + ' <span class="caret"></span>');
-
-    //     var canvas1 = d3.select($("#schemePreview1", panel)[0]);
-    //     var canvas2 = d3.select($("#schemePreview2", panel)[0]);
-    //     if(schemeId == 'dual') {
-    //         var palette1 = fetchSchemeValues("dualPos");
-    //         var palette2 = fetchSchemeValues("dualNeg");
-    //         renderPalette(canvas1, palette1.domain, palette1.range);
-    //         renderPalette(canvas2, palette2.domain, palette2.range);
-    //     } else {
-    //         var palette = fetchSchemeValues(schemeId);
-    //         renderPalette(canvas1, palette.domain, palette.range);
-    //         renderPalette(canvas2, palette.domain, palette.range);
-    //     }
-    //     state.controller.nodeScheme(schemeId);
-    // });
-    // $('#nodeScale', panel).slider().on('slide', decorator('nodeScale'));
-    // $("#nodeBorderColor", panel).change(function() {
-    //     state.controller['nodeBorderColor']('#' + this.value);
-    // });
-    // $('#nodeBorderOpacity', panel).slider().on('slide', decorator('nodeBorderOpacity'));
-    // $('#nodeBorderWidth', panel).slider().on('slide', decorator('nodeBorderWidth'));
-
-    // // Edge
-    // $("#edgeColor", panel).change(function() {
-    //     state.controller.edgeColor('#' + this.value);
-    // });
-    // $('#edgeOpacity', panel).slider().on('slide', decorator('edgeOpacity'));
-    // $('#edgeScale', panel).slider().on('slide', decorator('edgeScale'));
+    // Edge
+    $("#edgeColor", panel).change(function() {
+        state.controller.edgeColor('#' + this.value);
+    });
+    $('#edgeOpacity', panel).slider().on('slide', decorator('edgeOpacity'));
+    $('#edgeScale', panel).slider().on('slide', decorator('edgeScale'));
 
     // // Scheme
     // var fetchSchemeValues = function(schemeId) {
