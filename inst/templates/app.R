@@ -131,7 +131,7 @@ create_panel <- function(name) {
            htmlOutput("gsca_summary"),
            hr(), gscaSeriesTickInput,
            selectInput('analysis_res', 'Analysis', availableAnalysis),
-           selectInput('genesets_res', 'Gene Sets Collection', c(availableGeneSets[-1], "ALL"))),
+           selectInput('genesets_res', 'Gene Sets Collection', c(availableGeneSets, "ALL"))),
          enrich_res_content = dataTableOutput("gsca_output"),
 
          settings = includeHTML(HTMLSettings),
