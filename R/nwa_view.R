@@ -64,7 +64,7 @@ setMethod("viewSubNet", signature = "NWA",
               em_links <- seriesDF$edges
             }
 
-            options$nodeScheme = "linear3"
+            options$nodeScheme = "linear"
             defaultOptions = list(distance = 400)
             graphOptions <- modifyList(defaultOptions, options)
 

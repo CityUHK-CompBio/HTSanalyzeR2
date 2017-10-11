@@ -80,6 +80,7 @@ dependencies:
       - /plugins/sigma.renderers.linkurious/canvas/sigma.canvas.edges.curvedArrow.js
       - /plugins/sigma.layouts.forceLink/worker.js
       - /plugins/sigma.layouts.forceLink/supervisor.js
+      - /plugins/sigma.exporters.svg/sigma.exporters.svg.js
       - common.js
       - js/jscolor.js
       - js/bootstrap-slider.js

@@ -70,8 +70,6 @@ HTMLWidgets.widget(global = {
         }
 
         var current = global.getCurrentConfig(state, x)
-        // var container = document.getElementById("map_output");
-        // var container = document.getElementsByClassName("forceGraph")[0];
         var container = state.container;
         container.innerHTML = '';
 
@@ -232,6 +230,7 @@ HTMLWidgets.widget(global = {
         current.sigma = s;
         current.graph = g;
         current.data = x;
+        current.scheme = x.options.nodeScheme;
 
         global.generateControllers(state);
         configureSettingPanel(state);
@@ -460,69 +459,44 @@ HTMLWidgets.widget(global = {
             s.refresh();
         }
         
-
-        state.controller.distance = function(val) {
-            console.log(val);
+        // Color Scheme
+        // current.scheme = "dual" or "linear"
+        state.controller.scheme = function(schemeId, domain, range) {
+            // TODO: startwWith(current.scheme)
+            if (schemeId.startsWith(current.scheme)) {
+                var interpolate = function(val) {
+                    var f = (val - domain[0]) / (domain[1] - domain[0]);
+                    return _interpolateColor(h2r(range[0]), h2r(range[1]), f);
+                }
+                if (schemeId.startsWith("dual")) {
+                    var sch = schemeId.replace("dual", "");
+                    for (i = 0; i < g.nodes.length; i++) {
+                        if(g.nodes[i].scheme == sch) {
+                            g.nodes[i].color = r2rgba(interpolate(x.nodes.color[i]), 0.9);
+                        }
+                    }
+                } else {
+                    for (i = 0; i < g.nodes.length; i++) {
+                        g.nodes[i].color = r2rgba(interpolate(x.nodes.color[i]), 0.9);
+                    }
+                }
+            }
+            s.refresh();
         }
 
-        // state.controller.labelOpacity = function(val) {
-        //  console.log(val);
-        // }
-        // state.controller.labelScale = function(val) {
-        //  console.log(val);
-        // }
-        
+        // Buttons
+        state.controller.pause = function() {
+            sigma.layouts.stopForceLink();
+        }
 
+        state.controller.saveSVG = function() {
+            console.log("savesvg");
+            s.toSVG({download: true, labels:true, filename: 'network.svg', size: 2000});
+        }
 
         state.controller.refresh = function() {
-            
+            sigma.layouts.startForceLink(s);
         }
 
     }
 });
-
-
-
-
-
-
-
-
-// // Config for fruchtermanReingold
-// var config = {
-//     autoArea: true,
-//     area: 1,
-//     gravity: 200,
-//     speed: 1,
-//     iterations: 1000,
-//     easing: 'quadraticInOut',
-//     duration: 8000,
-// }
-// s.refresh();
-// sigma.layouts.fruchtermanReingold.start(s, config);
-// if (!sigma.layouts.fruchtermanReingold.isRunning(s)) {
-//     s.refresh();
-// }
-
-
-// // Config for layoutForce
-// var config = {  
-//  linLogMode:true,
-//  outboundAttractionDistribution: false,
-//  strongGravityMode:false,
-//  gravity:4,
-//  barnesHutTheta:3,
-//  edgeWeightInfluence:0,
-//  adjustSizes:false,
-//  barnesHutOptimize: false,
-//  startingIterations: 1,
-//  iterationsPerRender: 1,
-//  slowDown: 50,
-//  autoStop:true,
-//  avgDistanceThreshold:1e-8,
-//  // maxIterations:200000,
-//  // nodeSiblingsScale: 1.5,
-//  easing:'quadraticInOut'
-// }
-
-// sigma.layouts.startForceLink(s, config);

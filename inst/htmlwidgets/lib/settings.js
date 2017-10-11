@@ -19,8 +19,9 @@ addCustomBtns = function(panel, state) {
         return $('<li></li>').append(control);
     }
 
-    // menu.prepend(createButton("glyphicon glyphicon-pause", "pause", state.controller.pause));
-    // menu.prepend(createButton("glyphicon glyphicon-floppy-disk", "save", state.controller.saveImg));
+    menu.prepend(createButton("glyphicon glyphicon-pause", "pause", state.controller.pause));
+    menu.prepend(createButton("glyphicon glyphicon-refresh", "refresh", state.controller.refresh));
+    menu.prepend(createButton("glyphicon glyphicon-floppy-disk", "save", state.controller.saveSVG));
 }
 
 appendPanelId = function(panel, state) {
@@ -38,29 +39,23 @@ appendPanelId = function(panel, state) {
 }
 
 renderPalette = function(canvas, domain, range) {
-    // // width should be 100, height should be 1
-    // var width = 100;
-    // // var canvas = d3.select($("#nodeSchemes #" + schemeId + " #palette", panel)[0]);
-    // var context = canvas.node().getContext("2d");
-    // var image = context.createImageData(width, 1);
+    // width should be 100, height should be 1
+    var width = 100;
+    var context = canvas.getContext("2d");
+    var image = context.createImageData(width, 1);
 
-    // var max = Math.max.apply(null, domain);
-    // var min = Math.min.apply(null, domain);
-    // var domainMapping = domain.map(function(x) {return (x - min) * width / (max - min); });
+    var interpolate = function (factor) {
+        return _interpolateColor(h2r(range[0]), h2r(range[1]), factor);
+    }
 
-    // var color = d3.scaleLinear()
-    //     .domain(domainMapping)
-    //     .range(range)
-    //     .interpolate(d3.interpolateCubehelix.gamma(3.0));
-
-    // for (var i = 0, j = -1, c; i < width; ++i) {
-    //     c = d3.rgb(color(i));
-    //     image.data[++j] = c.r;
-    //     image.data[++j] = c.g;
-    //     image.data[++j] = c.b;
-    //     image.data[++j] = 255;
-    // }
-    // context.putImageData(image, 0, 0);
+    for (var i = 0, j = -1, c; i < width; ++i) {
+        c = interpolate(i / width);
+        image.data[++j] = c[0];
+        image.data[++j] = c[1];
+        image.data[++j] = c[2];
+        image.data[++j] = 255;
+    }
+    context.putImageData(image, 0, 0);
 }
 
 refreshValues = function(panel, state) {
@@ -213,62 +208,42 @@ initPanel = function(panel, title, state) {
     $('#edgeOpacity', panel).slider().on('slide', decorator('edgeOpacity'));
     $('#edgeScale', panel).slider().on('slide', decorator('edgeScale'));
 
-    // // Scheme
-    // var fetchSchemeValues = function(schemeId) {
-    //     var val1 = parseFloat($("#nodeSchemes #" + schemeId + " #value1", panel).val());
-    //     var val2 = parseFloat($("#nodeSchemes #" + schemeId + " #value2", panel).val());
-    //     var color1 = "#" + $("#nodeSchemes #" + schemeId + " #color1", panel).val();
-    //     var color2 = "#" + $("#nodeSchemes #" + schemeId + " #color2", panel).val();
+    // Scheme
+    var fetchSchemeValues = function(schemeId) {
+        var val1 = parseFloat($("#nodeSchemes #" + schemeId + " #value1", panel).val());
+        var val2 = parseFloat($("#nodeSchemes #" + schemeId + " #value2", panel).val());
+        var color1 = "#" + $("#nodeSchemes #" + schemeId + " #color1", panel).val();
+        var color2 = "#" + $("#nodeSchemes #" + schemeId + " #color2", panel).val();
+        return {domain: [val1, val2], range: [color1, color2]};
+    }
 
-    //     var dict = {domain: [val1, val2], range: [color1, color2]};
-    //     if(schemeId == "linear3") {
-    //         dict.domain.push(parseFloat($("#nodeSchemes #" + schemeId + " #value3", panel).val()));
-    //         dict.range.push("#" + $("#nodeSchemes #" + schemeId + " #color3", panel).val());
-    //     }
-    //     return dict;
-    // }
+    var uniTextColors = function(schemeId) {
+        var txtColor1 = $("#nodeSchemes #" + schemeId + " #color1", panel).css("color");
+        var txtColor2 = $("#nodeSchemes #" + schemeId + " #color2", panel).css("color");
+        $("#nodeSchemes #" + schemeId + " #value1", panel).css("color", txtColor1);
+        $("#nodeSchemes #" + schemeId + " #value2", panel).css("color", txtColor2);
+    }
 
-    // var uniTextColors = function(schemeId) {
-    //     var txtColor1 = $("#nodeSchemes #" + schemeId + " #color1", panel).css("color");
-    //     var txtColor2 = $("#nodeSchemes #" + schemeId + " #color2", panel).css("color");
-    //     $("#nodeSchemes #" + schemeId + " #value1", panel).css("color", txtColor1);
-    //     $("#nodeSchemes #" + schemeId + " #value2", panel).css("color", txtColor2);
-    // }
+    var renderFunc = function(schemeId) {
+        return function() {
+            var values = fetchSchemeValues(schemeId);
+            console.log(values);
+            var canvas = $("#nodeSchemes #" + schemeId + " #palette", panel)[0];
+            renderPalette(canvas, values.domain, values.range);
+            uniTextColors(schemeId);
+            state.controller.scheme(schemeId, values.domain, values.range);
+        }
+    }
 
-    // var renderFunc = function(schemeId) {
-    //     return function() {
-    //         var values = fetchSchemeValues(schemeId);
-    //         var canvas = d3.select($("#nodeSchemes #" + schemeId + " #palette", panel)[0]);
-    //         state.controller.changeScheme(schemeId, values.domain, values.range);
-    //         renderPalette(canvas, values.domain, values.range);
-    //         uniTextColors(schemeId);
-
-    //         if(schemeId.startsWith($("#nodeSchemeDropdown", panel).attr('value'))) {
-    //             var canvas1 = d3.select($("#schemePreview1", panel)[0]);
-    //             var canvas2 = d3.select($("#schemePreview2", panel)[0]);
-
-    //             if(schemeId.startsWith("dual")) {
-    //                 var palette1 = fetchSchemeValues("dualPos");
-    //                 var palette2 = fetchSchemeValues("dualNeg");
-    //                 renderPalette(canvas1, palette1.domain, palette1.range);
-    //                 renderPalette(canvas2, palette2.domain, palette2.range);
-    //             } else {
-    //                 renderPalette(canvas1, values.domain, values.range);
-    //                 renderPalette(canvas2, values.domain, values.range);
-    //             }
-    //         }
-    //     }
-    // }
-
-    // var ids = ["linear2", "linear3", "dualPos", "dualNeg"];
-    // for(var i in ids) {
-    //     var schemeId = ids[i];
-    //     var values = fetchSchemeValues(schemeId);
-    //     var canvas = d3.select($("#nodeSchemes #" + schemeId + " #palette", panel)[0]);
-    //     renderPalette(canvas, values.domain, values.range);
-    //     uniTextColors(schemeId);
-    //     $("#nodeSchemes #" + schemeId+ " input", panel).change(renderFunc(schemeId));
-    // }
+    var ids = ["linear2", "dualPos", "dualNeg"];
+    for(var i in ids) {
+        var schemeId = ids[i];
+        var values = fetchSchemeValues(schemeId);
+        var canvas = $("#nodeSchemes #" + schemeId + " #palette", panel)[0];
+        renderPalette(canvas, values.domain, values.range);
+        uniTextColors(schemeId);
+        $("#nodeSchemes #" + schemeId+ " input", panel).change(renderFunc(schemeId));
+    }
 
     addCustomBtns(panel, state);
     panel.removeClass("hidden");
