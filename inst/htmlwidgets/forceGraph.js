@@ -85,28 +85,15 @@ HTMLWidgets.widget(global = {
             N = x.nodes.id.length;
             E = x.links.source.length;
 
-            // x.nodes.label = x.nodes["label_term"];
-
             for(i =0; i < N; i++) {
-                var c = colors.grey;
-                if(x.nodes.scheme[i] == 'Pos') {
-                    c = _interpolateColor(colors.red, colors.white, x.nodes.color[i] / 0.05);
-                } else if (x.nodes.scheme[i] == 'Neg') {
-                    c = _interpolateColor(colors.blue, colors.white, x.nodes.color[i] / 0.05);
-                }
-
                 g.nodes.push({
                     id: x.nodes.id[i],
                     label : x.nodes.label[i],
                     x: Math.cos(2 * i * Math.PI / N ),
                     y: Math.sin(2 * i * Math.PI / N + Math.PI),
-                    // x : Math.cos(2 * Math.random() * N * Math.PI / N),
-                    // y : Math.cos(2 * Math.random() * N * Math.PI / N),
                     size: 0 + x.nodes.size[i],
-                    scheme: x.nodes.scheme[i],
-                    color: r2rgba(c, 0.9),
-              });
-
+                    scheme: 0 + x.nodes.scheme[i]
+                });
             }
 
             for(i = 0; i < E; i++) {
@@ -115,9 +102,27 @@ HTMLWidgets.widget(global = {
                     source: x.links.source[i],
                     target: x.links.target[i],
                     size: x.links.weight[i] / 2,
-                    // color: r2rgba(colors.edge, 0.2)
                 });
             }
+
+            // Color
+            for(i =0; i < N; i++) {
+                var c = colors.grey;
+                if(x.options.type == "GSCA") {
+                    if(x.nodes.scheme[i] == 'Pos') {
+                        c = _interpolateColor(colors.red, colors.white, x.nodes.color[i] / 0.05);
+                    } else if (x.nodes.scheme[i] == 'Neg') {
+                        c = _interpolateColor(colors.blue, colors.white, x.nodes.color[i] / 0.05);
+                    }
+                } else if (x.options.type == "NWA") {
+                    if(x.nodes.color[i] != null) {
+                        c = _interpolateColor(colors.red, colors.blue, x.nodes.color[i] / 9);
+                    }
+                }
+
+                g.nodes[i].color = r2rgba(c, 0.9);
+            }
+
         }
 
         s = new sigma({
@@ -231,12 +236,13 @@ HTMLWidgets.widget(global = {
         current.graph = g;
         current.data = x;
         current.scheme = x.options.nodeScheme;
+        current.type = x.options.type;
 
         global.generateControllers(state);
         configureSettingPanel(state);
     },
 
-    update: function(state, x) {
+    update: function(state, u) {
         var current = global.getCurrentConfig(state)
 
         var i, s;
@@ -244,17 +250,26 @@ HTMLWidgets.widget(global = {
 
         g = current.graph;
         s = current.sigma;
-        data = current.data;
-        tick = data.options.seriesData[x.process_map - 1];
+        x = current.data;
+        type = current.type;
+        
 
         for (i = 0; i < g.nodes.length; i++) {
-            g.nodes[i].scheme = data.nodes["scheme." + tick][i];
-            if(g.nodes[i].scheme == 'Pos') {
-                c = _interpolateColor(colors.red, colors.white, data.nodes["color." + tick][i] / 0.02);
-            } else if (g.nodes[i].scheme == 'Neg') {
-                c = _interpolateColor(colors.blue, colors.white, data.nodes["color." + tick][i] / 0.02);
-            } else {
-                c = colors.grey;
+            var c = colors.grey;
+
+            if (type == "GSCA") {
+                tick = x.options.seriesData[u.process_map - 1];
+                g.nodes[i].scheme = x.nodes["scheme." + tick][i];
+                if(g.nodes[i].scheme == 'Pos') {
+                    c = _interpolateColor(colors.red, colors.white, x.nodes["color." + tick][i] / 0.02);
+                } else if (g.nodes[i].scheme == 'Neg') {
+                    c = _interpolateColor(colors.blue, colors.white, x.nodes["color." + tick][i] / 0.02);
+                }
+            } else if(type == "NWA"){
+                tick = x.options.seriesData[u.process_net - 1];
+                if (x.nodes["color." + tick][i] != null) {
+                    c = _interpolateColor(colors.red, colors.blue, x.nodes["color." + tick][i] / 9);
+                }
             }
 
             g.nodes[i].color = r2rgba(c, 0.9);
@@ -462,7 +477,6 @@ HTMLWidgets.widget(global = {
         // Color Scheme
         // current.scheme = "dual" or "linear"
         state.controller.scheme = function(schemeId, domain, range) {
-            // TODO: startwWith(current.scheme)
             if (schemeId.startsWith(current.scheme)) {
                 var interpolate = function(val) {
                     var f = (val - domain[0]) / (domain[1] - domain[0]);

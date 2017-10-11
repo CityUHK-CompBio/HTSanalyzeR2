@@ -65,7 +65,7 @@ setMethod("viewSubNet", signature = "NWA",
             }
 
             options$nodeScheme = "linear"
-            defaultOptions = list(distance = 400)
+            defaultOptions = list(distance = 400, type = "NWA")
             graphOptions <- modifyList(defaultOptions, options)
 
             forceGraph(em_nodes, em_links, nMappings, lMappings, graphOptions, seriesData = series)
