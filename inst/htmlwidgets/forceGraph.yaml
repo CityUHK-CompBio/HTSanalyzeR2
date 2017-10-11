@@ -81,5 +81,13 @@ dependencies:
       - /plugins/sigma.layouts.forceLink/worker.js
       - /plugins/sigma.layouts.forceLink/supervisor.js
       - common.js
+      - js/jscolor.js
+      - js/bootstrap-slider.js
+      - js/jquery-ui.min.js
+      - js/lobipanel.js
+      - settings.js
     stylesheet:
       - css/common.css
+      - css/bootstrap-slider.css
+      - css/lobipanel.css
+      - css/jquery-ui.min.css

@@ -150,19 +150,21 @@ HTMLWidgets.widget(global = {
         });
 
         var config = {  
-            linLogMode:true,
-            outboundAttractionDistribution: false,
+            linLogMode:false,
             strongGravityMode:false,
-            gravity:4,
-            barnesHutTheta:5,
-            edgeWeightInfluence:0,
+            outboundAttractionDistribution: false,
             adjustSizes:false,
             barnesHutOptimize: false,
+            
+            gravity:30,
+            barnesHutTheta:0.1,
+            edgeWeightInfluence:0,
             startingIterations: 1,
             iterationsPerRender: 1,
             slowDown: 50,
-            autoStop:true,
-            avgDistanceThreshold:1e-7,
+
+            autoStop:false,
+            // avgDistanceThreshold:1e-6,
             // maxIterations:100000,
             easing:'quadraticInOut'
         };
@@ -171,6 +173,11 @@ HTMLWidgets.widget(global = {
         setTimeout(function(){
             sigma.layouts.configForceLink(s, {slowDown: 100}) 
         }, 2000);
+
+
+        setTimeout(function(){
+            sigma.layouts.configForceLink(s, {slowDown: 500}) 
+        }, 5000);
 
 
         // LASSO
@@ -226,6 +233,9 @@ HTMLWidgets.widget(global = {
         current.sigma = s;
         current.graph = g;
         current.data = x;
+
+        global.generateControllers(state);
+        configureSettingPanel(state);
     },
 
     update: function(state, x) {
@@ -259,19 +269,134 @@ HTMLWidgets.widget(global = {
         
     },
 
+    generateControllers: function(state) {
+        console.log("===============================generate Controllers===============================")
+        console.log(state);
+        var current = global.getCurrentConfig(state);
+        console.log(current);
+        state.controller = {};
+
+        var s = current.sigma;
+        var g = current.graph;
+
+        function reset() {
+            sigma.layouts.stopForceLink();
+
+            for (i = 0; i < g.nodes.length; i++) {
+                g.nodes[i].x = Math.cos(2 * i * Math.PI / N );
+                g.nodes[i].y = Math.sin(2 * i * Math.PI / N + Math.PI);
+            }
+
+            s.refresh();
+        }
+
+        var config = {  
+            linLogMode:false,
+            strongGravityMode:false,
+            outboundAttractionDistribution: false,
+            adjustSizes:false,
+            barnesHutOptimize: false,
+            
+            gravity:30,
+            barnesHutTheta:0.1,
+            edgeWeightInfluence:0,
+            startingIterations: 1,
+            iterationsPerRender: 1,
+            slowDown: 50,
+
+            autoStop:false,
+            // avgDistanceThreshold:1e-6,
+            // maxIterations:100000,
+            easing:'quadraticInOut'
+        };
+
+
+        state.controller.linLogMode = function(val) {
+            // reset();
+            // config.linLogMode = val;
+            // sigma.layouts.startForceLink(s, config);
+            sigma.layouts.configForceLink(s, {linLogMode:val});
+        }
+
+        state.controller.strongGravityMode = function(val) {
+            // reset();
+            // config.strongGravityMode = val;
+            // sigma.layouts.startForceLink(s, config);
+            sigma.layouts.configForceLink(s, {strongGravityMode:val});
+        }
+
+        state.controller.outboundAttractionDistribution = function(val) {
+            // reset();
+            // config.outboundAttractionDistribution = val;
+            // sigma.layouts.startForceLink(s, config);
+            sigma.layouts.configForceLink(s, {outboundAttractionDistribution:val});
+        }
+
+        state.controller.adjustSizes = function(val) {
+            // reset();
+            // config.adjustSizes = val;
+            // sigma.layouts.startForceLink(s, config);
+            sigma.layouts.configForceLink(s, {adjustSizes:val});
+        }
+
+        state.controller.barnesHutOptimize = function(val) {
+            // reset();
+            // config.barnesHutOptimize = val;
+            // sigma.layouts.startForceLink(s, config);
+            sigma.layouts.configForceLink(s, {barnesHutOptimize:val});
+        }
+
+        state.controller.gravity = function(val) {
+            // reset();
+            // config.gravity = val;
+            // sigma.layouts.startForceLink(s, config);
+            sigma.layouts.configForceLink(s, {gravity:val});
+        }
+
+        state.controller.barnesHutTheta = function(val) {
+            // reset();
+            // config.barnesHutTheta = val;
+            // sigma.layouts.startForceLink(s, config);
+            sigma.layouts.configForceLink(s, {barnesHutTheta:val});
+
+        }
+
+        state.controller.edgeWeightInfluence = function(val) {
+            // reset();
+            // config.edgeWeightInfluence = val;
+            // sigma.layouts.startForceLink(s, config);
+            sigma.layouts.configForceLink(s, {edgeWeightInfluence:val});
+        }
+
+        state.controller.slowDown = function(val) {
+            // reset();
+            // config.slowDown = val;
+            // sigma.layouts.startForceLink(s, config);
+            sigma.layouts.configForceLink(s, {slowDown:val});
+        }
+
+
+
+
+        state.controller.distance = function(val) {
+            console.log(val);
+        }
+
+        // state.controller.labelOpacity = function(val) {
+        //  console.log(val);
+        // }
+        // state.controller.labelScale = function(val) {
+        //  console.log(val);
+        // }
+        
+
+
+        state.controller.refresh = function() {
+            
+        }
+
+    }
 });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

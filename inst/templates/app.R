@@ -55,7 +55,7 @@ if(!is.null(nwa)) {
   }
 }
 
-HTMLSettings <- system.file("templates/settings.html", package="HTSanalyzeR2")
+HTMLSettings <- system.file("templates/settings2.html", package="HTSanalyzeR2")
 namesToList <- HTSanalyzeR2:::namesToList
 
 ## =========================================== Helper functions ============================================
