@@ -301,9 +301,12 @@ HTMLWidgets.widget(global = {
     },
 
     mergeConfig: function(config, x) {
-        config.scheme.dual.Pos.domain = x.options.colorDomain.Pos;
-        config.scheme.dual.Neg.domain = x.options.colorDomain.Neg;
-
+        if ("Pos" in x.options.colorDomain) {
+            config.scheme.dual.Pos.domain = x.options.colorDomain.Pos;      
+        }
+        if ("Neg" in x.options.colorDomain) {
+            config.scheme.dual.Neg.domain = x.options.colorDomain.Neg;      
+        }
         if(x.options.type == "GSCA") {
             config.settings.maxNodeSize = 40;
             config.settings.maxEdgeSize = 8;
@@ -483,18 +486,16 @@ HTMLWidgets.widget(global = {
 
         // Color Scheme
         state.controller.scheme = function(schemeId, domain, range) {
-            if (schemeId.startsWith(current.scheme)) {
-                if (schemeId.startsWith("dual")) {
-                    var sch = schemeId.replace("dual", "");
-                    current.scheme.dual[sch].domain = domain;
-                    current.scheme.dual[sch].range = range;
+            if (schemeId.startsWith("dual")) {
+                var sch = schemeId.replace("dual", "");
+                current.scheme.dual[sch].domain = domain;
+                current.scheme.dual[sch].range = range;
 
-                    for (i = 0; i < g.nodes.length; i++) {
-                        if(g.nodes[i].scheme == sch) {
-                            var palette = current.scheme.dual[sch];
-                            c = _iterpolatePalette(palette, x.nodes.color[i]);
-                            g.nodes[i].color = h2rgba(c, current.node.opacity);
-                        }
+                for (i = 0; i < g.nodes.length; i++) {
+                    if(g.nodes[i].scheme == sch) {
+                        var palette = current.scheme.dual[sch];
+                        c = _iterpolatePalette(palette, x.nodes.color[i]);
+                        g.nodes[i].color = h2rgba(c, current.node.opacity);
                     }
                 }
             }

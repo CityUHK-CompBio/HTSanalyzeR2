@@ -4,7 +4,7 @@ dependencies:
     src: "htmlwidgets/lib"
     script: js/jquery-1.12.4.min.js
   - name: linkurious
-    version: 1.5
+    version: 1.5.2
     src: "htmlwidgets/lib"
     script:
       - /src/sigma.core.js
@@ -81,14 +81,15 @@ dependencies:
       - /plugins/sigma.layouts.forceLink/worker.js
       - /plugins/sigma.layouts.forceLink/supervisor.js
       - /plugins/sigma.exporters.svg/sigma.exporters.svg.js
-      - common.js
       - js/jscolor.js
       - js/bootstrap-slider.js
       - js/jquery-ui.min.js
       - js/lobipanel.js
+      - common.js
       - settings.js
     stylesheet:
-      - css/common.css
       - css/bootstrap-slider.css
       - css/lobipanel.css
       - css/jquery-ui.min.css
+      - css/common.css
+
