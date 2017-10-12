@@ -6,7 +6,7 @@ forceGraph <- function(nodes, links, nMappings, lMappings, options,
   # nMappings: "id", "size", "color", "scheme", "label", "label_id", "label_term"
   # lMappings: "source", "target", "weight"
 
-  node.size <- list(min = 6, max = 20, default = 8)
+  node.size <- list(min = 3, max = 20, default = 3)
   link.weight <- list(min = 1, max = 6, default = 2)
   color.default <- 0.5
   color.domain.default <- c(0, 1)

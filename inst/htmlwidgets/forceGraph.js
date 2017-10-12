@@ -92,7 +92,7 @@ HTMLWidgets.widget(global = {
                     x: Math.cos(2 * i * Math.PI / N ),
                     y: Math.sin(2 * i * Math.PI / N + Math.PI),
                     size: 0 + x.nodes.size[i],
-                    scheme: 0 + x.nodes.scheme[i]
+                    scheme: x.nodes.scheme[i]
                 });
             }
 
@@ -108,6 +108,9 @@ HTMLWidgets.widget(global = {
             // Color
             for(i =0; i < N; i++) {
                 var c = colors.grey;
+
+
+
                 if(x.options.type == "GSCA") {
                     if(x.nodes.scheme[i] == 'Pos') {
                         c = _interpolateColor(colors.red, colors.white, x.nodes.color[i] / 0.05);
@@ -115,8 +118,10 @@ HTMLWidgets.widget(global = {
                         c = _interpolateColor(colors.blue, colors.white, x.nodes.color[i] / 0.05);
                     }
                 } else if (x.options.type == "NWA") {
-                    if(x.nodes.color[i] != null) {
+                    if(x.nodes.scheme[i] == 'Pos') {
                         c = _interpolateColor(colors.red, colors.blue, x.nodes.color[i] / 9);
+                    } else if (x.nodes.scheme[i] == 'Neg') {
+                        c = _interpolateColor(colors.blue, colors.white, x.nodes.color[i] / 9);
                     }
                 }
 
@@ -134,10 +139,12 @@ HTMLWidgets.widget(global = {
           settings: {
             clone: false,
             skipErrors: true,
-            maxNodeSize: 30,
-            maxEdgeSize: 8,
+            // maxNodeSize: 30,
+            // maxEdgeSize: 8,
+            // minEdgeSize: 1,
+            maxNodeSize: 10,
+            maxEdgeSize: 2,
             minEdgeSize: 1,
-
 
             edgeColor: 'default',
             defaultEdgeColor: r2rgba([46, 219, 86], 0.2),
@@ -149,8 +156,6 @@ HTMLWidgets.widget(global = {
             enableEdgeHovering: false,
             borderSize: 2,
             outerBorderSize: 3,
-            // defaultNodeBorderColor: '#fff',
-            // defaultNodeOuterBorderColor: 'rgb(236, 81, 72)',
             nodeHaloColor: 'rgba(236, 81, 72, 0.1)',
             nodeHaloSize: 30,
           }
@@ -267,8 +272,11 @@ HTMLWidgets.widget(global = {
                 }
             } else if(type == "NWA"){
                 tick = x.options.seriesData[u.process_net - 1];
-                if (x.nodes["color." + tick][i] != null) {
-                    c = _interpolateColor(colors.red, colors.blue, x.nodes["color." + tick][i] / 9);
+                g.nodes[i].scheme = x.nodes["scheme." + tick][i];
+                if(g.nodes[i].scheme == 'Pos') {
+                    c = _interpolateColor(colors.red, colors.white, x.nodes["color." + tick][i] / 9);
+                } else if (g.nodes[i].scheme == 'Neg') {
+                    c = _interpolateColor(colors.blue, colors.white, x.nodes["color." + tick][i] / 9);
                 }
             }
 
@@ -488,10 +496,6 @@ HTMLWidgets.widget(global = {
                         if(g.nodes[i].scheme == sch) {
                             g.nodes[i].color = r2rgba(interpolate(x.nodes.color[i]), 0.9);
                         }
-                    }
-                } else {
-                    for (i = 0; i < g.nodes.length; i++) {
-                        g.nodes[i].color = r2rgba(interpolate(x.nodes.color[i]), 0.9);
                     }
                 }
             }

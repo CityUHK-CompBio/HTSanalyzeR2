@@ -292,7 +292,7 @@ setMethod("extractEnrichMap", signature = "GSCA",
               V(g)$colorScheme <- "Pos"
               V(g)$colorScheme[tempdf[, "Observed.score"] < 0] <- "Neg"
             } else if (resultName=="HyperGeo.results") {
-              V(g)$colorScheme <- ""
+              V(g)$colorScheme <- "Pos"
             }
 
             ##labels attributes
@@ -430,28 +430,6 @@ setMethod("viewEnrichMap", signature = "GSCA",
           })
 
 ## Available graphOptions:
-#
-# distance: 200,
-#
-# title: "title",
-# titleSize: 22,
-# legendTitle: "legend",
-#
-# label: "id",
-# labelColor: "#000000",  // black
-# labelOpacity: 0.8,
-# labelScale: 1,
-#
-# nodeScale: 1,
-# ~~ nodeScheme: "linear2" ~~
-# nodeShape: "circle",
-# nodeBorderColor: "#808080", // grey
-# nodeBorderWidth: 1,
-# nodeBorderOpacity: 1,
-#
-# edgeScale: 1,
-# edgeColor: "#808080",  // grey
-# edgeOpacity: 0.6,
 
 
 #' FetchGSCASeriesValues

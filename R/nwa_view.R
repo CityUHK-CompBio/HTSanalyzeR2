@@ -22,7 +22,8 @@ setMethod("extractSubNet", signature = "NWA",
             diff.expr <- phenotypes[V(subnw)$name]
             diff.expr[is.na(diff.expr)] <- 0
             V(subnw)$diff <- diff.expr
-            E(subnw)$weight <- 2 # default weight
+            V(subnw)$colorScheme[diff.expr < 0] <- "Neg"
+            V(subnw)$colorScheme[diff.expr > 0] <- "Pos"
 
             subnw
           })
@@ -39,8 +40,8 @@ setMethod("viewSubNet", signature = "NWA",
 
             em_nodes <- igraph::as_data_frame(g, "vertices")
             em_links <- igraph::as_data_frame(g, "edge")
-            nMappings <- list(id = "name", color = "diff", label = "label", label_id = "name", label_term = "label")
-            lMappings <- list(source = "from", target = "to", weight = "weight")
+            nMappings <- list(id = "name", color = "diff", label = "label", label_id = "name", label_term = "label", scheme = "colorScheme")
+            lMappings <- list(source = "from", target = "to")
 
             series <- NULL
             if(!is.null(seriesObjs)) {
@@ -52,19 +53,20 @@ setMethod("viewSubNet", signature = "NWA",
               # Create series mappings
               nodeCols <- seriesDF$nodeSeriesCols
               nodeColNames <- sub("diff", "color", nodeCols)
+              nodeColNames <- sub("colorScheme", "scheme", nodeColNames)
               names(nodeCols) <- nodeColNames
               edgeCols <- seriesDF$edgeSeriesCols
               names(edgeCols) <- edgeCols
               # Append series data
               nMappings <- c(nMappings, nodeCols)
               lMappings <- c(lMappings, edgeCols)
-              nMappings[c("color")] <- paste(nMappings[c("color")], defaultKey, sep=".")
-              lMappings[c("weight")] <- paste(lMappings[c("weight")], defaultKey, sep=".")
+              nMappings[c("color", "scheme")] <- paste(nMappings[c("color", "scheme")], defaultKey, sep=".")
+              # lMappings[c("weight")] <- paste(lMappings[c("weight")], defaultKey, sep=".")
               em_nodes <- seriesDF$nodes
               em_links <- seriesDF$edges
             }
 
-            options$nodeScheme = "linear"
+            options$nodeScheme = "dual"
             defaultOptions = list(distance = 400, type = "NWA")
             graphOptions <- modifyList(defaultOptions, options)
 
@@ -80,11 +82,11 @@ fetchNWASeriesValues <- function(nwaObjs) {
     g <- extractSubNet(nwaObjs[[i]])
     dfList <- igraph::as_data_frame(g, "both")
     # Vertices - ("name"  "score" "label" "diff" )
-    colsToAppend <- colnames(dfList$vertices) %in% c("diff")
+    colsToAppend <- colnames(dfList$vertices) %in% c("diff", "colorScheme")
     colnames(dfList$vertices)[colsToAppend] <- paste(colnames(dfList$vertices), names(nwaObjs)[i], sep=".")[colsToAppend]
     dfList$vertices <- unique(dfList$vertices)
-    # Edges - ("from", "to", "weight")
-    colsToAppend <- colnames(dfList$edges) %in% c("weight")
+    # Edges - ("from", "to")
+    colsToAppend <- colnames(dfList$edges) %in% c()
     colnames(dfList$edges)[colsToAppend] <- paste(colnames(dfList$edges), names(nwaObjs)[i], sep=".")[colsToAppend]
     dfList$edges <- unique(dfList$edges)
     rownames(dfList$edges) <- paste0(dfList$edges$from, dfList$edges$to)

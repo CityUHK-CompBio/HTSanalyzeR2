@@ -102,7 +102,7 @@ refreshValues = function(panel, state) {
     $('#edgeOpacity', panel).slider().slider('setValue', curState.edgeOpacity);
     $('#edgeScale', panel).slider().slider('setValue', curState.edgeScale);
     // ColorScheme
-    var ids = ["linear2", "linear3", "dualPos", "dualNeg"];
+    var ids = ["dualPos", "dualNeg"];
     for(var i in ids) {
         var schemeId = ids[i];
         var palette = curState.palettes[schemeId];
@@ -110,10 +110,6 @@ refreshValues = function(panel, state) {
         $("#nodeSchemes #" + schemeId + " #value2", panel).val(palette.domain[1]);
         $("#nodeSchemes #" + schemeId + " #color1", panel)[0].jscolor.fromString(palette.range[0]);
         $("#nodeSchemes #" + schemeId + " #color2", panel)[0].jscolor.fromString(palette.range[1]);
-        if(schemeId == "linear3") {
-            $("#nodeSchemes #" + schemeId + " #value3", panel).val(palette.domain[2]);
-            $("#nodeSchemes #" + schemeId + " #color3", panel)[0].jscolor.fromString(palette.range[2]);
-        }
     }
 }
 
@@ -227,7 +223,6 @@ initPanel = function(panel, title, state) {
     var renderFunc = function(schemeId) {
         return function() {
             var values = fetchSchemeValues(schemeId);
-            console.log(values);
             var canvas = $("#nodeSchemes #" + schemeId + " #palette", panel)[0];
             renderPalette(canvas, values.domain, values.range);
             uniTextColors(schemeId);
@@ -235,7 +230,7 @@ initPanel = function(panel, title, state) {
         }
     }
 
-    var ids = ["linear2", "dualPos", "dualNeg"];
+    var ids = ["dualPos", "dualNeg"];
     for(var i in ids) {
         var schemeId = ids[i];
         var values = fetchSchemeValues(schemeId);
