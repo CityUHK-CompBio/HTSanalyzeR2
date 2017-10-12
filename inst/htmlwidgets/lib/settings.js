@@ -58,58 +58,48 @@ renderPalette = function(canvas, domain, range) {
     context.putImageData(image, 0, 0);
 }
 
-refreshValues = function(panel, state) {
-    var curState = state[state.currentKey];
-    // General
-    $("#generalTitle", panel).val(curState.title);
-    $('#generalTitleSize', panel).slider().slider('setValue', curState.titleSize)
-    $("#generalLegendTitle", panel).val(curState.legendTitle);
-    $('#generalDistance', panel).slider().slider('setValue', curState.distance)
+refreshValues = function(panel, config) {
+    // Layout
+    $("#layoutLinLogMode", panel).prop("checked", config.layout.linLogMode);
+    $("#layoutStrongGravityMode", panel).prop("checked", config.layout.strongGravityMode);
+    $("#layoutOutboundAttractionDistribution", panel).prop("checked", config.layout.outboundAttractionDistribution);
+    $("#layoutAdjustSizes", panel).prop("checked", config.layout.adjustSizes);
+    $("#layoutBarnesHutOptimize", panel).prop("checked", config.layout.barnesHutOptimize);
+
+    $('#layoutGravity', panel).slider().slider('setValue', config.layout.gravity);
+    $('#layoutBarnesHutTheta', panel).slider().slider('setValue', config.layout.barnesHutTheta);
+    $('#layoutEdgeWeightInfluence', panel).slider().slider('setValue', config.layout.edgeWeightInfluence);
+    $('#layoutSlowDown', panel).slider().slider('setValue', config.layout.slowDown);
+
     // Label
     var labelOptions = $("#labelOption", panel);
     labelOptions.find("label").removeClass("active");
-    labelOptions.find("label[value='"+ curState.label +"']").addClass("active");
-    $("#labelColor", panel)[0].jscolor.fromString(curState.labelColor);
-    $('#labelOpacity', panel).slider().slider('setValue', curState.labelOpacity);
-    $('#labelScale', panel).slider().slider('setValue', curState.labelScale);
+    // labelOptions.find("label[value='"+ curState.label +"']").addClass("active");
+    $("#labelColor", panel)[0].jscolor.fromString(config.label.color);
+    $('#labelOpacity', panel).slider().slider('setValue', config.label.opacity);
+    $('#labelScale', panel).slider().slider('setValue', config.label.scale);
+
     // Node
-    var nodeOptions = $("#nodeShapeOption", panel);
-    nodeOptions.find("label").removeClass("active");
-    nodeOptions.find("label[value='"+ curState.nodeShape +"']").addClass("active");
-    // Node - Scheme
-    var scheme = $("#nodeSchemeBtns li a[value='" + curState.nodeScheme + "']", panel).text();
-    var dropdownBtn = $('#nodeSchemeDropdown', panel);
-    dropdownBtn.attr("value", curState.nodeScheme);
-    dropdownBtn.html(scheme + ' <span class="caret"></span>')
-    var canvas1 = d3.select($("#schemePreview1", panel)[0]);
-    var canvas2 = d3.select($("#schemePreview2", panel)[0]);
-    if(curState.nodeScheme == 'dual') {
-        var palette1 = curState.palettes["dualPos"];
-        var palette2 = curState.palettes["dualNeg"];
-        renderPalette(canvas1, palette1.domain, palette1.range);
-        renderPalette(canvas2, palette2.domain, palette2.range);
-    } else {
-        var palette = curState.palettes[curState.nodeScheme];
-        renderPalette(canvas1, palette.domain, palette.range);
-        renderPalette(canvas2, palette.domain, palette.range);
-    }//
-    $('#nodeScale', panel).slider().slider('setValue', curState.nodeScale);
-    $("#nodeBorderColor", panel)[0].jscolor.fromString(curState.nodeBorderColor);
-    $('#nodeBorderOpacity', panel).slider().slider('setValue', curState.nodeBorderOpacity);
-    $('#nodeBorderWidth', panel).slider().slider('setValue', curState.nodeBorderWidth);
+    $('#nodeScale', panel).slider().slider('setValue', config.node.scale);
+    $('#nodeOpacity', panel).slider().slider('setValue', config.node.opacity);
+    $("#nodeBorderColor", panel)[0].jscolor.fromString(config.node.borderColor);
+    $('#nodeBorderOpacity', panel).slider().slider('setValue', config.node.borderOpacity);
+    $('#nodeBorderWidth', panel).slider().slider('setValue', config.node.borderWidth);
+    
     // Edge
-    $("#edgeColor", panel)[0].jscolor.fromString(curState.edgeColor);
-    $('#edgeOpacity', panel).slider().slider('setValue', curState.edgeOpacity);
-    $('#edgeScale', panel).slider().slider('setValue', curState.edgeScale);
+    $("#edgeColor", panel)[0].jscolor.fromString(config.edge.color);
+    $('#edgeOpacity', panel).slider().slider('setValue', config.edge.opacity);
+    $('#edgeScale', panel).slider().slider('setValue', config.edge.scale);
+
     // ColorScheme
-    var ids = ["dualPos", "dualNeg"];
+    var ids = ["Pos", "Neg"];
     for(var i in ids) {
         var schemeId = ids[i];
-        var palette = curState.palettes[schemeId];
-        $("#nodeSchemes #" + schemeId + " #value1", panel).val(palette.domain[0]);
-        $("#nodeSchemes #" + schemeId + " #value2", panel).val(palette.domain[1]);
-        $("#nodeSchemes #" + schemeId + " #color1", panel)[0].jscolor.fromString(palette.range[0]);
-        $("#nodeSchemes #" + schemeId + " #color2", panel)[0].jscolor.fromString(palette.range[1]);
+        var palette = config.scheme.dual[schemeId];
+        $("#nodeSchemes #dual" + schemeId + " #value1", panel).val(palette.domain[0]);
+        $("#nodeSchemes #dual" + schemeId + " #value2", panel).val(palette.domain[1]);
+        $("#nodeSchemes #dual" + schemeId + " #color1", panel)[0].jscolor.fromString(palette.range[0]);
+        $("#nodeSchemes #dual" + schemeId + " #color2", panel)[0].jscolor.fromString(palette.range[1]);
     }
 }
 
@@ -180,27 +170,20 @@ initPanel = function(panel, title, state) {
 
 
     //Label
-    $("#labelOption :input", panel).change(function() {
-        state.controller['labelOption'](this.value);
-    });
-    $("#labelColor", panel).change(function() {
-        state.controller['labelColor']("#" + this.value);
-    });
+    $("#labelOption :input", panel).change(function() { state.controller['labelOption'](this.value) });
+    $("#labelColor", panel).change(function() { state.controller['labelColor']("#" + this.value) });
     $('#labelOpacity', panel).slider().on('slide', decorator('labelOpacity'));
     $('#labelScale', panel).slider().on('slide', decorator('labelScale'));
 
     // Node
     $('#nodeScale', panel).slider().on('slide', decorator('nodeScale'));
-    $("#nodeBorderColor", panel).change(function() {
-        state.controller['nodeBorderColor']("#" + this.value);
-    });
+    $('#nodeOpacity', panel).slider().on('slide', decorator('nodeOpacity'));
+    $("#nodeBorderColor", panel).change(function() { state.controller['nodeBorderColor']("#" + this.value) });
     $('#nodeBorderOpacity', panel).slider().on('slide', decorator('nodeBorderOpacity'));
     $('#nodeBorderWidth', panel).slider().on('slide', decorator('nodeBorderWidth'));
 
     // Edge
-    $("#edgeColor", panel).change(function() {
-        state.controller.edgeColor('#' + this.value);
-    });
+    $("#edgeColor", panel).change(function() { state.controller.edgeColor('#' + this.value) });
     $('#edgeOpacity', panel).slider().on('slide', decorator('edgeOpacity'));
     $('#edgeScale', panel).slider().on('slide', decorator('edgeScale'));
 
@@ -244,7 +227,7 @@ initPanel = function(panel, title, state) {
     panel.removeClass("hidden");
 }
 
-configureSettingPanel = function(state) {
+configureSettingPanel = function(state, config) {
     var elParent = $('#' + state.elId).parent();
     var title = elParent.parents(".tab-pane").data("value");
     var panel = elParent.children(":first");
@@ -253,7 +236,7 @@ configureSettingPanel = function(state) {
         panel = $("[data-inner-id='" + innerId + "']")
     }
 
-    // refreshValues(panel, state);
+    refreshValues(panel, config);
 
     var lobiInited = panel.hasClass('lobipanel') && "undefined" != typeof panel.data('inner-id');
     if(!lobiInited) {

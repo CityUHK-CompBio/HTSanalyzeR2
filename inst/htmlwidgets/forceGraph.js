@@ -20,23 +20,13 @@ HTMLWidgets.widget(global = {
 
         if(!(state.currentKey in state)) {
             state[state.currentKey] = {
-                color: {
-                    // red: [158, 22, 23],
-                    // blue: [0, 106, 156],
-                    // grey: [200,200,200],
-                    // white: [255,255,255],
-                    // edge: [46, 219, 86]
-                    edge: "2EDB56",
-                    dual: {
-                        Pos: {
-                            domain:[0, 1],
-                            range:["#9E1617", "#FFFFFF"]
-                        },
-                        Neg: {
-                            domain:[0, 1],
-                            range:["#006A9C", "#FFFFFF"]
-                        }
-                    }
+                settings: {
+                    minNodeSize: 3,
+                    minEdgeSize: 1,
+                    // maxNodeSize: 40,
+                    // maxEdgeSize: 8,
+                    maxNodeSize: 10,
+                    maxEdgeSize: 2
                 },
                 layout: {
                     linLogMode: false,
@@ -56,15 +46,29 @@ HTMLWidgets.widget(global = {
                 },
                 node: {
                     scale: 1,
-                    color: "#000000",
                     opacity: 0.9,
-                    NANodeColor: "#C8C8C8",
-                    NANodeOpacity: 0.4,
+                    borderColor: "#E6E6E6",
+                    borderOpacity: 0.7,
+                    borderWidth: 1,
+                    NANodeColor: "#EDEDED",
+                    NANodeOpacity: 0.9,
                 },
                 edge : {
                     scale: 1,
-                    color: "#000000",
-                    opacity: 1,
+                    color: "#C6C6C6",
+                    opacity: 0.4,
+                },
+                scheme: {
+                    dual: {
+                        Pos: {
+                            domain:[0, 1],
+                            range:["#9E1617", "#FFFFFF"]
+                        },
+                        Neg: {
+                            domain:[0, 1],
+                            range:["#006A9C", "#FFFFFF"]
+                        }
+                    }
                 }
             };
         }
@@ -99,7 +103,7 @@ HTMLWidgets.widget(global = {
     },
 
     construct: function(state, x) {
-        console.log("======================   construct   ========================");
+        // console.log("======================   construct   ========================");
         // console.log(state);
 
         var current = global.getCurrentConfig(state)
@@ -142,9 +146,9 @@ HTMLWidgets.widget(global = {
             // Color
             for(i =0; i < N; i++) {
                 if(x.nodes.scheme[i] != null) {
-                    var palette = current.color.dual[x.nodes.scheme[i]];
+                    var palette = current.scheme.dual[x.nodes.scheme[i]];
                     c = _iterpolatePalette(palette, x.nodes.color[i]);
-                    g.nodes[i].color = h2rgba(c, 0.9);
+                    g.nodes[i].color = h2rgba(c, current.node.opacity);
                 } else {
                     g.nodes[i].color = h2rgba(current.node.NANodeColor, current.node.NANodeOpacity);
                 }
@@ -160,19 +164,18 @@ HTMLWidgets.widget(global = {
           settings: {
             clone: false,
             skipErrors: true,
-            // maxNodeSize: 30,
-            // maxEdgeSize: 8,
-            // minEdgeSize: 1,
-            maxNodeSize: 10,
-            maxEdgeSize: 2,
-            minEdgeSize: 1,
+
+            minNodeSize: current.settings.minNodeSize,
+            minEdgeSize: current.settings.minEdgeSize,
+            maxNodeSize: current.settings.maxNodeSize,
+            maxEdgeSize: current.settings.maxEdgeSize,
 
             edgeColor: 'default',
             defaultEdgeColor: h2rgba(current.edge.color, current.edge.opacity),
 
-            nodeOuterBorderColor: 'default',
-            nodeOuterBorderSize: 1 * current.node.scale,
-            defaultNodeOuterBorderColor: h2rgba(current.node.color, current.node.opacity),
+            nodeBorderColor: 'default',
+            nodeBorderSize: current.node.borderWidth,
+            defaultNodeBorderColor: h2rgba(current.node.borderColor, current.node.borderOpacity),
 
             defaultLabelSize: 14 * current.label.scale,
             defaultLabelColor: h2rgba(current.label.color, current.label.opacity),
@@ -267,7 +270,7 @@ HTMLWidgets.widget(global = {
         current.type = x.options.type;
 
         global.generateControllers(state);
-        configureSettingPanel(state);
+        configureSettingPanel(state, current);
     },
 
     update: function(state, u) {
@@ -283,7 +286,7 @@ HTMLWidgets.widget(global = {
             g.nodes[i].theme = x.nodes["scheme." + tick][i];
 
             if(g.nodes[i].theme != null) {
-                var palette = current.color.dual[g.nodes[i].theme];
+                var palette = current.scheme.dual[g.nodes[i].theme];
                 c = _iterpolatePalette(palette, x.nodes.color[i]);
                 g.nodes[i].color = h2rgba(c, current.node.opacity);
             } else {
@@ -300,6 +303,17 @@ HTMLWidgets.widget(global = {
     mergeConfig: function(config, x) {
         console.log(config);
         console.log(x.options);
+
+        config.scheme.dual.Pos.domain = x.options.colorDomain.Pos;
+        config.scheme.dual.Neg.domain = x.options.colorDomain.Neg;
+
+        if(x.options.type == "GSCA") {
+            config.settings.maxNodeSize = 40;
+            config.settings.maxEdgeSize = 8;
+        } else if (x.options.type == "GSCA") {
+            config.settings.maxNodeSize = 10;
+            config.settings.maxEdgeSize = 2;
+        }
     },
 
     generateControllers: function(state) {
@@ -332,17 +346,6 @@ HTMLWidgets.widget(global = {
 
 
         // Layout
-        // current.layout = {}
-        // current.layout.linLogMode = false;
-        // current.layout.strongGravityMode = false
-        // current.layout.outboundAttractionDistribution = false
-        // current.layout.adjustSizes = false
-        // current.layout.barnesHutOptimize = false
-        // current.layout.gravity = 30
-        // current.layout.barnesHutTheta = 0.1
-        // current.layout.edgeWeightInfluence = 0
-        // current.layout.slowDown = 200
-
         state.controller.linLogMode = function(val) {
             current.layout.linLogMode = val;
             sigma.layouts.configForceLink(s, {linLogMode:val});
@@ -398,10 +401,6 @@ HTMLWidgets.widget(global = {
         }
 
         // Label
-        // current.label = {}
-        // current.label.opacity = 1;
-        // current.label.color = "#000000"
-        // current.label.scale = 1
         state.controller.labelOption = function(val) {
             s.settings("drawLabels", val != 'none');
             if(val != 'none') {
@@ -428,12 +427,7 @@ HTMLWidgets.widget(global = {
         }
 
         // Node
-        // current.node = {}
-        // current.node.scale = 1
-        // current.node.color = "#000000"
-        // current.node.opacity = 1;
         state.controller.nodeScale = function(val) {
-            console.log(val);
             current.node["scale"] = val;
             for (i = 0; i < g.nodes.length; i++) {
                 g.nodes[i].size = x.nodes.size[i] * val;
@@ -441,32 +435,34 @@ HTMLWidgets.widget(global = {
             s.settings("maxNodeSize", 30 * val);
             s.refresh();
         }
-
+        state.controller.nodeOpacity = function(val) {
+            current.node["opacity"] = val;
+            for (i = 0; i < g.nodes.length; i++) {
+                if(g.nodes[i].scheme != null) {
+                    var palette = current.scheme.dual[g.nodes[i].scheme];
+                    c = _iterpolatePalette(palette, x.nodes.color[i]);
+                    g.nodes[i].color = h2rgba(c, current.node.opacity);
+                }
+            }
+            s.refresh();
+        }
         state.controller.nodeBorderColor = function(val) {
-            console.log(val);
-            current.node["color"] = val;
-            s.settings("defaultNodeBorderColor", r2rgba(h2r(val), current.node.opacity));
+            current.node["borderColor"] = val;
+            s.settings("defaultNodeBorderColor", r2rgba(h2r(val), current.node.borderOpacity));
             s.refresh();
         }
         state.controller.nodeBorderOpacity = function(val) {
-            console.log(val);
-            current.node["opacity"] = val;
-            s.settings("defaultNodeBorderColor", r2rgba(h2r(current.node.color), val));
+            current.node["borderOpacity"] = val;
+            s.settings("defaultNodeBorderColor", r2rgba(h2r(current.node.borderColor), val));
             s.refresh();
         }
         state.controller.nodeBorderWidth = function(val) {
-            console.log(val);
-            current.node["scale"] = val;
-            s.settings("nodeBorderSize", 2 * val);
+            current.node["borderWidth"] = val;
+            s.settings("nodeBorderSize", val);
             s.refresh();
         }
         
-
         // Edge
-        // current.edge = {}
-        // current.edge.scale = 1
-        // current.edge.color = "#000000"
-        // current.edge.opacity = 1;
         state.controller.edgeScale = function(val) {
             console.log(val);
             current.edge["scale"] = val;
@@ -495,12 +491,12 @@ HTMLWidgets.widget(global = {
             if (schemeId.startsWith(current.scheme)) {
                 if (schemeId.startsWith("dual")) {
                     var sch = schemeId.replace("dual", "");
-                    current.color.dual[sch].domain = domain;
-                    current.color.dual[sch].range = range;
+                    current.scheme.dual[sch].domain = domain;
+                    current.scheme.dual[sch].range = range;
 
                     for (i = 0; i < g.nodes.length; i++) {
                         if(g.nodes[i].scheme == sch) {
-                            var palette = current.color.dual[sch];
+                            var palette = current.scheme.dual[sch];
                             c = _iterpolatePalette(palette, x.nodes.color[i]);
                             g.nodes[i].color = h2rgba(c, current.node.opacity);
                         }
