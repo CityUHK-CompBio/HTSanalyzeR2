@@ -26,8 +26,12 @@ var r2h = function(rgb) {
 };
 
 var r2rgba = function(rgb, alpha) {
-	return "rgba(" + rgb.join(",") + ", " + alpha + ")";
-}
+  return "rgba(" + rgb.join(",") + ", " + alpha + ")";
+};
+
+var h2rgba = function(hex, alpha) {
+  return r2rgba(h2r(hex), alpha);
+};
 
 // Interpolates two [r,g,b] colors and returns an [r,g,b] of the result
 // Taken from the awesome ROT.js roguelike dev library at
@@ -41,3 +45,20 @@ var _interpolateColor = function(color1, color2, factor) {
   return result;
 };
 
+var _iterpolatePalette = function(palette, value) {
+// {
+//   domain:[0, 1],
+//   range:["#9E1617", "#FFFFFF"]
+// }
+  var color1 = h2r(palette.range[0]);
+  var color2 = h2r(palette.range[1]);
+
+  var factor = 0;
+  if(palette.domain[0] != palette.domain[1]) {
+    factor = (value - palette.domain[0]) / (palette.domain[1] - palette.domain[0]);
+    factor = factor < 0 ? 0 : (factor > 1 ? 1 : factor);
+  }
+
+  var rgb = _interpolateColor(color1, color2, factor);
+  return r2h(rgb);
+}

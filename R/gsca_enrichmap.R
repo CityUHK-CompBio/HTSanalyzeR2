@@ -378,7 +378,7 @@ setMethod("viewEnrichMap", signature = "GSCA",
                    allSig = TRUE,
                    gsNameType = "id",
                    specificGeneset = NULL,
-                   options = list(distance = 400),
+                   options = list(),
                    seriesObjs = NULL) {
 
             g <- extractEnrichMap(object, resultName, gscs, ntop, allSig, gsNameType, specificGeneset)
@@ -393,10 +393,8 @@ setMethod("viewEnrichMap", signature = "GSCA",
             title <- "Enrichment Map of"
             if (resultName=="GSEA.results") {
               title <- paste(title, "GSEA on", paste(gscs, collapse =", "))
-              scheme = "dual"
             } else if (resultName=="HyperGeo.results") {
               title <- paste(title, "Hypergeometric tests on", paste(gscs, collapse =", "))
-              scheme = "linear2"
             }
 
             series <- NULL
@@ -422,8 +420,8 @@ setMethod("viewEnrichMap", signature = "GSCA",
               em_links <- seriesDF$edges
             }
 
-            options$nodeScheme = scheme
-            defaultOptions = list(distance = 400, title = title, label = gsNameType, legendTitle = "Adjusted p-values", type = "GSCA")
+            options$nodeScheme = "dual"
+            defaultOptions = list(title = title, label = gsNameType, legendTitle = "Adjusted p-values", type = "GSCA")
             graphOptions <- modifyList(defaultOptions, options)
 
             forceGraph(em_nodes, em_links, nMappings, lMappings, graphOptions, seriesData = series)

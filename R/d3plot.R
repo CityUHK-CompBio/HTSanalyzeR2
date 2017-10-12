@@ -5,12 +5,9 @@ forceGraph <- function(nodes, links, nMappings, lMappings, options,
 
   # nMappings: "id", "size", "color", "scheme", "label", "label_id", "label_term"
   # lMappings: "source", "target", "weight"
-
-  node.size <- list(min = 3, max = 20, default = 3)
+  node.size <- list(min = 3, max = 20, default = 4)
   link.weight <- list(min = 1, max = 6, default = 2)
-  color.default <- 0.5
-  color.domain.default <- c(0, 1)
-  scheme.default <- ""
+  color.default <- 0
 
   nodesDF = nodes[unlist(nMappings)]
   linksDF = links[unlist(lMappings)]
@@ -20,31 +17,19 @@ forceGraph <- function(nodes, links, nMappings, lMappings, options,
   if(is.null(nodesDF$size)){
     nodesDF$size <- node.size$default
   } else {
-    keys <- grep("^size($|\\.)", colnames(nodesDF), value = TRUE)
-    for(key in keys) {
-      nodesDF[key] <- norm(nodesDF[key], node.size$min, node.size$max, node.size$default)
+    nodesDF$size <- norm(nodesDF$size, node.size$min, node.size$max, node.size$default)
+  }
+
+  if(nrow(linksDF) > 0) {
+    if(is.null(linksDF$weight)){
+      linksDF$weight <- link.weight$default
     }
   }
 
   if(is.null(nodesDF$color)) {
     nodesDF$color <- color.default
   }
-  colorDomain <- niceDomain(nodesDF$color)
-
-  if(is.null(nodesDF$scheme)) {
-    nodesDF$scheme <- scheme.default
-  }
-
-  if(nrow(linksDF) > 0) {
-    if(is.null(linksDF$weight)){
-      linksDF$weight <- link.weight$default
-    } else {
-      keys <- grep("^weight($|\\.)", colnames(linksDF), value = TRUE)
-      for(key in keys) {
-        linksDF[key] <- norm(linksDF[key], link.weight$min, link.weight$max, link.weight$default)
-      }
-    }
-  }
+  colorDomain <- niceDomain(nodesDF, seriesData)
 
   # create options
   argOptions <- modifyList(options, list(colorDomain = colorDomain, seriesData = seriesData))
@@ -94,10 +79,26 @@ norm <- function(arr, minValue, maxValue, defaultValue) {
   tmp * (maxValue - minValue) + minValue
 }
 
-niceDomain <- function(arr) {
-  ran = round(range(arr, na.rm = TRUE), 3)
-  if(ran[1] == ran[2]) {
-    ran[2] = ran[2] + 0.05
+
+# Get the color domain by "color" and "scheme" cols of nodesDF
+niceDomain <- function(nodesDF, seriesData) {
+  color <- nodesDF$color
+  scheme <- nodesDF$scheme
+  if(!is.null(seriesData)) {
+    for(tick in seriesData) {
+      color <- c(color, nodesDF[, paste("color", tick, sep = ".")])
+      scheme <- c(scheme, nodesDF[, paste("scheme", tick, sep = ".")])
+    }
   }
-  ran
+
+  domains <- list()
+  for(sch in unique(scheme[!is.na(scheme)])) {
+    ran <- range(color[scheme == sch], na.rm = TRUE)
+    if(ran[1] == ran[2]) {
+       ran[2] = ran[2] + 0.05
+    }
+    domains[[sch]] <- round(ran, 3)
+  }
+
+  domains
 }

@@ -20,12 +20,51 @@ HTMLWidgets.widget(global = {
 
         if(!(state.currentKey in state)) {
             state[state.currentKey] = {
-                colors: {
-                    red: [158, 22, 23],
-                    blue: [0, 106, 156],
-                    grey: [200,200,200],
-                    white: [255,255,255],
-                    edge: [46, 219, 86]
+                color: {
+                    // red: [158, 22, 23],
+                    // blue: [0, 106, 156],
+                    // grey: [200,200,200],
+                    // white: [255,255,255],
+                    // edge: [46, 219, 86]
+                    edge: "2EDB56",
+                    dual: {
+                        Pos: {
+                            domain:[0, 1],
+                            range:["#9E1617", "#FFFFFF"]
+                        },
+                        Neg: {
+                            domain:[0, 1],
+                            range:["#006A9C", "#FFFFFF"]
+                        }
+                    }
+                },
+                layout: {
+                    linLogMode: false,
+                    strongGravityMode: false,
+                    outboundAttractionDistribution: false,
+                    adjustSizes: false,
+                    barnesHutOptimize: false,
+                    gravity: 30,
+                    barnesHutTheta: 0.1,
+                    edgeWeightInfluence: 0,
+                    slowDown: 200
+                },
+                label: {
+                    opacity: 1,
+                    color: "#000000",
+                    scale: 1,
+                },
+                node: {
+                    scale: 1,
+                    color: "#000000",
+                    opacity: 0.9,
+                    NANodeColor: "#C8C8C8",
+                    NANodeOpacity: 0.4,
+                },
+                edge : {
+                    scale: 1,
+                    color: "#000000",
+                    opacity: 1,
                 }
             };
         }
@@ -36,7 +75,8 @@ HTMLWidgets.widget(global = {
     initialize: function(el, width, height) {
         // console.log("====================   initialize   ========================");
         el.style.height = "90vh";
-        // var state = global.getElementState(el);
+        var state = global.getElementState(el);
+        state.container = el;
     },
 
     resize: function(el, width, height) {
@@ -48,9 +88,8 @@ HTMLWidgets.widget(global = {
         // console.log("====================   renderValue   ========================");
         // console.log(el);
         console.log(x);
-
         var state = global.getElementState(el);
-        state.container = el;
+        // state.container = el;
 
         if (x.update) {
             global.update(state, x);
@@ -64,28 +103,23 @@ HTMLWidgets.widget(global = {
         // console.log(state);
 
         var current = global.getCurrentConfig(state)
-        if ("sigma" in current) {
-            s = current.sigma;
-            s.kill();
-        }
+        if ("sigma" in current) { current.sigma.kill(); }
 
-        var current = global.getCurrentConfig(state, x)
-        var container = state.container;
-        container.innerHTML = '';
+        state.container.innerHTML = '';
+        current = global.getCurrentConfig(state, x);
+        
+        global.mergeConfig(current, x);
 
-        var colors = current.colors;
-
+        var container = state.container
         var g = { nodes: [], edges: [] };
 
         if ("graph" in current) {
             g = current.graph;
         } else {
-            var i, s;
-
             N = x.nodes.id.length;
             E = x.links.source.length;
 
-            for(i =0; i < N; i++) {
+            for(var i =0; i < N; i++) {
                 g.nodes.push({
                     id: x.nodes.id[i],
                     label : x.nodes.label[i],
@@ -96,38 +130,25 @@ HTMLWidgets.widget(global = {
                 });
             }
 
-            for(i = 0; i < E; i++) {
+            for(var i = 0; i < E; i++) {
                 g.edges.push({
                     id: 'e' + i,
                     source: x.links.source[i],
                     target: x.links.target[i],
-                    size: x.links.weight[i] / 2,
+                    size: x.links.weight[i]
                 });
             }
 
             // Color
             for(i =0; i < N; i++) {
-                var c = colors.grey;
-
-
-
-                if(x.options.type == "GSCA") {
-                    if(x.nodes.scheme[i] == 'Pos') {
-                        c = _interpolateColor(colors.red, colors.white, x.nodes.color[i] / 0.05);
-                    } else if (x.nodes.scheme[i] == 'Neg') {
-                        c = _interpolateColor(colors.blue, colors.white, x.nodes.color[i] / 0.05);
-                    }
-                } else if (x.options.type == "NWA") {
-                    if(x.nodes.scheme[i] == 'Pos') {
-                        c = _interpolateColor(colors.red, colors.blue, x.nodes.color[i] / 9);
-                    } else if (x.nodes.scheme[i] == 'Neg') {
-                        c = _interpolateColor(colors.blue, colors.white, x.nodes.color[i] / 9);
-                    }
+                if(x.nodes.scheme[i] != null) {
+                    var palette = current.color.dual[x.nodes.scheme[i]];
+                    c = _iterpolatePalette(palette, x.nodes.color[i]);
+                    g.nodes[i].color = h2rgba(c, 0.9);
+                } else {
+                    g.nodes[i].color = h2rgba(current.node.NANodeColor, current.node.NANodeOpacity);
                 }
-
-                g.nodes[i].color = r2rgba(c, 0.9);
             }
-
         }
 
         s = new sigma({
@@ -147,11 +168,14 @@ HTMLWidgets.widget(global = {
             minEdgeSize: 1,
 
             edgeColor: 'default',
-            defaultEdgeColor: r2rgba([46, 219, 86], 0.2),
+            defaultEdgeColor: h2rgba(current.edge.color, current.edge.opacity),
 
             nodeOuterBorderColor: 'default',
-            nodeOuterBorderSize: 1,
-            defaultNodeOuterBorderColor: '#eee',
+            nodeOuterBorderSize: 1 * current.node.scale,
+            defaultNodeOuterBorderColor: h2rgba(current.node.color, current.node.opacity),
+
+            defaultLabelSize: 14 * current.label.scale,
+            defaultLabelColor: h2rgba(current.label.color, current.label.opacity),
 
             enableEdgeHovering: false,
             borderSize: 2,
@@ -162,18 +186,18 @@ HTMLWidgets.widget(global = {
         });
 
         var config = {  
-            linLogMode:false,
-            strongGravityMode:false,
-            outboundAttractionDistribution: false,
-            adjustSizes:false,
-            barnesHutOptimize: false,
+            linLogMode: current.layout.linLogMode,
+            strongGravityMode:current.layout.strongGravityMode,
+            outboundAttractionDistribution: current.layout.outboundAttractionDistribution,
+            adjustSizes:current.layout.adjustSizes,
+            barnesHutOptimize: current.layout.barnesHutOptimize,
             
-            gravity:30,
-            barnesHutTheta:0.1,
-            edgeWeightInfluence:0,
+            gravity:current.layout.gravity,
+            barnesHutTheta:current.layout.barnesHutTheta,
+            edgeWeightInfluence:current.layout.edgeWeightInfluence,
+            slowDown: current.layout.slowDown,
             startingIterations: 1,
             iterationsPerRender: 1,
-            slowDown: 200,
 
             autoStop:true,
             avgDistanceThreshold:1e-6,
@@ -240,7 +264,6 @@ HTMLWidgets.widget(global = {
         current.sigma = s;
         current.graph = g;
         current.data = x;
-        current.scheme = x.options.nodeScheme;
         current.type = x.options.type;
 
         global.generateControllers(state);
@@ -250,49 +273,38 @@ HTMLWidgets.widget(global = {
     update: function(state, u) {
         var current = global.getCurrentConfig(state)
 
-        var i, s;
-        var colors = current.colors
+        var g = current.graph;
+        var s = current.sigma;
+        var x = current.data;
+        var type = current.type;
 
-        g = current.graph;
-        s = current.sigma;
-        x = current.data;
-        type = current.type;
-        
+        for(i =0; i < g.nodes.length; i++) {
+            var tick = x.options.seriesData[u.process - 1];
+            g.nodes[i].theme = x.nodes["scheme." + tick][i];
 
-        for (i = 0; i < g.nodes.length; i++) {
-            var c = colors.grey;
-
-            if (type == "GSCA") {
-                tick = x.options.seriesData[u.process_map - 1];
-                g.nodes[i].scheme = x.nodes["scheme." + tick][i];
-                if(g.nodes[i].scheme == 'Pos') {
-                    c = _interpolateColor(colors.red, colors.white, x.nodes["color." + tick][i] / 0.02);
-                } else if (g.nodes[i].scheme == 'Neg') {
-                    c = _interpolateColor(colors.blue, colors.white, x.nodes["color." + tick][i] / 0.02);
-                }
-            } else if(type == "NWA"){
-                tick = x.options.seriesData[u.process_net - 1];
-                g.nodes[i].scheme = x.nodes["scheme." + tick][i];
-                if(g.nodes[i].scheme == 'Pos') {
-                    c = _interpolateColor(colors.red, colors.white, x.nodes["color." + tick][i] / 9);
-                } else if (g.nodes[i].scheme == 'Neg') {
-                    c = _interpolateColor(colors.blue, colors.white, x.nodes["color." + tick][i] / 9);
-                }
+            if(g.nodes[i].theme != null) {
+                var palette = current.color.dual[g.nodes[i].theme];
+                c = _iterpolatePalette(palette, x.nodes.color[i]);
+                g.nodes[i].color = h2rgba(c, current.node.opacity);
+            } else {
+                g.nodes[i].color = h2rgba(current.node.NANodeColor, current.node.NANodeOpacity);
             }
-
-            g.nodes[i].color = r2rgba(c, 0.9);
         }
 
         if (!sigma.layouts.isForceLinkRunning()) {
-        //     sigma.layouts.startForceLink(s, config);
             s.refresh();    
         }
         
     },
 
+    mergeConfig: function(config, x) {
+        console.log(config);
+        console.log(x.options);
+    },
+
     generateControllers: function(state) {
         console.log("===============================generate Controllers===============================")
-        console.log(state);
+        // console.log(state);
         var current = global.getCurrentConfig(state);
         console.log(current);
         state.controller = {};
@@ -303,12 +315,10 @@ HTMLWidgets.widget(global = {
 
         function reset() {
             sigma.layouts.stopForceLink();
-
             for (i = 0; i < g.nodes.length; i++) {
                 g.nodes[i].x = Math.cos(2 * i * Math.PI / N );
                 g.nodes[i].y = Math.sin(2 * i * Math.PI / N + Math.PI);
             }
-
             s.refresh();
         }
 
@@ -322,16 +332,16 @@ HTMLWidgets.widget(global = {
 
 
         // Layout
-        current.layout = {}
-        current.layout.linLogMode = false;
-        current.layout.strongGravityMode = false
-        current.layout.outboundAttractionDistribution = false
-        current.layout.adjustSizes = false
-        current.layout.barnesHutOptimize = false
-        current.layout.gravity = 30
-        current.layout.barnesHutTheta = 0.1
-        current.layout.edgeWeightInfluence = 0
-        current.layout.slowDown = 200
+        // current.layout = {}
+        // current.layout.linLogMode = false;
+        // current.layout.strongGravityMode = false
+        // current.layout.outboundAttractionDistribution = false
+        // current.layout.adjustSizes = false
+        // current.layout.barnesHutOptimize = false
+        // current.layout.gravity = 30
+        // current.layout.barnesHutTheta = 0.1
+        // current.layout.edgeWeightInfluence = 0
+        // current.layout.slowDown = 200
 
         state.controller.linLogMode = function(val) {
             current.layout.linLogMode = val;
@@ -388,10 +398,10 @@ HTMLWidgets.widget(global = {
         }
 
         // Label
-        current.label = {}
-        current.label.opacity = 1;
-        current.label.color = "#000000"
-        current.label.scale = 1
+        // current.label = {}
+        // current.label.opacity = 1;
+        // current.label.color = "#000000"
+        // current.label.scale = 1
         state.controller.labelOption = function(val) {
             s.settings("drawLabels", val != 'none');
             if(val != 'none') {
@@ -418,11 +428,10 @@ HTMLWidgets.widget(global = {
         }
 
         // Node
-        current.node = {}
-        current.node.scale = 1
-        current.node.color = "#000000"
-        current.node.opacity = 1;
-
+        // current.node = {}
+        // current.node.scale = 1
+        // current.node.color = "#000000"
+        // current.node.opacity = 1;
         state.controller.nodeScale = function(val) {
             console.log(val);
             current.node["scale"] = val;
@@ -454,11 +463,10 @@ HTMLWidgets.widget(global = {
         
 
         // Edge
-        current.edge = {}
-        current.edge.scale = 1
-        current.edge.color = "#000000"
-        current.edge.opacity = 1;
-
+        // current.edge = {}
+        // current.edge.scale = 1
+        // current.edge.color = "#000000"
+        // current.edge.opacity = 1;
         state.controller.edgeScale = function(val) {
             console.log(val);
             current.edge["scale"] = val;
@@ -481,20 +489,20 @@ HTMLWidgets.widget(global = {
             s.settings("defaultEdgeColor", r2rgba(h2r(current.edge.color), val));
             s.refresh();
         }
-        
+
         // Color Scheme
-        // current.scheme = "dual" or "linear"
         state.controller.scheme = function(schemeId, domain, range) {
             if (schemeId.startsWith(current.scheme)) {
-                var interpolate = function(val) {
-                    var f = (val - domain[0]) / (domain[1] - domain[0]);
-                    return _interpolateColor(h2r(range[0]), h2r(range[1]), f);
-                }
                 if (schemeId.startsWith("dual")) {
                     var sch = schemeId.replace("dual", "");
+                    current.color.dual[sch].domain = domain;
+                    current.color.dual[sch].range = range;
+
                     for (i = 0; i < g.nodes.length; i++) {
                         if(g.nodes[i].scheme == sch) {
-                            g.nodes[i].color = r2rgba(interpolate(x.nodes.color[i]), 0.9);
+                            var palette = current.color.dual[sch];
+                            c = _iterpolatePalette(palette, x.nodes.color[i]);
+                            g.nodes[i].color = h2rgba(c, current.node.opacity);
                         }
                     }
                 }

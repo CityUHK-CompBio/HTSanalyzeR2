@@ -175,7 +175,7 @@ server <- function(input, output, session) {
     })
 
   observeEvent(input$process_map, {
-    output$map_output <- updateForceGraph(list(process_map = input$process_map))
+    output$map_output <- updateForceGraph(list(process = input$process_map))
   })
 
   observeEvent({input$analysis_map
@@ -184,7 +184,7 @@ server <- function(input, output, session) {
     })
 
   observeEvent(input$process_net, {
-    output$network_output <- updateForceGraph(list(process_net = input$process_net))
+    output$network_output <- updateForceGraph(list(process = input$process_net))
     output$nwa_summary <- renderUI(create_nwa_summary(nwaObjs[[input$process_net]]))
   })
 
