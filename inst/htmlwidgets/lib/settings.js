@@ -103,43 +103,7 @@ refreshValues = function(panel, config) {
     }
 }
 
-initPanel = function(panel, title, state) {
-    if("undefined" != typeof title) {
-        $("#settingPanelTitle", panel).text("Settings (" + title + ")");
-    }
-
-    panel.lobiPanel({
-        state: "collapsed",
-        minWidth: 500,
-        maxWidth: 1000,
-        minHeight: 600,
-        maxHeight: 800,
-
-        reload: false,
-        close: false,
-        editTitle: false,
-        expand: false,
-        unpin: false,
-        minimize: {
-            tooltip: "Settings"
-        },
-    })
-
-    var instance = panel.data('lobiPanel');
-    instance.$el.attr("old-style", "left: 200px; top: 80px; z-index: 10001; position: fixed; width: 750px; right: auto; bottom: auto; height: 730px; user-select: initial;");
-
-    instance.disableTooltips();
-    instance.toggleMinimize = function() {
-        if (instance.isMinimized()) {
-            instance.maximize();
-            instance.unpin();
-        } else {
-            instance.pin();
-            instance.minimize();
-        }
-        return instance;
-    };
-
+refreshListeners = function(panel, state) {
     var decorator = function(funcName) {
         return function(obj) {
             state.controller[funcName](obj.value);
@@ -222,6 +186,44 @@ initPanel = function(panel, title, state) {
         uniTextColors(schemeId);
         $("#nodeSchemes #" + schemeId+ " input", panel).change(renderFunc(schemeId));
     }
+}
+
+initPanel = function(panel, title, state) {
+    if("undefined" != typeof title) {
+        $("#settingPanelTitle", panel).text("Settings (" + title + ")");
+    }
+
+    panel.lobiPanel({
+        state: "collapsed",
+        minWidth: 500,
+        maxWidth: 1000,
+        minHeight: 600,
+        maxHeight: 800,
+
+        reload: false,
+        close: false,
+        editTitle: false,
+        expand: false,
+        unpin: false,
+        minimize: {
+            tooltip: "Settings"
+        },
+    })
+
+    var instance = panel.data('lobiPanel');
+    instance.$el.attr("old-style", "left: 200px; top: 80px; z-index: 10001; position: fixed; width: 750px; right: auto; bottom: auto; height: 730px; user-select: initial;");
+
+    instance.disableTooltips();
+    instance.toggleMinimize = function() {
+        if (instance.isMinimized()) {
+            instance.maximize();
+            instance.unpin();
+        } else {
+            instance.pin();
+            instance.minimize();
+        }
+        return instance;
+    };
 
     addCustomBtns(panel, state);
     panel.removeClass("hidden");
@@ -237,6 +239,7 @@ configureSettingPanel = function(state, config) {
     }
 
     refreshValues(panel, config);
+    refreshListeners(panel, state);
 
     var lobiInited = panel.hasClass('lobipanel') && "undefined" != typeof panel.data('inner-id');
     if(!lobiInited) {

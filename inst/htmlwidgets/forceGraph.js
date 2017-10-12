@@ -119,6 +119,7 @@ HTMLWidgets.widget(global = {
 
         if ("graph" in current) {
             g = current.graph;
+
         } else {
             N = x.nodes.id.length;
             E = x.links.source.length;
@@ -155,7 +156,7 @@ HTMLWidgets.widget(global = {
             }
         }
 
-        s = new sigma({
+        var s = new sigma({
           graph: g,
           renderer: {
             container: container,
@@ -269,7 +270,7 @@ HTMLWidgets.widget(global = {
         current.data = x;
         current.type = x.options.type;
 
-        global.generateControllers(state);
+        global.generateControllers(state, current);
         configureSettingPanel(state, current);
     },
 
@@ -297,13 +298,9 @@ HTMLWidgets.widget(global = {
         if (!sigma.layouts.isForceLinkRunning()) {
             s.refresh();    
         }
-        
     },
 
     mergeConfig: function(config, x) {
-        console.log(config);
-        console.log(x.options);
-
         config.scheme.dual.Pos.domain = x.options.colorDomain.Pos;
         config.scheme.dual.Neg.domain = x.options.colorDomain.Neg;
 
@@ -316,13 +313,11 @@ HTMLWidgets.widget(global = {
         }
     },
 
-    generateControllers: function(state) {
+    generateControllers: function(state, current) {
         console.log("===============================generate Controllers===============================")
         // console.log(state);
-        var current = global.getCurrentConfig(state);
-        console.log(current);
-        state.controller = {};
 
+        state.controller = {};
         var s = current.sigma;
         var g = current.graph;
         var x = current.data;
@@ -511,13 +506,12 @@ HTMLWidgets.widget(global = {
             sigma.layouts.stopForceLink();
         }
 
-        state.controller.saveSVG = function() {
-            console.log("savesvg");
-            s.toSVG({download: true, labels:true, filename: 'network.svg', size: 2000});
-        }
-
         state.controller.refresh = function() {
             sigma.layouts.startForceLink(s);
+        }
+
+        state.controller.saveSVG = function() {
+            s.toSVG({download: true, labels:true, filename: 'network.svg', size: 2000});
         }
 
     }
