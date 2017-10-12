@@ -39,8 +39,9 @@ if(!is.null(gsca)) {
 
   availableAnalysis <- HTSanalyzeR2:::availableResults(gsca@summary$results, TRUE)
   availableGeneSets <- HTSanalyzeR2:::availableResults(gsca@summary$results, FALSE)
+  specificGenesetItem <- NULL
   if(!is.null(specificGeneset)) {
-    availableGeneSets <- c("SpecificGeneset", availableGeneSets)
+    specificGenesetItem = "SpecificGeneset"
   }
 
 }
@@ -138,7 +139,7 @@ create_panel <- function(name) {
          enrich_map_sidebar = wellPanel(
            h3("Enrichment Map"),
            selectInput('analysis_map', 'Analysis', availableAnalysis[-3]),
-           selectInput('genesets_map', 'Gene Sets Collection', availableGeneSets),
+           selectInput('genesets_map', 'Gene Sets Collection', c(specificGenesetItem, availableGeneSets)),
            gscaProcessSlider),
          enrich_map_content = forceGraphOutput("map_output"),
 
