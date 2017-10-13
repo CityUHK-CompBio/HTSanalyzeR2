@@ -1,41 +1,26 @@
-addCustomBtns = function(panel, state) {
+addCustomBtns = function(panel) {
     var dropdown = panel.find('div .dropdown');
     var menu = dropdown.find('.dropdown-menu');
 
-    var createButton = function(icon, tooltip, func) {
-        var control = $('<a data-func="customBtn"></a>');
+    var createButton = function(icon, tooltip) {
+        var control = $('<a data-func="customBtn" id="customBtn' + tooltip + '" ></a>');
         control.append('<i class="panel-control-icon ' + icon + '"></i>');
         control.append('<span class="control-title">' + tooltip + '</span>');
         control.attr('data-tooltip', tooltip);
-
         control.on('mousedown', function(ev) {
             ev.stopPropagation();
         });
         control.on('click', function(ev) {
             ev.stopPropagation();
-            func();
+            // func();
         });
 
         return $('<li></li>').append(control);
     }
 
-    menu.prepend(createButton("glyphicon glyphicon-pause", "pause", state.controller.pause));
-    menu.prepend(createButton("glyphicon glyphicon-refresh", "refresh", state.controller.refresh));
-    menu.prepend(createButton("glyphicon glyphicon-floppy-disk", "save", state.controller.saveSVG));
-}
-
-appendPanelId = function(panel, state) {
-    var panelId = state.elId;
-    $("#accordion", panel).attr("id", "accordion" + panelId);
-
-    $("[data-toggle='collapse']", panel).each(function() {
-        $(this).attr("href", $(this).attr("href") + panelId);
-        $(this).attr("data-parent", $(this).attr("data-parent") + panelId);
-    });
-
-    $(".panel-collapse", panel).each(function() {
-        $(this).attr("id", $(this).attr("id") + panelId);
-    });
+    menu.prepend(createButton("glyphicon glyphicon-pause", "Pause"));
+    menu.prepend(createButton("glyphicon glyphicon-refresh", "Refresh"));
+    menu.prepend(createButton("glyphicon glyphicon-floppy-disk", "Save"));
 }
 
 renderPalette = function(canvas, domain, range) {
@@ -103,29 +88,28 @@ refreshValues = function(panel, config) {
     }
 }
 
-refreshListeners = function(panel, state) {
+refreshListeners = function(panel, config) {
     var decorator = function(funcName) {
         return function(obj) {
-            state.controller[funcName](obj.value);
-            // state.controller.refresh();
+            config.controllers[funcName](obj.value);
         }
     }
 
     // Layout
     $("#layoutLinLogMode", panel).change(function() {
-        state.controller['linLogMode'](this.checked);
+        config.controllers['linLogMode'](this.checked);
     });
     $("#layoutStrongGravityMode", panel).change(function() {
-        state.controller['strongGravityMode'](this.checked);
+        config.controllers['strongGravityMode'](this.checked);
     });
     $("#layoutOutboundAttractionDistribution", panel).change(function() {
-        state.controller['outboundAttractionDistribution'](this.checked);
+        config.controllers['outboundAttractionDistribution'](this.checked);
     });
     $("#layoutAdjustSizes", panel).change(function() {
-        state.controller['adjustSizes'](this.checked);
+        config.controllers['adjustSizes'](this.checked);
     });
     $("#layoutBarnesHutOptimize", panel).change(function() {
-        state.controller['barnesHutOptimize'](this.checked);
+        config.controllers['barnesHutOptimize'](this.checked);
     });
     $('#layoutGravity', panel).slider().on('slide', decorator('gravity'));
     $('#layoutBarnesHutTheta', panel).slider().on('slide', decorator('barnesHutTheta'));
@@ -134,20 +118,20 @@ refreshListeners = function(panel, state) {
 
 
     //Label
-    $("#labelOption :input", panel).change(function() { state.controller['labelOption'](this.value) });
-    $("#labelColor", panel).change(function() { state.controller['labelColor']("#" + this.value) });
+    $("#labelOption :input", panel).change(function() { config.controllers['labelOption'](this.value) });
+    $("#labelColor", panel).change(function() { config.controllers['labelColor']("#" + this.value) });
     $('#labelOpacity', panel).slider().on('slide', decorator('labelOpacity'));
     $('#labelScale', panel).slider().on('slide', decorator('labelScale'));
 
     // Node
     $('#nodeScale', panel).slider().on('slide', decorator('nodeScale'));
     $('#nodeOpacity', panel).slider().on('slide', decorator('nodeOpacity'));
-    $("#nodeBorderColor", panel).change(function() { state.controller['nodeBorderColor']("#" + this.value) });
+    $("#nodeBorderColor", panel).change(function() { config.controllers['nodeBorderColor']("#" + this.value) });
     $('#nodeBorderOpacity', panel).slider().on('slide', decorator('nodeBorderOpacity'));
     $('#nodeBorderWidth', panel).slider().on('slide', decorator('nodeBorderWidth'));
 
     // Edge
-    $("#edgeColor", panel).change(function() { state.controller.edgeColor('#' + this.value) });
+    $("#edgeColor", panel).change(function() { config.controllers.edgeColor('#' + this.value) });
     $('#edgeOpacity', panel).slider().on('slide', decorator('edgeOpacity'));
     $('#edgeScale', panel).slider().on('slide', decorator('edgeScale'));
 
@@ -173,7 +157,7 @@ refreshListeners = function(panel, state) {
             var canvas = $("#nodeSchemes #" + schemeId + " #palette", panel)[0];
             renderPalette(canvas, values.domain, values.range);
             uniTextColors(schemeId);
-            state.controller.scheme(schemeId, values.domain, values.range);
+            config.controllers.scheme(schemeId, values.domain, values.range);
         }
     }
 
@@ -186,17 +170,44 @@ refreshListeners = function(panel, state) {
         uniTextColors(schemeId);
         $("#nodeSchemes #" + schemeId+ " input", panel).change(renderFunc(schemeId));
     }
+
+    // CustomButtons
+    $("#customBtnPause", panel).on('click', function(ev) { 
+        ev.stopPropagation(); 
+        config.controllers.pause(); 
+    });
+    $("#customBtnRefresh", panel).on('click', function(ev) { 
+        ev.stopPropagation(); 
+        config.controllers.refresh(); 
+    });
+    $("#customBtnSave", panel).on('click', function(ev) { 
+        ev.stopPropagation(); 
+        config.controllers.saveSVG(); 
+    });
 }
 
-initPanel = function(panel, title, state) {
+appendPanelId = function(panel, panelId) {
+    $("#accordion", panel).attr("id", "accordion" + panelId);
+
+    $("[data-toggle='collapse']", panel).each(function() {
+        $(this).attr("href", $(this).attr("href") + panelId);
+        $(this).attr("data-parent", $(this).attr("data-parent") + panelId);
+    });
+
+    $(".panel-collapse", panel).each(function() {
+        $(this).attr("id", $(this).attr("id") + panelId);
+    });
+}
+
+initPanel = function(panel, title) {
     if("undefined" != typeof title) {
         $("#settingPanelTitle", panel).text("Settings (" + title + ")");
     }
 
     panel.lobiPanel({
         state: "collapsed",
-        minWidth: 500,
-        maxWidth: 1000,
+        minWidth: 400,
+        maxWidth: 600,
         minHeight: 600,
         maxHeight: 800,
 
@@ -225,12 +236,13 @@ initPanel = function(panel, title, state) {
         return instance;
     };
 
-    addCustomBtns(panel, state);
+    addCustomBtns(panel);
     panel.removeClass("hidden");
 }
 
 configureSettingPanel = function(state, config) {
-    var elParent = $('#' + state.elId).parent();
+    var panelId = state.elId;
+    var elParent = $('#' + panelId).parent();
     var title = elParent.parents(".tab-pane").data("value");
     var panel = elParent.children(":first");
     var innerId = elParent.data("lobipanel-child-inner-id");
@@ -238,12 +250,12 @@ configureSettingPanel = function(state, config) {
         panel = $("[data-inner-id='" + innerId + "']")
     }
 
-    refreshValues(panel, config);
-    refreshListeners(panel, state);
-
     var lobiInited = panel.hasClass('lobipanel') && "undefined" != typeof panel.data('inner-id');
     if(!lobiInited) {
-        appendPanelId(panel, state);
-        initPanel(panel, title, state);
+        appendPanelId(panel, panelId);
+        initPanel(panel, title);
     }
+
+    refreshValues(panel, config);
+    refreshListeners(panel, config);
 }
