@@ -175,30 +175,34 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust
   ##if(output == "png" )
   ##    png(file.path(filepath, paste("gsea_plots", filename, ".png", sep="")))
   ##set the graphical parameters
-  gsea.layout <- layout(matrix(c(1, 2, 3)), heights = c(4, 2, 1))
+  # def.par <- par(no.readonly = TRUE)
+  gsea.layout <- layout(matrix(c(1, 2, 3)), heights = c(0.5,0.2,0.1))
   layout.show(gsea.layout)
-  par(mai=c(0, 1, 0.5, 0.5))
+  par(mai=c(0, 1, 0.5, 0.2))
   ##Plot the running score and add a vertical line at the position of
   ##the enrichment score (maximal absolute value of the running score)
-  plot(x=c(1:length(runningScore)), y=runningScore, type="l", ylab="Enrichment score(ES)", lwd=4, col="green",
-       cex.lab = 1.25, bg = "aliceblue", xaxt = "n", las = 1)
-  abline(h=0, lty = 1)
-  # abline(v=which(runningScore == enrichmentScore), lty=3, col="red3", lwd=1.75)
+  plot(x=c(1:length(runningScore)), y=runningScore, type="l", ylab="Enrichment score(ES)", lwd=3, col="green",
+       cex.lab = 1.5, bg = "aliceblue", xaxt = "n", las = 1)
   grid(NULL, NULL, lwd = 1)
+  abline(h=0, lty = 2)
+  # abline(v=which(runningScore == enrichmentScore), lty=3, col="red3", lwd=1.75)
+
   # plot.coordinates <- par("usr")
   if(enrichmentScore > 0){
   text(x = length(geneList)/7*6, y = (enrichmentScore)/4*3,
-       labels = paste("ES:", signif(enrichmentScore, 3), "\nAdjust.P.value:", signif(Adjust.P.value, 3)),
+       labels = paste("ES:", signif(enrichmentScore, 3), "\nAdjust.P.value:", signif(Adjust.P.value, 2)),
        cex = 1.5)} else {
          text(x = length(geneList)/8, y = (enrichmentScore)/4*3,
-              labels = paste("ES:", signif(enrichmentScore, 3), "\nAdjust.P.value:", signif(Adjust.P.value, 3)),
+              labels = paste("ES:", signif(enrichmentScore, 3), "\nAdjust.P.value:", signif(Adjust.P.value, 2)),
               cex = 1.5)
        }
   #-------------------## plot a color barplot indicating the phenotypes
-  par(mai=c(0, 1, 0, 0.5))
-  plot(x=seq(1, length(geneList)), type="l", y=geneList,  bg = "aliceblue", yaxt="n",
-   xlab=NA, col="red", lwd=2, xaxt="n", cex.lab = 1.25, ylab = NA)
-  abline(v=which(positions == 1))
+  par(mai=c(0, 1, 0, 0.2))
+  # plot(x=seq(1, length(geneList)), type="l", y=geneList,  bg = "aliceblue", yaxt="n",
+  #  xlab=NA, col="red", lwd=2, xaxt="n", cex.lab = 1.25, ylab = NA)
+  plot(0, type = "n", xaxt = "n", xaxs = "i", xlab = "", yaxt = "n",
+       ylab = "", xlim = c(1, length(geneList)), lwd = 3)
+  abline(v=which(positions == 1), lwd = 0.75)
   # abline(h=0)
   # lines(x=seq(1, length(geneList)), type="l", y=geneList,
   #       xlab=NA, col="red3", lwd=2, xaxt="n")
@@ -209,11 +213,11 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust
   ##this is done using the 'positions' output of gseaScores,
   ##which stores a one for each match position and a zero otherwise
 
-  par(mai = c(0.5, 1, 0, 0.5))
+  par(mai = c(0.1, 1, 0, 0.2))
   ticks = 1000
   ran <- range(geneList, na.rm = TRUE)
   offset <- ceiling(ticks * ran[1] / (ran[1] - ran[2]))
-  palette <- c(colorRampPalette(c("purple3", "white"))(offset),
+  palette <- c(colorRampPalette(c("blue", "white"))(offset),
                colorRampPalette(c("white", "red"))(ticks - offset))
   rank.colors <- palette[ceiling((geneList - ran[1]) / (ran[2] - ran[1]) * ticks)]
 
@@ -252,11 +256,11 @@ makeGSEAplots <- function(geneList, geneSet, exponent, filepath,
 ##position of hits for a gene set.
 gseaScores <- function(geneList, geneSet, exponent=1, mode="score", gsName = gsName,
                        GSEA.results = GSEA.results) {
-  paraCheck("GSCAClass", "genelist", geneList)
-  paraCheck("Analyze", "exponent", exponent)
-  paraCheck("Report", "gs", geneSet)
-  paraCheck("Report", "gseaScore.mode", mode)
-  geneSet<-intersect(names(geneList), geneSet)
+  # paraCheck("GSCAClass", "genelist", geneList)
+  # paraCheck("Analyze", "exponent", exponent)
+  # paraCheck("Report", "gs", geneSet)
+  # paraCheck("Report", "gseaScore.mode", mode)
+  # geneSet<-intersect(names(geneList), geneSet)
 
   nh <- length(geneSet)
   N <- length(geneList)
