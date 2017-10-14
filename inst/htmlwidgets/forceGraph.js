@@ -288,7 +288,7 @@ HTMLWidgets.widget(global = {
 
             if(g.nodes[i].theme != null) {
                 var palette = current.scheme.dual[g.nodes[i].theme];
-                c = _iterpolatePalette(palette, x.nodes.color[i]);
+                c = _iterpolatePalette(palette, x.nodes["color." + tick][i]);
                 g.nodes[i].color = h2rgba(c, current.node.opacity);
             } else {
                 g.nodes[i].color = h2rgba(current.node.NANodeColor, current.node.NANodeOpacity);
