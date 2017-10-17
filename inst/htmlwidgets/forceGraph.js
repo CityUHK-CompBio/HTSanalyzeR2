@@ -110,13 +110,11 @@ HTMLWidgets.widget(global = {
         state.container.innerHTML = '';
 
         current = global.getCurrentConfig(state, x);
-        global.mergeConfig(current, x);
-
 
         var g = null;
-        if ("graph" in current) {
-            g = current.graph;
-        } else {
+        if (!("graph" in current)) {
+            global.mergeConfig(current, x);
+
             g = { nodes: [], edges: [] };
             N = x.nodes.id.length;
             E = x.links.source.length;
@@ -127,7 +125,7 @@ HTMLWidgets.widget(global = {
                     label : x.nodes.label[i],
                     x: Math.cos(2 * i * Math.PI / N ),
                     y: Math.sin(2 * i * Math.PI / N + Math.PI),
-                    size: 0 + x.nodes.size[i],
+                    size: x.nodes.size[i] * current.node.scale,
                     scheme: x.nodes.scheme[i]
                 });
             }
@@ -137,7 +135,7 @@ HTMLWidgets.widget(global = {
                     id: 'e' + i,
                     source: x.links.source[i],
                     target: x.links.target[i],
-                    size: x.links.weight[i]
+                    size: x.links.weight[i] * current.edge.scale
                 });
             }
 
@@ -151,6 +149,8 @@ HTMLWidgets.widget(global = {
                     g.nodes[i].color = h2rgba(current.node.NANodeColor, current.node.NANodeOpacity);
                 }
             }
+        } else {
+            g = current.graph;
         }
 
         var s = new sigma({
@@ -165,7 +165,7 @@ HTMLWidgets.widget(global = {
 
             minNodeSize: current.settings.minNodeSize,
             minEdgeSize: current.settings.minEdgeSize,
-            maxNodeSize: current.settings.maxNodeSize,
+            maxNodeSize: current.settings.maxNodeSize * current.node.scale,
             maxEdgeSize: current.settings.maxEdgeSize,
 
             edgeColor: 'default',
@@ -291,19 +291,36 @@ HTMLWidgets.widget(global = {
     },
 
     mergeConfig: function(config, x) {
+        if(x.options.type == "GSCA") {
+            config.settings.maxNodeSize = 40;
+            config.settings.maxEdgeSize = 8;
+        } else if (x.options.type == "NWA") {
+            config.settings.maxNodeSize = 10;
+            config.settings.maxEdgeSize = 2;
+        }
+
+        var options = x.options;
+        var configurableKeys = ["settings", "layout", "label", "node", "edge"]; // "scheme"
+        for(var ki in configurableKeys) {
+            var key = configurableKeys[ki];
+            if(key in options) {
+                for (var sk in options[key]) {
+                    if(options[key][sk] != null) {
+                        config[key][sk] = options[key][sk];
+                    }
+                }
+            }
+        }
+
+        // TODO: Use uneven scalers
+        // if("scheme" in options) {}
         if ("Pos" in x.options.colorDomain) {
             config.scheme.dual.Pos.domain = x.options.colorDomain.Pos;      
         }
         if ("Neg" in x.options.colorDomain) {
             config.scheme.dual.Neg.domain = x.options.colorDomain.Neg;      
         }
-        if(x.options.type == "GSCA") {
-            config.settings.maxNodeSize = 40;
-            config.settings.maxEdgeSize = 8;
-        } else if (x.options.type == "GSCA") {
-            config.settings.maxNodeSize = 10;
-            config.settings.maxEdgeSize = 2;
-        }
+
     },
 
     generateControllers: function(state, current) {
@@ -419,7 +436,7 @@ HTMLWidgets.widget(global = {
             for (i = 0; i < g.nodes.length; i++) {
                 g.nodes[i].size = x.nodes.size[i] * val;
             }
-            s.settings("maxNodeSize", 30 * val);
+            s.settings("maxNodeSize", current.settings.maxNodeSize * val);
             s.refresh();
         }
         current.controllers.nodeOpacity = function(val) {
