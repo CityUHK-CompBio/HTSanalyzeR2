@@ -258,12 +258,13 @@ HTMLWidgets.widget(global = {
         current.sigma = s;
         current.data = x;
         current.type = x.options.type;
-        global.generateControllers(current);
+        global.generateControllers(state, current);
 
         configureSettingPanel(state, current);
     },
 
     update: function(state, u) {
+        // console.log("====================   Update    ========================");
         var current = global.getCurrentConfig(state)
 
         var g = current.graph;
@@ -277,7 +278,7 @@ HTMLWidgets.widget(global = {
 
             if(g.nodes[i].theme != null) {
                 var palette = current.scheme.dual[g.nodes[i].theme];
-                c = _iterpolatePalette(palette, x.nodes["color." + tick][i]);
+                c = _iterpolatePalette(palette, x.nodes.color[i]);
                 g.nodes[i].color = h2rgba(c, current.node.opacity);
             } else {
                 g.nodes[i].color = h2rgba(current.node.NANodeColor, current.node.NANodeOpacity);
@@ -305,8 +306,8 @@ HTMLWidgets.widget(global = {
         }
     },
 
-    generateControllers: function(current) {
-        console.log("===============================generate Controllers===============================")
+    generateControllers: function(state, current) {
+        // console.log("============================ generate Controllers ============================")
 
         var s = current.sigma;
         var g = current.graph;
@@ -498,7 +499,8 @@ HTMLWidgets.widget(global = {
         }
 
         current.controllers.saveSVG = function() {
-            s.toSVG({download: true, labels:true, filename: 'network.svg', size: 2000});
+            cur = global.getCurrentConfig(state)
+            cur.sigma.toSVG({download: true, labels:true, filename: 'network.svg', size: 2000});
         }
     }
 });
