@@ -90,9 +90,11 @@ create_data_table <- function(gscaObj, analysis, genesets) {
 
   target_cols <- c("HyperGeo.Adj.Pvalue", "GSEA.Adj.Pvalue", "Pvalue", "Adjusted.Pvalue")
   dt_options <- list(pageLength = 10,
+                     dom = 'Bfrtip',
+                     buttons = c('copy', 'csv', 'pdf', 'print'),
                      columnDefs = list(list(targets = which(colnames(res) %in% target_cols) - 1, render = jsRender)))
 
-  dt <- DT::datatable(res, filter = 'top', rownames = FALSE, escape = FALSE, options = dt_options, callback = jsCallback)
+  dt <- DT::datatable(res, filter = 'top', rownames = FALSE, escape = FALSE, extensions = 'Buttons', options = dt_options, callback = jsCallback)
   if (analysis != "Significant in both") {
     dt <- formatStyle(dt, 'Adjusted.Pvalue', target = "row", fontWeight = styleInterval(gscaObj@para$pValueCutoff, c('bold', 'weight')))
   }
@@ -102,7 +104,7 @@ create_data_table <- function(gscaObj, analysis, genesets) {
 create_enrich_map <- function(gscaObj, seriesObjs, input) {
   options <- list(distance = 400)
   genesets <- ifelse(is.null(specificGeneset), input$genesets_map, names(gscaObj@listOfGeneSetCollections))
-  viewEnrichMap(gscaObj,
+  HTSanalyzeR2::viewEnrichMap(gscaObj,
                 resultName=paste0(input$analysis_map, ".results"),
                 gscs = genesets,
                 allSig=TRUE,
@@ -114,7 +116,7 @@ create_enrich_map <- function(gscaObj, seriesObjs, input) {
 
 create_network <- function(nwaObj, seriesObjs) {
   options <- list(distance = 400)
-  viewSubNet(nwaObj, options = options, seriesObjs = seriesObjs)
+  HTSanalyzeR2::viewSubNet(nwaObj, options = options, seriesObjs = seriesObjs)
 }
 
 create_gsca_summary <- function(gscaObj) {

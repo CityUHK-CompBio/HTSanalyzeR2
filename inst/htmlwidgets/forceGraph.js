@@ -22,7 +22,7 @@ HTMLWidgets.widget(global = {
                     // maxNodeSize: 40,
                     // maxEdgeSize: 8,
                     maxNodeSize: 10,
-                    maxEdgeSize: 2
+                    maxEdgeSize: 3
                 },
                 layout: {
                     linLogMode: false,
@@ -289,13 +289,14 @@ HTMLWidgets.widget(global = {
         }
 
         if (!sigma.layouts.isForceLinkRunning()) {
-            s.refresh();    
+            s.refresh();
         }
     },
 
     mergeConfig: function(config, x) {
         if(x.options.type == "GSCA") {
-            config.settings.maxNodeSize = 40;
+            config.settings.maxNodeSize = 20;
+            config.settings.minNodeSize = 3;
             config.settings.maxEdgeSize = 8;
         } else if (x.options.type == "NWA") {
             config.settings.maxNodeSize = 10;
@@ -318,10 +319,10 @@ HTMLWidgets.widget(global = {
         // TODO: Use uneven scalers
         // if("scheme" in options) {}
         if ("Pos" in x.options.colorDomain) {
-            config.scheme.dual.Pos.domain = x.options.colorDomain.Pos;      
+            config.scheme.dual.Pos.domain = x.options.colorDomain.Pos;
         }
         if ("Neg" in x.options.colorDomain) {
-            config.scheme.dual.Neg.domain = x.options.colorDomain.Neg;      
+            config.scheme.dual.Neg.domain = x.options.colorDomain.Neg;
         }
     },
 
@@ -501,7 +502,7 @@ HTMLWidgets.widget(global = {
             cur.s.settings("nodeBorderSize", val);
             cur.s.refresh();
         }
-        
+
         // Edge
         state.controllers.edgeScale = function(val) {
             var cur = getConfig(state);
