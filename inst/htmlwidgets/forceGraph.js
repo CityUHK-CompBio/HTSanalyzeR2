@@ -1,22 +1,18 @@
 HTMLWidgets.widget(global = {
     name: "forceGraph",
     type: "output",
-    store: {currentKey: ""},
+    store: {},
 
     getElementState: function(el) {
         var elId = el.id;
         if (!(elId in global.store)) {
-            global.store[elId] = {elId: elId};
+            global.store[elId] = {elId: elId, currentKey: "default"};
         }
         return global.store[elId];
     },
 
     getCurrentConfig: function(state, x) {
         if(x) { state.currentKey = JSON.stringify(x).hashCode().toString(); }
-
-        if(state.currentKey == "") {
-            return;
-        }
 
         if(!(state.currentKey in state)) {
             state[state.currentKey] = {
@@ -106,21 +102,20 @@ HTMLWidgets.widget(global = {
         // console.log("======================   construct   ========================");
         // console.log(state);
 
-        var current = global.getCurrentConfig(state)
-        if ("sigma" in current) { current.sigma.kill(); }
-
+        var present = global.getCurrentConfig(state);
+        if ("sigma" in present) {
+            present.sigma.kill();
+            present.sigma = null;
+        }
         state.container.innerHTML = '';
+
         current = global.getCurrentConfig(state, x);
-        
-        global.mergeConfig(current, x);
 
-        var container = state.container
-        var g = { nodes: [], edges: [] };
+        var g = null;
+        if (!("graph" in current)) {
+            global.mergeConfig(current, x);
 
-        if ("graph" in current) {
-            g = current.graph;
-
-        } else {
+            g = { nodes: [], edges: [] };
             N = x.nodes.id.length;
             E = x.links.source.length;
 
@@ -130,7 +125,7 @@ HTMLWidgets.widget(global = {
                     label : x.nodes.label[i],
                     x: Math.cos(2 * i * Math.PI / N ),
                     y: Math.sin(2 * i * Math.PI / N + Math.PI),
-                    size: 0 + x.nodes.size[i],
+                    size: x.nodes.size[i] * current.node.scale,
                     scheme: x.nodes.scheme[i]
                 });
             }
@@ -140,7 +135,7 @@ HTMLWidgets.widget(global = {
                     id: 'e' + i,
                     source: x.links.source[i],
                     target: x.links.target[i],
-                    size: x.links.weight[i]
+                    size: x.links.weight[i] * current.edge.scale
                 });
             }
 
@@ -154,12 +149,14 @@ HTMLWidgets.widget(global = {
                     g.nodes[i].color = h2rgba(current.node.NANodeColor, current.node.NANodeOpacity);
                 }
             }
+        } else {
+            g = current.graph;
         }
 
         var s = new sigma({
           graph: g,
           renderer: {
-            container: container,
+            container: state.container,
             type: 'canvas',
           },
           settings: {
@@ -168,7 +165,7 @@ HTMLWidgets.widget(global = {
 
             minNodeSize: current.settings.minNodeSize,
             minEdgeSize: current.settings.minEdgeSize,
-            maxNodeSize: current.settings.maxNodeSize,
+            maxNodeSize: current.settings.maxNodeSize * current.node.scale,
             maxEdgeSize: current.settings.maxEdgeSize,
 
             edgeColor: 'default',
@@ -189,13 +186,13 @@ HTMLWidgets.widget(global = {
           }
         });
 
-        var config = {  
+        var forceConfig = {
             linLogMode: current.layout.linLogMode,
             strongGravityMode:current.layout.strongGravityMode,
             outboundAttractionDistribution: current.layout.outboundAttractionDistribution,
             adjustSizes:current.layout.adjustSizes,
             barnesHutOptimize: current.layout.barnesHutOptimize,
-            
+
             gravity:current.layout.gravity,
             barnesHutTheta:current.layout.barnesHutTheta,
             edgeWeightInfluence:current.layout.edgeWeightInfluence,
@@ -208,21 +205,14 @@ HTMLWidgets.widget(global = {
             // maxIterations:100000,
             easing:'quadraticInOut'
         };
-        sigma.layouts.startForceLink(s, config);
+        sigma.layouts.startForceLink(s, forceConfig);
 
-        // setTimeout(function(){
-        //     sigma.layouts.configForceLink(s, {slowDown: 500}) 
-        // }, 2000);
-
-
-        // LASSO
+        // Initialize the activeState plugin:
         var activeState = sigma.plugins.activeState(s);
         var keyboard = sigma.plugins.keyboard(s, s.renderers[0]);
-
-        // Initialize the Select plugin:
+        // Initialize the select plugin:
         var select = sigma.plugins.select(s, activeState);
         select.bindKeyboard(keyboard);
-
         // Initialize the dragNodes plugin:
         var dragListener = sigma.plugins.dragNodes(s, s.renderers[0], activeState);
 
@@ -234,7 +224,6 @@ HTMLWidgets.widget(global = {
           'fillStyle': 'rgba(236, 81, 72, 0.2)',
           'cursor': 'crosshair'
         });
-
         select.bindLasso(lasso);
 
         // halo on active nodes:
@@ -265,16 +254,20 @@ HTMLWidgets.widget(global = {
           }, 0);
         });
 
-        current.sigma = s;
         current.graph = g;
+        current.sigma = s;
         current.data = x;
         current.type = x.options.type;
 
-        global.generateControllers(state, current);
-        configureSettingPanel(state, current);
+        refreshSettingPanel(state);
+        if (!("controllers" in state)) {
+            global.generateControllers(state);
+            configureSettingPanel(state);
+        }
     },
 
     update: function(state, u) {
+        // console.log("====================   Update    ========================");
         var current = global.getCurrentConfig(state)
 
         var g = current.graph;
@@ -288,7 +281,7 @@ HTMLWidgets.widget(global = {
 
             if(g.nodes[i].theme != null) {
                 var palette = current.scheme.dual[g.nodes[i].theme];
-                c = _iterpolatePalette(palette, x.nodes["color." + tick][i]);
+                c = _iterpolatePalette(palette, x.nodes.color[i]);
                 g.nodes[i].color = h2rgba(c, current.node.opacity);
             } else {
                 g.nodes[i].color = h2rgba(current.node.NANodeColor, current.node.NANodeOpacity);
@@ -301,219 +294,272 @@ HTMLWidgets.widget(global = {
     },
 
     mergeConfig: function(config, x) {
+        if(x.options.type == "GSCA") {
+            config.settings.maxNodeSize = 40;
+            config.settings.maxEdgeSize = 8;
+        } else if (x.options.type == "NWA") {
+            config.settings.maxNodeSize = 10;
+            config.settings.maxEdgeSize = 2;
+        }
+
+        var options = x.options;
+        var configurableKeys = ["settings", "layout", "label", "node", "edge"]; // "scheme"
+        for(var ki in configurableKeys) {
+            var key = configurableKeys[ki];
+            if(key in options) {
+                for (var sk in options[key]) {
+                    if(options[key][sk] != null) {
+                        config[key][sk] = options[key][sk];
+                    }
+                }
+            }
+        }
+
+        // TODO: Use uneven scalers
+        // if("scheme" in options) {}
         if ("Pos" in x.options.colorDomain) {
             config.scheme.dual.Pos.domain = x.options.colorDomain.Pos;      
         }
         if ("Neg" in x.options.colorDomain) {
             config.scheme.dual.Neg.domain = x.options.colorDomain.Neg;      
         }
-        if(x.options.type == "GSCA") {
-            config.settings.maxNodeSize = 40;
-            config.settings.maxEdgeSize = 8;
-        } else if (x.options.type == "GSCA") {
-            config.settings.maxNodeSize = 10;
-            config.settings.maxEdgeSize = 2;
-        }
     },
 
-    generateControllers: function(state, current) {
-        console.log("===============================generate Controllers===============================")
-        // console.log(state);
+    generateControllers: function(state) {
+        // console.log("============================ generate Controllers ============================")
 
-        state.controller = {};
-        var s = current.sigma;
-        var g = current.graph;
-        var x = current.data;
+        // var s = cur.current.sigma;
+        // var g = cur.current.graph;
+        // var x = cur.current.data;
+        // cur.current.controllers = {};
+
+        if ("controllers" in state) {
+            return;
+        }
+        state.controllers = {};
+
+        function getConfig(state) {
+            var config = global.getCurrentConfig(state);
+            return {
+                s: config.sigma,
+                g: config.graph,
+                x: config.data,
+                current: config
+            }
+        }
 
         function reset() {
+            var cur = getConfig(state);
             sigma.layouts.stopForceLink();
-            for (i = 0; i < g.nodes.length; i++) {
-                g.nodes[i].x = Math.cos(2 * i * Math.PI / N );
-                g.nodes[i].y = Math.sin(2 * i * Math.PI / N + Math.PI);
+            for (i = 0; i < cur.g.nodes.length; i++) {
+                cur.g.nodes[i].x = Math.cos(2 * i * Math.PI / N );
+                cur.g.nodes[i].y = Math.sin(2 * i * Math.PI / N + Math.PI);
             }
-            s.refresh();
+            cur.s.refresh();
         }
 
         function refresh() {
-            sigma.layouts.configForceLink(s, {slowDown: current.layout.slowDown});
+            var cur = getConfig(state);
+            sigma.layouts.configForceLink(cur.s, {slowDown: cur.current.layout.slowDown});
             if(!sigma.layouts.isForceLinkRunning()) {
-                sigma.layouts.startForceLink(s);
+                sigma.layouts.startForceLink(cur.s);
             }
-            s.refresh();
+            cur.s.refresh();
         }
-
 
         // Layout
-        state.controller.linLogMode = function(val) {
-            current.layout.linLogMode = val;
-            sigma.layouts.configForceLink(s, {linLogMode:val});
+        state.controllers.linLogMode = function(val) {
+            var cur = getConfig(state);
+            cur.current.layout.linLogMode = val;
+            sigma.layouts.configForceLink(cur.s, {linLogMode:val});
             refresh();
         }
 
-        state.controller.strongGravityMode = function(val) {
-            current.layout.strongGravityMode = val;
-            sigma.layouts.configForceLink(s, {strongGravityMode:val});
+        state.controllers.strongGravityMode = function(val) {
+            var cur = getConfig(state);
+            cur.current.layout.strongGravityMode = val;
+            sigma.layouts.configForceLink(cur.s, {strongGravityMode:val});
             refresh();
         }
 
-        state.controller.outboundAttractionDistribution = function(val) {
-            current.layout.outboundAttractionDistribution = val;
-            sigma.layouts.configForceLink(s, {outboundAttractionDistribution:val});
+        state.controllers.outboundAttractionDistribution = function(val) {
+            var cur = getConfig(state);
+            cur.current.layout.outboundAttractionDistribution = val;
+            sigma.layouts.configForceLink(cur.s, {outboundAttractionDistribution:val});
             refresh();
         }
 
-        state.controller.adjustSizes = function(val) {
-            current.layout.adjustSizes = val;
-            sigma.layouts.configForceLink(s, {adjustSizes:val});
+        state.controllers.adjustSizes = function(val) {
+            var cur = getConfig(state);
+            cur.current.layout.adjustSizes = val;
+            sigma.layouts.configForceLink(cur.s, {adjustSizes:val});
             refresh();
         }
 
-        state.controller.barnesHutOptimize = function(val) {
-            current.layout.barnesHutOptimize = val;
-            sigma.layouts.configForceLink(s, {barnesHutOptimize:val});
+        state.controllers.barnesHutOptimize = function(val) {
+            var cur = getConfig(state);
+            cur.current.layout.barnesHutOptimize = val;
+            sigma.layouts.configForceLink(cur.s, {barnesHutOptimize:val});
             refresh();
         }
 
-        state.controller.gravity = function(val) {
-            current.layout.gravity = val;
-            sigma.layouts.configForceLink(s, {gravity:val});
+        state.controllers.gravity = function(val) {
+            var cur = getConfig(state);
+            cur.current.layout.gravity = val;
+            sigma.layouts.configForceLink(cur.s, {gravity:val});
             refresh();
         }
 
-        state.controller.barnesHutTheta = function(val) {
-            current.layout.barnesHutTheta = val;
-            sigma.layouts.configForceLink(s, {barnesHutTheta:val});
+        state.controllers.barnesHutTheta = function(val) {
+            var cur = getConfig(state);
+            cur.current.layout.barnesHutTheta = val;
+            sigma.layouts.configForceLink(cur.s, {barnesHutTheta:val});
             refresh();
         }
 
-        state.controller.edgeWeightInfluence = function(val) {
-            current.layout.edgeWeightInfluence = val;
-            sigma.layouts.configForceLink(s, {edgeWeightInfluence:val});
+        state.controllers.edgeWeightInfluence = function(val) {
+            var cur = getConfig(state);
+            cur.current.layout.edgeWeightInfluence = val;
+            sigma.layouts.configForceLink(cur.s, {edgeWeightInfluence:val});
             refresh();
         }
 
-        state.controller.slowDown = function(val) {
-            current.layout.slowDown = val;
-            sigma.layouts.configForceLink(s, {slowDown:val});
+        state.controllers.slowDown = function(val) {
+            var cur = getConfig(state);
+            cur.current.layout.slowDown = val;
+            sigma.layouts.configForceLink(cur.s, {slowDown:val});
             refresh();
         }
 
         // Label
-        state.controller.labelOption = function(val) {
-            s.settings("drawLabels", val != 'none');
+        state.controllers.labelOption = function(val) {
+            var cur = getConfig(state);
+            cur.s.settings("drawLabels", val != 'none');
             if(val != 'none') {
-                for (i = 0; i < g.nodes.length; i++) {
-                    g.nodes[i].label = x.nodes["label_" + val][i];
+                for (i = 0; i < cur.g.nodes.length; i++) {
+                    cur.g.nodes[i].label = cur.x.nodes["label_" + val][i];
                 }
             }
-            s.refresh();
+            cur.s.refresh();
         }
-        state.controller.labelColor = function(val) {
-            current.label["color"] = val;
-            s.settings("defaultLabelColor", r2rgba(h2r(val), current.label.opacity));
-            s.refresh();
+        state.controllers.labelColor = function(val) {
+            var cur = getConfig(state);
+            cur.current.label["color"] = val;
+            cur.s.settings("defaultLabelColor", r2rgba(h2r(val), cur.current.label.opacity));
+            cur.s.refresh();
         }
-        state.controller.labelOpacity = function(val) {
-            current.label["opacity"] = val;
-            s.settings("defaultLabelColor", r2rgba(h2r(current.label.color), val));
-            s.refresh();
+        state.controllers.labelOpacity = function(val) {
+            var cur = getConfig(state);
+            cur.current.label["opacity"] = val;
+            cur.s.settings("defaultLabelColor", r2rgba(h2r(cur.current.label.color), val));
+            cur.s.refresh();
         }
-        state.controller.labelScale = function(val) {
-            current.label["scale"] = val;
-            s.settings("defaultLabelSize", 14 * val);
-            s.refresh();
+        state.controllers.labelScale = function(val) {
+            var cur = getConfig(state);
+            cur.current.label["scale"] = val;
+            cur.s.settings("defaultLabelSize", 14 * val);
+            cur.s.refresh();
         }
 
         // Node
-        state.controller.nodeScale = function(val) {
-            current.node["scale"] = val;
-            for (i = 0; i < g.nodes.length; i++) {
-                g.nodes[i].size = x.nodes.size[i] * val;
+        state.controllers.nodeScale = function(val) {
+            var cur = getConfig(state);
+            cur.current.node["scale"] = val;
+            for (i = 0; i < cur.g.nodes.length; i++) {
+                cur.g.nodes[i].size = cur.x.nodes.size[i] * val;
             }
-            s.settings("maxNodeSize", 30 * val);
-            s.refresh();
+            cur.s.settings("maxNodeSize", cur.current.settings.maxNodeSize * val);
+            cur.s.refresh();
         }
-        state.controller.nodeOpacity = function(val) {
-            current.node["opacity"] = val;
-            for (i = 0; i < g.nodes.length; i++) {
-                if(g.nodes[i].scheme != null) {
-                    var palette = current.scheme.dual[g.nodes[i].scheme];
-                    c = _iterpolatePalette(palette, x.nodes.color[i]);
-                    g.nodes[i].color = h2rgba(c, current.node.opacity);
+        state.controllers.nodeOpacity = function(val) {
+            var cur = getConfig(state);
+            cur.current.node["opacity"] = val;
+            for (i = 0; i < cur.g.nodes.length; i++) {
+                if(cur.g.nodes[i].scheme != null) {
+                    var palette = cur.current.scheme.dual[cur.g.nodes[i].scheme];
+                    c = _iterpolatePalette(palette, cur.x.nodes.color[i]);
+                    cur.g.nodes[i].color = h2rgba(c, cur.current.node.opacity);
                 }
             }
-            s.refresh();
+            cur.s.refresh();
         }
-        state.controller.nodeBorderColor = function(val) {
-            current.node["borderColor"] = val;
-            s.settings("defaultNodeBorderColor", r2rgba(h2r(val), current.node.borderOpacity));
-            s.refresh();
+        state.controllers.nodeBorderColor = function(val) {
+            var cur = getConfig(state);
+            cur.current.node["borderColor"] = val;
+            cur.s.settings("defaultNodeBorderColor", r2rgba(h2r(val), cur.current.node.borderOpacity));
+            cur.s.refresh();
         }
-        state.controller.nodeBorderOpacity = function(val) {
-            current.node["borderOpacity"] = val;
-            s.settings("defaultNodeBorderColor", r2rgba(h2r(current.node.borderColor), val));
-            s.refresh();
+        state.controllers.nodeBorderOpacity = function(val) {
+            var cur = getConfig(state);
+            cur.current.node["borderOpacity"] = val;
+            cur.s.settings("defaultNodeBorderColor", r2rgba(h2r(cur.current.node.borderColor), val));
+            cur.s.refresh();
         }
-        state.controller.nodeBorderWidth = function(val) {
-            current.node["borderWidth"] = val;
-            s.settings("nodeBorderSize", val);
-            s.refresh();
+        state.controllers.nodeBorderWidth = function(val) {
+            var cur = getConfig(state);
+            cur.current.node["borderWidth"] = val;
+            cur.s.settings("nodeBorderSize", val);
+            cur.s.refresh();
         }
         
         // Edge
-        state.controller.edgeScale = function(val) {
-            console.log(val);
-            current.edge["scale"] = val;
-            for (i = 0; i < g.edges.length; i++) {
-                g.edges[i].size = x.links.weight[i] * val / 2;
+        state.controllers.edgeScale = function(val) {
+            var cur = getConfig(state);
+            cur.current.edge["scale"] = val;
+            for (i = 0; i < cur.g.edges.length; i++) {
+                cur.g.edges[i].size = cur.x.links.weight[i] * val;
             }
-            s.settings("maxEdgeSize", 8 * val);
-            s.refresh();
+            cur.s.settings("maxEdgeSize", 8 * val);
+            cur.s.refresh();
         }
 
-        state.controller.edgeColor = function(val) {
-            console.log(val);
-            current.edge["color"] = val;
-            s.settings("defaultEdgeColor", r2rgba(h2r(val), current.edge.opacity));
-            s.refresh();
+        state.controllers.edgeColor = function(val) {
+            var cur = getConfig(state);
+            cur.current.edge["color"] = val;
+            cur.s.settings("defaultEdgeColor", r2rgba(h2r(val), cur.current.edge.opacity));
+            cur.s.refresh();
         }
-        state.controller.edgeOpacity = function(val) {
-            console.log(val);
-            current.edge["opacity"] = val;
-            s.settings("defaultEdgeColor", r2rgba(h2r(current.edge.color), val));
-            s.refresh();
+        state.controllers.edgeOpacity = function(val) {
+            var cur = getConfig(state);
+            cur.current.edge["opacity"] = val;
+            cur.s.settings("defaultEdgeColor", r2rgba(h2r(cur.current.edge.color), val));
+            cur.s.refresh();
         }
 
         // Color Scheme
-        state.controller.scheme = function(schemeId, domain, range) {
+        state.controllers.scheme = function(schemeId, domain, range) {
+
+            var cur = getConfig(state);
             if (schemeId.startsWith("dual")) {
                 var sch = schemeId.replace("dual", "");
-                current.scheme.dual[sch].domain = domain;
-                current.scheme.dual[sch].range = range;
+                cur.current.scheme.dual[sch].domain = domain;
+                cur.current.scheme.dual[sch].range = range;
 
-                for (i = 0; i < g.nodes.length; i++) {
-                    if(g.nodes[i].scheme == sch) {
-                        var palette = current.scheme.dual[sch];
-                        c = _iterpolatePalette(palette, x.nodes.color[i]);
-                        g.nodes[i].color = h2rgba(c, current.node.opacity);
+                for (i = 0; i < cur.g.nodes.length; i++) {
+                    if(cur.g.nodes[i].scheme == sch) {
+                        var palette = cur.current.scheme.dual[sch];
+                        c = _iterpolatePalette(palette, cur.x.nodes.color[i]);
+                        cur.g.nodes[i].color = h2rgba(c, cur.current.node.opacity);
                     }
                 }
             }
-            s.refresh();
+            cur.s.refresh();
         }
 
         // Buttons
-        state.controller.pause = function() {
+        state.controllers.pause = function() {
             sigma.layouts.stopForceLink();
         }
 
-        state.controller.refresh = function() {
-            sigma.layouts.startForceLink(s);
+        state.controllers.refresh = function() {
+            var cur = getConfig(state);
+            sigma.layouts.startForceLink(cur.s);
         }
 
-        state.controller.saveSVG = function() {
-            s.toSVG({download: true, labels:true, filename: 'network.svg', size: 2000});
+        state.controllers.saveSVG = function() {
+            var cur = getConfig(state);
+            cur = global.getCurrentConfig(state)
+            cur.sigma.toSVG({download: true, labels:true, filename: 'network.svg', size: 2000});
         }
-
     }
 });
