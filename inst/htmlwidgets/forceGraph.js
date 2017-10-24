@@ -177,6 +177,7 @@ HTMLWidgets.widget(global = {
 
             defaultLabelSize: 14 * current.label.scale,
             defaultLabelColor: h2rgba(current.label.color, current.label.opacity),
+            labelThreshold: 0,
 
             enableEdgeHovering: false,
             borderSize: 2,
