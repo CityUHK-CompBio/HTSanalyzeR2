@@ -73,19 +73,19 @@ HTMLWidgets.widget(global = {
     },
 
     initialize: function(el, width, height) {
-        // console.log("====================   initialize   ========================");
-        el.style.height = "90vh";
+        console.log("====================   initialize   ========================");
+        el.style.height = "85vh";
         var state = global.getElementState(el);
         state.container = el;
     },
 
     resize: function(el, width, height) {
-        // console.log("====================   resize   ========================");
+        console.log("====================   resize   ========================");
         // var state = global.getElementState(el);
     },
 
     renderValue: function(el, x, simulation) {
-        // console.log("====================   renderValue   ========================");
+        console.log("====================   renderValue   ========================");
         // console.log(el);
         console.log(x);
         var state = global.getElementState(el);
@@ -99,7 +99,7 @@ HTMLWidgets.widget(global = {
     },
 
     construct: function(state, x) {
-        // console.log("======================   construct   ========================");
+        console.log("======================   construct   ========================");
         // console.log(state);
 
         var present = global.getCurrentConfig(state);
@@ -177,7 +177,7 @@ HTMLWidgets.widget(global = {
 
             defaultLabelSize: 14 * current.label.scale,
             defaultLabelColor: h2rgba(current.label.color, current.label.opacity),
-            labelThreshold: 0,
+			labelThreshold: 0,
 
             enableEdgeHovering: false,
             borderSize: 2,
@@ -260,15 +260,25 @@ HTMLWidgets.widget(global = {
         current.data = x;
         current.type = x.options.type;
 
-        refreshSettingPanel(state);
-        if (!("controllers" in state)) {
-            global.generateControllers(state);
-            configureSettingPanel(state);
-        }
+        // refreshSettingPanel(state);
+        // if (!("controllers" in state)) {
+        //     global.generateControllers(state);
+        //     configureSettingPanel(state);
+        // }
+        global.replaceButtonAction();
+    },
+
+    replaceButtonAction: function() {
+        console.log("erere");
+        $('li.messages-menu').click(function (ev) {
+            ev.stopPropagation();
+            console.log("setting btn clicked")
+            $('#settingBar').toggleClass('active');
+         });
     },
 
     update: function(state, u) {
-        // console.log("====================   Update    ========================");
+        console.log("====================   Update    ========================");
         var current = global.getCurrentConfig(state)
 
         var g = current.graph;
@@ -276,7 +286,7 @@ HTMLWidgets.widget(global = {
         var x = current.data;
         var type = current.type;
 
-        for(i =0; i < g.nodes.length; i++) {
+        for(i = 0; i < g.nodes.length; i++) {
             var tick = x.options.seriesData[u.process - 1];
             g.nodes[i].theme = x.nodes["scheme." + tick][i];
 

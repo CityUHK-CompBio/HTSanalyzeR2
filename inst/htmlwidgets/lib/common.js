@@ -61,4 +61,4 @@ var _iterpolatePalette = function(palette, value) {
 
   var rgb = _interpolateColor(color1, color2, factor);
   return r2h(rgb);
-}
+};

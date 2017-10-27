@@ -1,0 +1,212 @@
+<div id="settingBar" style="padding-top: 50px">
+    <ul class="list-unstyled components">
+        <!-- Layout -->
+        <li>
+            <a href="#layoutPanel" data-toggle="collapse" aria-expanded="false">Layout</a>
+            <ul class="collapse list-unstyled" id="layoutPanel">
+                <li>
+                    <div id="layoutSwitches" class="form-group shiny-input-checkboxgroup shiny-input-container">
+                      <label class="control-label" for="layoutSwitches">Switches</label>
+                      <div class="shiny-options-group">
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" name="layoutSwitches" value="layoutLinLogMode"/>
+                            <span>Lin-Log Mode</span>
+                          </label>
+                        </div>
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" name="layoutSwitches" value="layoutStrongGravityMode"/>
+                            <span>Strong Gravity Mode</span>
+                          </label>
+                        </div>
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" name="layoutSwitches" value="layoutOutboundAttractionDistribution"/>
+                            <span>Outbound Attraction Distribution</span>
+                          </label>
+                        </div>
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" name="layoutSwitches" value="layoutAdjustSizes"/>
+                            <span>Adjust Sizes</span>
+                          </label>
+                        </div>
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" name="layoutSwitches" value="layoutBarnesHutOptimize"/>
+                            <span>Barnes-Hut Optimize</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                </li>
+
+                <li>
+                    <div class="form-group shiny-input-container">
+                      <label class="control-label" for="layoutGravity">Gravity</label>
+                      <input class="js-range-slider" id="layoutGravity" data-min="-50" data-max="500" data-from="30" data-step="10" data-grid="true" data-grid-num="11.0" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
+                    </div>
+                </li>
+
+                <li>
+                    <div class="form-group shiny-input-container">
+                      <label class="control-label" for="layoutBarnesHutTheta">Barnes-Hut Theta</label>
+                      <input class="js-range-slider" id="layoutBarnesHutTheta" data-min="-10.0" data-max="10.0" data-from="0.1" data-step="0.1" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
+                    </div>
+                </li>
+
+                <li>
+                    <div class="form-group shiny-input-container">
+                      <label class="control-label" for="layoutEdgeWeightInfluence">Edge Weight Influence</label>
+                      <input class="js-range-slider" id="layoutEdgeWeightInfluence" data-min="0.0" data-max="10" data-from="1" data-step="0.1" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
+                    </div>
+                </li>
+
+                <li>
+                    <div class="form-group shiny-input-container">
+                      <label class="control-label" for="layoutSlowDown">Slowdown</label>
+                      <input class="js-range-slider" id="layoutSlowDown" data-min="50" data-max="1000" data-from="200" data-step="10" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
+                    </div>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Label -->
+        <li>
+            <a href="#labelPanel" data-toggle="collapse" aria-expanded="false">Label</a>
+            <ul class="collapse list-unstyled" id="labelPanel">
+                <li>
+                    <div id="labelOption" class="form-group shiny-input-radiogroup shiny-input-container shiny-input-container-inline">
+                      <label class="control-label" for="labelOption">
+                        <h3>Text</h3>
+                      </label>
+                      <div class="shiny-options-group">
+                        <label class="radio-inline">
+                          <input type="radio" name="labelOption" value="id" checked="checked"/>
+                          <span>ID</span>
+                        </label>
+                        <label class="radio-inline">
+                          <input type="radio" name="labelOption" value="term"/>
+                          <span>Term</span>
+                        </label>
+                        <label class="radio-inline">
+                          <input type="radio" name="labelOption" value="none"/>
+                          <span>None</span>
+                        </label>
+                      </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-group shiny-input-container">
+                      <label class="control-label" for="labelScale">Label Scale</label>
+                      <input class="js-range-slider" id="labelScale" data-min="0.1" data-max="4" data-from="1" data-step="0.1" data-grid="true" data-grid-num="8" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-group shiny-input-container" data-shiny-input-type="colour">
+                      <label for="labelColor">Label Color</label>
+                      <input id="labelColor" type="text" class="form-control shiny-colour-input" data-init-value="#0FAABBAA" data-show-colour="both" data-palette="square" data-allow-alpha="true"/>
+                    </div>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Node -->
+        <li>
+            <a href="#nodePanel" data-toggle="collapse" aria-expanded="false">Node</a>
+            <ul class="collapse list-unstyled" id="nodePanel">
+                <li>
+                    <div class="form-group shiny-input-container">
+                      <label class="control-label" for="nodeScale">Scale</label>
+                      <input class="js-range-slider" id="nodeScale" data-min="0.0" data-max="10" data-from="1" data-step="0.1" data-grid="true" data-grid-num="10.0" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-group shiny-input-container">
+                      <label class="control-label" for="nodeOpacity">Opacity</label>
+                      <input class="js-range-slider" id="nodeOpacity" data-min="0.0" data-max="1.0" data-from="0.8" data-step="0.01" data-grid="true" data-grid-num="1.0" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-group shiny-input-container">
+                      <label class="control-label" for="nodeBorderWidth">Border Width</label>
+                      <input class="js-range-slider" id="nodeBorderWidth" data-min="1.0" data-max="10" data-from="1" data-step="0.1" data-grid="true" data-grid-num="9.0" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-group shiny-input-container" data-shiny-input-type="colour">
+                      <label for="nodeBorderColor">Border Color</label>
+                      <input id="nodeBorderColor" type="text" class="form-control shiny-colour-input" data-init-value="#DB1F51EC" data-show-colour="both" data-palette="square" data-allow-alpha="true"/>
+                    </div>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Edge -->
+        <li>
+            <a href="#edgePanel" data-toggle="collapse" aria-expanded="false">Edge</a>
+            <ul class="collapse list-unstyled" id="edgePanel">
+                <li>
+                    <div class="form-group shiny-input-container">
+                      <label class="control-label" for="edgeScale">Edge Scale</label>
+                      <input class="js-range-slider" id="edgeScale" data-min="0.5" data-max="5" data-from="1" data-step="0.1" data-grid="true" data-grid-num="4.5" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-group shiny-input-container" data-shiny-input-type="colour">
+                      <label for="edgeColor">Edge Color</label>
+                      <input id="edgeColor" type="text" class="form-control shiny-colour-input" data-init-value="#0099FFE2" data-show-colour="both" data-palette="square" data-allow-alpha="true"/>
+                    </div>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Scheme -->
+        <li>
+            <a href="#schemePanel" data-toggle="collapse" aria-expanded="false">Color Scheme</a>
+            <ul class="collapse list-unstyled" id="schemePanel">
+                <li>
+                    <div id="dualPos" class="form-group shiny-input-container">
+                        <h5>Dual <small>Pos:</small></h5>
+                        <div style="position:relative; width: 100%; height: 35px">
+                            <canvas id="posPalette" width="100" height="1" style="width:100%; height:30px"></canvas>
+                            <input id="posValue1" class="text" value="0" style="position:absolute;width:80px; left:5px;top:5px;text-align:left; background:none;border:none;">
+                            <input id="posValue2" class="text" value="0.05" style="position:absolute;width:80px; right:5px;top:5px;text-align:right; background:none;border:none;">
+                        </div>
+
+                        <div class="row" style="width:100%; margin-left:0px; margin-right:0px;">
+                            <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
+                                <input id="posColor1" type="text" class="form-control shiny-colour-input" style="width:100%; text-align: left;" data-init-value="#9e1617" data-show-colour="both" data-palette="square" data-allow-alpha="false"/>
+                            </div>
+                            <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
+                                <input id="posColor2" type="text" class="form-control shiny-colour-input" style="width:100%; text-align: right;" data-init-value="#FFFFFF" data-show-colour="both" data-palette="square" data-allow-alpha="false"/>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div id="dualPos" class="form-group shiny-input-container">
+                        <h5>Dual <small>Neg:</small></h5>
+                        <div style="position:relative; width: 100%; height: 35px">
+                            <canvas id="negPalette" width="100" height="1" style="width:100%; height:30px"></canvas>
+                            <input id="negValue1" class="text" value="0" style="position:absolute;width:80px; left:5px;top:5px;text-align:left; background:none;border:none;">
+                            <input id="negValue2" class="text" value="0.05" style="position:absolute;width:80px; right:5px;top:5px;text-align:right; background:none;border:none;">
+                        </div>
+
+                        <div class="row" style="width:100%; margin-left:0px; margin-right:0px;">
+                            <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
+                                <input id="negColor1" type="text" class="form-control shiny-colour-input" style="width:100%; text-align: left;" data-init-value="#006a9c" data-show-colour="both" data-palette="square" data-allow-alpha="false"/>
+                            </div>
+                            <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
+                                <input id="negColor2" type="text" class="form-control shiny-colour-input" style="width:100%; text-align: right;" data-init-value="#FFFFFF" data-show-colour="both" data-palette="square" data-allow-alpha="false"/>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </li>
+
+    </ul>
+
+</div>

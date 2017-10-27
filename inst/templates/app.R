@@ -1,10 +1,10 @@
 library(shiny)
-library(shinythemes)
-library(DT)
+library(shinydashboard)
 library(igraph)
 library(dplyr)
+library(DT)
+library(colourpicker)
 library(HTSanalyzeR2)
-
 
 ## ============================================ Loading results ============================================
 ## results: list(gsca = gsca, nwa = nwa)
@@ -14,6 +14,7 @@ nwa <- results$nwa
 gscaObjs <- NULL
 nwaObjs <- NULL
 specificGeneset = results$specificGeneset
+
 
 ## ============================================ Preprocessing ==============================================
 gscaTS <- !is.null(gsca) && class(gsca) == "list"
@@ -26,7 +27,7 @@ if(!is.null(gsca)) {
     gscaObjs <- gsca
     gscaSeriesTicks <- names(gscaObjs)
     gscaSeriesTickInput <- selectInput('series_tick_res', 'Series Tick', gscaSeriesTicks)
-    gscaProcessSlider <- sliderInput("process_map", h3("Process"), 1, length(gscaSeriesTicks), value = 1, step = 1, animate = animationOptions(interval=1000))
+    gscaProcessSlider <- sliderInput("process_map", "Process", 1, length(gscaSeriesTicks), value = 1, step = 1, animate = animationOptions(interval=1000))
     for(name in gscaSeriesTicks) {
       gscaObjs[[name]] <- HTSanalyzeR2:::appendLinks(gscaObjs[[name]])
       gscaObjs[[name]] <- HTSanalyzeR2:::combineResults(gscaObjs[[name]])
@@ -51,23 +52,15 @@ if(!is.null(nwa)) {
   if(nwaTS) {
     nwaObjs <- nwa
     nwaSeriesTicks <- names(nwaObjs)
-    nwaProcessSlider <- sliderInput("process_net", h3("Process"), 1, length(nwaSeriesTicks), value = 1, step = 1, animate = animationOptions(interval=1000))
+    nwaProcessSlider <- sliderInput("process_net", "Process", 1, length(nwaSeriesTicks), value = 1, step = 1, animate = animationOptions(interval=1000))
     nwa <- nwaObjs[[1]]
   }
 }
 
-HTMLSettings <- system.file("templates/settings2.html", package="HTSanalyzeR2")
+HTMLSettings <- system.file("templates/settings3.html", package="HTSanalyzeR2")
 namesToList <- HTSanalyzeR2:::namesToList
 
 ## =========================================== Helper functions ============================================
-create_sidebar_tab <- function(name, sidebar, content) {
-  tabPanel(name, fluidRow(column(width = 3, sidebar), column(width = 9, content)))
-}
-
-create_sidebar_setting_tab <- function(name, sidebar, settings, content) {
-  tabPanel(name, fluidRow(column(width = 3, sidebar), column(width = 9, settings, content)))
-}
-
 trim_result <- function(result, digits = 3) {
   signif_cols <- c("Observed.score")
   round_cols <- c("HyperGeo.Adj.Pvalue", "GSEA.Adj.Pvalue", "Pvalue", "Adjusted.Pvalue", "Expected.Hits")
@@ -89,9 +82,7 @@ create_data_table <- function(gscaObj, analysis, genesets) {
   res <- trim_result(res, digits = 3)
 
   target_cols <- c("HyperGeo.Adj.Pvalue", "GSEA.Adj.Pvalue", "Pvalue", "Adjusted.Pvalue")
-  dt_options <- list(pageLength = 10,
-                     dom = 'Bfrtip',
-                     buttons = c('copy', 'csv', 'pdf', 'print'),
+  dt_options <- list(pageLength = 13, dom = 'Bfrtip', buttons = c('copy', 'csv', 'pdf', 'print'),
                      columnDefs = list(list(targets = which(colnames(res) %in% target_cols) - 1, render = jsRender)))
 
   dt <- DT::datatable(res, filter = 'top', rownames = FALSE, escape = FALSE, extensions = 'Buttons', options = dt_options, callback = jsCallback)
@@ -101,99 +92,170 @@ create_data_table <- function(gscaObj, analysis, genesets) {
   dt
 }
 
+convertMenuItem <- function(mi,tabName) {
+  mi$children[[1]]$attribs['data-toggle']="tab"
+  mi$children[[1]]$attribs['data-value'] = tabName
+  # mi$children[[1]]$attribs['aria-expanded'] = "false"
+  mi
+}
+
+ifNotNull <- function(obj, item) {
+  if(is.null(obj)) return(NULL)
+  item
+}
+
+
+## ============================================ Define ui ==================================================
+
+header <- dashboardHeader(title = "HTSAnalyzeR2", dropdownMenu(type = "messages", icon = icon("cogs"), badgeStatus = NULL))
+
+sidebar <- dashboardSidebar(
+  sidebarMenu(
+    ifNotNull(gsca,
+           convertMenuItem(
+             menuItem("Enrichment Result",
+                      tabName = "table_tab",
+                      icon = icon("th-list"),
+                      gscaSeriesTickInput,
+                      selectInput('analysis_res', 'Analysis', availableAnalysis),
+                      selectInput('genesets_res', 'Gene Sets Collection', c(availableGeneSets, "ALL"))
+             ), "table_tab")),
+    ifNotNull(gsca,
+           convertMenuItem(
+             menuItem("Enrichment Map",
+                      tabName = "map_tab",
+                      icon = icon("area-chart"),
+                      selectInput('analysis_map', 'Analysis', availableAnalysis[-3]),
+                      selectInput('genesets_map', 'Gene Sets Collection', c(specificGenesetItem, availableGeneSets)),
+                      gscaProcessSlider
+             ), "map_tab")),
+    ifNotNull(nwa,
+           convertMenuItem(
+             menuItem("Network Analysis",
+                      tabName = "network_tab",
+                      icon = icon("area-chart"),
+                      nwaProcessSlider
+             ), "network_tab"))
+
+  )
+)
+
+body <- dashboardBody(
+  tabItems(
+    tabItem(
+      tabName = "table_tab",
+      fluidRow(
+        column(width = 9,
+               box(width = NULL, status = "success", solidHeader = FALSE, dataTableOutput("gsca_output"))),
+        column(width = 3,
+               valueBoxOutput("numGenesets", width = NULL),
+               valueBoxOutput("numAboveMinimum", width = NULL),
+               infoBoxOutput("para1", width = NULL),
+               infoBoxOutput("para2", width = NULL),
+               infoBoxOutput("para3", width = NULL))
+      )
+    ),
+
+    tabItem(tabName = "map_tab",
+            fluidRow(
+              column(width = 12,
+                     box(width = NULL, status = "success", solidHeader = TRUE,
+                         title = "Enrichment Map of GO_MF",
+                         forceGraphOutput("map_output")))
+            )
+    ),
+
+    tabItem(tabName = "network_tab",
+            fluidRow(
+              column(width = 12,
+                     box(width = NULL, status = "success", solidHeader = TRUE,
+                         title = "Network Analysis",
+                         forceGraphOutput("network_output")))
+            )
+    )),
+
+  includeHTML(HTMLSettings)
+
+)
+
+ui <- dashboardPage(header = header, sidebar = sidebar, body = body, skin = "blue")
+
+## ============================================ Define server ==============================================
+renderGSCASummary <- function(input, output) {
+  # HTSanalyzeR2:::generateGSCASummary(gscaObj)
+  output$numGenesets <- renderValueBox(valueBox(icon = icon("database"), color = "aqua",
+    value = 4015,
+    subtitle = "Gene sets in GO_MF."))
+  output$numAboveMinimum <- renderValueBox(valueBox(icon = icon("certificate"), color = "olive",
+    value = 347,
+    subtitle = "Above the minimum size."))
+  output$para1 <- renderValueBox(infoBox(icon = icon("wrench"), color = "teal",
+    value = 0.01,
+    title = "P-value Cutoff", subtitle = "Significant gene set cutoff p-value (adjusted)"))
+  output$para2 <- renderValueBox(infoBox(icon = icon("wrench"), color = "teal",
+    value = 20,
+    title = "Minimum size", subtitle = "Minimum gene set size"))
+  output$para3 <- renderValueBox(infoBox(icon = icon("wrench"), color = "teal",
+    value = "BH",
+    title = "Correction", subtitle = "MHT correction method"))
+}
+
+renderNWASummary <- function(input, output) {
+  # HTSanalyzeR2:::generateNWASummary(nwaObj)
+}
+
 create_enrich_map <- function(gscaObj, seriesObjs, input) {
-  options <- list(distance = 400)
   genesets <- ifelse(is.null(specificGeneset), input$genesets_map, names(gscaObj@listOfGeneSetCollections))
-  HTSanalyzeR2::viewEnrichMap(gscaObj,
-                resultName=paste0(input$analysis_map, ".results"),
-                gscs = genesets,
-                allSig=TRUE,
-                gsNameType="id",
-                specificGeneset = specificGeneset,
-                options = options,
-                seriesObjs = seriesObjs)
+  HTSanalyzeR2::viewEnrichMap(
+    gscaObj,
+    resultName=paste0(input$analysis_map, ".results"),
+    gscs = genesets,
+    allSig=TRUE,
+    gsNameType="id",
+    specificGeneset = specificGeneset,
+    seriesObjs = seriesObjs)
 }
 
 create_network <- function(nwaObj, seriesObjs) {
-  options <- list(distance = 400)
-  HTSanalyzeR2::viewSubNet(nwaObj, options = options, seriesObjs = seriesObjs)
+  HTSanalyzeR2::viewSubNet(nwaObj, seriesObjs = seriesObjs)
 }
 
-create_gsca_summary <- function(gscaObj) {
-  HTSanalyzeR2:::generateGSCASummary(gscaObj)
-}
-
-create_nwa_summary <- function(nwaObj) {
-  HTSanalyzeR2:::generateNWASummary(nwaObj)
-}
-
-## ============================================ Define ui ==================================================
-create_panel <- function(name) {
-  switch(name,
-         enrich_res_sidebar = wellPanel(
-           htmlOutput("gsca_summary"),
-           hr(), gscaSeriesTickInput,
-           selectInput('analysis_res', 'Analysis', availableAnalysis),
-           selectInput('genesets_res', 'Gene Sets Collection', c(availableGeneSets, "ALL"))),
-         enrich_res_content = dataTableOutput("gsca_output"),
-
-         settings = includeHTML(HTMLSettings),
-         enrich_map_sidebar = wellPanel(
-           h3("Enrichment Map"),
-           selectInput('analysis_map', 'Analysis', availableAnalysis[-3]),
-           selectInput('genesets_map', 'Gene Sets Collection', c(specificGenesetItem, availableGeneSets)),
-           gscaProcessSlider),
-         enrich_map_content = forceGraphOutput("map_output"),
-
-         network_sidebar = wellPanel(
-           htmlOutput("nwa_summary"),
-           nwaProcessSlider),
-         network_content = forceGraphOutput("network_output")
-  )
-}
-
-tabs <- list()
-if(!is.null(gsca)) {
-  tabs <- c(tabs, list(create_sidebar_tab("Enrichment Result", create_panel("enrich_res_sidebar"), create_panel("enrich_res_content"))))
-  tabs <- c(tabs, list(create_sidebar_setting_tab("Enrichment Map", create_panel("enrich_map_sidebar"), create_panel("settings"), create_panel("enrich_map_content"))))
-}
-if(!is.null(nwa)) {
-  tabs <- c(tabs, list(create_sidebar_setting_tab("Network Analysis", create_panel("network_sidebar"), create_panel("settings"), create_panel("network_content"))))
-}
-
-ui <- do.call(navbarPage, c(list(title="HTSanalyzeR2", fluid = TRUE, theme = shinytheme("yeti")), tabs))
-
-## ============================================ Define server ==============================================
 server <- function(input, output, session) {
-  observeEvent({input$series_tick_res
-    input$analysis_res
-    input$genesets_res}, {
+  observeEvent(
+    { input$series_tick_res
+      input$analysis_res
+      input$genesets_res },
+    {
       obj <- gsca
       if(gscaTS) {
         obj <- gscaObjs[[input$series_tick_res]]
       }
       output$gsca_output <- renderDataTable(create_data_table(obj, input$analysis_res, input$genesets_res))
-      output$gsca_summary <- renderUI(create_gsca_summary(obj))
-    })
+      renderGSCASummary(input, output)
+    }
+  )
 
   observeEvent(input$process_map, {
     output$map_output <- updateForceGraph(list(process = input$process_map))
   })
 
-  observeEvent({input$analysis_map
-    input$genesets_map}, {
+  observeEvent(
+    { input$analysis_map
+      input$genesets_map },
+    {
       output$map_output <- renderForceGraph(create_enrich_map(gsca, gscaObjs, input))
-    })
+    }
+  )
 
   observeEvent(input$process_net, {
     output$network_output <- updateForceGraph(list(process = input$process_net))
-    output$nwa_summary <- renderUI(create_nwa_summary(nwaObjs[[input$process_net]]))
+    renderNWASummary(input, output) # nwaObjs[[input$process_net]]
   })
 
   ## TODO: undefined behavior
   observeEvent({42}, {
     output$network_output <- renderForceGraph(create_network(nwa, nwaObjs))
-    output$nwa_summary <- renderUI(create_nwa_summary(nwa))
+    renderNWASummary(input, output) # nwaObjs[[input$process_net]]
   })
 }
 
