@@ -92,16 +92,6 @@ create_data_table <- function(gscaObj, analysis, genesets) {
   dt
 }
 
-convertMenuItem <- function(mi,tabName) {
-  mi$children[[1]]$attribs['data-toggle']="tab"
-  mi$children[[1]]$attribs['data-value'] = tabName
-  # mi$children[[1]]$attribs['aria-expanded'] = "false"
-  # if(length(mi$attribs$class)>0 && mi$attribs$class=="treeview"){
-  #   mi$attribs$class=NULL
-  # }
-  mi
-}
-
 ifNotNull <- function(obj, item) {
   if(is.null(obj)) return(NULL)
   item
@@ -117,31 +107,24 @@ sidebar <- dashboardSidebar(
     tags$head(
       includeScript(system.file("htmlwidgets/lib/btn.js", package="HTSanalyzeR2"))
     ),
-    ifNotNull(gsca,
-           convertMenuItem(
-             menuItem("Enrichment Result",
+    ifNotNull(gsca, menuItem("Enrichment Result",
                       tabName = "table_tab",
                       icon = icon("th-list"),
                       gscaSeriesTickInput,
                       selectInput('analysis_res', 'Analysis', availableAnalysis),
                       selectInput('genesets_res', 'Gene Sets Collection', c(availableGeneSets, "ALL"))
-             ), "table_tab")),
-    ifNotNull(gsca,
-           convertMenuItem(
-             menuItem("Enrichment Map",
+                      )),
+    ifNotNull(gsca, menuItem("Enrichment Map",
                       tabName = "map_tab",
                       icon = icon("area-chart"),
                       selectInput('analysis_map', 'Analysis', availableAnalysis[-3]),
                       selectInput('genesets_map', 'Gene Sets Collection', c(specificGenesetItem, availableGeneSets)),
                       gscaProcessSlider
-             ), "map_tab")),
-    ifNotNull(nwa,
-           convertMenuItem(
-             menuItem("Network Analysis",
+                      )),
+    ifNotNull(nwa, menuItem("Network Analysis",
                       tabName = "network_tab",
                       icon = icon("area-chart"),
-                      nwaProcessSlider
-             ), "network_tab"))
+                      nwaProcessSlider))
     )
 )
 
