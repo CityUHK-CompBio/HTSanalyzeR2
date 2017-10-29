@@ -96,6 +96,9 @@ convertMenuItem <- function(mi,tabName) {
   mi$children[[1]]$attribs['data-toggle']="tab"
   mi$children[[1]]$attribs['data-value'] = tabName
   # mi$children[[1]]$attribs['aria-expanded'] = "false"
+  # if(length(mi$attribs$class)>0 && mi$attribs$class=="treeview"){
+  #   mi$attribs$class=NULL
+  # }
   mi
 }
 
@@ -139,8 +142,7 @@ sidebar <- dashboardSidebar(
                       icon = icon("area-chart"),
                       nwaProcessSlider
              ), "network_tab"))
-
-  )
+    )
 )
 
 body <- dashboardBody(
@@ -175,7 +177,10 @@ body <- dashboardBody(
                          title = "Network Analysis",
                          forceGraphOutput("network_output")))
             )
-    )),
+    ),
+
+    tabItem(tabName = "dummy", fluidRow(colourInput("dummyColorInput", "")))
+  ),
 
   includeHTML(HTMLSettings)
 )
@@ -232,7 +237,7 @@ server <- function(input, output, session) {
       if(gscaTS) {
         obj <- gscaObjs[[input$series_tick_res]]
       }
-      output$gsca_output <- renderDataTable(create_data_table(obj, input$analysis_res, input$genesets_res))
+      output$gsca_output <- DT::renderDataTable(create_data_table(obj, input$analysis_res, input$genesets_res), server = FALSE)
       renderGSCASummary(input, output)
     }
   )
