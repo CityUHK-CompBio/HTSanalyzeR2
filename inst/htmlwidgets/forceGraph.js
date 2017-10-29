@@ -265,16 +265,7 @@ HTMLWidgets.widget(global = {
         //     global.generateControllers(state);
         //     configureSettingPanel(state);
         // }
-        global.replaceButtonAction();
-    },
 
-    replaceButtonAction: function() {
-        console.log("erere");
-        $('li.messages-menu').click(function (ev) {
-            ev.stopPropagation();
-            console.log("setting btn clicked")
-            $('#settingBar').toggleClass('active');
-         });
     },
 
     update: function(state, u) {
