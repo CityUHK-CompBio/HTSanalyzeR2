@@ -1,21 +1,20 @@
 HTMLWidgets.widget(global = {
     name: "forceGraph",
     type: "output",
-    store: {},
+    store: {currentTab: "default"},
 
     getElementState: function(el) {
         var elId = el.id;
         if (!(elId in global.store)) {
-            global.store[elId] = {elId: elId, currentKey: "default"};
+            global.store[elId] = {elId: elId, container:el, currentKey: "default"};
         }
         return global.store[elId];
     },
 
-    getCurrentConfig: function(state, x) {
-        if(x) { state.currentKey = JSON.stringify(x).hashCode().toString(); }
-
+    setCurrentConfig: function(state, x) {
+        state.currentKey = JSON.stringify(x).hashCode().toString();
         if(!(state.currentKey in state)) {
-            state[state.currentKey] = {
+             state[state.currentKey] = {
                 settings: {
                     minNodeSize: 3,
                     minEdgeSize: 1,
@@ -68,28 +67,35 @@ HTMLWidgets.widget(global = {
                 }
             };
         }
-
         return state[state.currentKey];
+    },
+
+    getCurrentConfig: function(state, x) {
+        var key = state.currentKey;
+        if(x) { key = JSON.stringify(x).hashCode().toString(); }
+
+        if(!(key in state)) {
+            return null;
+        }
+        return state[key];
     },
 
     initialize: function(el, width, height) {
         console.log("====================   initialize   ========================");
         el.style.height = "85vh";
-        var state = global.getElementState(el);
-        state.container = el;
+        var initState = global.getElementState(el);
+        initState.container = el;
+        registerForceGraph(global);
     },
 
     resize: function(el, width, height) {
         console.log("====================   resize   ========================");
-        // var state = global.getElementState(el);
     },
 
-    renderValue: function(el, x, simulation) {
+    renderValue: function(el, x) {
         console.log("====================   renderValue   ========================");
-        // console.log(el);
         console.log(x);
         var state = global.getElementState(el);
-        // state.container = el;
 
         if (x.update) {
             global.update(state, x);
@@ -98,24 +104,38 @@ HTMLWidgets.widget(global = {
         }
     },
 
+    switchTab: function(tabId) {
+        console.log("switching loging");
+        global.store.currentTab = tabId;
+    },
+
     construct: function(state, x) {
         console.log("======================   construct   ========================");
         // console.log(state);
 
-        var present = global.getCurrentConfig(state);
-        if ("sigma" in present) {
-            present.sigma.kill();
-            present.sigma = null;
+        if(!state.hasOwnProperty("supervisor")) {
+            var s = new sigma({
+              graph: { nodes: [], edges: [] },
+              renderer: {
+                container: state.container,
+                type: 'canvas',
+              },
+              settings: {}
+            });
+
+            sigma.layouts.killForceLink();
+            sigma.layouts.startForceLink(s, {});
+            var supervisor = sigma.layouts.stopForceLink();
+            state.supervisor = supervisor;
         }
-        state.container.innerHTML = '';
 
-        current = global.getCurrentConfig(state, x);
-
-        var g = null;
-        if (!("graph" in current)) {
-            global.mergeConfig(current, x);
-
-            g = { nodes: [], edges: [] };
+        config = global.setCurrentConfig(state, x);
+        if(!config.hasOwnProperty("metadata")) {
+            global.mergeConfig(config, x);
+            var meta = {};
+            
+            var g = { nodes: [], edges: [] };
+            // Init Graph
             N = x.nodes.id.length;
             E = x.links.source.length;
 
@@ -125,174 +145,179 @@ HTMLWidgets.widget(global = {
                     label : x.nodes.label[i],
                     x: Math.cos(2 * i * Math.PI / N ),
                     y: Math.sin(2 * i * Math.PI / N + Math.PI),
-                    size: x.nodes.size[i] * current.node.scale,
+                    size: x.nodes.size[i] * config.node.scale,
                     scheme: x.nodes.scheme[i]
                 });
             }
-
+            for(i =0; i < N; i++) {
+                if(x.nodes.scheme[i] != null) {
+                    var palette = config.scheme.dual[x.nodes.scheme[i]];
+                    c = _iterpolatePalette(palette, x.nodes.color[i]);
+                    g.nodes[i].color = h2rgba(c, config.node.opacity);
+                } else {
+                    g.nodes[i].color = h2rgba(config.node.NANodeColor, config.node.NANodeOpacity);
+                }
+            }
             for(var i = 0; i < E; i++) {
                 g.edges.push({
                     id: 'e' + i,
                     source: x.links.source[i],
                     target: x.links.target[i],
-                    size: x.links.weight[i] * current.edge.scale
+                    size: x.links.weight[i] * config.edge.scale
                 });
             }
 
-            // Color
-            for(i =0; i < N; i++) {
-                if(x.nodes.scheme[i] != null) {
-                    var palette = current.scheme.dual[x.nodes.scheme[i]];
-                    c = _iterpolatePalette(palette, x.nodes.color[i]);
-                    g.nodes[i].color = h2rgba(c, current.node.opacity);
-                } else {
-                    g.nodes[i].color = h2rgba(current.node.NANodeColor, current.node.NANodeOpacity);
-                }
-            }
-        } else {
-            g = current.graph;
+            var sigmaSettings = {
+                clone: false,
+                skipErrors: true,
+
+                minNodeSize: config.settings.minNodeSize,
+                minEdgeSize: config.settings.minEdgeSize,
+                maxNodeSize: config.settings.maxNodeSize * config.node.scale,
+                maxEdgeSize: config.settings.maxEdgeSize,
+
+                edgeColor: 'default',
+                defaultEdgeColor: h2rgba(config.edge.color, config.edge.opacity),
+
+                nodeBorderColor: 'default',
+                nodeBorderSize: config.node.borderWidth,
+                defaultNodeBorderColor: h2rgba(config.node.borderColor, config.node.borderOpacity),
+
+                defaultLabelSize: 14 * config.label.scale,
+                defaultLabelColor: h2rgba(config.label.color, config.label.opacity),
+                labelThreshold: 0,
+
+                enableEdgeHovering: false,
+                borderSize: 2,
+                outerBorderSize: 3,
+                nodeHaloColor: 'rgba(236, 81, 72, 0.1)',
+                nodeHaloSize: 30
+            };
+
+            var forceConfig = {
+                linLogMode: config.layout.linLogMode,
+                strongGravityMode:config.layout.strongGravityMode,
+                outboundAttractionDistribution: config.layout.outboundAttractionDistribution,
+                adjustSizes:config.layout.adjustSizes,
+                barnesHutOptimize: config.layout.barnesHutOptimize,
+
+                gravity:config.layout.gravity,
+                barnesHutTheta:config.layout.barnesHutTheta,
+                edgeWeightInfluence:config.layout.edgeWeightInfluence,
+                slowDown: config.layout.slowDown,
+                startingIterations: 1,
+                iterationsPerRender: 1,
+
+                autoStop:true,
+                avgDistanceThreshold:1e-6,
+                // maxIterations:100000,
+                easing:'quadraticInOut'
+            };
+
+            meta.graph = g;
+            meta.sigmaSettings = sigmaSettings;
+            meta.forceConfig = forceConfig;
+
+            config.meta = meta;
         }
 
-        var s = new sigma({
-          graph: g,
-          renderer: {
-            container: state.container,
-            type: 'canvas',
-          },
-          settings: {
-            clone: false,
-            skipErrors: true,
+        var sv = state.supervisor;
+        var meta = config.meta;
 
-            minNodeSize: current.settings.minNodeSize,
-            minEdgeSize: current.settings.minEdgeSize,
-            maxNodeSize: current.settings.maxNodeSize * current.node.scale,
-            maxEdgeSize: current.settings.maxEdgeSize,
+        sv.graph = meta.graph;
+        sv.config = meta.forceConfig;
+        sv.sigInst.graph.clear();
+        sv.sigInst.graph.read(meta.graph);
+        sv.sigInst.settings(meta.sigmaSettings);
 
-            edgeColor: 'default',
-            defaultEdgeColor: h2rgba(current.edge.color, current.edge.opacity),
+        sigma.layouts.killForceLink();
+        sigma.layouts.startForceLink(sv.sigInst, sv.config);
 
-            nodeBorderColor: 'default',
-            nodeBorderSize: current.node.borderWidth,
-            defaultNodeBorderColor: h2rgba(current.node.borderColor, current.node.borderOpacity),
+        // // Initialize the activeState plugin:
+        // var activeState = sigma.plugins.activeState(s);
+        // var keyboard = sigma.plugins.keyboard(s, s.renderers[0]);
+        // // Initialize the select plugin:
+        // var select = sigma.plugins.select(s, activeState);
+        // select.bindKeyboard(keyboard);
+        // // Initialize the dragNodes plugin:
+        // var dragListener = sigma.plugins.dragNodes(s, s.renderers[0], activeState);
 
-            defaultLabelSize: 14 * current.label.scale,
-            defaultLabelColor: h2rgba(current.label.color, current.label.opacity),
-			labelThreshold: 0,
+        // // Initialize the lasso plugin:
+        // var lasso = new sigma.plugins.lasso(s, s.renderers[0], {
+        //   'strokeStyle': 'rgb(236, 81, 72)',
+        //   'lineWidth': 2,
+        //   'fillWhileDrawing': true,
+        //   'fillStyle': 'rgba(236, 81, 72, 0.2)',
+        //   'cursor': 'crosshair'
+        // });
+        // select.bindLasso(lasso);
 
-            enableEdgeHovering: false,
-            borderSize: 2,
-            outerBorderSize: 3,
-            nodeHaloColor: 'rgba(236, 81, 72, 0.1)',
-            nodeHaloSize: 30,
-          }
-        });
-
-        var forceConfig = {
-            linLogMode: current.layout.linLogMode,
-            strongGravityMode:current.layout.strongGravityMode,
-            outboundAttractionDistribution: current.layout.outboundAttractionDistribution,
-            adjustSizes:current.layout.adjustSizes,
-            barnesHutOptimize: current.layout.barnesHutOptimize,
-
-            gravity:current.layout.gravity,
-            barnesHutTheta:current.layout.barnesHutTheta,
-            edgeWeightInfluence:current.layout.edgeWeightInfluence,
-            slowDown: current.layout.slowDown,
-            startingIterations: 1,
-            iterationsPerRender: 1,
-
-            autoStop:true,
-            avgDistanceThreshold:1e-6,
-            // maxIterations:100000,
-            easing:'quadraticInOut'
-        };
-        sigma.layouts.startForceLink(s, forceConfig);
-
-        // Initialize the activeState plugin:
-        var activeState = sigma.plugins.activeState(s);
-        var keyboard = sigma.plugins.keyboard(s, s.renderers[0]);
-        // Initialize the select plugin:
-        var select = sigma.plugins.select(s, activeState);
-        select.bindKeyboard(keyboard);
-        // Initialize the dragNodes plugin:
-        var dragListener = sigma.plugins.dragNodes(s, s.renderers[0], activeState);
-
-        // Initialize the lasso plugin:
-        var lasso = new sigma.plugins.lasso(s, s.renderers[0], {
-          'strokeStyle': 'rgb(236, 81, 72)',
-          'lineWidth': 2,
-          'fillWhileDrawing': true,
-          'fillStyle': 'rgba(236, 81, 72, 0.2)',
-          'cursor': 'crosshair'
-        });
-        select.bindLasso(lasso);
-
-        // halo on active nodes:
-        function renderHalo() {
-          s.renderers[0].halo({
-            nodes: activeState.nodes()
-          });
-        }
-
-        s.renderers[0].bind('render', function(e) {
-          renderHalo();
-        });
-
-        //"spacebar" + "s" keys pressed binding for the lasso tool
-        keyboard.bind('32+83', function() {
-          if (lasso.isActive) {
-            lasso.deactivate();
-          } else {
-            lasso.activate();
-          }
-        });
-
-        // Listen for selectedNodes event
-        lasso.bind('selectedNodes', function (event) {
-          setTimeout(function() {
-            lasso.deactivate();
-            s.refresh({ skipIdexation: true });
-          }, 0);
-        });
-
-        current.graph = g;
-        current.sigma = s;
-        current.data = x;
-        current.type = x.options.type;
-
-        // refreshSettingPanel(state);
-        // if (!("controllers" in state)) {
-        //     global.generateControllers(state);
-        //     configureSettingPanel(state);
+        // // halo on active nodes:
+        // function renderHalo() {
+        //   s.renderers[0].halo({
+        //     nodes: activeState.nodes()
+        //   });
         // }
+
+        // s.renderers[0].bind('render', function(e) {
+        //   renderHalo();
+        // });
+
+        // //"spacebar" + "s" keys pressed binding for the lasso tool
+        // keyboard.bind('32+83', function() {
+        //   if (lasso.isActive) {
+        //     lasso.deactivate();
+        //   } else {
+        //     lasso.activate();
+        //   }
+        // });
+
+        // // Listen for selectedNodes event
+        // lasso.bind('selectedNodes', function (event) {
+        //   setTimeout(function() {
+        //     lasso.deactivate();
+        //     s.refresh({ skipIdexation: true });
+        //   }, 0);
+        // });
+
+   //      current.graph = g;
+   //      current.sigma = s;
+   //      current.data = x;
+   //      current.type = x.options.type;
+
+   //      // refreshSettingPanel(state);
+   //      // if (!("controllers" in state)) {
+   //      //     global.generateControllers(state);
+   //      //     configureSettingPanel(state);
+   //      // }
 
     },
 
     update: function(state, u) {
         console.log("====================   Update    ========================");
-        var current = global.getCurrentConfig(state)
+        // var current = global.getCurrentConfig(state)
 
-        var g = current.graph;
-        var s = current.sigma;
-        var x = current.data;
-        var type = current.type;
+        // var g = current.graph;
+        // var s = current.sigma;
+        // var x = current.data;
+        // var type = current.type;
 
-        for(i = 0; i < g.nodes.length; i++) {
-            var tick = x.options.seriesData[u.process - 1];
-            g.nodes[i].theme = x.nodes["scheme." + tick][i];
+        // for(i = 0; i < g.nodes.length; i++) {
+        //     var tick = x.options.seriesData[u.process - 1];
+        //     g.nodes[i].theme = x.nodes["scheme." + tick][i];
 
-            if(g.nodes[i].theme != null) {
-                var palette = current.scheme.dual[g.nodes[i].theme];
-                c = _iterpolatePalette(palette, x.nodes.color[i]);
-                g.nodes[i].color = h2rgba(c, current.node.opacity);
-            } else {
-                g.nodes[i].color = h2rgba(current.node.NANodeColor, current.node.NANodeOpacity);
-            }
-        }
+        //     if(g.nodes[i].theme != null) {
+        //         var palette = current.scheme.dual[g.nodes[i].theme];
+        //         c = _iterpolatePalette(palette, x.nodes.color[i]);
+        //         g.nodes[i].color = h2rgba(c, current.node.opacity);
+        //     } else {
+        //         g.nodes[i].color = h2rgba(current.node.NANodeColor, current.node.NANodeOpacity);
+        //     }
+        // }
 
-        if (!sigma.layouts.isForceLinkRunning()) {
-            s.refresh();
-        }
+        // if (!sigma.layouts.isForceLinkRunning()) {
+        //     s.refresh();
+        // }
     },
 
     mergeConfig: function(config, x) {

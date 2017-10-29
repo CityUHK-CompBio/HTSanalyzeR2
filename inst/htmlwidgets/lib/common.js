@@ -62,3 +62,17 @@ var _iterpolatePalette = function(palette, value) {
   var rgb = _interpolateColor(color1, color2, factor);
   return r2h(rgb);
 };
+
+
+var forceGraphObj = null;
+
+var registerForceGraph = function(global) {
+  forceGraphObj = global;
+}
+
+var tabSwitched = function(tabId) {
+  // console.log("tab switched to " + tabId);
+  if(forceGraphObj != null) {
+    forceGraphObj.switchTab(tabId);
+  }
+}
