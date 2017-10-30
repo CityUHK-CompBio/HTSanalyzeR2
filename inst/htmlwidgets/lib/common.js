@@ -20,10 +20,9 @@ var tabSwitched = function(tabId) {
   // console.log("tab switched to " + tabId);
   if(forceGraphObj != null) {
     var el = $(tabId + " .forceGraph")[0];
-    forceGraphObj.switchTab(el);
+    el && forceGraphObj.switchTab(el);
   }
 }
-
 
 
 // Converts a #ffffff hex string into an [r,g,b] array

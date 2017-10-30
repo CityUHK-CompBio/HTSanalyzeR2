@@ -132,6 +132,7 @@ HTMLWidgets.widget(global = {
         registerForceGraph(global);
 
         global.initHandlers();
+        configureSettingHandlers(global.store.handlers);
     },
 
     resize: function(el, width, height) {
@@ -150,9 +151,83 @@ HTMLWidgets.widget(global = {
         }
     },
 
+    initPlugins: function(state) {
+        var s = state.supervisor.sigInst;
+
+        // Initialize the activeState plugin:
+        var activeState = sigma.plugins.activeState(s);
+        // Initialize the dragNodes plugin:
+        var dragListener = sigma.plugins.dragNodes(s, s.renderers[0], activeState);
+        // Initialize the select plugin:
+        var select = sigma.plugins.select(s, activeState);
+        
+        // Halo on active nodes:
+        s.renderers[0].bind('render', function(e) {
+          s.renderers[0].halo({
+            nodes: activeState.nodes()
+          });
+        });
+
+        var keyboard = sigma.plugins.keyboard(s, s.renderers[0]);
+        select.bindKeyboard(keyboard);
+
+        // Initialize the lasso plugin:
+        var lasso = new sigma.plugins.lasso(s, s.renderers[0], {
+          'strokeStyle': 'rgb(236, 81, 72)',
+          'lineWidth': 2,
+          'fillWhileDrawing': true,
+          'fillStyle': 'rgba(236, 81, 72, 0.2)',
+          'cursor': 'crosshair'
+        });
+
+        // // "spacebar" + "s" keys pressed binding for the lasso tool
+        // keyboard.bind('32+83', function() {
+        //   if (lasso.isActive) {
+        //     lasso.deactivate();
+        //   } else {
+        //     lasso.activate();
+        //   }
+        // });
+        
+        // select.bindLasso(lasso);
+
+        // // Listen for selectedNodes event
+        // lasso.bind('selectedNodes', function (event) {
+        //   setTimeout(function() {
+        //     lasso.deactivate();
+        //     s.refresh({ skipIdexation: true });
+        //   }, 0);
+        // });
+
+        state.plugins = { 
+            activeState: activeState, 
+            dragListener: dragListener, 
+            select: select, 
+            lasso: lasso, 
+            keyboard: keyboard
+        }
+
+    },
+
+    killPlugins: function(state) {
+        state.plugins.lasso.clear();
+        sigma.plugins.killActiveState();
+        sigma.plugins.killKeyboard(state.supervisor.sigInst);
+        sigma.plugins.killSelect(state.supervisor.sigInst);
+        sigma.plugins.killDragNodes(state.supervisor.sigInst);
+
+        state.plugins = null;
+    },
+
+
     switchTab: function(el) {
         console.log("====================   switchTab   ========================");
         if(global.store.currentTab != el) {
+            // Current
+            var state = global.getElementState(global.store.currentTab);
+            global.killPlugins(state);
+
+            // Target
             global.store.currentTab = el;
             var state = global.getElementState(el);
             if(state.hasOwnProperty("supervisor")) {
@@ -160,6 +235,7 @@ HTMLWidgets.widget(global = {
                 sigma.layouts.killForceLink();
                 sigma.layouts.startForceLink(sv.sigInst, sv.config);
                 sv.sigInst.refresh();
+                global.initPlugins(state);
             }
         }
     },
@@ -180,6 +256,8 @@ HTMLWidgets.widget(global = {
             sigma.layouts.killForceLink();
             sigma.layouts.startForceLink(s);
             state.supervisor = sigma.layouts.stopForceLink();
+
+            global.initPlugins(state);
         }
 
         config = global.setConfig(state, x);
@@ -291,62 +369,7 @@ HTMLWidgets.widget(global = {
         sigma.layouts.startForceLink(sv.sigInst, sv.config);
         sv.sigInst.refresh();
 
-        // // Initialize the activeState plugin:
-        // var activeState = sigma.plugins.activeState(s);
-        // var keyboard = sigma.plugins.keyboard(s, s.renderers[0]);
-        // // Initialize the select plugin:
-        // var select = sigma.plugins.select(s, activeState);
-        // select.bindKeyboard(keyboard);
-        // // Initialize the dragNodes plugin:
-        // var dragListener = sigma.plugins.dragNodes(s, s.renderers[0], activeState);
-
-        // // Initialize the lasso plugin:
-        // var lasso = new sigma.plugins.lasso(s, s.renderers[0], {
-        //   'strokeStyle': 'rgb(236, 81, 72)',
-        //   'lineWidth': 2,
-        //   'fillWhileDrawing': true,
-        //   'fillStyle': 'rgba(236, 81, 72, 0.2)',
-        //   'cursor': 'crosshair'
-        // });
-        // select.bindLasso(lasso);
-
-        // // halo on active nodes:
-        // function renderHalo() {
-        //   s.renderers[0].halo({
-        //     nodes: activeState.nodes()
-        //   });
-        // }
-
-        // s.renderers[0].bind('render', function(e) {
-        //   renderHalo();
-        // });
-
-        // //"spacebar" + "s" keys pressed binding for the lasso tool
-        // keyboard.bind('32+83', function() {
-        //   if (lasso.isActive) {
-        //     lasso.deactivate();
-        //   } else {
-        //     lasso.activate();
-        //   }
-        // });
-
-        // // Listen for selectedNodes event
-        // lasso.bind('selectedNodes', function (event) {
-        //   setTimeout(function() {
-        //     lasso.deactivate();
-        //     s.refresh({ skipIdexation: true });
-        //   }, 0);
-        // });
-
-
-   //      // refreshSettingPanel(state);
-   //      // if (!("controllers" in state)) {
-   //      //     global.generateControllers(state);
-   //      //     configureSettingPanel(state);
-   //      // }
-
         refreshSettingPanel(state, config);
-        configureSettingHandlers(global.store.handlers);
     },
 
     update: function(state, u) {
@@ -518,8 +541,8 @@ HTMLWidgets.widget(global = {
         // Color Scheme
         handlers.scheme = function(schemeId, domain, range) {
             console.log("scheme" + ": " + schemeId);
-            console.log(domain);
-            console.log(range);
+            // console.log(domain);
+            // console.log(range);
             var cur = global.currentSituation();
             var sv = cur.state.supervisor;
             var meta = cur.config.metadata;
@@ -556,6 +579,3 @@ HTMLWidgets.widget(global = {
         // }
     }
 });
-
-
-

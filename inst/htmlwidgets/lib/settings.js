@@ -255,6 +255,10 @@ refreshSettingPanel = function(state, config) {
 }
 
 configureSettingHandlers = function(handlers) {
+    if(handlers.hasOwnProperty('configured')) {
+        return;
+    }
+
     // Layout
     $("#layoutSwitches .checkbox input[value='layoutLinLogMode']").change(function() {
         handlers['linLogMode'](this.checked);
@@ -350,6 +354,11 @@ configureSettingHandlers = function(handlers) {
         renderPalette($("canvas#negPalette")[0], palette);
         handlers["scheme"]("dualNeg", palette.domain, palette.range);
     })
+
+
+
+
+    handlers['configured'] = true;
 }
 
 
