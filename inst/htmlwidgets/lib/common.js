@@ -33,6 +33,10 @@ var h2rgba = function(hex, alpha) {
   return r2rgba(h2r(hex), alpha);
 };
 
+var alpha2h = function(alpha) {
+  return (alpha * 255).toString(16);
+};
+
 // Interpolates two [r,g,b] colors and returns an [r,g,b] of the result
 // Taken from the awesome ROT.js roguelike dev library at
 // https://github.com/ondras/rot.js
@@ -71,7 +75,7 @@ var registerForceGraph = function(global) {
 }
 
 var tabSwitched = function(tabId) {
-  console.log("tab switched to " + tabId);
+  // console.log("tab switched to " + tabId);
   if(forceGraphObj != null) {
     var el = $(tabId + " .forceGraph")[0];
     forceGraphObj.switchTab(el);

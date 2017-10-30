@@ -35,9 +35,10 @@ HTMLWidgets.widget(global = {
                     slowDown: 200
                 },
                 label: {
+                    text: "id",
+                    scale: 1,
                     opacity: 1,
                     color: "#000000",
-                    scale: 1,
                 },
                 node: {
                     scale: 1,
@@ -157,12 +158,17 @@ HTMLWidgets.widget(global = {
                 });
             }
             for(i =0; i < N; i++) {
+                // color
                 if(x.nodes.scheme[i] != null) {
                     var palette = config.scheme.dual[x.nodes.scheme[i]];
                     c = _iterpolatePalette(palette, x.nodes.color[i]);
                     g.nodes[i].color = h2rgba(c, config.node.opacity);
                 } else {
                     g.nodes[i].color = h2rgba(config.node.NANodeColor, config.node.NANodeOpacity);
+                }
+                // label
+                if(x.nodes["label_" + config.label.text] != null) {
+                    g.nodes[i].label = x.nodes["label_" + config.label.text][i];
                 }
             }
             for(var i = 0; i < E; i++) {
@@ -183,6 +189,7 @@ HTMLWidgets.widget(global = {
                 maxNodeSize: config.settings.maxNodeSize * config.node.scale,
                 maxEdgeSize: config.settings.maxEdgeSize,
 
+                
                 edgeColor: 'default',
                 defaultEdgeColor: h2rgba(config.edge.color, config.edge.opacity),
 
@@ -190,6 +197,7 @@ HTMLWidgets.widget(global = {
                 nodeBorderSize: config.node.borderWidth,
                 defaultNodeBorderColor: h2rgba(config.node.borderColor, config.node.borderOpacity),
 
+                drawLabels: config.label.text != "none",
                 defaultLabelSize: 14 * config.label.scale,
                 defaultLabelColor: h2rgba(config.label.color, config.label.opacity),
                 labelThreshold: 0,
@@ -288,16 +296,14 @@ HTMLWidgets.widget(global = {
         //   }, 0);
         // });
 
-   //      current.graph = g;
-   //      current.sigma = s;
-   //      current.data = x;
-   //      current.type = x.options.type;
 
    //      // refreshSettingPanel(state);
    //      // if (!("controllers" in state)) {
    //      //     global.generateControllers(state);
    //      //     configureSettingPanel(state);
    //      // }
+
+        refreshSettingPanel(state, config);
 
     },
 
