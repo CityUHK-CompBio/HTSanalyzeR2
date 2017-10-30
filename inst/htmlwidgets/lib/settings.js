@@ -272,7 +272,6 @@
 
 
 
-
 renderPalette = function(canvas, domain, range) {
     // width should be 100, height should be 1
     var width = 100;
@@ -294,6 +293,7 @@ renderPalette = function(canvas, domain, range) {
 }
 
 updateShinyInput = function(panel, id, val) {
+    // ChangeValue via shiny. General but not robust.
     var element = $(".shiny-bound-input#" + id, panel);
     var data = element.data("shiny-input-binding");
     if (element.length > 0) {
@@ -310,32 +310,48 @@ refreshValues = function(panel, config) {
     $("#layoutSwitches .checkbox input[value='layoutAdjustSizes']", panel).prop("checked", config.layout.adjustSizes);
     $("#layoutSwitches .checkbox input[value='layoutBarnesHutOptimize']", panel).prop("checked", config.layout.barnesHutOptimize);
 
-    updateShinyInput(panel, "layoutGravity", config.layout.gravity);
-    updateShinyInput(panel, "layoutBarnesHutTheta", config.layout.barnesHutTheta);
-    updateShinyInput(panel, "layoutEdgeWeightInfluence", config.layout.edgeWeightInfluence);
-    updateShinyInput(panel, "layoutSlowDown", config.layout.slowDown);
+    $("#layoutGravity", panel).data("ionRangeSlider").update({from: config.layout.gravity});
+    $("#layoutBarnesHutTheta", panel).data("ionRangeSlider").update({from: config.layout.barnesHutTheta});
+    $("#layoutEdgeWeightInfluence", panel).data("ionRangeSlider").update({from: config.layout.edgeWeightInfluence});
+    $("#layoutSlowDown", panel).data("ionRangeSlider").update({from: config.layout.slowDown});
+    // updateShinyInput(panel, "layoutGravity", config.layout.gravity);
+    // updateShinyInput(panel, "layoutBarnesHutTheta", config.layout.barnesHutTheta);
+    // updateShinyInput(panel, "layoutEdgeWeightInfluence", config.layout.edgeWeightInfluence);
+    // updateShinyInput(panel, "layoutSlowDown", config.layout.slowDown);
 
     // Label
     $("#labelOption input[value='" + config.label.text + "']").prop("checked", true);
-    updateShinyInput(panel, "labelScale", config.label.scale);
-    updateShinyInput(panel, "labelColor", config.label.color + alpha2h(config.label.opacity));
+    $("#labelScale", panel).data("ionRangeSlider").update({from: config.label.scale});
+    $("#labelColor", panel).colourpicker("value", config.label.color + alpha2h(config.label.opacity));
+    // updateShinyInput(panel, "labelScale", config.);
+    // updateShinyInput(panel, "labelColor", );
+
     
     // Node
-    updateShinyInput(panel, "nodeScale", config.node.scale);
-    updateShinyInput(panel, "nodeOpacity", config.node.opacity);
-    updateShinyInput(panel, "nodeBorderWidth", config.node.borderWidth);
-    updateShinyInput(panel, "nodeBorderColor", config.node.borderColor + alpha2h(config.node.borderOpacity));
+    $("#nodeScale", panel).data("ionRangeSlider").update({from: config.node.scale});
+    $("#nodeOpacity", panel).data("ionRangeSlider").update({from: config.node.opacity});
+    $("#nodeBorderWidth", panel).data("ionRangeSlider").update({from: config.node.borderWidth});
+    $("#nodeBorderColor", panel).colourpicker("value", config.node.borderColor + alpha2h(config.node.borderOpacity));
+    // updateShinyInput(panel, "nodeScale", config.node.scale);
+    // updateShinyInput(panel, "nodeOpacity", config.node.opacity);
+    // updateShinyInput(panel, "nodeBorderWidth", config.node.borderWidth);
+    // updateShinyInput(panel, "nodeBorderColor", config.node.borderColor + alpha2h(config.node.borderOpacity));
 
     // Edge
-    updateShinyInput(panel, "edgeScale", config.edge.scale);
-    updateShinyInput(panel, "edgeColor", config.edge.color + alpha2h(config.edge.opacity));
+    $("#edgeScale", panel).data("ionRangeSlider").update({from: config.edge.scale});
+    $("#edgeColor", panel).colourpicker("value", config.edge.color + alpha2h(config.edge.opacity));
+    // updateShinyInput(panel, "edgeScale", config.edge.scale);
+    // updateShinyInput(panel, "edgeColor", config.edge.color + alpha2h(config.edge.opacity));
 
     // ColorScheme
-    updateShinyInput(panel, "posColor1", config.scheme.dual.Pos.range[0]);
-    updateShinyInput(panel, "posColor2", config.scheme.dual.Pos.range[1]);
-    updateShinyInput(panel, "negColor1", config.scheme.dual.Neg.range[0]);
-    updateShinyInput(panel, "negColor2", config.scheme.dual.Neg.range[1]);
-
+    $("#posColor1", panel).colourpicker("value", config.scheme.dual.Pos.range[0]);
+    $("#posColor2", panel).colourpicker("value", config.scheme.dual.Pos.range[1]);
+    $("#negColor1", panel).colourpicker("value", config.scheme.dual.Neg.range[0]);
+    $("#negColor2", panel).colourpicker("value", config.scheme.dual.Neg.range[1]);
+    // updateShinyInput(panel, "posColor1", config.scheme.dual.Pos.range[0]);
+    // updateShinyInput(panel, "posColor2", config.scheme.dual.Pos.range[1]);
+    // updateShinyInput(panel, "negColor1", config.scheme.dual.Neg.range[0]);
+    // updateShinyInput(panel, "negColor2", config.scheme.dual.Neg.range[1]);
     $("input#posValue1", panel).prop("value", config.scheme.dual.Pos.domain[0]);
     $("input#posValue2", panel).prop("value", config.scheme.dual.Pos.domain[1]);
     $("input#negValue1", panel).prop("value", config.scheme.dual.Neg.domain[0]);
@@ -357,4 +373,8 @@ refreshSettingPanel = function(state, config) {
 
     var panel = $("#settingBar");
     refreshValues(panel, config);
+}
+
+configureListeners = function(state, config) {
+
 }

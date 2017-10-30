@@ -34,7 +34,7 @@ var h2rgba = function(hex, alpha) {
 };
 
 var alpha2h = function(alpha) {
-  return (alpha * 255).toString(16);
+  return Math.floor(alpha * 255).toString(16);
 };
 
 // Interpolates two [r,g,b] colors and returns an [r,g,b] of the result
