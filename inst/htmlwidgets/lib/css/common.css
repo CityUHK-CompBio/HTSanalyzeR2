@@ -1,14 +1,3 @@
-/*.forceGraph {
-    border: 1px solid #DFDFDF;
-}*/
-
-.slider.slider-horizontal {
-    width: 100%;
-    height: 20px;
-}
-
-
-
 #settingBar {
     width: 300px;
     position: fixed;
@@ -26,12 +15,11 @@
     right: 0;
 }
 
-
 #settingBar ul li a {
-	color: #b8c7ce;
+    color: #b8c7ce;
     padding: 10px;
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 600;
     display: block;
 }
 
@@ -49,21 +37,15 @@
     background: #2c3b41;
 }
 
-
-
-ul ul a {
-    font-size: 12px !important;
-    font-weight: 400 !important;
-    padding-left: 30px !important;
-    background: rgb(44, 59, 65);
-}
-
 #settingBar .shiny-input-container {
-	padding:12px 15px 0px 15px;
+    padding:12px 15px 0px 15px;
 }
 
-/*#settingBar p {
-    color: #fff;
-    padding: 10px;
+#settingBar .irs-min, #settingBar .irs-max {
+    color: #cacaca;
 }
-*/
+
+#posColor2+.colourpicker-panel, #negColor2+.colourpicker-panel {
+    left: auto;
+    right: 0px;
+}
