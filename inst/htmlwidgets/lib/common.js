@@ -71,8 +71,9 @@ var registerForceGraph = function(global) {
 }
 
 var tabSwitched = function(tabId) {
-  // console.log("tab switched to " + tabId);
+  console.log("tab switched to " + tabId);
   if(forceGraphObj != null) {
-    forceGraphObj.switchTab(tabId);
+    var el = $(tabId + " .forceGraph")[0];
+    forceGraphObj.switchTab(el);
   }
 }

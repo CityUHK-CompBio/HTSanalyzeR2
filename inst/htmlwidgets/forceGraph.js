@@ -85,6 +85,7 @@ HTMLWidgets.widget(global = {
         el.style.height = "85vh";
         var initState = global.getElementState(el);
         initState.container = el;
+        // TODO: rmarkdown.
         registerForceGraph(global);
     },
 
@@ -104,9 +105,18 @@ HTMLWidgets.widget(global = {
         }
     },
 
-    switchTab: function(tabId) {
-        console.log("switching loging");
-        global.store.currentTab = tabId;
+    switchTab: function(el) {
+        console.log("====================   switchTab   ========================");
+        if(global.store.currentTab != el) {
+            global.store.currentTab = el;
+            var state = global.getElementState(el);
+            if(state.hasOwnProperty("supervisor")) {
+                var sv = state.supervisor;
+                sigma.layouts.killForceLink();
+                sigma.layouts.startForceLink(sv.sigInst, sv.config);
+                sv.sigInst.refresh();
+            }
+        }
     },
 
     construct: function(state, x) {
@@ -119,14 +129,12 @@ HTMLWidgets.widget(global = {
               renderer: {
                 container: state.container,
                 type: 'canvas',
-              },
-              settings: {}
+              }
             });
 
             sigma.layouts.killForceLink();
-            sigma.layouts.startForceLink(s, {});
-            var supervisor = sigma.layouts.stopForceLink();
-            state.supervisor = supervisor;
+            sigma.layouts.startForceLink(s);
+            state.supervisor = sigma.layouts.stopForceLink();
         }
 
         config = global.setCurrentConfig(state, x);
@@ -135,7 +143,6 @@ HTMLWidgets.widget(global = {
             var meta = {};
             
             var g = { nodes: [], edges: [] };
-            // Init Graph
             N = x.nodes.id.length;
             E = x.links.source.length;
 
@@ -214,6 +221,7 @@ HTMLWidgets.widget(global = {
                 easing:'quadraticInOut'
             };
 
+            meta.data = x;
             meta.graph = g;
             meta.sigmaSettings = sigmaSettings;
             meta.forceConfig = forceConfig;
@@ -224,14 +232,14 @@ HTMLWidgets.widget(global = {
         var sv = state.supervisor;
         var meta = config.meta;
 
-        sv.graph = meta.graph;
+        sv.graph.clear();
+        sv.graph.read(meta.graph);
         sv.config = meta.forceConfig;
-        sv.sigInst.graph.clear();
-        sv.sigInst.graph.read(meta.graph);
         sv.sigInst.settings(meta.sigmaSettings);
-
         sigma.layouts.killForceLink();
         sigma.layouts.startForceLink(sv.sigInst, sv.config);
+        sv.sigInst.refresh();
+
 
         // // Initialize the activeState plugin:
         // var activeState = sigma.plugins.activeState(s);
