@@ -38,22 +38,18 @@ HTMLWidgets.widget(global = {
                 label: {
                     text: "id",
                     scale: 1,
-                    opacity: 1,
-                    color: "#000000",
+                    color: "#000000FF"
                 },
                 node: {
                     scale: 1,
                     opacity: 0.9,
-                    borderColor: "#E6E6E6",
-                    borderOpacity: 0.7,
+                    borderColor: "#E6E6E6B2",
                     borderWidth: 1,
-                    NANodeColor: "#EDEDED",
-                    NANodeOpacity: 0.9,
+                    NANodeColor: "#EDEDEDE5"
                 },
                 edge : {
                     scale: 1,
-                    color: "#C6C6C6",
-                    opacity: 0.4,
+                    color: "#C6C6C666"
                 },
                 scheme: {
                     dual: {
@@ -209,10 +205,9 @@ HTMLWidgets.widget(global = {
                 // color
                 if(x.nodes.scheme[i] != null) {
                     var palette = config.scheme.dual[x.nodes.scheme[i]];
-                    c = _iterpolatePalette(palette, x.nodes.color[i]);
-                    g.nodes[i].color = h2rgba(c, config.node.opacity);
+                    g.nodes[i].color = _iterpolatePalette(palette, x.nodes.color[i], config.node.opacity);
                 } else {
-                    g.nodes[i].color = h2rgba(config.node.NANodeColor, config.node.NANodeOpacity);
+                    g.nodes[i].color = hex2rgba(config.node.NANodeColor);
                 }
                 // label
                 if(x.nodes["label_" + config.label.text] != null) {
@@ -239,15 +234,15 @@ HTMLWidgets.widget(global = {
 
                 
                 edgeColor: 'default',
-                defaultEdgeColor: h2rgba(config.edge.color, config.edge.opacity),
+                defaultEdgeColor: hex2rgba(config.edge.color),
 
                 nodeBorderColor: 'default',
                 nodeBorderSize: config.node.borderWidth,
-                defaultNodeBorderColor: h2rgba(config.node.borderColor, config.node.borderOpacity),
+                defaultNodeBorderColor: hex2rgba(config.node.borderColor),
 
                 drawLabels: config.label.text != "none",
                 defaultLabelSize: 14 * config.label.scale,
-                defaultLabelColor: h2rgba(config.label.color, config.label.opacity),
+                defaultLabelColor: hex2rgba(config.label.color),
                 labelThreshold: 0,
 
                 enableEdgeHovering: false,
@@ -295,7 +290,6 @@ HTMLWidgets.widget(global = {
         sigma.layouts.killForceLink();
         sigma.layouts.startForceLink(sv.sigInst, sv.config);
         sv.sigInst.refresh();
-
 
         // // Initialize the activeState plugin:
         // var activeState = sigma.plugins.activeState(s);
@@ -352,9 +346,7 @@ HTMLWidgets.widget(global = {
    //      // }
 
         refreshSettingPanel(state, config);
-
         configureSettingHandlers(global.store.handlers);
-
     },
 
     update: function(state, u) {
@@ -372,10 +364,9 @@ HTMLWidgets.widget(global = {
 
             if(g.nodes[i].theme != null) {
                 var palette = config.scheme.dual[g.nodes[i].theme];
-                c = _iterpolatePalette(palette, x.nodes.color[i]);
-                g.nodes[i].color = h2rgba(c, config.node.opacity);
+                g.nodes[i].color = _iterpolatePalette(palette, x.nodes.color[i], config.node.opacity);
             } else {
-                g.nodes[i].color = h2rgba(config.node.NANodeColor, config.node.NANodeOpacity);
+                g.nodes[i].color = hex2rgba(config.node.NANodeColor);
             }
         }
 
@@ -476,8 +467,7 @@ HTMLWidgets.widget(global = {
             for(var i = 0; i < meta.graph.nodes.length; i++) {
                 if(meta.graph.nodes[i].scheme != null) {
                     var palette = cur.config.scheme.dual[meta.graph.nodes[i].scheme];
-                    c = _iterpolatePalette(palette, meta.data.nodes.color[i]);
-                    meta.graph.nodes[i].color = h2rgba(c, val)
+                    meta.graph.nodes[i].color = _iterpolatePalette(palette, meta.data.nodes.color[i], cur.config.node.opacity);
                 }
             }
             sv.sigInst.refresh();
@@ -525,25 +515,29 @@ HTMLWidgets.widget(global = {
             sv.sigInst.refresh();
         }
 
-        // // Color Scheme
-        // state.controllers.scheme = function(schemeId, domain, range) {
+        // Color Scheme
+        handlers.scheme = function(schemeId, domain, range) {
+            console.log("scheme" + ": " + schemeId);
+            console.log(domain);
+            console.log(range);
+            var cur = global.currentSituation();
+            var sv = cur.state.supervisor;
+            var meta = cur.config.metadata;
 
-        //     var cur = getConfig(state);
-        //     if (schemeId.startsWith("dual")) {
-        //         var sch = schemeId.replace("dual", "");
-        //         cur.current.scheme.dual[sch].domain = domain;
-        //         cur.current.scheme.dual[sch].range = range;
+            if (schemeId.startsWith("dual")) {
+                var sch = schemeId.replace("dual", "");
+                cur.config.scheme.dual[sch].domain = domain;
+                cur.config.scheme.dual[sch].range = range;
 
-        //         for (i = 0; i < cur.g.nodes.length; i++) {
-        //             if(cur.g.nodes[i].scheme == sch) {
-        //                 var palette = cur.current.scheme.dual[sch];
-        //                 c = _iterpolatePalette(palette, cur.x.nodes.color[i]);
-        //                 cur.g.nodes[i].color = h2rgba(c, cur.current.node.opacity);
-        //             }
-        //         }
-        //     }
-        //     cur.s.refresh();
-        // }
+                for(var i = 0; i < meta.graph.nodes.length; i++) {
+                    var palette = cur.config.scheme.dual[sch];
+                    if(meta.graph.nodes[i].scheme == sch) {
+                        meta.graph.nodes[i].color = _iterpolatePalette(palette, meta.data.nodes.color[i], cur.config.node.opacity);
+                    }
+                }
+                sv.sigInst.refresh();
+            }
+        }
 
         // // Buttons
         // state.controllers.pause = function() {
@@ -562,3 +556,6 @@ HTMLWidgets.widget(global = {
         // }
     }
 });
+
+
+
