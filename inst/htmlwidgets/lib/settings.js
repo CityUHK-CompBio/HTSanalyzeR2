@@ -314,44 +314,27 @@ refreshValues = function(panel, config) {
     $("#layoutBarnesHutTheta", panel).data("ionRangeSlider").update({from: config.layout.barnesHutTheta});
     $("#layoutEdgeWeightInfluence", panel).data("ionRangeSlider").update({from: config.layout.edgeWeightInfluence});
     $("#layoutSlowDown", panel).data("ionRangeSlider").update({from: config.layout.slowDown});
-    // updateShinyInput(panel, "layoutGravity", config.layout.gravity);
-    // updateShinyInput(panel, "layoutBarnesHutTheta", config.layout.barnesHutTheta);
-    // updateShinyInput(panel, "layoutEdgeWeightInfluence", config.layout.edgeWeightInfluence);
-    // updateShinyInput(panel, "layoutSlowDown", config.layout.slowDown);
 
     // Label
-    $("#labelOption input[value='" + config.label.text + "']").prop("checked", true);
+    $("#labelOption input[value='" + config.label.text + "']", panel).prop("checked", true);
     $("#labelScale", panel).data("ionRangeSlider").update({from: config.label.scale});
     $("#labelColor", panel).colourpicker("value", config.label.color + alpha2h(config.label.opacity));
-    // updateShinyInput(panel, "labelScale", config.);
-    // updateShinyInput(panel, "labelColor", );
-
     
     // Node
     $("#nodeScale", panel).data("ionRangeSlider").update({from: config.node.scale});
     $("#nodeOpacity", panel).data("ionRangeSlider").update({from: config.node.opacity});
     $("#nodeBorderWidth", panel).data("ionRangeSlider").update({from: config.node.borderWidth});
     $("#nodeBorderColor", panel).colourpicker("value", config.node.borderColor + alpha2h(config.node.borderOpacity));
-    // updateShinyInput(panel, "nodeScale", config.node.scale);
-    // updateShinyInput(panel, "nodeOpacity", config.node.opacity);
-    // updateShinyInput(panel, "nodeBorderWidth", config.node.borderWidth);
-    // updateShinyInput(panel, "nodeBorderColor", config.node.borderColor + alpha2h(config.node.borderOpacity));
 
     // Edge
     $("#edgeScale", panel).data("ionRangeSlider").update({from: config.edge.scale});
     $("#edgeColor", panel).colourpicker("value", config.edge.color + alpha2h(config.edge.opacity));
-    // updateShinyInput(panel, "edgeScale", config.edge.scale);
-    // updateShinyInput(panel, "edgeColor", config.edge.color + alpha2h(config.edge.opacity));
 
     // ColorScheme
     $("#posColor1", panel).colourpicker("value", config.scheme.dual.Pos.range[0]);
     $("#posColor2", panel).colourpicker("value", config.scheme.dual.Pos.range[1]);
     $("#negColor1", panel).colourpicker("value", config.scheme.dual.Neg.range[0]);
     $("#negColor2", panel).colourpicker("value", config.scheme.dual.Neg.range[1]);
-    // updateShinyInput(panel, "posColor1", config.scheme.dual.Pos.range[0]);
-    // updateShinyInput(panel, "posColor2", config.scheme.dual.Pos.range[1]);
-    // updateShinyInput(panel, "negColor1", config.scheme.dual.Neg.range[0]);
-    // updateShinyInput(panel, "negColor2", config.scheme.dual.Neg.range[1]);
     $("input#posValue1", panel).prop("value", config.scheme.dual.Pos.domain[0]);
     $("input#posValue2", panel).prop("value", config.scheme.dual.Pos.domain[1]);
     $("input#negValue1", panel).prop("value", config.scheme.dual.Neg.domain[0]);
@@ -375,6 +358,104 @@ refreshSettingPanel = function(state, config) {
     refreshValues(panel, config);
 }
 
-configureListeners = function(state, config) {
+configureSettingHandlers = function(handlers) {
+    // Layout
+    $("#layoutSwitches .checkbox input[value='layoutLinLogMode']").change(function() {
+        handlers['linLogMode'](this.checked);
+    });
+    $("#layoutSwitches .checkbox input[value='layoutStrongGravityMode']").change(function() {
+        handlers['strongGravityMode'](this.checked);
+    });
+    $("#layoutSwitches .checkbox input[value='layoutOutboundAttractionDistribution']").change(function() {
+        handlers['outboundAttractionDistribution'](this.checked);
+    });
+    $("#layoutSwitches .checkbox input[value='layoutAdjustSizes']").change(function() {
+        handlers['adjustSizes'](this.checked);
+    });
+    $("#layoutSwitches .checkbox input[value='layoutBarnesHutOptimize']").change(function() {
+        handlers['barnesHutOptimize'](this.checked);
+    });
+
+    $("#layoutGravity").on("change", function() {
+        var value = $(this).prop("value");
+        handlers["gravity"](value);
+    });
+    $("#layoutBarnesHutTheta").on("change", function() {
+        var value = $(this).prop("value");
+        handlers["barnesHutTheta"](value);
+    });
+    $("#layoutEdgeWeightInfluence").on("change", function() {
+        var value = $(this).prop("value");
+        handlers["edgeWeightInfluence"](value);
+    });
+    $("#layoutSlowDown").on("change", function() {
+        var value = $(this).prop("value");
+        handlers["slowDown"](value);
+    });
+
+    // Label
+    $("#labelOption input").change(function(ev) {
+        var value = ev.currentTarget.value;
+        handlers["labelOption"](value);
+    });
+    $("#labelScale").on("change", function() {
+        var value = $(this).prop("value");
+        handlers["labelScale"](value);
+    });
+    $("#labelColor").on("change", function() {
+        var value = $(this).colourpicker("value");
+        handlers["labelColor"](value);
+    });
+
+    // Node
+    $("#nodeScale").on("change", function() {
+        var value = $(this).prop("value");
+        handlers["nodeScale"](value);
+    });
+    $("#nodeOpacity").on("change", function() {
+        var value = $(this).prop("value");
+        handlers["nodeOpacity"](value);
+    });
+    $("#nodeBorderWidth").on("change", function() {
+        var value = $(this).prop("value");
+        handlers["nodeBorderWidth"](value);
+    });
+    $("#nodeBorderColor").on("change", function() {
+        var value = $(this).colourpicker("value");
+        handlers["nodeBorderColor"](value);
+    });
+    
+    // Edge
+    $("#edgeScale").on("change", function() {
+        var value = $(this).prop("value");
+        handlers["edgeScale"](value);
+    });
+    $("#edgeColor").on("change", function() {
+        var value = $(this).colourpicker("value");
+        handlers["edgeColor"](value);
+    });
+
+
 
 }
+
+
+
+//     // // ColorScheme
+//     // $("#posColor1", panel).colourpicker("value", config.scheme.dual.Pos.range[0]);
+//     // $("#posColor2", panel).colourpicker("value", config.scheme.dual.Pos.range[1]);
+//     // $("#negColor1", panel).colourpicker("value", config.scheme.dual.Neg.range[0]);
+//     // $("#negColor2", panel).colourpicker("value", config.scheme.dual.Neg.range[1]);
+//     // $("input#posValue1", panel).prop("value", config.scheme.dual.Pos.domain[0]);
+//     // $("input#posValue2", panel).prop("value", config.scheme.dual.Pos.domain[1]);
+//     // $("input#negValue1", panel).prop("value", config.scheme.dual.Neg.domain[0]);
+//     // $("input#negValue2", panel).prop("value", config.scheme.dual.Neg.domain[1]);
+
+//     // renderPalette($("canvas#posPalette", panel)[0], config.scheme.dual.Pos.domain, config.scheme.dual.Pos.range);
+//     // renderPalette($("canvas#negPalette", panel)[0], config.scheme.dual.Neg.domain, config.scheme.dual.Neg.range);
+
+//     // $("input#posValue1", panel).css("color", $("input#posColor1", panel).css("color"));
+//     // $("input#posValue2", panel).css("color", $("input#posColor2", panel).css("color"));
+//     // $("input#negValue1", panel).css("color", $("input#negColor1", panel).css("color"));
+//     // $("input#negValue2", panel).css("color", $("input#negColor2", panel).css("color"));
+// }

@@ -67,7 +67,6 @@ var _iterpolatePalette = function(palette, value) {
   return r2h(rgb);
 };
 
-
 var forceGraphObj = null;
 
 var registerForceGraph = function(global) {
@@ -80,4 +79,13 @@ var tabSwitched = function(tabId) {
     var el = $(tabId + " .forceGraph")[0];
     forceGraphObj.switchTab(el);
   }
+}
+
+var hex2rgba = function(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})?[a-f\d]*$/i.exec(hex + "ff");
+  var rgba = [0, 0, 0, 1];
+  if (result) {
+    rgba = [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16), parseInt(result[4], 16) / 255.0];
+  }
+  return "rgba(" + rgba.join(",") + ")";
 }
