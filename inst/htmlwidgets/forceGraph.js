@@ -226,11 +226,11 @@ HTMLWidgets.widget(global = {
             meta.sigmaSettings = sigmaSettings;
             meta.forceConfig = forceConfig;
 
-            config.meta = meta;
+            config.metadata = meta;
         }
 
         var sv = state.supervisor;
-        var meta = config.meta;
+        var meta = config.metadata;
 
         sv.graph.clear();
         sv.graph.read(meta.graph);
@@ -303,29 +303,29 @@ HTMLWidgets.widget(global = {
 
     update: function(state, u) {
         console.log("====================   Update    ========================");
-        // var current = global.getCurrentConfig(state)
+        console.log(u);
+        var config = global.getCurrentConfig(state);
+        var sv = state.supervisor;
+        var meta = config.metadata;
 
-        // var g = current.graph;
-        // var s = current.sigma;
-        // var x = current.data;
-        // var type = current.type;
+        var x = meta.data;
+        var g = meta.graph;
+        for(var i = 0; i < g.nodes.length; i++) {
+            var tick = x.options.seriesData[u.process - 1];
+            g.nodes[i].theme = x.nodes["scheme." + tick][i];
 
-        // for(i = 0; i < g.nodes.length; i++) {
-        //     var tick = x.options.seriesData[u.process - 1];
-        //     g.nodes[i].theme = x.nodes["scheme." + tick][i];
+            if(g.nodes[i].theme != null) {
+                var palette = config.scheme.dual[g.nodes[i].theme];
+                c = _iterpolatePalette(palette, x.nodes.color[i]);
+                g.nodes[i].color = h2rgba(c, config.node.opacity);
+            } else {
+                g.nodes[i].color = h2rgba(config.node.NANodeColor, config.node.NANodeOpacity);
+            }
+        }
 
-        //     if(g.nodes[i].theme != null) {
-        //         var palette = current.scheme.dual[g.nodes[i].theme];
-        //         c = _iterpolatePalette(palette, x.nodes.color[i]);
-        //         g.nodes[i].color = h2rgba(c, current.node.opacity);
-        //     } else {
-        //         g.nodes[i].color = h2rgba(current.node.NANodeColor, current.node.NANodeOpacity);
-        //     }
-        // }
-
-        // if (!sigma.layouts.isForceLinkRunning()) {
-        //     s.refresh();
-        // }
+        if (!sigma.layouts.isForceLinkRunning()) {
+            sv.sigInst.refresh();
+        }
     },
 
     mergeConfig: function(config, x) {
