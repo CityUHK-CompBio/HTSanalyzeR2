@@ -188,6 +188,12 @@ renderPalette = function(canvas, palette) {
     context.putImageData(image, 0, 0);
 }
 
+uniTextColors = function(scheme) {
+    // scheme = "pos" / "neg"
+    $("input#" + scheme + "Value1").css("color", $("input#" + scheme + "Color1").css("color"));
+    $("input#" + scheme + "Value2").css("color", $("input#" + scheme + "Color2").css("color"));
+}
+
 updateShinyInput = function(panel, id, val) {
     // ChangeValue via shiny. General but not robust.
     var element = $(".shiny-bound-input#" + id, panel);
@@ -238,11 +244,8 @@ refreshValues = function(panel, config) {
 
     renderPalette($("canvas#posPalette", panel)[0], config.scheme.dual.Pos);
     renderPalette($("canvas#negPalette", panel)[0], config.scheme.dual.Neg);
-
-    $("input#posValue1", panel).css("color", $("input#posColor1", panel).css("color"));
-    $("input#posValue2", panel).css("color", $("input#posColor2", panel).css("color"));
-    $("input#negValue1", panel).css("color", $("input#negColor1", panel).css("color"));
-    $("input#negValue2", panel).css("color", $("input#negColor2", panel).css("color"));
+    uniTextColors("pos");
+    uniTextColors("neg");
 }
 
 refreshSettingPanel = function(state, config) {
@@ -347,16 +350,15 @@ configureSettingHandlers = function(handlers) {
     $("#dualPos input").on("change", function() {
         var palette = fetchSchemeValues("pos");
         renderPalette($("canvas#posPalette")[0], palette);
+        uniTextColors("pos");
         handlers["scheme"]("dualPos", palette.domain, palette.range);
     })    
     $("#dualNeg input").on("change", function() {
         var palette = fetchSchemeValues("neg");
         renderPalette($("canvas#negPalette")[0], palette);
+        uniTextColors("neg");
         handlers["scheme"]("dualNeg", palette.domain, palette.range);
     })
-
-
-
 
     handlers['configured'] = true;
 }
