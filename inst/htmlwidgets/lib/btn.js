@@ -8,8 +8,6 @@ $(function() {
 	var firstTab = $('section.sidebar ul.sidebar-menu li a').first().attr("href");
 	$('li.messages-menu').css("display", firstTab == "#shiny-tab-table_tab" ? "none" : "block");
 	
-	$(".tab-content .tab-pane").first().addClass("active");
-
 	$('section.sidebar ul.sidebar-menu li').click(function(ev) {
 		// console.log(ev.currentTarget);
 		$(".tab-content .tab-pane.active").removeClass("active")
@@ -22,4 +20,6 @@ $(function() {
 		tabSwitched(tabId);
 	});
 
+	var tabId = $('section.sidebar ul.sidebar-menu li a').first().attr("href");
+	$(".tab-content .tab-pane" + tabId).addClass("active");
 });
