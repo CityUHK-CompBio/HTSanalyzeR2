@@ -108,24 +108,24 @@ sidebar <- dashboardSidebar(
       includeScript(system.file("htmlwidgets/lib/btn.js", package="HTSanalyzeR2"))
     ),
     ifNotNull(gsca, menuItem("Enrichment Result",
-                      tabName = "table_tab",
-                      icon = icon("th-list"),
-                      gscaSeriesTickInput,
-                      selectInput('analysis_res', 'Analysis', availableAnalysis),
-                      selectInput('genesets_res', 'Gene Sets Collection', c(availableGeneSets, "ALL"))
-                      )),
+                             tabName = "table_tab",
+                             icon = icon("th-list"),
+                             gscaSeriesTickInput,
+                             selectInput('analysis_res', 'Analysis', availableAnalysis),
+                             selectInput('genesets_res', 'Gene Sets Collection', c(availableGeneSets, "ALL"))
+    )),
     ifNotNull(gsca, menuItem("Enrichment Map",
-                      tabName = "map_tab",
-                      icon = icon("area-chart"),
-                      selectInput('analysis_map', 'Analysis', availableAnalysis[-3]),
-                      selectInput('genesets_map', 'Gene Sets Collection', c(specificGenesetItem, availableGeneSets)),
-                      gscaProcessSlider
-                      )),
+                             tabName = "map_tab",
+                             icon = icon("area-chart"),
+                             selectInput('analysis_map', 'Analysis', availableAnalysis[-3]),
+                             selectInput('genesets_map', 'Gene Sets Collection', c(specificGenesetItem, availableGeneSets)),
+                             gscaProcessSlider
+    )),
     ifNotNull(nwa, menuItem("Network Analysis",
-                      tabName = "network_tab",
-                      icon = icon("area-chart"),
-                      nwaProcessSlider))
-    )
+                            tabName = "network_tab",
+                            icon = icon("area-chart"),
+                            nwaProcessSlider))
+  )
 )
 
 body <- dashboardBody(
@@ -162,7 +162,9 @@ body <- dashboardBody(
             )
     ),
 
-    tabItem(tabName = "dummy", fluidRow(colourInput("dummyColorInput", "")))
+    tabItem(tabName = "dummy", fluidRow(
+      colourInput("dummyColorInput", ""),
+      sliderInput("dummySliderInput", "", 0, 1, 0)))
   ),
 
   includeHTML(HTMLSettings)
@@ -174,20 +176,20 @@ ui <- dashboardPage(header = header, sidebar = sidebar, body = body, skin = "blu
 renderGSCASummary <- function(input, output) {
   # HTSanalyzeR2:::generateGSCASummary(gscaObj)
   output$numGenesets <- renderValueBox(valueBox(icon = icon("database"), color = "aqua",
-    value = 4015,
-    subtitle = "Gene sets in GO_MF."))
+                                                value = 4015,
+                                                subtitle = "Gene sets in GO_MF."))
   output$numAboveMinimum <- renderValueBox(valueBox(icon = icon("certificate"), color = "olive",
-    value = 347,
-    subtitle = "Above the minimum size."))
+                                                    value = 347,
+                                                    subtitle = "Above the minimum size."))
   output$para1 <- renderValueBox(infoBox(icon = icon("wrench"), color = "teal",
-    value = 0.01,
-    title = "P-value Cutoff", subtitle = "Significant gene set cutoff p-value (adjusted)"))
+                                         value = 0.01,
+                                         title = "P-value Cutoff", subtitle = "Significant gene set cutoff p-value (adjusted)"))
   output$para2 <- renderValueBox(infoBox(icon = icon("wrench"), color = "teal",
-    value = 20,
-    title = "Minimum size", subtitle = "Minimum gene set size"))
+                                         value = 20,
+                                         title = "Minimum size", subtitle = "Minimum gene set size"))
   output$para3 <- renderValueBox(infoBox(icon = icon("wrench"), color = "teal",
-    value = "BH",
-    title = "Correction", subtitle = "MHT correction method"))
+                                         value = "BH",
+                                         title = "Correction", subtitle = "MHT correction method"))
 }
 
 renderNWASummary <- function(input, output) {
