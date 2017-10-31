@@ -26,7 +26,8 @@ Imports:
     knitr,
     dplyr,
     shiny,
-    shinythemes
+    shinydashboard,
+    colourpicker
 Collate: 
     'utils.R'
     'class_union.R'
