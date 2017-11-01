@@ -38,7 +38,7 @@
 }
 
 #settingBar .shiny-input-container {
-    padding:12px 15px 0px 15px;
+    padding: 12px 15px 0px 15px;
 }
 
 #settingBar .irs-min, #settingBar .irs-max {
@@ -49,3 +49,18 @@
     left: auto;
     right: 0px;
 }
+
+
+.cust-setting-btn {
+    float: right;
+    font-size: 14px;
+    padding: 10px 10px 10px 10px;
+    margin: -10px 0px -10px 0px;
+}
+
+.cust-setting-btn:hover  {
+    background: rgba(0, 0, 0, 0.1);
+    color: white;
+}
+
+

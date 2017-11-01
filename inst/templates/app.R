@@ -104,9 +104,6 @@ header <- dashboardHeader(title = "HTSAnalyzeR2", dropdownMenu(type = "messages"
 
 sidebar <- dashboardSidebar(
   sidebarMenu(
-    tags$head(
-      includeScript(system.file("htmlwidgets/lib/btn.js", package="HTSanalyzeR2"))
-    ),
     ifNotNull(gsca, menuItem("Enrichment Result",
                              tabName = "table_tab",
                              icon = icon("th-list"),

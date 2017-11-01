@@ -562,20 +562,31 @@ HTMLWidgets.widget(global = {
             }
         }
 
-        // // Buttons
-        // state.controllers.pause = function() {
-        //     sigma.layouts.stopForceLink();
-        // }
+        // Custom Buttons
+        handlers.pause = function() {
+            console.log("pause");
+            var cur = global.currentSituation();
+            var sv = cur.state.supervisor;
 
-        // state.controllers.refresh = function() {
-        //     var cur = getConfig(state);
-        //     sigma.layouts.startForceLink(cur.s);
-        // }
+            sigma.layouts.stopForceLink();
+        }
 
-        // state.controllers.saveSVG = function() {
-        //     var cur = getConfig(state);
-        //     cur = global.getConfig(state)
-        //     cur.sigma.toSVG({download: true, labels:true, filename: 'network.svg', size: 2000});
-        // }
+        handlers.refresh = function() {
+            console.log("refresh");
+            var cur = global.currentSituation();
+            var sv = cur.state.supervisor;
+
+            sigma.layouts.startForceLink(sv.sigInst);
+        }
+
+        handlers.saveSVG = function() {
+            console.log("saveSVG");
+            var cur = global.currentSituation();
+            var sv = cur.state.supervisor;
+            var elem = $(cur.state.container);
+
+            sv.sigInst.toSVG({download: true, labels:true, filename: 'network.svg', width: elem.width(), height: elem.height()})
+        }
     }
 });
+
