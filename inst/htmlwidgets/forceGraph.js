@@ -19,8 +19,6 @@ HTMLWidgets.widget(global = {
                 settings: {
                     minNodeSize: 3,
                     minEdgeSize: 1,
-                    // maxNodeSize: 40,
-                    // maxEdgeSize: 8,
                     maxNodeSize: 10,
                     maxEdgeSize: 3
                 },
@@ -102,7 +100,6 @@ HTMLWidgets.widget(global = {
         }
 
         // TODO: Use uneven scalers
-        // if("scheme" in options) {}
         if ("Pos" in x.options.colorDomain) {
             config.scheme.dual.Pos.domain = x.options.colorDomain.Pos;
         }
@@ -242,7 +239,6 @@ HTMLWidgets.widget(global = {
 
     construct: function(state, x) {
         console.log("======================   construct   ========================");
-        // console.log(state);
 
         if(!state.hasOwnProperty("supervisor")) {
             var s = new sigma({
@@ -263,7 +259,6 @@ HTMLWidgets.widget(global = {
         config = global.setConfig(state, x);
         if(!config.hasOwnProperty("metadata")) {
             global.mergeConfig(config, x);
-            var meta = {};
             
             var g = { nodes: [], edges: [] };
             N = x.nodes.id.length;
@@ -350,11 +345,12 @@ HTMLWidgets.widget(global = {
                 easing:'quadraticInOut'
             };
 
-            meta.data = x;
-            meta.graph = g;
-            meta.sigmaSettings = sigmaSettings;
-            meta.forceConfig = forceConfig;
-
+            var meta = {
+            	data: x,
+            	graph: g,
+            	sigmaSettings: sigmaSettings,
+            	forceConfig: forceConfig
+            };
             config.metadata = meta;
         }
 
@@ -589,4 +585,5 @@ HTMLWidgets.widget(global = {
         }
     }
 });
+
 

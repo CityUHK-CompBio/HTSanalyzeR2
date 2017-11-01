@@ -11,7 +11,6 @@ String.prototype.hashCode = function() {
 };
 
 
-
 // Converts a #ffffff hex string into an [r,g,b] array
 var h2r = function(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -143,5 +142,6 @@ var initReportFramework = function() {
 $(function() {
   initReportFramework();
 });
+
 
 
