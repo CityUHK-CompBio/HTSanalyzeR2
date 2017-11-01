@@ -1,319 +1,210 @@
-<div class="panel panel-primary d3-setting-panel hidden">
-    <div class="panel-heading">
-        <div class="panel-title">
-            <h4 id="settingPanelTitle">Settings</h4>
-        </div>
-    </div>
-    <div class="panel-body" id="setting-panel">
-        <div class="panel-group" id="accordion">
-            <!-- Debug Panel -->
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#debugPanel">
-                        Debug</a>
-                </h4>
-                </div>
-                <div id="debugPanel" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <h5 for="debug-tb1">Title:</h5>
-                            <input id="debug-tb1" type="text" class="form-control">
+<div id="settingBar" style="padding-top: 50px">
+    <ul class="list-unstyled components">
+        <!-- Layout -->
+        <li>
+            <a href="#layoutPanel" data-toggle="collapse" aria-expanded="false">Layout</a>
+            <ul class="collapse list-unstyled" id="layoutPanel">
+                <li>
+                    <div id="layoutSwitches" class="form-group shiny-input-checkboxgroup shiny-input-container">
+                      <label class="control-label" for="layoutSwitches">Switches</label>
+                      <div class="shiny-options-group">
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" name="layoutSwitches" value="layoutLinLogMode"/>
+                            <span>Lin-Log Mode</span>
+                          </label>
                         </div>
-                        <div class="form-group">
-                            <h5 for="debug-tb2">Title:</h5>
-                            <input id="debug-tb2" type="text" class="form-control">
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" name="layoutSwitches" value="layoutStrongGravityMode"/>
+                            <span>Strong Gravity Mode</span>
+                          </label>
                         </div>
-                        <div class="form-group">
-                            <h5 for="debug-tb3">Title:</h5>
-                            <input id="debug-tb3" type="text" class="form-control">
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" name="layoutSwitches" value="layoutOutboundAttractionDistribution"/>
+                            <span>Outbound Attraction Distribution</span>
+                          </label>
+                        </div>
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" name="layoutSwitches" value="layoutAdjustSizes"/>
+                            <span>Adjust Sizes</span>
+                          </label>
+                        </div>
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" name="layoutSwitches" value="layoutBarnesHutOptimize"/>
+                            <span>Barnes-Hut Optimize</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                </li>
+
+                <li>
+                    <div class="form-group shiny-input-container">
+                      <label class="control-label" for="layoutGravity">Gravity</label>
+                      <input class="js-range-slider" id="layoutGravity" data-min="-50" data-max="500" data-from="30" data-step="10" data-grid="true" data-grid-num="11.0" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
+                    </div>
+                </li>
+
+                <li>
+                    <div class="form-group shiny-input-container">
+                      <label class="control-label" for="layoutBarnesHutTheta">Barnes-Hut Theta</label>
+                      <input class="js-range-slider" id="layoutBarnesHutTheta" data-min="-10.0" data-max="10.0" data-from="0.1" data-step="0.1" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
+                    </div>
+                </li>
+
+                <li>
+                    <div class="form-group shiny-input-container">
+                      <label class="control-label" for="layoutEdgeWeightInfluence">Edge Weight Influence</label>
+                      <input class="js-range-slider" id="layoutEdgeWeightInfluence" data-min="0.0" data-max="10" data-from="1" data-step="0.1" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
+                    </div>
+                </li>
+
+                <li>
+                    <div class="form-group shiny-input-container">
+                      <label class="control-label" for="layoutSlowDown">Slowdown</label>
+                      <input class="js-range-slider" id="layoutSlowDown" data-min="50" data-max="1000" data-from="200" data-step="10" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
+                    </div>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Label -->
+        <li>
+            <a href="#labelPanel" data-toggle="collapse" aria-expanded="false">Label</a>
+            <ul class="collapse list-unstyled" id="labelPanel">
+                <li>
+                    <div id="labelOption" class="form-group shiny-input-radiogroup shiny-input-container shiny-input-container-inline">
+                      <label class="control-label" for="labelOption">Text</label>
+                      <div class="shiny-options-group">
+                        <label class="radio-inline">
+                          <input type="radio" name="labelOption" value="id" checked="checked"/>
+                          <span>ID</span>
+                        </label>
+                        <label class="radio-inline">
+                          <input type="radio" name="labelOption" value="term"/>
+                          <span>Term</span>
+                        </label>
+                        <label class="radio-inline">
+                          <input type="radio" name="labelOption" value="none"/>
+                          <span>None</span>
+                        </label>
+                      </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-group shiny-input-container">
+                      <label class="control-label" for="labelScale">Label Scale</label>
+                      <input class="js-range-slider" id="labelScale" data-min="0.1" data-max="4" data-from="1" data-step="0.1" data-grid="true" data-grid-num="8" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-group shiny-input-container" data-shiny-input-type="colour">
+                      <label for="labelColor">Label Color</label>
+                      <input id="labelColor" type="text" class="form-control shiny-colour-input" data-init-value="#0FAABBAA" data-show-colour="both" data-palette="square" data-allow-alpha="true"/>
+                    </div>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Node -->
+        <li>
+            <a href="#nodePanel" data-toggle="collapse" aria-expanded="false">Node</a>
+            <ul class="collapse list-unstyled" id="nodePanel">
+                <li>
+                    <div class="form-group shiny-input-container">
+                      <label class="control-label" for="nodeScale">Scale</label>
+                      <input class="js-range-slider" id="nodeScale" data-min="0.0" data-max="10" data-from="1" data-step="0.1" data-grid="true" data-grid-num="10.0" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-group shiny-input-container">
+                      <label class="control-label" for="nodeOpacity">Opacity</label>
+                      <input class="js-range-slider" id="nodeOpacity" data-min="0.0" data-max="1.0" data-from="0.8" data-step="0.05" data-grid="true" data-grid-num="1.0" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-group shiny-input-container">
+                      <label class="control-label" for="nodeBorderWidth">Border Width</label>
+                      <input class="js-range-slider" id="nodeBorderWidth" data-min="0.0" data-max="10" data-from="1" data-step="0.1" data-grid="true" data-grid-num="10.0" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-group shiny-input-container" data-shiny-input-type="colour">
+                      <label for="nodeBorderColor">Border Color</label>
+                      <input id="nodeBorderColor" type="text" class="form-control shiny-colour-input" data-init-value="#DB1F51EC" data-show-colour="both" data-palette="square" data-allow-alpha="true"/>
+                    </div>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Edge -->
+        <li>
+            <a href="#edgePanel" data-toggle="collapse" aria-expanded="false">Edge</a>
+            <ul class="collapse list-unstyled" id="edgePanel">
+                <li>
+                    <div class="form-group shiny-input-container">
+                      <label class="control-label" for="edgeScale">Edge Scale</label>
+                      <input class="js-range-slider" id="edgeScale" data-min="0.5" data-max="5" data-from="1" data-step="0.1" data-grid="true" data-grid-num="4.5" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-group shiny-input-container" data-shiny-input-type="colour">
+                      <label for="edgeColor">Edge Color</label>
+                      <input id="edgeColor" type="text" class="form-control shiny-colour-input" data-init-value="#0099FFE2" data-show-colour="both" data-palette="square" data-allow-alpha="true"/>
+                    </div>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Scheme -->
+        <li>
+            <a href="#schemePanel" data-toggle="collapse" aria-expanded="false">Color Scheme</a>
+            <ul class="collapse list-unstyled" id="schemePanel">
+                <li>
+                    <div id="dualPos" class="form-group shiny-input-container">
+                        <h5>Dual <small>Pos:</small></h5>
+                        <div style="position:relative; width: 100%; height: 35px">
+                            <canvas id="posPalette" width="100" height="1" style="width:100%; height:30px"></canvas>
+                            <input id="posValue1" class="text" value="0" style="position:absolute;width:80px; left:5px;top:5px;text-align:left; background:none;border:none;">
+                            <input id="posValue2" class="text" value="0.05" style="position:absolute;width:80px; right:5px;top:5px;text-align:right; background:none;border:none;">
                         </div>
 
-
-                        <div class="form-group">
-                            <h5 for="debug-sd1">Title Size:</h5>
-                            <input id="debug-sd1" data-slider-id='debugSlide1' type="text" data-slider-min="-10" data-slider-max="500" data-slider-step="1" data-slider-value="2" />
-                        </div>
-                        <div class="form-group">
-                            <h5 for="debug-sd2">Title Size:</h5>
-                            <input id="debug-sd2" data-slider-id='debugSlide2' type="text" data-slider-min="-5" data-slider-max="10" data-slider-step="0.1" data-slider-value="0.5" />
-                        </div>
-                        <div class="form-group">
-                            <h5 for="debug-sd3">Title Size:</h5>
-                            <input id="debug-sd3" data-slider-id='debugSlide3' type="text" data-slider-min="-10" data-slider-max="200" data-slider-step="1" data-slider-value="2" />
-                        </div>
-                        <div class="form-group">
-                            <h5 for="debug-sd4">Title Size:</h5>
-                            <input id="debug-sd4" data-slider-id='debugSlide4' type="text" data-slider-min="-10" data-slider-max="100" data-slider-step="1" data-slider-value="2" />
-                        </div>
-                        <div class="form-group">
-                            <h5 for="debug-sd5">Title Size:</h5>
-                            <input id="debug-sd5" data-slider-id='debugSlide5' type="text" data-slider-min="-10" data-slider-max="50" data-slider-step="1" data-slider-value="2" />
-                        </div>
-                        <div class="form-group">
-                            <h5 for="debug-sd6">Title Size:</h5>
-                            <input id="debug-sd6" data-slider-id='debugSlide6' type="text" data-slider-min="-10" data-slider-max="50" data-slider-step="1" data-slider-value="2" />
-                        </div>
-                        <div class="form-group">
-                            <h5 for="debug-sd7">Title Size:</h5>
-                            <input id="debug-sd7" data-slider-id='debugSlide7' type="text" data-slider-min="-10" data-slider-max="50" data-slider-step="1" data-slider-value="2" />
+                        <div class="row" style="width:100%; margin-left:0px; margin-right:0px;">
+                            <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
+                                <input id="posColor1" type="text" class="form-control shiny-colour-input" style="width:100%; text-align: left;" data-init-value="#9e1617" data-show-colour="both" data-palette="square"/>
+                            </div>
+                            <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
+                                <input id="posColor2" type="text" class="form-control shiny-colour-input" style="width:100%; text-align: right;" data-init-value="#FFFFFF" data-show-colour="both" data-palette="square"/>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-
-
-
-
-            <!-- General Panel -->
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#generalPanel">
-                        General</a>
-                </h4>
-                </div>
-                <div id="generalPanel" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <h5 for="generalTitle">Title:</h5>
-                            <input id="generalTitle" type="text" class="form-control">
+                </li>
+                <li>
+                    <div id="dualNeg" class="form-group shiny-input-container">
+                        <h5>Dual <small>Neg:</small></h5>
+                        <div style="position:relative; width: 100%; height: 35px">
+                            <canvas id="negPalette" width="100" height="1" style="width:100%; height:30px"></canvas>
+                            <input id="negValue1" class="text" value="0" style="position:absolute;width:80px; left:5px;top:5px;text-align:left; background:none;border:none;">
+                            <input id="negValue2" class="text" value="0.05" style="position:absolute;width:80px; right:5px;top:5px;text-align:right; background:none;border:none;">
                         </div>
-                        <div class="form-group">
-                            <h5 for="generalTitleSize">Title Size:</h5>
-                            <input id="generalTitleSize" data-slider-id='titleSizeSlider' type="text" data-slider-min="5" data-slider-max="50" data-slider-step="1" data-slider-value="22" />
-                        </div>
-                        <div class="form-group">
-                            <h5 for="generalLegendTitle">Legend title:</h5>
-                            <input id="generalLegendTitle" type="text" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <h5 for="generalDistance">Distance:</h5>
-                            <input id="generalDistance" data-slider-id='distanceSlider' type="text" data-slider-min="0" data-slider-max="800" data-slider-step="50" data-slider-value="400" />
+
+                        <div class="row" style="width:100%; margin-left:0px; margin-right:0px;">
+                            <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
+                                <input id="negColor1" type="text" class="form-control shiny-colour-input" style="width:100%; text-align: left;" data-init-value="#006a9c" data-show-colour="both" data-palette="square"/>
+                            </div>
+                            <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
+                                <input id="negColor2" type="text" class="form-control shiny-colour-input" style="width:100%; text-align: right;" data-init-value="#FFFFFF" data-show-colour="both" data-palette="square"/>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <!-- Label Panel -->
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#labelPanel">
-                        Label</a>
-                </h4>
-                </div>
-                <div id="labelPanel" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <h5>Text:</h5>
-                            <div id="labelOption" class="btn-group btn-group-justified" data-toggle="buttons">
-                                <label class="btn btn-default" value="id">
-                                    <input type="radio" name="labelOption" value="id" autocomplete="off" checked>ID
-                                </label>
-                                <label class="btn btn-default" value="term">
-                                    <input type="radio" name="labelOption" value="term" autocomplete="off">Term
-                                </label>
-                                <label class="btn btn-default" value="none">
-                                    <input type="radio" name="labelOption" value="none" autocomplete="off">None
-                                </label>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <h5>Color / Opacity:</h5>
-                            <input id="labelColor" class="jscolor" value="AABBAA" style="float: left">
-                            <div style="margin-left: 190px;">
-                                <input id="labelOpacity" data-slider-id='labelOpacitySlider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.05" data-slider-value="0.8" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <h5>Scale:</h5>
-                            <input id="labelScale" data-slider-id='labelScaleSlider' type="text" data-slider-min="0.1" data-slider-max="4" data-slider-step="0.1" data-slider-value="1" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Node Panel -->
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#nodePanel">
-                        Node</a>
-                </h4>
-                </div>
-                <div id="nodePanel" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <h5>Shape:</h5>
-                            <div id="nodeShapeOption" class="btn-group btn-group-justified" data-toggle="buttons">
-                                <label class="btn btn-default" value='circle'>
-                                    <input type="radio" name='nodeShapeOption' value='circle' autocomplete="off" checked>Circle
-                                </label>
-                                <label class="btn btn-default" value='triangle'>
-                                    <input type="radio" name='nodeShapeOption' value='triangle' autocomplete="off">Triangle
-                                </label>
-                                <label class="btn btn-default" value='rectangle'>
-                                    <input type="radio" name='nodeShapeOption' value='rectangle' autocomplete="off">Rectangle
-                                </label>
-                                <label class="btn btn-default" value='diamond'>
-                                    <input type="radio" name='nodeShapeOption' value='diamond' autocomplete="off">Diamond
-                                </label>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <h5>Scale:</h5>
-                            <input id="nodeScale" data-slider-id='nodeScaleSlider' type="text" data-slider-min="0.1" data-slider-max="10" data-slider-step="0.1" data-slider-value="1" />
-                        </div>
-                        <div class="form-group">
-                            <h5>Color Scheme:</h5>
-                            <div>
-                                <div class="input-group">
-                                    <div class="input-group-btn">
-                                        <button id="nodeSchemeDropdown" value="default" type="button" class="btn btn-default dropdown-toggle"
-                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Linear-2<span class="caret"></span>
-                                        </button>
-                                        <ul id="nodeSchemeBtns" class="dropdown-menu">
-                                            <li><a value="linear2">Linear-2</a></li>
-                                            <li><a value="linear3">Linear-3</a></li>
-                                            <li><a value="dual">Dual</a></li>
-                                        </ul>
-                                    </div>
-                                    <div style="width: 100%">
-                                        <canvas id="schemePreview1" width="100" height="1"
-                                                style="width: 100%; height: 22px; padding-top: 3px; padding-left: 8px; padding-bottom: 0px; display: block;"></canvas>
-                                        <canvas id="schemePreview2" width="100" height="1"
-                                                style="width: 100%; height: 22px; padding-bottom: 3px; padding-left: 8px; padding-top: 0px;display: block;"></canvas>
-                                    </div>
-                                </div>
-                                <!-- /input-group -->
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <h5>Border Color/Opacity:</h5>
-                            <input id="nodeBorderColor" class="jscolor" value="ab2567" style="float: left">
-                            <div style="margin-left: 190px;">
-                                <input id="nodeBorderOpacity" data-slider-id='nodeBorderOpacitySlider' type="text" data-slider-min="0.0" data-slider-max="1" data-slider-step="0.05" data-slider-value="0.8" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <h5>Border Width:</h5>
-                            <input id="nodeBorderWidth" data-slider-id='widthSlider' type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="1" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Edge Panel -->
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#edgePanel">
-                        Edge</a>
-                </h4>
-                </div>
-                <div id="edgePanel" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <h5>Color / Opacity:</h5>
-                            <input id="edgeColor" class="jscolor" value="ab2567" style="float: left">
-                            <div style="margin-left: 190px;">
-                                <input id="edgeOpacity" data-slider-id='edgeOpacitySlider' type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.05" data-slider-value="0.6" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <h5>Weight:</h5>
-                            <input id="edgeScale" data-slider-id='edgeScaleSlider' type="text" data-slider-min="0.5" data-slider-max="5" data-slider-step="0.5" data-slider-value="1" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Color Scheme Panel -->
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#schemePanel">
-                        Color schemes</a>
-                </h4>
-                </div>
-                <div id="schemePanel" class="panel-collapse collapse">
-                    <div id="nodeSchemes" class="panel-body">
+                </li>
+            </ul>
+        </li>
+        
+    </ul>
 
-                        <div id="linear2" class="form-group">
-                            <h5>Linear-2: </h5>
-                            <div style="position:relative; width: 100%; height: 35px">
-                                <canvas id="palette" width="100" height="1" style="width:100%; height:30px"></canvas>
-                                <input id="value1" class="text" value="-1" style="position:absolute;width:80px; left:5px;top:5px;text-align:left; background:none;border:none;">
-                                <input id="value2" class="text" value="0" style="position:absolute;width:80px; right:5px;top:5px;text-align:right; background:none;border:none;">
-                            </div>
-                            <div class="row" style="width:100%; margin-left:0px; margin-right:0px;">
-                                <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
-                                    <input id="color1" class="jscolor" value="0E0F7E" style="width:100%; text-align: left;">
-                                </div>
-                                <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
-                                    <input id="color2" class="jscolor" value="EBEEED" style="width:100%; text-align: right;">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="linear3" class="form-group">
-                            <h5>Linear-3: </h5>
-                            <div style="position:relative; width: 100%; height: 35px">
-                                <canvas id="palette" width="100" height="1" style="width:100%; height:30px"></canvas>
-                                <input id="value1" class="text" value="-1" style="position:absolute;width:80px; left:5px;top:5px;text-align:left; background:none;border:none;">
-                                <input id="value2" class="text" value="0" style="position:absolute;width:80px; left:50%;top:5px;text-align:center;margin-left:-40px; background:none;border:none;">
-                                <input id="value3" class="text" value="0" style="position:absolute;width:80px; right:5px;top:5px;text-align:right; background:none;border:none;">
-                            </div>
-                            <div class="row" style="width:100%; margin-left:0px; margin-right:0px;">
-                                <div class="col-xs-4" style="padding-left:0px; padding-right:0px;">
-                                    <input id="color1" class="jscolor" value="0E0F7E" style="width:100%; text-align: left;">
-                                </div>
-                                <div class="col-xs-4" style="padding-left:0px; padding-right:0px;">
-                                    <input id="color2" class="jscolor" value="FF0000" style="width:100%; text-align: center;">
-                                </div>
-                                <div class="col-xs-4" style="padding-left:0px; padding-right:0px;">
-                                    <input id="color3" class="jscolor" value="BB0000" style="width:100%; text-align: right;">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="dualPos" class="form-group">
-                            <h5>Dual <small>Pos:</small></h5>
-                            <div style="position:relative; width: 100%; height: 35px">
-                                <canvas id="palette" width="100" height="1" style="width:100%; height:30px"></canvas>
-                                <input id="value1" class="text" value="-1" style="position:absolute;width:80px; left:5px;top:5px;text-align:left; background:none;border:none;">
-                                <input id="value2" class="text" value="0" style="position:absolute;width:80px; right:5px;top:5px;text-align:right; background:none;border:none;">
-                            </div>
-
-                            <div class="row" style="width:100%; margin-left:0px; margin-right:0px;">
-                                <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
-                                    <input id="color1" class="jscolor" value="0E0F7E" style="width:100%; text-align: left;">
-                                </div>
-                                <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
-                                    <input id="color2" class="jscolor" value="EBEEED" style="width:100%; text-align: right;">
-                                </div>
-                            </div>
-                        </div>
-                        <div id="dualNeg" class="form-group">
-                            <h5>Dual <small>Neg:</small></h5>
-                            <div style="position:relative; width: 100%; height: 35px">
-                                <canvas id="palette" width="100" height="1" style="width:100%; height:30px"></canvas>
-                                <input id="value1" class="text" value="-1" style="position:absolute;width:80px; left:5px;top:5px;text-align:left; background:none;border:none;">
-                                <input id="value2" class="text" value="0" style="position:absolute;width:80px; right:5px;top:5px;text-align:right; background:none;border:none;">
-                            </div>
-
-                            <div class="row" style="width:100%; margin-left:0px; margin-right:0px;">
-                                <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
-                                    <input id="color1" class="jscolor" value="0E0F7E" style="width:100%; text-align: left;">
-                                </div>
-                                <div class="col-xs-6" style="padding-left:0px; padding-right:0px;">
-                                    <input id="color2" class="jscolor" value="EBEEED" style="width:100%; text-align: right;">
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-                <!-- END setting menu -->
-            </div>
-        </div>
-    </div>
 </div>
