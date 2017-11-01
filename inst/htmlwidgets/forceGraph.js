@@ -383,7 +383,7 @@ HTMLWidgets.widget(global = {
 
             if(g.nodes[i].theme != null) {
                 var palette = config.scheme.dual[g.nodes[i].theme];
-                g.nodes[i].color = _iterpolatePalette(palette, x.nodes.color[i], config.node.opacity);
+                g.nodes[i].color = _iterpolatePalette(palette, x.nodes["color." + tick][i], config.node.opacity);
             } else {
                 g.nodes[i].color = hex2rgba(config.node.NANodeColor);
             }
@@ -585,5 +585,6 @@ HTMLWidgets.widget(global = {
         }
     }
 });
+
 
 
