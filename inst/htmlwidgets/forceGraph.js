@@ -148,98 +148,43 @@ HTMLWidgets.widget(global = {
         }
     },
 
-    initPlugins: function(state) {
-        var s = state.supervisor.sigInst;
+    update: function(state, u) {
+        console.log("====================   Update    ========================");
+        console.log(u);
+        var config = global.getConfig(state);
+        var sv = state.supervisor;
+        var meta = config.metadata;
 
-        // Initialize the activeState plugin:
-        var activeState = sigma.plugins.activeState(s);
-        // Initialize the dragNodes plugin:
-        var dragListener = sigma.plugins.dragNodes(s, s.renderers[0], activeState);
-        // Initialize the select plugin:
-        var select = sigma.plugins.select(s, activeState);
-        
-        // Halo on active nodes:
-        s.renderers[0].bind('render', function(e) {
-          s.renderers[0].halo({
-            nodes: activeState.nodes()
-          });
-        });
+        var x = meta.data;
+        var g = meta.graph;
+        for(var i = 0; i < g.nodes.length; i++) {
+            var tick = x.options.seriesData[u.process - 1];
+            g.nodes[i].theme = x.nodes["scheme." + tick][i];
 
-        var keyboard = sigma.plugins.keyboard(s, s.renderers[0]);
-        select.bindKeyboard(keyboard);
-
-        // Initialize the lasso plugin:
-        var lasso = new sigma.plugins.lasso(s, s.renderers[0], {
-          'strokeStyle': 'rgb(236, 81, 72)',
-          'lineWidth': 2,
-          'fillWhileDrawing': true,
-          'fillStyle': 'rgba(236, 81, 72, 0.2)',
-          'cursor': 'crosshair'
-        });
-
-        // // "spacebar" + "s" keys pressed binding for the lasso tool
-        // keyboard.bind('32+83', function() {
-        //   if (lasso.isActive) {
-        //     lasso.deactivate();
-        //   } else {
-        //     lasso.activate();
-        //   }
-        // });
-        
-        // select.bindLasso(lasso);
-
-        // // Listen for selectedNodes event
-        // lasso.bind('selectedNodes', function (event) {
-        //   setTimeout(function() {
-        //     lasso.deactivate();
-        //     s.refresh({ skipIdexation: true });
-        //   }, 0);
-        // });
-
-        state.plugins = { 
-            activeState: activeState, 
-            dragListener: dragListener, 
-            select: select, 
-            lasso: lasso, 
-            keyboard: keyboard
+            if(g.nodes[i].theme != null) {
+                var palette = config.scheme.dual[g.nodes[i].theme];
+                g.nodes[i].color = _iterpolatePalette(palette, x.nodes["color." + tick][i], config.node.opacity);
+            } else {
+                g.nodes[i].color = hex2rgba(config.node.NANodeColor);
+            }
         }
 
-    },
-
-    killPlugins: function(state) {
-        state.plugins.lasso.clear();
-        sigma.plugins.killActiveState();
-        sigma.plugins.killKeyboard(state.supervisor.sigInst);
-        sigma.plugins.killSelect(state.supervisor.sigInst);
-        sigma.plugins.killDragNodes(state.supervisor.sigInst);
-
-        state.plugins = null;
-    },
-
-
-    switchTab: function(el) {
-        console.log("====================   switchTab   ========================");
-        if(global.store.currentTab != el) {
-            // Current
-            var state = global.getElementState(global.store.currentTab);
-            global.killPlugins(state);
-
-            // Target
-            global.store.currentTab = el;
-            var state = global.getElementState(el);
-            if(state.hasOwnProperty("supervisor")) {
-                var sv = state.supervisor;
-                sigma.layouts.killForceLink();
-                sigma.layouts.startForceLink(sv.sigInst, sv.config);
-                sv.sigInst.refresh();
-                global.initPlugins(state);
-            }
+        if (!sigma.layouts.isForceLinkRunning()) {
+            sv.sigInst.refresh();
         }
     },
 
     construct: function(state, x) {
-        console.log("======================   construct   ========================");
+        console.log("====================   Construct   ========================");
+        console.log(x);
 
+        var config = global.setConfig(state, x);
+        global.initSupervisor(state);
+        global.initMetadata(config, x);
+        global.build(state, config);
+    },
+
+    initSupervisor: function(state) {
         if(!state.hasOwnProperty("supervisor")) {
             var s = new sigma({
               graph: { nodes: [], edges: [] },
@@ -255,8 +200,9 @@ HTMLWidgets.widget(global = {
 
             global.initPlugins(state);
         }
+    },
 
-        config = global.setConfig(state, x);
+    initMetadata: function(config, x) {
         if(!config.hasOwnProperty("metadata")) {
             global.mergeConfig(config, x);
             
@@ -303,7 +249,7 @@ HTMLWidgets.widget(global = {
                 minNodeSize: config.settings.minNodeSize,
                 minEdgeSize: config.settings.minEdgeSize,
                 maxNodeSize: config.settings.maxNodeSize * config.node.scale,
-                maxEdgeSize: config.settings.maxEdgeSize,
+                maxEdgeSize: config.settings.maxEdgeSize * config.edge.scale,
 
                 
                 edgeColor: 'default',
@@ -346,51 +292,12 @@ HTMLWidgets.widget(global = {
             };
 
             var meta = {
-            	data: x,
-            	graph: g,
-            	sigmaSettings: sigmaSettings,
-            	forceConfig: forceConfig
+                data: x,
+                graph: g,
+                sigmaSettings: sigmaSettings,
+                forceConfig: forceConfig
             };
             config.metadata = meta;
-        }
-
-        var sv = state.supervisor;
-        var meta = config.metadata;
-
-        sv.graph.clear();
-        sv.graph.read(meta.graph);
-        sv.config = meta.forceConfig;
-        sv.sigInst.settings(meta.sigmaSettings);
-        sigma.layouts.killForceLink();
-        sigma.layouts.startForceLink(sv.sigInst, sv.config);
-        sv.sigInst.refresh();
-
-        refreshSettingPanel(state, config);
-    },
-
-    update: function(state, u) {
-        console.log("====================   Update    ========================");
-        console.log(u);
-        var config = global.getConfig(state);
-        var sv = state.supervisor;
-        var meta = config.metadata;
-
-        var x = meta.data;
-        var g = meta.graph;
-        for(var i = 0; i < g.nodes.length; i++) {
-            var tick = x.options.seriesData[u.process - 1];
-            g.nodes[i].theme = x.nodes["scheme." + tick][i];
-
-            if(g.nodes[i].theme != null) {
-                var palette = config.scheme.dual[g.nodes[i].theme];
-                g.nodes[i].color = _iterpolatePalette(palette, x.nodes["color." + tick][i], config.node.opacity);
-            } else {
-                g.nodes[i].color = hex2rgba(config.node.NANodeColor);
-            }
-        }
-
-        if (!sigma.layouts.isForceLinkRunning()) {
-            sv.sigInst.refresh();
         }
     },
 
@@ -575,16 +482,156 @@ HTMLWidgets.widget(global = {
             sigma.layouts.startForceLink(sv.sigInst);
         }
 
+        // download function from sigma sigma.exporters.svg
+        function download(string, filename) {
+            if (typeof safari !== 'undefined') {
+                var msg = "File download does not work in Safari. Please use a modern web browser such as Firefox, Chrome, or Internet Explorer 11.";
+                alert(msg);
+                throw new Error(msg);
+            }
+
+            // Blob
+            var blob = new Blob( [string], {type: 'image/svg+xml;charset=utf-8'} );
+            objectUrl = window.URL.createObjectURL(blob);
+
+            if (navigator.msSaveBlob) { // IE11+ : (has Blob, but not a[download])
+                navigator.msSaveBlob(blob, filename);
+            } else if (navigator.msSaveOrOpenBlob) { // IE10+ : (has Blob, but not a[download])
+                navigator.msSaveOrOpenBlob(blob, filename);
+            } else {
+                // A-download
+                var anchor = document.createElement('a');
+                anchor.setAttribute('href', objectUrl);
+                anchor.setAttribute('download', filename);
+
+                // Firefox requires the link to be added to the DOM before it can be clicked.
+                document.body.appendChild(anchor);
+                anchor.click();
+                document.body.removeChild(anchor);
+            }
+
+            setTimeout(function() { // Firefox needs a timeout
+                window.URL.revokeObjectURL(objectUrl);
+            }, 0);
+        }
+
+        function appendLegend(svgString, situation) {
+            return svgString;
+        }
+
         handlers.saveSVG = function() {
             console.log("saveSVG");
             var cur = global.currentSituation();
             var sv = cur.state.supervisor;
             var elem = $(cur.state.container);
 
-            sv.sigInst.toSVG({download: true, labels:true, filename: 'network.svg', width: elem.width(), height: elem.height()})
+            // sv.sigInst.toSVG({download: true, labels:true, filename: 'network.svg', width: elem.width(), height: elem.height()})
+            var svgStr = sv.sigInst.toSVG({labels:true, width: elem.width(), height: elem.height()});
+            download(appendLegend(svgStr, cur), "network.svg");
         }
-    }
-});
+    },
 
+    initPlugins: function(state) {
+        var s = state.supervisor.sigInst;
+
+        // Initialize the activeState plugin:
+        var activeState = sigma.plugins.activeState(s);
+        // Initialize the dragNodes plugin:
+        var dragListener = sigma.plugins.dragNodes(s, s.renderers[0], activeState);
+        // Initialize the select plugin:
+        var select = sigma.plugins.select(s, activeState);
+        
+        // Halo on active nodes:
+        s.renderers[0].bind('render', function(e) {
+          s.renderers[0].halo({
+            nodes: activeState.nodes()
+          });
+        });
+
+        var keyboard = sigma.plugins.keyboard(s, s.renderers[0]);
+        select.bindKeyboard(keyboard);
+
+        // Initialize the lasso plugin:
+        var lasso = new sigma.plugins.lasso(s, s.renderers[0], {
+          'strokeStyle': 'rgb(236, 81, 72)',
+          'lineWidth': 2,
+          'fillWhileDrawing': true,
+          'fillStyle': 'rgba(236, 81, 72, 0.2)',
+          'cursor': 'crosshair'
+        });
+
+        // // "spacebar" + "s" keys pressed binding for the lasso tool
+        // keyboard.bind('32+83', function() {
+        //   if (lasso.isActive) {
+        //     lasso.deactivate();
+        //   } else {
+        //     lasso.activate();
+        //   }
+        // });
+        
+        // select.bindLasso(lasso);
+
+        // // Listen for selectedNodes event
+        // lasso.bind('selectedNodes', function (event) {
+        //   setTimeout(function() {
+        //     lasso.deactivate();
+        //     s.refresh({ skipIdexation: true });
+        //   }, 0);
+        // });
+
+        state.plugins = { 
+            activeState: activeState, 
+            dragListener: dragListener, 
+            select: select, 
+            lasso: lasso, 
+            keyboard: keyboard
+        }
+    },
+
+    killPlugins: function(state) {
+        state.plugins.lasso.clear();
+        sigma.plugins.killActiveState();
+        sigma.plugins.killKeyboard(state.supervisor.sigInst);
+        sigma.plugins.killSelect(state.supervisor.sigInst);
+        sigma.plugins.killDragNodes(state.supervisor.sigInst);
+
+        state.plugins = null;
+    },
+
+    switchTab: function(el) {
+        console.log("====================   switchTab   ========================");
+        if(global.store.currentTab != el) {
+            // Current
+            var state = global.getElementState(global.store.currentTab);
+            global.killPlugins(state);
+
+            // Target
+            global.store.currentTab = el;
+            var state = global.getElementState(el);
+            if(state.hasOwnProperty("supervisor")) {
+                var config = global.getConfig(state);
+                global.build(state, config);
+                global.initPlugins(state);
+            }
+        }
+    },
+
+    build: function(state, config) {
+        console.log("======================   Build   ========================");
+        var sv = state.supervisor;
+        var meta = config.metadata;
+
+        sv.graph.clear();
+        sv.graph.read(meta.graph);
+        sv.config = meta.forceConfig;
+        sv.sigInst.settings(meta.sigmaSettings);
+        sigma.layouts.killForceLink();
+        sigma.layouts.startForceLink(sv.sigInst, sv.config);
+        sv.sigInst.refresh();
+
+        refreshSettingPanel(state, config);
+    }
+
+});
 
 
