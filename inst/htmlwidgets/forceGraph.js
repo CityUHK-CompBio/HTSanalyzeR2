@@ -516,7 +516,8 @@ HTMLWidgets.widget(global = {
         }
 
         function appendLegend(svgString, situation) {
-            return svgString;
+            var g = global.drawLegend(situation.state, situation.config);
+            return svgString.replace("</svg>", g.outerHTML + "</svg>");
         }
 
         handlers.saveSVG = function() {
@@ -629,7 +630,58 @@ HTMLWidgets.widget(global = {
         sigma.layouts.startForceLink(sv.sigInst, sv.config);
         sv.sigInst.refresh();
 
+        global.refreshLegend(state, config);
         refreshSettingPanel(state, config);
+    },
+
+    refreshLegend: function(state, config) {
+        console.log("====================   Draw Legend   =====================");
+        console.log(state);
+        console.log(config);
+
+        var container = state.container;
+
+        // Create or Select the SVG layer.
+        if(container.getElementsByTagName("svg").length == 0) {
+            var svgElem = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svgElem.style.width = "100%";
+            svgElem.style.height = "100%";
+            container.appendChild(svgElem);
+        }
+        var svg = container.getElementsByTagName("svg")[0];
+        svg.innerHTML = '';
+
+        var gLegend = global.drawLegend(state, config);
+        svg.appendChild(gLegend);
+    },
+
+    drawLegend: function(state, config) {
+        var baseId = state.container.id;
+
+        function makeSVG(tag, attrs) {
+            var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
+            for (var k in attrs)
+                el.setAttribute(k, attrs[k]);
+            return el;
+        }
+
+        var linearGradient1 = makeSVG('linearGradient', {id:baseId+'grad1', x1:'0%', y1:'100%', x2:'0%', y2:'0%'});
+        linearGradient1.appendChild(makeSVG('stop', {offset:'0%', 'stop-color':'#9E1617', 'stop-opacity':'1'}));
+        linearGradient1.appendChild(makeSVG('stop', {offset:'100%', 'stop-color':'#FFFFFF', 'stop-opacity':'1'}));
+        var linearGradient2 = makeSVG('linearGradient', {id:baseId+'grad2', x1:'0%', y1:'0%', x2:'0%', y2:'100%'});
+        linearGradient2.appendChild(makeSVG('stop', {offset:'0%', 'stop-color':'#006A9C', 'stop-opacity':'1'}));
+        linearGradient2.appendChild(makeSVG('stop', {offset:'100%', 'stop-color':'#FFFFFF', 'stop-opacity':'1'}));
+        var defs = makeSVG("defs");
+        defs.appendChild(linearGradient1);
+        defs.appendChild(linearGradient2);
+        var rect1 = makeSVG('rect', {x1:'0', y1:'0', width:'15', height:'100', fill:'url(#'+ baseId +'grad1)', transform:'translate(10,110)'});
+        var rect2 = makeSVG('rect', {x1:'0', y1:'0', width:'15', height:'100', fill:'url(#'+ baseId +'grad2)', transform:'translate(10,10)'});
+
+        var g = makeSVG('g', {transform: 'translate(20,500)'});
+        g.appendChild(defs);
+        g.appendChild(rect1);
+        g.appendChild(rect2);
+        return g;
     }
 
 });
