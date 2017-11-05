@@ -137,7 +137,9 @@ body <- dashboardBody(
                valueBoxOutput("numAboveMinimum", width = NULL),
                infoBoxOutput("para1", width = NULL),
                infoBoxOutput("para2", width = NULL),
-               infoBoxOutput("para3", width = NULL))
+               infoBoxOutput("para3", width = NULL),
+               infoBoxOutput("para4", width = NULL),
+               infoBoxOutput("para5", width = NULL))
       )
     ),
 
@@ -145,7 +147,7 @@ body <- dashboardBody(
             fluidRow(
               column(width = 12,
                      box(width = NULL, status = "success", solidHeader = TRUE,
-                         title = "Enrichment Map of GO_MF",
+                         title = "Enrichment Map",
                          forceGraphOutput("map_output")))
             )
     ),
@@ -170,23 +172,46 @@ body <- dashboardBody(
 ui <- dashboardPage(header = header, sidebar = sidebar, body = body, skin = "blue")
 
 ## ============================================ Define server ==============================================
-renderGSCASummary <- function(input, output) {
+renderGSCASummary <- function(input, output, gscaObj) {
   # HTSanalyzeR2:::generateGSCASummary(gscaObj)
+  numGenesets <- ifelse(input$genesets_res != "ALL", gscaObj@summary$gsc[input$genesets_res, 1],  sum(gscaObj@summary$gsc[,1]))
+  numAboveMinimum <- ifelse(input$genesets_res != "ALL", gscaObj@summary$gsc[input$genesets_res, 2],  sum(gscaObj@summary$gsc[,2]))
+
   output$numGenesets <- renderValueBox(valueBox(icon = icon("database"), color = "aqua",
-                                                value = 4015,
-                                                subtitle = "Gene sets in GO_MF."))
+                                                value = numGenesets,
+                                                subtitle = paste("Gene sets in", input$genesets_res)))
   output$numAboveMinimum <- renderValueBox(valueBox(icon = icon("certificate"), color = "olive",
-                                                    value = 347,
+                                                    value = numAboveMinimum,
                                                     subtitle = "Above the minimum size."))
-  output$para1 <- renderValueBox(infoBox(icon = icon("wrench"), color = "teal",
-                                         value = 0.01,
-                                         title = "P-value Cutoff", subtitle = "Significant gene set cutoff p-value (adjusted)"))
-  output$para2 <- renderValueBox(infoBox(icon = icon("wrench"), color = "teal",
-                                         value = 20,
-                                         title = "Minimum size", subtitle = "Minimum gene set size"))
-  output$para3 <- renderValueBox(infoBox(icon = icon("wrench"), color = "teal",
-                                         value = "BH",
-                                         title = "Correction", subtitle = "MHT correction method"))
+
+  if(input$analysis_res == "GSEA") {
+    output$para1 <- renderValueBox(infoBox(color = "teal", title = "P-value Cutoff", subtitle = "Significant gene set cutoff p-value(adjusted)",
+                                           value = gscaObj@summary$para$gsea[, "pValueCutoff"]))
+    output$para2 <- renderValueBox(infoBox(color = "teal", title = "Minimum size", subtitle = "Minimum gene set size",
+                                           value = gscaObj@summary$para$gsea[, "minGeneSetSize"]))
+    output$para3 <- renderValueBox(infoBox(color = "teal", title = "Correction", subtitle = "MHT correction method",
+                                           value = gscaObj@summary$para$gsea[, "pAdjustMethod"]))
+    output$para4 <- renderValueBox(infoBox(color = "teal", title = "Permutations", subtitle = "Number of permutations",
+                                           value = gscaObj@summary$para$gsea[, "nPermutations"]))
+    output$para5 <- renderValueBox(infoBox(color = "teal", title = "Exponent", subtitle = "Exponent used",
+                                           value = gscaObj@summary$para$gsea[, "exponent"]))
+  } else if(input$analysis_res == "HyperGeo") {
+    output$para1 <- renderValueBox(infoBox(color = "maroon", title = "P-value Cutoff", subtitle = "Significant gene set cutoff p-value(adjusted)",
+                                           value = gscaObj@summary$para$hypergeo[, "pValueCutoff"]))
+    output$para2 <- renderValueBox(infoBox(color = "maroon", title = "Minimum size", subtitle = "Minimum gene set size",
+                                           value = gscaObj@summary$para$hypergeo[, "minGeneSetSize"]))
+    output$para3 <- renderValueBox(infoBox(color = "maroon", title = "Correction", subtitle = "MHT correction method",
+                                           value = gscaObj@summary$para$hypergeo[, "pAdjustMethod"]))
+    output$para4 <- renderValueBox(shiny::div(shiny::div()))
+    output$para5 <- renderValueBox(shiny::div(shiny::div()))
+  } else {
+    output$para1 <- renderValueBox(shiny::div(shiny::div()))
+    output$para2 <- renderValueBox(shiny::div(shiny::div()))
+    output$para3 <- renderValueBox(shiny::div(shiny::div()))
+    output$para4 <- renderValueBox(shiny::div(shiny::div()))
+    output$para5 <- renderValueBox(shiny::div(shiny::div()))
+  }
+
 }
 
 renderNWASummary <- function(input, output) {
@@ -220,7 +245,7 @@ server <- function(input, output, session) {
         obj <- gscaObjs[[input$series_tick_res]]
       }
       output$gsca_output <- DT::renderDataTable(create_data_table(obj, input$analysis_res, input$genesets_res), server = FALSE)
-      renderGSCASummary(input, output)
+      renderGSCASummary(input, output, obj)
     }
   )
 
