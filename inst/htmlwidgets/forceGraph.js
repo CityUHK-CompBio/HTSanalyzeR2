@@ -134,6 +134,10 @@ HTMLWidgets.widget(global = {
 
     resize: function(el, width, height) {
         console.log("====================   resize   ========================");
+        var state = global.getElementState(el);
+        var config = global.getConfig(state);
+        
+		global.refreshLegend(state, config);
     },
 
     renderValue: function(el, x) {
@@ -462,6 +466,7 @@ HTMLWidgets.widget(global = {
                     }
                 }
                 sv.sigInst.refresh();
+                global.refreshLegend(cur.state, cur.config);
             }
         }
 
@@ -658,29 +663,56 @@ HTMLWidgets.widget(global = {
     drawLegend: function(state, config) {
         var baseId = state.container.id;
 
-        function makeSVG(tag, attrs) {
+        function appendChildren(el, children) {
+        	for (var i in children)
+            	el.appendChild(children[i]);
+            return el;
+        }
+        function makeSVG(tag, attrs, children) {
             var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
             for (var k in attrs)
                 el.setAttribute(k, attrs[k]);
+            appendChildren(el, children);
             return el;
         }
+        function translate(x, y) {
+        	return 'translate('+ x +', ' + y + ')';
+        }
 
-        var linearGradient1 = makeSVG('linearGradient', {id:baseId+'grad1', x1:'0%', y1:'100%', x2:'0%', y2:'0%'});
-        linearGradient1.appendChild(makeSVG('stop', {offset:'0%', 'stop-color':'#9E1617', 'stop-opacity':'1'}));
-        linearGradient1.appendChild(makeSVG('stop', {offset:'100%', 'stop-color':'#FFFFFF', 'stop-opacity':'1'}));
-        var linearGradient2 = makeSVG('linearGradient', {id:baseId+'grad2', x1:'0%', y1:'0%', x2:'0%', y2:'100%'});
-        linearGradient2.appendChild(makeSVG('stop', {offset:'0%', 'stop-color':'#006A9C', 'stop-opacity':'1'}));
-        linearGradient2.appendChild(makeSVG('stop', {offset:'100%', 'stop-color':'#FFFFFF', 'stop-opacity':'1'}));
-        var defs = makeSVG("defs");
-        defs.appendChild(linearGradient1);
-        defs.appendChild(linearGradient2);
-        var rect1 = makeSVG('rect', {x1:'0', y1:'0', width:'15', height:'100', fill:'url(#'+ baseId +'grad1)', transform:'translate(10,110)'});
-        var rect2 = makeSVG('rect', {x1:'0', y1:'0', width:'15', height:'100', fill:'url(#'+ baseId +'grad2)', transform:'translate(10,10)'});
+        var palette = config.scheme.dual;
+        var dim = [$(state.container).width(), $(state.container).height()];
+        var legHeight = 100;
+        var legWidth = 13;
 
-        var g = makeSVG('g', {transform: 'translate(20,500)'});
-        g.appendChild(defs);
-        g.appendChild(rect1);
-        g.appendChild(rect2);
+        var posGrad = makeSVG("linearGradient", {id:baseId+'PosGrad', x1:'0%', y1:'0%', x2:'0%', y2:'100%'});
+    		posGrad.appendChild(makeSVG('stop', {offset:'0%', 'stop-color':palette.Pos.range[0], 'stop-opacity':'1'}));
+    		posGrad.appendChild(makeSVG('stop', {offset:'100%', 'stop-color':palette.Pos.range[1], 'stop-opacity':'1'}));
+        var negGrad = makeSVG("linearGradient", {id:baseId+'NegGrad', x1:'0%', y1:'100%', x2:'0%', y2:'0%'});
+    		negGrad.appendChild(makeSVG('stop', {offset:'0%', 'stop-color':palette.Neg.range[0], 'stop-opacity':'1'}));
+    		negGrad.appendChild(makeSVG('stop', {offset:'100%', 'stop-color':palette.Neg.range[1], 'stop-opacity':'1'}));
+    	var defs = makeSVG("defs", null, [posGrad, negGrad]);
+
+        var rect1 = makeSVG('rect', {x1:'0', y1:'0', width:legWidth, height:legHeight, fill:'url(#'+ baseId +'PosGrad)', transform:translate(0, 0)});
+        var rect2 = makeSVG('rect', {x1:'0', y1:'0', width:legWidth, height:legHeight, fill:'url(#'+ baseId +'NegGrad)', transform:translate(0, legHeight)});
+
+        var g = makeSVG('g', {transform: translate(45, dim[1] - 2 * legHeight - 20)}, [defs, rect1, rect2]);
+
+        var textPos = makeSVG('text', {'font-size':'14','font-family':'arial','fill':palette.Pos.range[0],'transform':translate(-30,2),'alignment-baseline':'hanging'});
+        	textPos.append("Pos");
+        var textPosTick1 = makeSVG('text', {'font-size':'14','font-family':'arial','fill':'rgba(0,0,0,1)','transform':translate(legWidth+2,2),'alignment-baseline':'hanging'});
+        	textPosTick1.append(palette.Pos.domain[0]);
+        var textPosTick2 = makeSVG('text', {'font-size':'14','font-family':'arial','fill':'rgba(0,0,0,1)','transform':translate(legWidth+2,legHeight-2),'alignment-baseline':'baseline'});
+        	textPosTick2.append(palette.Pos.domain[1]);
+        appendChildren(g, [textPos, textPosTick1, textPosTick2]);
+
+        var textNeg = makeSVG('text', {'font-size':'14','font-family':'arial','fill':palette.Neg.range[0],'transform':translate(-30,legHeight*2-2),'alignment-baseline':'baseline'});
+        	textNeg.append("Neg");
+        var textNegTick1 = makeSVG('text', {'font-size':'14','font-family':'arial','fill':'rgba(0,0,0,1)','transform':translate(legWidth+2,legHeight*2-2),'alignment-baseline':'baseline'});
+        	textNegTick1.append(palette.Neg.domain[0]);
+        var textNegTick2 = makeSVG('text', {'font-size':'14','font-family':'arial','fill':'rgba(0,0,0,1)','transform':translate(legWidth+2,legHeight+2),'alignment-baseline':'hanging'});
+        	textNegTick2.append(palette.Neg.domain[1]);
+        appendChildren(g, [textNeg, textNegTick1, textNegTick2]);
+
         return g;
     }
 
