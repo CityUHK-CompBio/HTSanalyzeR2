@@ -51,11 +51,11 @@ HTMLWidgets.widget(global = {
                 },
                 scheme: {
                     dual: {
-                        Pos: {
+                        pos: {
                             domain:[0, 1],
                             range:["#9E1617", "#FFFFFF"]
                         },
-                        Neg: {
+                        neg: {
                             domain:[0, 1],
                             range:["#006A9C", "#FFFFFF"]
                         }
@@ -100,11 +100,11 @@ HTMLWidgets.widget(global = {
         }
 
         // TODO: Use uneven scalers
-        if ("Pos" in x.options.colorDomain) {
-            config.scheme.dual.Pos.domain = x.options.colorDomain.Pos;
+        if ("pos" in x.options.colorDomain) {
+            config.scheme.dual.pos.domain = x.options.colorDomain.pos;
         }
-        if ("Neg" in x.options.colorDomain) {
-            config.scheme.dual.Neg.domain = x.options.colorDomain.Neg;
+        if ("neg" in x.options.colorDomain) {
+            config.scheme.dual.neg.domain = x.options.colorDomain.neg;
         }
     },
 
@@ -444,22 +444,18 @@ HTMLWidgets.widget(global = {
         }
 
         // Color Scheme
-        handlers.scheme = function(schemeId, domain, range) {
-            console.log("scheme" + ": " + schemeId);
-            // console.log(domain);
-            // console.log(range);
+        handlers.scheme = function(schemeId, subScheme, type, idx, value) {
+            console.log("scheme" + ": " + schemeId + " " + subScheme + " " + type + " " + value);
             var cur = global.currentSituation();
             var sv = cur.state.supervisor;
             var meta = cur.config.metadata;
 
-            if (schemeId.startsWith("dual")) {
-                var sch = schemeId.replace("dual", "");
-                cur.config.scheme.dual[sch].domain = domain;
-                cur.config.scheme.dual[sch].range = range;
+            if (schemeId == "dual") {
+                cur.config.scheme.dual[subScheme][type][idx] = value;
 
                 for(var i = 0; i < meta.graph.nodes.length; i++) {
-                    var palette = cur.config.scheme.dual[sch];
-                    if(meta.graph.nodes[i].scheme == sch) {
+                    var palette = cur.config.scheme.dual[subScheme];
+                    if(meta.graph.nodes[i].scheme == subScheme) {
                         meta.graph.nodes[i].color = _iterpolatePalette(palette, meta.data.nodes.color[i], cur.config.node.opacity);
                     }
                 }
@@ -648,11 +644,11 @@ HTMLWidgets.widget(global = {
         var legWidth = 13;
 
         var posGrad = makeSVG("linearGradient", {id:baseId+'PosGrad', x1:'0%', y1:'0%', x2:'0%', y2:'100%'});
-            posGrad.appendChild(makeSVG('stop', {offset:'0%', 'stop-color':palette.Pos.range[0], 'stop-opacity':'1'}));
-            posGrad.appendChild(makeSVG('stop', {offset:'100%', 'stop-color':palette.Pos.range[1], 'stop-opacity':'1'}));
+            posGrad.appendChild(makeSVG('stop', {offset:'0%', 'stop-color':palette.pos.range[0], 'stop-opacity':'1'}));
+            posGrad.appendChild(makeSVG('stop', {offset:'100%', 'stop-color':palette.pos.range[1], 'stop-opacity':'1'}));
         var negGrad = makeSVG("linearGradient", {id:baseId+'NegGrad', x1:'0%', y1:'100%', x2:'0%', y2:'0%'});
-            negGrad.appendChild(makeSVG('stop', {offset:'0%', 'stop-color':palette.Neg.range[0], 'stop-opacity':'1'}));
-            negGrad.appendChild(makeSVG('stop', {offset:'100%', 'stop-color':palette.Neg.range[1], 'stop-opacity':'1'}));
+            negGrad.appendChild(makeSVG('stop', {offset:'0%', 'stop-color':palette.neg.range[0], 'stop-opacity':'1'}));
+            negGrad.appendChild(makeSVG('stop', {offset:'100%', 'stop-color':palette.neg.range[1], 'stop-opacity':'1'}));
         var defs = makeSVG("defs", null, [posGrad, negGrad]);
 
         var rect1 = makeSVG('rect', {x1:'0', y1:'0', width:legWidth, height:legHeight, fill:'url(#'+ baseId +'PosGrad)', transform:translate(0, 0)});
@@ -660,20 +656,20 @@ HTMLWidgets.widget(global = {
 
         var g = makeSVG('g', {transform: translate(45, dim[1] - 2 * legHeight - 20)}, [defs, rect1, rect2]);
 
-        var textPos = makeSVG('text', {'font-size':'14','font-family':'arial','fill':palette.Pos.range[0],'transform':translate(-30,2),'alignment-baseline':'hanging'});
+        var textPos = makeSVG('text', {'font-size':'14','font-family':'arial','fill':palette.pos.range[0],'transform':translate(-30,2),'alignment-baseline':'hanging'});
             textPos.append("Pos");
         var textPosTick1 = makeSVG('text', {'font-size':'14','font-family':'arial','fill':'rgba(0,0,0,1)','transform':translate(legWidth+2,2),'alignment-baseline':'hanging'});
-            textPosTick1.append(palette.Pos.domain[0]);
+            textPosTick1.append(palette.pos.domain[0]);
         var textPosTick2 = makeSVG('text', {'font-size':'14','font-family':'arial','fill':'rgba(0,0,0,1)','transform':translate(legWidth+2,legHeight-2),'alignment-baseline':'baseline'});
-            textPosTick2.append(palette.Pos.domain[1]);
+            textPosTick2.append(palette.pos.domain[1]);
         appendChildren(g, [textPos, textPosTick1, textPosTick2]);
 
-        var textNeg = makeSVG('text', {'font-size':'14','font-family':'arial','fill':palette.Neg.range[0],'transform':translate(-30,legHeight*2-2),'alignment-baseline':'baseline'});
+        var textNeg = makeSVG('text', {'font-size':'14','font-family':'arial','fill':palette.neg.range[0],'transform':translate(-30,legHeight*2-2),'alignment-baseline':'baseline'});
             textNeg.append("Neg");
         var textNegTick1 = makeSVG('text', {'font-size':'14','font-family':'arial','fill':'rgba(0,0,0,1)','transform':translate(legWidth+2,legHeight*2-2),'alignment-baseline':'baseline'});
-            textNegTick1.append(palette.Neg.domain[0]);
+            textNegTick1.append(palette.neg.domain[0]);
         var textNegTick2 = makeSVG('text', {'font-size':'14','font-family':'arial','fill':'rgba(0,0,0,1)','transform':translate(legWidth+2,legHeight+2),'alignment-baseline':'hanging'});
-            textNegTick2.append(palette.Neg.domain[1]);
+            textNegTick2.append(palette.neg.domain[1]);
         appendChildren(g, [textNeg, textNegTick1, textNegTick2]);
 
         return g;

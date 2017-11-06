@@ -22,8 +22,8 @@ setMethod("extractSubNet", signature = "NWA",
             diff.expr <- phenotypes[V(subnw)$name]
             diff.expr[is.na(diff.expr)] <- 0
             V(subnw)$diff <- diff.expr
-            V(subnw)$colorScheme[diff.expr < 0] <- "Neg"
-            V(subnw)$colorScheme[diff.expr > 0] <- "Pos"
+            V(subnw)$colorScheme[diff.expr < 0] <- "neg"
+            V(subnw)$colorScheme[diff.expr > 0] <- "pos"
 
             subnw
           })

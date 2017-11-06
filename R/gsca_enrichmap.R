@@ -289,10 +289,10 @@ setMethod("extractEnrichMap", signature = "GSCA",
             V(g)$adjPvalue <- tempdf[, "Adjusted.Pvalue"]
             if(resultName=="GSEA.results") {
               V(g)$obsPvalue <- tempdf[, "Observed.score"]
-              V(g)$colorScheme <- "Pos"
-              V(g)$colorScheme[tempdf[, "Observed.score"] < 0] <- "Neg"
+              V(g)$colorScheme <- "pos"
+              V(g)$colorScheme[tempdf[, "Observed.score"] < 0] <- "neg"
             } else if (resultName=="HyperGeo.results") {
-              V(g)$colorScheme <- "Pos"
+              V(g)$colorScheme <- "pos"
             }
 
             ##labels attributes

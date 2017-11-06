@@ -17,8 +17,8 @@ renderPalette = function(canvas, palette) {
 
 uniTextColors = function(scheme) {
     // scheme = "pos" / "neg"
+    $("input#" + scheme + "Value0").css("color", $("input#" + scheme + "Color0").css("color"));
     $("input#" + scheme + "Value1").css("color", $("input#" + scheme + "Color1").css("color"));
-    $("input#" + scheme + "Value2").css("color", $("input#" + scheme + "Color2").css("color"));
 }
 
 updateShinyInput = function(panel, id, val) {
@@ -59,17 +59,17 @@ refreshValues = function(panel, config) {
     $("#edgeColor", panel).colourpicker("value", config.edge.color);
 
     // ColorScheme
-    $("#posColor1", panel).colourpicker("value", config.scheme.dual.Pos.range[0]);
-    $("#posColor2", panel).colourpicker("value", config.scheme.dual.Pos.range[1]);
-    $("#negColor1", panel).colourpicker("value", config.scheme.dual.Neg.range[0]);
-    $("#negColor2", panel).colourpicker("value", config.scheme.dual.Neg.range[1]);
-    $("input#posValue1", panel).prop("value", config.scheme.dual.Pos.domain[0]);
-    $("input#posValue2", panel).prop("value", config.scheme.dual.Pos.domain[1]);
-    $("input#negValue1", panel).prop("value", config.scheme.dual.Neg.domain[0]);
-    $("input#negValue2", panel).prop("value", config.scheme.dual.Neg.domain[1]);
+    $("#posColor0", panel).colourpicker("value", config.scheme.dual.pos.range[0]);
+    $("#posColor1", panel).colourpicker("value", config.scheme.dual.pos.range[1]);
+    $("#negColor0", panel).colourpicker("value", config.scheme.dual.neg.range[0]);
+    $("#negColor1", panel).colourpicker("value", config.scheme.dual.neg.range[1]);
+    $("input#posValue0", panel).prop("value", config.scheme.dual.pos.domain[0]);
+    $("input#posValue1", panel).prop("value", config.scheme.dual.pos.domain[1]);
+    $("input#negValue0", panel).prop("value", config.scheme.dual.neg.domain[0]);
+    $("input#negValue1", panel).prop("value", config.scheme.dual.neg.domain[1]);
 
-    renderPalette($("canvas#posPalette", panel)[0], config.scheme.dual.Pos);
-    renderPalette($("canvas#negPalette", panel)[0], config.scheme.dual.Neg);
+    renderPalette($("canvas#posPalette", panel)[0], config.scheme.dual.pos);
+    renderPalette($("canvas#negPalette", panel)[0], config.scheme.dual.neg);
     uniTextColors("pos");
     uniTextColors("neg");
 }
@@ -163,23 +163,26 @@ configureSettingHandlers = function(handlers) {
     // ColorScheme
     var fetchSchemeValues = function(scheme) {
         // scheme = "pos" / "neg"
+        var val0 = parseFloat($("input#" + scheme + "Value0").prop("value"));
         var val1 = parseFloat($("input#" + scheme + "Value1").prop("value"));
-        var val2 = parseFloat($("input#" + scheme + "Value2").prop("value"));
+        var color0 = $("#" + scheme + "Color0").colourpicker("value");
         var color1 = $("#" + scheme + "Color1").colourpicker("value");
-        var color2 = $("#" + scheme + "Color2").colourpicker("value");
-        return {domain: [val1, val2], range: [color1, color2]};
+        return {domain: [val0, val1], range: [color0, color1]};
     }
-    $("#dualPos input").on("change", function() {
-        var palette = fetchSchemeValues("pos");
-        renderPalette($("canvas#posPalette")[0], palette);
-        uniTextColors("pos");
-        handlers["scheme"]("dualPos", palette.domain, palette.range);
-    })    
-    $("#dualNeg input").on("change", function() {
-        var palette = fetchSchemeValues("neg");
-        renderPalette($("canvas#negPalette")[0], palette);
-        uniTextColors("neg");
-        handlers["scheme"]("dualNeg", palette.domain, palette.range);
+    $("#schemePanel input").on("change", function(evt) {
+        // posValue1 posValue2 posColor1 posColor2
+        // negValue1 negValue2 negColor1 negColor2
+        var evtId = evt.currentTarget.id;
+        var sch = evtId.substring(0,3) == "pos" ? "pos" : "neg";
+        var type = evtId.substring(3,8) == "Value" ? "domain" : "range";
+        var idx = parseInt(evtId.substring(8));
+        var val = type == "domain" ? parseFloat($(evt.currentTarget).prop("value")) : $(evt.currentTarget).colourpicker("value");
+
+        var palette = fetchSchemeValues(sch);
+        renderPalette($("canvas#" + sch + "Palette")[0], palette);
+        uniTextColors(sch);
+
+        handlers["scheme"]("dual", sch, type, idx, val);
     })
 
     handlers['configured'] = true;

@@ -45,7 +45,7 @@
     color: #cacaca;
 }
 
-#posColor2+.colourpicker-panel, #negColor2+.colourpicker-panel {
+#posColor1+.colourpicker-panel, #negColor1+.colourpicker-panel {
     left: auto;
     right: 0px;
 }
