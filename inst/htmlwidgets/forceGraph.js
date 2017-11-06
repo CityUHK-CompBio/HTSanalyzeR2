@@ -120,14 +120,12 @@ HTMLWidgets.widget(global = {
 
     initialize: function(el, width, height) {
         console.log("====================   initialize   ========================");
-        el.style.height = "85vh";
+        el.style.height = ($("#settingBar").length > 0) ? "85vh" : "97vh";
         global.store.currentTab = el;
         var initState = global.getElementState(el);
         initState.container = el;
         
-        // TODO: rmarkdown.
         registerForceGraph(global);
-
         global.initHandlers();
         configureSettingHandlers(global.store.handlers);
     },
@@ -598,7 +596,10 @@ HTMLWidgets.widget(global = {
         sv.sigInst.refresh();
 
         global.refreshLegend(state, config);
-        refreshSettingPanel(state, config);
+
+        if($("#settingBar").length > 0) {
+            refreshSettingPanel(state, config);
+        }
     },
 
     refreshLegend: function(state, config) {
