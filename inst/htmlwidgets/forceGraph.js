@@ -137,7 +137,7 @@ HTMLWidgets.widget(global = {
         var state = global.getElementState(el);
         var config = global.getConfig(state);
         
-		global.refreshLegend(state, config);
+        global.refreshLegend(state, config);
     },
 
     renderValue: function(el, x) {
@@ -271,7 +271,7 @@ HTMLWidgets.widget(global = {
                 enableEdgeHovering: false,
                 borderSize: 2,
                 outerBorderSize: 3,
-                nodeHaloColor: 'rgba(236, 81, 72, 0.1)',
+                nodeHaloColor: 'rgba(236, 81, 72, 0.2)',
                 nodeHaloSize: 30
             };
 
@@ -556,52 +556,13 @@ HTMLWidgets.widget(global = {
 
         var keyboard = sigma.plugins.keyboard(s, s.renderers[0]);
         select.bindKeyboard(keyboard);
-
-        // Initialize the lasso plugin:
-        var lasso = new sigma.plugins.lasso(s, s.renderers[0], {
-          'strokeStyle': 'rgb(236, 81, 72)',
-          'lineWidth': 2,
-          'fillWhileDrawing': true,
-          'fillStyle': 'rgba(236, 81, 72, 0.2)',
-          'cursor': 'crosshair'
-        });
-
-        // // "spacebar" + "s" keys pressed binding for the lasso tool
-        // keyboard.bind('32+83', function() {
-        //   if (lasso.isActive) {
-        //     lasso.deactivate();
-        //   } else {
-        //     lasso.activate();
-        //   }
-        // });
-        
-        // select.bindLasso(lasso);
-
-        // // Listen for selectedNodes event
-        // lasso.bind('selectedNodes', function (event) {
-        //   setTimeout(function() {
-        //     lasso.deactivate();
-        //     s.refresh({ skipIdexation: true });
-        //   }, 0);
-        // });
-
-        state.plugins = { 
-            activeState: activeState, 
-            dragListener: dragListener, 
-            select: select, 
-            lasso: lasso, 
-            keyboard: keyboard
-        }
     },
 
     killPlugins: function(state) {
-        state.plugins.lasso.clear();
         sigma.plugins.killActiveState();
         sigma.plugins.killKeyboard(state.supervisor.sigInst);
         sigma.plugins.killSelect(state.supervisor.sigInst);
         sigma.plugins.killDragNodes(state.supervisor.sigInst);
-
-        state.plugins = null;
     },
 
     switchTab: function(el) {
@@ -609,6 +570,7 @@ HTMLWidgets.widget(global = {
         if(global.store.currentTab != el) {
             // Current
             var state = global.getElementState(global.store.currentTab);
+            $("svg", state.container).remove();
             global.killPlugins(state);
 
             // Target
@@ -641,8 +603,8 @@ HTMLWidgets.widget(global = {
 
     refreshLegend: function(state, config) {
         console.log("====================   Draw Legend   =====================");
-        console.log(state);
-        console.log(config);
+        // console.log(state);
+        // console.log(config);
 
         var container = state.container;
 
@@ -651,7 +613,7 @@ HTMLWidgets.widget(global = {
             var svgElem = document.createElementNS("http://www.w3.org/2000/svg", "svg");
             svgElem.style.width = "100%";
             svgElem.style.height = "100%";
-            container.appendChild(svgElem);
+            container.appendChild(svgElem);        
         }
         var svg = container.getElementsByTagName("svg")[0];
         svg.innerHTML = '';
@@ -664,8 +626,8 @@ HTMLWidgets.widget(global = {
         var baseId = state.container.id;
 
         function appendChildren(el, children) {
-        	for (var i in children)
-            	el.appendChild(children[i]);
+            for (var i in children)
+                el.appendChild(children[i]);
             return el;
         }
         function makeSVG(tag, attrs, children) {
@@ -676,7 +638,7 @@ HTMLWidgets.widget(global = {
             return el;
         }
         function translate(x, y) {
-        	return 'translate('+ x +', ' + y + ')';
+            return 'translate('+ x +', ' + y + ')';
         }
 
         var palette = config.scheme.dual;
@@ -685,12 +647,12 @@ HTMLWidgets.widget(global = {
         var legWidth = 13;
 
         var posGrad = makeSVG("linearGradient", {id:baseId+'PosGrad', x1:'0%', y1:'0%', x2:'0%', y2:'100%'});
-    		posGrad.appendChild(makeSVG('stop', {offset:'0%', 'stop-color':palette.Pos.range[0], 'stop-opacity':'1'}));
-    		posGrad.appendChild(makeSVG('stop', {offset:'100%', 'stop-color':palette.Pos.range[1], 'stop-opacity':'1'}));
+            posGrad.appendChild(makeSVG('stop', {offset:'0%', 'stop-color':palette.Pos.range[0], 'stop-opacity':'1'}));
+            posGrad.appendChild(makeSVG('stop', {offset:'100%', 'stop-color':palette.Pos.range[1], 'stop-opacity':'1'}));
         var negGrad = makeSVG("linearGradient", {id:baseId+'NegGrad', x1:'0%', y1:'100%', x2:'0%', y2:'0%'});
-    		negGrad.appendChild(makeSVG('stop', {offset:'0%', 'stop-color':palette.Neg.range[0], 'stop-opacity':'1'}));
-    		negGrad.appendChild(makeSVG('stop', {offset:'100%', 'stop-color':palette.Neg.range[1], 'stop-opacity':'1'}));
-    	var defs = makeSVG("defs", null, [posGrad, negGrad]);
+            negGrad.appendChild(makeSVG('stop', {offset:'0%', 'stop-color':palette.Neg.range[0], 'stop-opacity':'1'}));
+            negGrad.appendChild(makeSVG('stop', {offset:'100%', 'stop-color':palette.Neg.range[1], 'stop-opacity':'1'}));
+        var defs = makeSVG("defs", null, [posGrad, negGrad]);
 
         var rect1 = makeSVG('rect', {x1:'0', y1:'0', width:legWidth, height:legHeight, fill:'url(#'+ baseId +'PosGrad)', transform:translate(0, 0)});
         var rect2 = makeSVG('rect', {x1:'0', y1:'0', width:legWidth, height:legHeight, fill:'url(#'+ baseId +'NegGrad)', transform:translate(0, legHeight)});
@@ -698,19 +660,19 @@ HTMLWidgets.widget(global = {
         var g = makeSVG('g', {transform: translate(45, dim[1] - 2 * legHeight - 20)}, [defs, rect1, rect2]);
 
         var textPos = makeSVG('text', {'font-size':'14','font-family':'arial','fill':palette.Pos.range[0],'transform':translate(-30,2),'alignment-baseline':'hanging'});
-        	textPos.append("Pos");
+            textPos.append("Pos");
         var textPosTick1 = makeSVG('text', {'font-size':'14','font-family':'arial','fill':'rgba(0,0,0,1)','transform':translate(legWidth+2,2),'alignment-baseline':'hanging'});
-        	textPosTick1.append(palette.Pos.domain[0]);
+            textPosTick1.append(palette.Pos.domain[0]);
         var textPosTick2 = makeSVG('text', {'font-size':'14','font-family':'arial','fill':'rgba(0,0,0,1)','transform':translate(legWidth+2,legHeight-2),'alignment-baseline':'baseline'});
-        	textPosTick2.append(palette.Pos.domain[1]);
+            textPosTick2.append(palette.Pos.domain[1]);
         appendChildren(g, [textPos, textPosTick1, textPosTick2]);
 
         var textNeg = makeSVG('text', {'font-size':'14','font-family':'arial','fill':palette.Neg.range[0],'transform':translate(-30,legHeight*2-2),'alignment-baseline':'baseline'});
-        	textNeg.append("Neg");
+            textNeg.append("Neg");
         var textNegTick1 = makeSVG('text', {'font-size':'14','font-family':'arial','fill':'rgba(0,0,0,1)','transform':translate(legWidth+2,legHeight*2-2),'alignment-baseline':'baseline'});
-        	textNegTick1.append(palette.Neg.domain[0]);
+            textNegTick1.append(palette.Neg.domain[0]);
         var textNegTick2 = makeSVG('text', {'font-size':'14','font-family':'arial','fill':'rgba(0,0,0,1)','transform':translate(legWidth+2,legHeight+2),'alignment-baseline':'hanging'});
-        	textNegTick2.append(palette.Neg.domain[1]);
+            textNegTick2.append(palette.Neg.domain[1]);
         appendChildren(g, [textNeg, textNegTick1, textNegTick2]);
 
         return g;
