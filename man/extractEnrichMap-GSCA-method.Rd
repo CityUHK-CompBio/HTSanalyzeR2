@@ -6,7 +6,7 @@
 \title{Extract the enrichment map result from GSCA object}
 \usage{
 \S4method{extractEnrichMap}{GSCA}(object, resultName = "GSEA.results", gscs,
-  ntop = NULL, allSig = TRUE, gsNameType = "id")
+  ntop = NULL, allSig = TRUE, gsNameType = "id", specificGeneset = NULL)
 }
 \description{
 This is a generic function.

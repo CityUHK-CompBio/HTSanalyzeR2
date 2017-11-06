@@ -5,7 +5,7 @@
 \title{FetchGSCASeriesValues}
 \usage{
 fetchGSCASeriesValues(gscaObjs, resultName = "GSEA.results", gscs,
-  ntop = NULL, allSig = TRUE, gsNameType = "id")
+  ntop = NULL, allSig = TRUE, gsNameType = "id", specificGeneset = NULL)
 }
 \description{
 FetchGSCASeriesValues

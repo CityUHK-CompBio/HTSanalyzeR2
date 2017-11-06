@@ -9,14 +9,14 @@
   msigdbGSCs = NULL)
 }
 \arguments{
-\item{object}{an object. When this function is implemented as the S4 method
+\item{object}{An object. When this function is implemented as the S4 method
 of class 'GSCA', this argument is an object of class 'GSCA'.}
 
-\item{keggGSCs}{a character vector of names of all KEGG gene set collections}
+\item{keggGSCs}{A character vector of names of all KEGG gene set collections}
 
-\item{goGSCs}{a character vector of names of all GO gene set collections}
+\item{goGSCs}{A character vector of names of all GO gene set collections}
 
-\item{msigdbGSCs}{a character vector of names of all MSigDB gene set collections}
+\item{msigdbGSCs}{A character vector of names of all MSigDB gene set collections}
 }
 \value{
 In the end, this function will return an updated object of class GSCA.

@@ -19,13 +19,13 @@ method of class 'GSCA' or 'NWA', this argument is an object of class
 
 \item{para}{a list of parameters for GSEA and hypergeometric tests.}
 
-\item{verbose}{a single logical value specifying to display detailed messages
+\item{verbose}{A single logical value specifying to display detailed messages
 (when verbose=TRUE) or not (when verbose=FALSE)}
 
-\item{doGSOA}{a single logical value specifying to perform gene set
-overrepresentation analysis (when doGSOA=TRUE) or not (when doGSOA=FALSE)}
+\item{doGSOA}{A single logical value specifying to perform gene set
+overrepresentation analysis(hypergeeometric test) (when doGSOA=TRUE) or not (when doGSOA=FALSE)}
 
-\item{doGSEA}{a single logical value specifying to perform gene set
+\item{doGSEA}{A single logical value specifying to perform gene set
 enrichment analysis (when doGSEA=TRUE) or not (when doGSEA=FALSE)}
 
 \item{fdr}{a single numeric value specifying the false discovery for the scoring of nodes
@@ -33,20 +33,20 @@ enrichment analysis (when doGSEA=TRUE) or not (when doGSEA=FALSE)}
 
 \item{species}{a single character value specifying the species for which the data should be read.}
 
-\item{para$pValueCutoff}{a single numeric value specifying the cutoff for p-values considered
+\item{para$pValueCutoff}{A single numeric value specifying the cutoff for p-values considered
 significant}
 
-\item{para$pAdjustMethod}{a single character value specifying the p-value adjustment method to be used
+\item{para$pAdjustMethod}{A single character value specifying the p-value adjustment method to be used
 (see 'p.adjust' for details)}
 
-\item{para$nPermutations}{a single integer or numeric value specifying the number of permutations for
+\item{para$nPermutations}{A single integer or numeric value specifying the number of permutations for
 deriving p-values in GSEA}
 
-\item{para$minGeneSetSize}{a single integer or numeric value specifying the minimum number of elements
+\item{para$minGeneSetSize}{A single integer or numeric value specifying the minimum number of elements
 in a gene set that must map to elements of the gene universe. Gene sets with
 fewer than this number are removed from both hypergeometric analysis and GSEA.}
 
-\item{para$exponent}{a single integer or numeric value used in weighting phenotypes in GSEA.}
+\item{para$exponent}{A single integer or numeric value used in weighting phenotypes in GSEA.}
 }
 \value{
 In the end, this function will return an updated object of

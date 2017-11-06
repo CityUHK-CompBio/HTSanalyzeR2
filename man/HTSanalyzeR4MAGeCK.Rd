@@ -4,31 +4,15 @@
 \alias{HTSanalyzeR4MAGeCK}
 \title{An analysis pipeline for MAGeCK data.}
 \usage{
-HTSanalyzeR4MAGeCK(file,
-                   selectDirection = "negative",
-                   doGSOA = FALSE,
-                   doGSEA = TRUE,
-                   hitsCutoffLogFC = NULL,
-                   hitsCutoffPval = NULL,
-                   listOfGeneSetCollections,
-                   species = "Hs",
-                   initialIDs = "SYMBOL",
-                   keepMultipleMappings = TRUE,
-                   duplicateRemoverMethod = "max",
-                   orderAbsValue = FALSE,
-                   pValueCutoff = 0.05,
-                   pAdjustMethod = "BH",
-                   nPermutations = 1000,
-                   minGeneSetSize = 15,
-                   exponent = 1,
-                   verbose = TRUE,
-                   keggGSCs = NULL,
-                   goGSCs = NULL,
-                   msigdbGSCs = NULL,
-                   interactionMatrix = NULL,
-                   reportDir = "HTSanalyzerReport",
-                   nwAnalysisGenetic = FALSE,
-                   nwAnalysisFdr = 0.001)
+HTSanalyzeR4MAGeCK(file, selectDirection = "negative", doGSOA = FALSE,
+  doGSEA = TRUE, hitsCutoffLogFC = NULL, hitsCutoffPval = NULL,
+  listOfGeneSetCollections, species = "Hs", initialIDs = "SYMBOL",
+  keepMultipleMappings = TRUE, duplicateRemoverMethod = "max",
+  orderAbsValue = FALSE, pValueCutoff = 0.05, pAdjustMethod = "BH",
+  nPermutations = 1000, minGeneSetSize = 15, exponent = 1,
+  verbose = TRUE, keggGSCs = NULL, goGSCs = NULL, msigdbGSCs = NULL,
+  interactionMatrix = NULL, reportDir = "HTSanalyzerReport",
+  nwAnalysisGenetic = FALSE, nwAnalysisFdr = 0.001)
 }
 \arguments{
 \item{file}{A result file for CRISPR data using MAGeCK to do preprocessing.}

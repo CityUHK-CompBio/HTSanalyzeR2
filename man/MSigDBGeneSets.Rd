@@ -14,11 +14,11 @@ It should be one of the following character strings: 'h'(hallmark gene sets),
 'c7'(immunologic signatures).}
 }
 \value{
-Return A list of gene sets.
+Return a list of gene sets.
 }
 \description{
 This function creates gene set collections based on MSigDB.
-It is collection-specific, and returns a GeneSetCollection objects with
+It is collection-specific, and returns a GeneSetCollection object with
 the elements of the gene sets represented by Entrez Gene IDs.
 }
 \examples{

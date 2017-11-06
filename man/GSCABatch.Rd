@@ -7,7 +7,8 @@
 GSCABatch(expInfor, listOfGeneSetCollections, phenotypeTS, hitsTS = list())
 }
 \description{
-This S4 class packages time-series data for further GSCA.
+This S4 class packages time-series data for further GSCA. To put it more clearly, it'll finally generate a list of
+GSCA objects for further analyses.
 }
 \section{Slots}{
 

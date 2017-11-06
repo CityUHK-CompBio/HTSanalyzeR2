@@ -21,7 +21,7 @@
 data should be read.}
 
 \item{initialIDs}{A single character value specifying the type of initial
-identifiers for input geneList}
+identifiers for input geneList.}
 
 \item{keepMultipleMappings}{A single logical value. If TRUE, the function
 keeps the entries with multiple mappings (first mapping is kept). If FALSE,
@@ -49,17 +49,17 @@ genes, converts annotations to Entrez identifiers, etc.
 This function will do the following preprocessing steps:
 
 1:filter out p-values (the slot **pvalues** of class NWA), phenotypes
- (the slot phenotypes of class NWA) and data for enrichment (the slot
- geneList of class GSCA) with NA values or without valid names, and invalid
-  gene names (the slot hits of class GSCA);
+ (the slot **phenotypes** of class NWA) and data for enrichment (the slot
+ **geneList** of class GSCA) with NA values or without valid names, and invalid
+  gene names (the slot **hits** of class GSCA);
 
-2:invoke function duplicateRemover to remove duplicated genes in the slot pvalues,
- phenotypes of class NWA, and the slot geneList and hits of class GSCA;
+2:invoke function duplicateRemover to remove duplicated genes in the slot **pvalues**,
+ **phenotypes** of class NWA, and the slot **geneList** and **hits** of class GSCA;
 
 3:invoke function annotationConvertor to convert annotations from initialIDs
-to Entrez identifiers. Please note that the slot hits and the names of the slot
-geneList of class GSCA, the names of the slot pvalues and the names of the slot
-phenotypes of class NWA must have the same type of gene annotation specified by
+to Entrez identifiers. Please note that the slot **hits** and the names of the slot
+**geneList** of class GSCA, the names of the slot **pvalues** and the names of the slot
+**phenotypes** of class NWA must have the same type of gene annotation specified by
 initialIDs;
 
 4:order the data for enrichment decreasingly for objects of class GSCA.

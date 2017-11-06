@@ -5,7 +5,7 @@
 \title{Write HTML reports for both enrichment and network analyses}
 \usage{
 reportAll(gsca = NULL, nwa = NULL, TSOrder = NULL,
-  reportDir = "AnalysisReport")
+  specificGeneset = NULL, reportDir = "AnalysisReport")
 }
 \arguments{
 \item{gsca}{a GSCA object or a list of GSCA objects}

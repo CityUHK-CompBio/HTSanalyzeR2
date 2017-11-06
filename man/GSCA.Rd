@@ -2,13 +2,13 @@
 % Please edit documentation in R/gsca_class.R
 \name{GSCA}
 \alias{GSCA}
-\title{An S4 class for Gene Set Collection Analyses on high-throughput screens}
+\title{An S4 class for Gene Set Collection Analyses on high-throughput data}
 \usage{
 GSCA(listOfGeneSetCollections, geneList, hits = character())
 }
 \description{
 This S4 class includes a series of methods to do gene set enrichment analysis
-and hypergeometric tests for high-throughput screens.
+and hypergeometric test for high-throughput data.
 }
 \section{Slots}{
 
@@ -20,18 +20,18 @@ set collection' is a list of gene sets).}
 identifiers.}
 
 \item{\code{hits}}{A character vector of the gene identifiers (used as hits in
-the hypergeometric tests).It's needed if you want do GSOA.}
+the hypergeometric tests).It's needed if you want to do GSOA.}
 
-\item{\code{para}}{a list of parameters for hypergeometric tests and GSEA. These
+\item{\code{para}}{A list of parameters for hypergeometric test and GSEA. These
 parameters are pValueCutoff, pAdjustMethod, nPermutations, minGeneSetSize
 and exponent.}
 
-\item{\code{result}}{a list of results.}
+\item{\code{result}}{A list of results.}
 
-\item{\code{summary}}{a list of summary information for listOfGeneSetCollections,
+\item{\code{summary}}{A list of summary information for listOfGeneSetCollections,
 geneList, hits, para, and result.}
 
-\item{\code{preprocessed}}{a single logical value specifying whether or not the
+\item{\code{preprocessed}}{A single logical value specifying whether or not the
 input data has been preprocessed.}
 }}
 

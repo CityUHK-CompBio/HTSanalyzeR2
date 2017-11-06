@@ -25,7 +25,7 @@ A named vector of phenotypes with duplicates removed
 \description{
 This function gets rid of the duplicates in a vector of phenotypes
 with gene identifiers as names. It is used to prepare the named vector
-of phenotypes for the over-representation and enrichment analysis.
+of phenotypes for the over-representation and gene set enrichment analysis.
 }
 \examples{
 x<-c(5,1,3,-2,6)

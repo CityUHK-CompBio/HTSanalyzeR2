@@ -7,7 +7,8 @@
 NWABatch(expInfor, pvalueTS, phenotypeTS = list(), interactome = NA)
 }
 \description{
-This S4 class packages time-series data for further NWA.
+This S4 class packages time-series data for further NWA. To put it more clearly, it'll finally generate a list of
+NWA objects for further analyses.
 }
 \section{Slots}{
 

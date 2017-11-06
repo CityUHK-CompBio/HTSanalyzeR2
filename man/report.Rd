@@ -6,7 +6,8 @@
 \alias{report,NWA-method}
 \title{Write HTML reports for enrichment or network analyses}
 \usage{
-\S4method{report}{GSCA}(object, reportDir = "GSCAReport")
+\S4method{report}{GSCA}(object, specificGeneset = NULL,
+  reportDir = "GSCAReport")
 
 \S4method{report}{NWA}(object, reportDir = "NWAReport")
 }
