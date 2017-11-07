@@ -28,7 +28,7 @@ var r2h = function(rgb) {
 
 // range: ["#9E1617", "#FFFFFF"] }, factor: 0-1
 // return: rgb array
-var _iterpolateColor = function(range, factor) {
+var _iterpolateColor = function(range, factor, ret) {
   var color1 = h2r(range[0]);
   var color2 = h2r(range[1]);
   var rgb = color1.slice();
@@ -36,6 +36,9 @@ var _iterpolateColor = function(range, factor) {
     rgb[i] = Math.round(rgb[i] + factor*(color2[i]-color1[i]));
   }
 
+  if(ret == 'hex') {
+    return r2h(rgb);
+  }
   return rgb;
 }
 

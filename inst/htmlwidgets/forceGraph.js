@@ -52,14 +52,20 @@ HTMLWidgets.widget(global = {
                 scheme: {
                     dual: {
                         pos: {
-                            domain:[0, 1],
-                            range:["#9E1617", "#FFFFFF"]
+                            enabled: false,
+                            domain: [0, 1],
+                            range: ["#9E1617", "#FFF3F3"]
                         },
                         neg: {
-                            domain:[0, 1],
-                            range:["#006A9C", "#FFFFFF"]
+                            enabled: false,
+                            domain: [0, 1],
+                            range: ["#006A9C", "#F3F3FF"]
                         }
                     }
+                },
+                info: {
+                    graphType: "", 
+                    legendTitle: ""
                 }
             };
         }
@@ -77,11 +83,13 @@ HTMLWidgets.widget(global = {
     },
 
     mergeConfig: function(config, x) {
-        if(x.options.type == "GSCA") {
+        config.info.graphType = x.options.type; //HyperGeo GSEA NWA
+        config.info.legendTitle = "legendTitle" in x.options ? x.options.legendTitle : "";
+        if(config.info.graphType == "GSEA" || config.graphType == "HyperGeo") {
             config.settings.maxNodeSize = 20;
             config.settings.minNodeSize = 3;
             config.settings.maxEdgeSize = 8;
-        } else if (x.options.type == "NWA") {
+        } else if (config.info.graphType == "NWA") {
             config.settings.maxNodeSize = 10;
             config.settings.maxEdgeSize = 2;
         }
@@ -101,10 +109,16 @@ HTMLWidgets.widget(global = {
 
         // TODO: Use uneven scalers
         if ("pos" in x.options.colorDomain) {
+            config.scheme.dual.pos.enabled = true;
             config.scheme.dual.pos.domain = x.options.colorDomain.pos;
         }
         if ("neg" in x.options.colorDomain) {
+            config.scheme.dual.neg.enabled = true;
             config.scheme.dual.neg.domain = x.options.colorDomain.neg;
+        }
+        if (config.info.graphType == "NWA" && "pos" in x.options.colorDomain) {
+            config.scheme.dual.pos.domain[0] = x.options.colorDomain.pos[1];
+            config.scheme.dual.pos.domain[1] = x.options.colorDomain.pos[0];
         }
     },
 
@@ -620,8 +634,13 @@ HTMLWidgets.widget(global = {
     },
 
     drawLegend: function(state, config) {
-        var baseId = state.container.id;
-
+        function nice(value) {
+            var sciNot = value.toExponential(1).split('e');
+            var a = Math.round(sciNot[0] * 2 + Math.sign(sciNot[0]) * 0.45) * 0.5;
+            var n = sciNot[1];
+            return (a + 'e' + n) * 1;
+            return value;
+        }
         function appendChildren(el, children) {
             for (var i in children)
                 el.appendChild(children[i]);
@@ -637,40 +656,82 @@ HTMLWidgets.widget(global = {
         function translate(x, y) {
             return 'translate('+ x +', ' + y + ')';
         }
+        function makeText(cont, x, y) {
+            var txt = makeSVG('text', {transform:translate(x, y), 'font-size':'13','font-family':'arial','fill':'rgba(0,0,0,0.8)','alignment-baseline':'hanging'} )
+            txt.append(cont);
+            return txt;
+        }
 
-        var palette = config.scheme.dual;
+        var pals = $.extend({}, config.scheme.dual);
+        var schs = [];
+
+        // config.info.graphType: HyperGeo GSEA NWA
+        if (config.info.graphType == 'GSEA') {
+            schs = ["pos", "neg"];
+        } else {
+            if (pals.pos.enabled) schs.push("pos");
+            if (pals.neg.enabled) schs.push("neg");
+        }
+
+        // nice domain
+        for(var idx in schs) {
+            pals[schs[idx]].domain[0] = nice(pals[schs[idx]].domain[0]);
+            pals[schs[idx]].domain[1] = nice(pals[schs[idx]].domain[1]);
+        }
+        if (config.info.graphType == 'GSEA') {
+            var maxDom = Math.max(pals.pos.domain[1], pals.neg.domain[1]);
+            pals.pos.domain[1] = maxDom;
+            pals.neg.domain[1] = maxDom;
+        }
+
+        // draw legend
         var dim = [$(state.container).width(), $(state.container).height()];
-        var legHeight = 100;
-        var legWidth = 13;
+        var edgeLen = 18;
+        var ticks = 11;
+        var legWidth = 60;
+        var legHeight = edgeLen * ticks;
 
-        var posGrad = makeSVG("linearGradient", {id:baseId+'PosGrad', x1:'0%', y1:'0%', x2:'0%', y2:'100%'});
-            posGrad.appendChild(makeSVG('stop', {offset:'0%', 'stop-color':palette.pos.range[0], 'stop-opacity':'1'}));
-            posGrad.appendChild(makeSVG('stop', {offset:'100%', 'stop-color':palette.pos.range[1], 'stop-opacity':'1'}));
-        var negGrad = makeSVG("linearGradient", {id:baseId+'NegGrad', x1:'0%', y1:'100%', x2:'0%', y2:'0%'});
-            negGrad.appendChild(makeSVG('stop', {offset:'0%', 'stop-color':palette.neg.range[0], 'stop-opacity':'1'}));
-            negGrad.appendChild(makeSVG('stop', {offset:'100%', 'stop-color':palette.neg.range[1], 'stop-opacity':'1'}));
-        var defs = makeSVG("defs", null, [posGrad, negGrad]);
+        var g = makeSVG('g', {transform: translate(40, dim[1] - legHeight - 40)});
 
-        var rect1 = makeSVG('rect', {x1:'0', y1:'0', width:legWidth, height:legHeight, fill:'url(#'+ baseId +'PosGrad)', transform:translate(0, 0)});
-        var rect2 = makeSVG('rect', {x1:'0', y1:'0', width:legWidth, height:legHeight, fill:'url(#'+ baseId +'NegGrad)', transform:translate(0, legHeight)});
+        if (schs.length == 1) {
+            var pal = pals[schs[0]];
+            for(var i = 0; i < ticks; i++) {
+                var color = _iterpolateColor(pal.range, i / (ticks - 1), "hex");
+                var rect = makeSVG('rect', {transform:translate(10, edgeLen * i), width:edgeLen, height:edgeLen, style:"fill:"+color});
+                appendChildren(g, [rect]);
+            }
 
-        var g = makeSVG('g', {transform: translate(45, dim[1] - 2 * legHeight - 20)}, [defs, rect1, rect2]);
+            var txt0 = makeText(pal.domain[0], edgeLen + 15, 5);
+            var txt1 = makeText(pal.domain[1], edgeLen + 15, (ticks - 1) * edgeLen + 5);
+            appendChildren(g, [txt0, txt1]);
+        } else {
+            var i, sepTicks = 5;
+            for(i = 0; i < sepTicks; i++) {
+                var color = _iterpolateColor(pals.pos.range, i / (sepTicks - 1), "hex");
+                g.appendChild(makeSVG('rect', {transform:translate(10, edgeLen * i), width:edgeLen, height:edgeLen, style:"fill:"+color}));
+            }
+            g.appendChild(makeSVG('rect', {transform:translate(10, edgeLen * i++), width:edgeLen, height:edgeLen, style:"fill:#FDFDFD"}));
+            for(; i <= 2 * sepTicks; i++) {
+                var color = _iterpolateColor(pals.neg.range, ( 2*sepTicks - i) / (sepTicks - 1), "hex");
+                g.appendChild(makeSVG('rect', {transform:translate(10, edgeLen * i), width:edgeLen, height:edgeLen, style:"fill:"+color}));
+            }
 
-        var textPos = makeSVG('text', {'font-size':'14','font-family':'arial','fill':palette.pos.range[0],'transform':translate(-30,2),'alignment-baseline':'hanging'});
-            textPos.append("Pos");
-        var textPosTick1 = makeSVG('text', {'font-size':'14','font-family':'arial','fill':'rgba(0,0,0,1)','transform':translate(legWidth+2,2),'alignment-baseline':'hanging'});
-            textPosTick1.append(palette.pos.domain[0]);
-        var textPosTick2 = makeSVG('text', {'font-size':'14','font-family':'arial','fill':'rgba(0,0,0,1)','transform':translate(legWidth+2,legHeight-2),'alignment-baseline':'baseline'});
-            textPosTick2.append(palette.pos.domain[1]);
-        appendChildren(g, [textPos, textPosTick1, textPosTick2]);
+            var txts = [pals.pos.domain[0], pals.pos.domain[1], 1, pals.neg.domain[1], pals.neg.domain[0]];
+            var transY = [5, 4*edgeLen + 5, 5*edgeLen + 5, 6*edgeLen + 5, 10 * edgeLen + 5];
+            txts[2] = (config.info.graphType == 'NWA') ? 0 : 1;
 
-        var textNeg = makeSVG('text', {'font-size':'14','font-family':'arial','fill':palette.neg.range[0],'transform':translate(-30,legHeight*2-2),'alignment-baseline':'baseline'});
-            textNeg.append("Neg");
-        var textNegTick1 = makeSVG('text', {'font-size':'14','font-family':'arial','fill':'rgba(0,0,0,1)','transform':translate(legWidth+2,legHeight*2-2),'alignment-baseline':'baseline'});
-            textNegTick1.append(palette.neg.domain[0]);
-        var textNegTick2 = makeSVG('text', {'font-size':'14','font-family':'arial','fill':'rgba(0,0,0,1)','transform':translate(legWidth+2,legHeight+2),'alignment-baseline':'hanging'});
-            textNegTick2.append(palette.neg.domain[1]);
-        appendChildren(g, [textNeg, textNegTick1, textNegTick2]);
+            for(var i = 0; i < txts.length; i++) {
+                g.appendChild(makeText(txts[i], edgeLen + 15, transY[i]));
+            }
+        }
+
+        // Legend title
+        var title = makeSVG('text', {transform:translate(edgeLen / 2 + 10, edgeLen * ticks + 5), 'font-size':'13','font-family':'arial','fill':'rgba(0,0,0,0.8)','alignment-baseline':'hanging', 'text-anchor':'middle'});
+        title.append(config.info.legendTitle);
+        // var txt1 = makeSVG('tspan', {x:0, dy:"1.2em"}); txt1.append("Adjusted");
+        // var txt2 = makeSVG('tspan', {x:0, dy:"1.2em"}); txt2.append("p-values");
+        // appendChildren(title, [txt1, txt2])
+        appendChildren(g, [title]);
 
         return g;
     }

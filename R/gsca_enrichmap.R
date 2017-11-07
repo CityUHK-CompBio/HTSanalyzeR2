@@ -370,6 +370,7 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #' viewEnrichMap(gsca, gscs="GO_MF", allSig = F, ntop = 7, gsNameType = "term")
 #' @export
 #' @importFrom igraph as_data_frame
+#' @importFrom stringr str_replace
 setMethod("viewEnrichMap", signature = "GSCA",
           function(object,
                    resultName = "GSEA.results",
@@ -421,7 +422,7 @@ setMethod("viewEnrichMap", signature = "GSCA",
             }
 
             options$nodeScheme = "dual"
-            defaultOptions = list(title = title, label = gsNameType, legendTitle = "Adjusted p-values", type = "GSCA")
+            defaultOptions = list(title = title, label = gsNameType, legendTitle = "Adjusted p-values", type = stringr::str_replace(resultName, ".results", ""))
             graphOptions <- modifyList(defaultOptions, options)
 
             forceGraph(em_nodes, em_links, nMappings, lMappings, graphOptions, seriesData = series)
