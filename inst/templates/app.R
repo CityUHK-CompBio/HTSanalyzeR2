@@ -38,8 +38,12 @@ if(!is.null(gsca)) {
     gsca <- HTSanalyzeR2:::combineResults(gsca)
   }
 
-  availableAnalysis <- HTSanalyzeR2:::availableResults(gsca@summary$results, TRUE)
+
+  availableAnalysis <- HTSanalyzeR2:::availableResults(gsca@result, TRUE)
   availableGeneSets <- HTSanalyzeR2:::availableResults(gsca@summary$results, FALSE)
+  #
+  # availableAnalysis <- HTSanalyzeR2:::availableResults(gsca@summary$results, TRUE)
+  # availableGeneSets <- HTSanalyzeR2:::availableResults(gsca@summary$results, FALSE)
   specificGenesetItem <- NULL
   if(!is.null(specificGeneset)) {
     specificGenesetItem = "SpecificGeneset"

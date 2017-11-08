@@ -204,9 +204,15 @@ combineResults <- function(gsca) {
 }
 
 availableResults <- function(results, byRow = TRUE) {
-  res <- c("HyperGeo", "GSEA", "Significant in both")
+  res <- c(0, 0, 0)
+  names(res) <- c("HyperGeo", "GSEA", "Significant in both")
+  # res <- res[which(!is.na(rowSums(results)) & rowSums(results) > 0)]
   if(byRow) {
-    res <- res[which(!is.na(rowSums(results)) & rowSums(results) > 0)]
+    if(!is.null(results$HyperGeo.results)) res["HyperGeo"] <- 1
+    if(!is.null(results$GSEA.results)) res["GSEA"] <- 1
+    if(length(unlist(results$Sig.adj.pvals.in.both))>0) res["Significant in both"] <- 1
+    res <- names(res[res==1])
+
   } else {
     res <- colnames(results)[colSums(results, na.rm = TRUE) > 0]
   }
