@@ -200,7 +200,9 @@ setMethod("extractEnrichMap", signature = "GSCA",
 
             if (length(unlist(topGS, recursive = FALSE)) == 0) {
               warning("No significant gene sets found!\n")
-              return(NULL)
+              g <- makeEmptyGraph(c("name", "geneSetSize", "adjPvalue", "obsPvalue", "colorScheme", "label", "label_id", "label_term"),
+                                  c("from", "to", "weight"))
+              return(g)
             }
 
             gsInUni <- list()
@@ -478,4 +480,18 @@ fetchGSCASeriesValues <- function(gscaObjs, resultName = "GSEA.results", gscs,
   rownames(edgeDF) <- NULL
 
   list(nodes = nodeDF, edges = edgeDF, nodeSeriesCols = nodeCols, edgeSeriesCols = edgeCols)
+}
+
+
+
+#' @importFrom igraph make_empty_graph set_vertex_attr
+makeEmptyGraph <- function(NAttributes, EAttributes) {
+  g <- igraph::make_empty_graph(n = 0, directed = TRUE)
+  for (attr in NAttributes) {
+    g <- igraph::set_vertex_attr(g, attr, value = 0)
+  }
+  for (attr in EAttributes) {
+    g <- igraph::set_edge_attr(g, attr, value = 0)
+  }
+  g
 }

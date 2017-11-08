@@ -200,11 +200,11 @@ renderGSCASummary <- function(input, output, gscaObj) {
     output$para5 <- renderValueBox(infoBox(color = "teal", title = "Exponent", subtitle = "Exponent used",
                                            value = gscaObj@summary$para$gsea[, "exponent"]))
   } else if(input$analysis_res == "HyperGeo") {
-    output$para1 <- renderValueBox(infoBox(color = "maroon", title = "P-value Cutoff", subtitle = "Significant gene set cutoff p-value(adjusted)",
+    output$para1 <- renderValueBox(infoBox(color = "teal", title = "P-value Cutoff", subtitle = "Significant gene set cutoff p-value(adjusted)",
                                            value = gscaObj@summary$para$hypergeo[, "pValueCutoff"]))
-    output$para2 <- renderValueBox(infoBox(color = "maroon", title = "Minimum size", subtitle = "Minimum gene set size",
+    output$para2 <- renderValueBox(infoBox(color = "teal", title = "Minimum size", subtitle = "Minimum gene set size",
                                            value = gscaObj@summary$para$hypergeo[, "minGeneSetSize"]))
-    output$para3 <- renderValueBox(infoBox(color = "maroon", title = "Correction", subtitle = "MHT correction method",
+    output$para3 <- renderValueBox(infoBox(color = "teal", title = "Correction", subtitle = "MHT correction method",
                                            value = gscaObj@summary$para$hypergeo[, "pAdjustMethod"]))
     output$para4 <- renderValueBox(shiny::div(shiny::div()))
     output$para5 <- renderValueBox(shiny::div(shiny::div()))
@@ -233,6 +233,13 @@ create_enrich_map <- function(gscaObj, seriesObjs, input) {
     specificGeneset = specificGeneset,
     seriesObjs = seriesObjs)
 }
+
+# ##
+# gscaObj <- gscaTStmp[[1]]
+# resultName <- "HyperGeo.results"
+# gscs <- names(gscaObj@listOfGeneSetCollections)
+# specificGeneset <- NULL
+# seriesObjs <- gscaTStmp
 
 create_network <- function(nwaObj, seriesObjs) {
   HTSanalyzeR2::viewSubNet(nwaObj, seriesObjs = seriesObjs)
