@@ -64,7 +64,7 @@ HTMLWidgets.widget(global = {
                     }
                 },
                 info: {
-                    graphType: "", 
+                    graphType: "",
                     legendTitle: ""
                 }
             };
@@ -138,7 +138,7 @@ HTMLWidgets.widget(global = {
         global.store.currentTab = el;
         var initState = global.getElementState(el);
         initState.container = el;
-        
+
         registerForceGraph(global);
         global.initHandlers();
         configureSettingHandlers(global.store.handlers);
@@ -148,7 +148,7 @@ HTMLWidgets.widget(global = {
         console.log("====================   resize   ========================");
         var state = global.getElementState(el);
         var config = global.getConfig(state);
-        
+
         global.refreshLegend(state, config);
     },
 
@@ -221,7 +221,7 @@ HTMLWidgets.widget(global = {
     initMetadata: function(config, x) {
         if(!config.hasOwnProperty("metadata")) {
             global.mergeConfig(config, x);
-            
+
             var g = { nodes: [], edges: [] };
             N = x.nodes.id.length;
             E = x.links.source.length;
@@ -267,7 +267,7 @@ HTMLWidgets.widget(global = {
                 maxNodeSize: config.settings.maxNodeSize * config.node.scale,
                 maxEdgeSize: config.settings.maxEdgeSize * config.edge.scale,
 
-                
+
                 edgeColor: 'default',
                 defaultEdgeColor: hex2rgba(config.edge.color),
 
@@ -319,13 +319,13 @@ HTMLWidgets.widget(global = {
 
     initHandlers: function() {
         console.log("==================== Init Handlers ========================");
-        
+
         if(global.store.hasOwnProperty("handlers")) {
             return;
         }
         global.store.handlers = {};
         var handlers = global.store.handlers;
-        
+
         // Layout
         createLayoutRefreshFunc = function(key) {
             return function(val) {
@@ -554,7 +554,7 @@ HTMLWidgets.widget(global = {
         var dragListener = sigma.plugins.dragNodes(s, s.renderers[0], activeState);
         // Initialize the select plugin:
         var select = sigma.plugins.select(s, activeState);
-        
+
         // Halo on active nodes:
         s.renderers[0].bind('render', function(e) {
           s.renderers[0].halo({
@@ -624,7 +624,7 @@ HTMLWidgets.widget(global = {
             var svgElem = document.createElementNS("http://www.w3.org/2000/svg", "svg");
             svgElem.style.width = "100%";
             svgElem.style.height = "100%";
-            container.appendChild(svgElem);        
+            container.appendChild(svgElem);
         }
         var svg = container.getElementsByTagName("svg")[0];
         svg.innerHTML = '';
@@ -662,7 +662,7 @@ HTMLWidgets.widget(global = {
             return txt;
         }
 
-        var pals = $.extend({}, config.scheme.dual);
+        var pals = $.extend(true, {}, config.scheme.dual);
         var schs = [];
 
         // config.info.graphType: HyperGeo GSEA NWA
