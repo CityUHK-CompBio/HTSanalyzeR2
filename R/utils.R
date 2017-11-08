@@ -79,7 +79,7 @@ paraCheck <- function(group, paraName, para) {
                         "'max', 'min', 'average', 'fc.avg(fold change average)'"))
            }
            if (paraName == "orderAbsValue" &&
-              !is.logical(para) || length(para) != 1) {
+              (!is.logical(para) || length(para) != 1)) {
              stop("'orderAbsValue' should be a logical value!\n")
            }
            if (paraName == "genetic") {
