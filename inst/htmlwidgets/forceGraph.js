@@ -110,11 +110,11 @@ HTMLWidgets.widget(global = {
         // TODO: Use uneven scalers
         if ("pos" in x.options.colorDomain) {
             config.scheme.dual.pos.enabled = true;
-            config.scheme.dual.pos.domain = x.options.colorDomain.pos;
+            config.scheme.dual.pos.domain = $.extend(true, {}, x.options.colorDomain.pos);
         }
         if ("neg" in x.options.colorDomain) {
             config.scheme.dual.neg.enabled = true;
-            config.scheme.dual.neg.domain = x.options.colorDomain.neg;
+            config.scheme.dual.neg.domain = $.extend(true, {}, x.options.colorDomain.neg);
         }
         if (config.info.graphType == "NWA" && "pos" in x.options.colorDomain) {
             config.scheme.dual.pos.domain[0] = x.options.colorDomain.pos[1];
