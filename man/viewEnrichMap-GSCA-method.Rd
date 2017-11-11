@@ -3,7 +3,7 @@
 \docType{methods}
 \name{viewEnrichMap,GSCA-method}
 \alias{viewEnrichMap,GSCA-method}
-\title{Plot a figure of the enrichment map for GSEA or Hypergeometric tests}
+\title{Plot the enrichment map for GSEA or GSOA result}
 \usage{
 \S4method{viewEnrichMap}{GSCA}(object, resultName = "GSEA.results", gscs,
   ntop = NULL, allSig = TRUE, gsNameType = "id", specificGeneset = NULL,
@@ -107,9 +107,9 @@ viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
 ## view an enrichment map with specificGenesets in 'GO_MF' gene sets of GSEA results
 library(igraph)
 ## As told previously, specificGeneset needs to be a subset of all analyzed gene sets
-## which can be roughly gotten by getTopGeneSets(object, resultName, gscs, ntop = 20000, allSig = FALSE)
+## which can be roughly gotten by:
 tmp <- getTopGeneSets(gsca, resultName = "GSEA.results", gscs=c("GO_MF"), ntop = 20000, allSig = FALSE)
-In that case, we can define specificGeneset as below:
+## In that case, we can define specificGeneset as below:
 GO_MF_geneset <- tmp$GO_MF[c(4,2,6,9,12)]
 ## the name of specificGenesets also needs to match with the names of tmp
 specificGeneset <- list("GO_MF"=GO_MF_geneset)

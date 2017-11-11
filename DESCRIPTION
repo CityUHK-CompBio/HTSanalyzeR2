@@ -7,7 +7,8 @@ Author: Feng GAO <gaofeng21cn@gmail.com>, Xiupei MEI <meixiupei@gmail.com>
     Xin Wang <xinwang2hms@gmail.com>
 Maintainer: Feng GAO <gaofeng21cn@gmail.com>,  Xiupei MEI <meixiupei@gmail.com>
 Description: This package provides classes and methods for gene set over-
-    representation, enrichment and network analyses on high-throughput screens.
+    representation, enrichment and network analyses on various high-throughput 
+    data as well as time series data.
 License: Artistic-2.0
 LazyData: TRUE
 RoxygenNote: 6.0.1
@@ -35,7 +36,6 @@ Collate:
     'HTSanalyzeR2.R'
     'HTSanalyzeR4MAGeCK.R'
     'RcppExports.R'
-    'backup.R'
     'd3plot.R'
     'gscaTS.R'
     'gsca_class.R'

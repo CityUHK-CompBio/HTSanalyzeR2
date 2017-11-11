@@ -120,6 +120,14 @@ HTMLWidgets.widget(global = {
             config.scheme.dual.pos.domain[0] = x.options.colorDomain.pos[1];
             config.scheme.dual.pos.domain[1] = x.options.colorDomain.pos[0];
         }
+        if (config.info.graphType == "GSEA") {
+            if (!("pos" in x.options.colorDomain)) {
+                config.scheme.dual.pos.domain[1] = 1e-8
+            }
+            if (!("neg" in x.options.colorDomain)) {
+                config.scheme.dual.neg.domain[1] = 1e-8
+            }
+        }
     },
 
     currentSituation: function() {
