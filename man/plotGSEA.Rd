@@ -9,24 +9,23 @@
   filepath = ".", output = "pdf", ...)
 }
 \arguments{
-\item{object}{an object. When this function is implemented as the S4 method of class GSCA,
-this argument is an object of class GSCA.}
+\item{object}{A GSCA object.}
 
-\item{gscs}{a character vector specifying the names of gene set collections whose top
-significant gene sets will be plotted}
+\item{gscs}{A character vector specifying the names of gene set collections whose top
+significant gene sets will be plotted.}
 
-\item{ntop}{a single integer or numeric value specifying how many gene sets of top
+\item{ntop}{A single integer or numeric value specifying how many gene sets of top
 significance will be plotted.}
 
-\item{allSig}{a single logical value. If 'TRUE', all significant gene sets (GSEA adjusted
+\item{allSig}{A single logical value. If 'TRUE', all significant gene sets (GSEA adjusted
 p-value < 'pValueCutoff' of slot 'para') will be plotted; otherwise, only top 'ntop' gene
  sets will be plotted.}
 
-\item{filepath}{a single character value specifying where to store GSEA figures.}
+\item{filepath}{A single character value specifying where to store GSEA figures.}
 
-\item{output}{a single character value specifying the format of output image: "pdf" or "png"}
+\item{output}{A single character value specifying the format of output image: "pdf" or "png".}
 
-\item{...}{other arguments used by the function png or pdf such as 'width' and 'height'}
+\item{...}{Other arguments used by the function png or pdf such as 'width' and 'height'}
 }
 \description{
 This is a generic function.When implemented as the S4 method for objects of class GSCA,
@@ -34,27 +33,40 @@ this function plots figures of the positions of genes of the gene set in the ran
 list and the location of the enrichment score for top significant gene sets.
 }
 \examples{
-## Not run:
-library(org.Dm.eg.db)
+library(org.Hs.eg.db)
 library(GO.db)
+library(KEGGREST)
 ## load data for enrichment analyses
-data(data4enrich)
-## select hits
-hits <- names(data4enrich)[abs(data4enrich) > 2]
+data(d7)
+phenotype <- as.vector(d7$neg.lfc)
+names(phenotype) <- d7$id
+
+## select hits if you also want to do GSOA, otherwise ignore it
+hits <-  names(phenotype[which(abs(phenotype) > 2)])
+
 ## set up a list of gene set collections
-GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
-PW_KEGG <- KeggGeneSets(species="Dm")
-H_MSig <- MSigDBGeneSets(collection = "h")
-ListGSC <- list(GO_MF=GO_MF, H_MSig = H_MSig, PW_KEGG=PW_KEGG)
+GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+PW_KEGG <- KeggGeneSets(species="Hs")
+ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
+
 ## create an object of class 'GSCA'
-gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
-## print gsca
-gsca
+gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
+
 ## do preprocessing
-gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
+gsca <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+                   duplicateRemoverMethod="max", orderAbsValue=FALSE)
+
+## support parallel calculation using doParallel package
+doParallel::registerDoParallel(cores=4)
+
 ## do hypergeometric tests and GSEA
-gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
+gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH",
+                                nPermutations=100, minGeneSetSize=200, exponent=1),
+                                doGSOA = TRUE, doGSEA = TRUE)
+
+## summarize gsca
 summarize(gsca)
+
 ## plot  significant gene sets in GO_MF and PW_KEGG
-plotGSEA(gsca, gscs=c("GO_MF","PW_KEGG"), ntop=1, filepath=".")
+plotGSEA(gsca, gscs=c("GO_MF","PW_KEGG"), ntop=3, filepath=".")
 }

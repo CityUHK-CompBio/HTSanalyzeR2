@@ -11,11 +11,11 @@
 \S4method{summarize}{NWA}(object, what = "ALL")
 }
 \arguments{
-\item{object}{an object. When this function is implemented as the S4 method
-of class GSCA or NWA, this argument is an object of class GSCA or NWA.}
+\item{object}{A GSCA object or NWA object.}
 
-\item{what}{a single character value or a character vector of key words
-specifying what to print (see details below).}
+\item{what}{A single character value or a character vector of key words
+specifying what to print (see Methods below). Default will print a summary of all
+information.}
 }
 \description{
 This is a generic function.
@@ -38,29 +38,40 @@ and 'ALL' (all slots).
 \examples{
 # =================================================================
 # GSCA class
-## Not run:
-library(org.Dm.eg.db)
+library(org.Hs.eg.db)
 library(GO.db)
+library(KEGGREST)
 ## load data for enrichment analyses
-data(data4enrich)
-## select hits
-hits <- names(data4enrich)[abs(data4enrich) > 2]
+data(d7)
+phenotype <- as.vector(d7$neg.lfc)
+names(phenotype) <- d7$id
+
+## select hits if you also want to do GSOA, otherwise ignore it
+hits <-  names(phenotype[which(abs(phenotype) > 2)])
+
 ## set up a list of gene set collections
-GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
-ListGSC <- list(GO_MF=GO_MF)
+GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+PW_KEGG <- KeggGeneSets(species="Hs")
+ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
+
 ## create an object of class 'GSCA'
-gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
-## print gsca
-gsca
+gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
+
 ## do preprocessing
-gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
+gsca <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+                   duplicateRemoverMethod="max", orderAbsValue=FALSE)
+
+## support parallel calculation using doParallel package
+doParallel::registerDoParallel(cores=4)
+
 ## do hypergeometric tests and GSEA
-gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
+gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH",
+                                nPermutations=100, minGeneSetSize=200, exponent=1),
+                                doGSOA = TRUE, doGSEA = TRUE)
+
 ## summarize gsca
 summarize(gsca, what = "ALL")
-## End(not run)
-# ==========================================================
-# NWA class
+summarize(gsca, what = "Result")
 # Conducting the preparation steps
 data(xn)
 data(data4enrich)

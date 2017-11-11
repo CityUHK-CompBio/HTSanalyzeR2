@@ -19,38 +19,49 @@ setGeneric("getTopGeneSets", function(object,
 #' 'Hits' (the slot 'hits'), 'Para' (the slot 'para'), 'Result' (the slot
 #' 'result') and 'ALL' (all slots).
 #'
-#' @param object an object. When this function is implemented as the S4 method
-#' of class GSCA or NWA, this argument is an object of class GSCA or NWA.
-#' @param what a single character value or a character vector of key words
-#' specifying what to print (see details below).
+#' @param object A GSCA object or NWA object.
+#' @param what A single character value or a character vector of key words
+#' specifying what to print (see Methods below). Default will print a summary of all
+#' information.
 #'
 #'
 #' @examples
 #' # =================================================================
 #' # GSCA class
-#' ## Not run:
-#' library(org.Dm.eg.db)
+#' library(org.Hs.eg.db)
 #' library(GO.db)
+#' library(KEGGREST)
 #' ## load data for enrichment analyses
-#' data(data4enrich)
-#' ## select hits
-#' hits <- names(data4enrich)[abs(data4enrich) > 2]
+#' data(d7)
+#' phenotype <- as.vector(d7$neg.lfc)
+#' names(phenotype) <- d7$id
+#'
+#' ## select hits if you also want to do GSOA, otherwise ignore it
+#' hits <-  names(phenotype[which(abs(phenotype) > 2)])
+#'
 #' ## set up a list of gene set collections
-#' GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
-#' ListGSC <- list(GO_MF=GO_MF)
+#' GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+#' PW_KEGG <- KeggGeneSets(species="Hs")
+#' ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
+#'
 #' ## create an object of class 'GSCA'
-#' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
-#' ## print gsca
-#' gsca
+#' gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
+#'
 #' ## do preprocessing
-#' gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
+#' gsca <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+#'                    duplicateRemoverMethod="max", orderAbsValue=FALSE)
+#'
+#' ## support parallel calculation using doParallel package
+#' doParallel::registerDoParallel(cores=4)
+#'
 #' ## do hypergeometric tests and GSEA
-#' gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
+#' gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH",
+#'                                 nPermutations=100, minGeneSetSize=200, exponent=1),
+#'                                 doGSOA = TRUE, doGSEA = TRUE)
+#'
 #' ## summarize gsca
 #' summarize(gsca, what = "ALL")
-#'## End(not run)
-#' # ==========================================================
-#' # NWA class
+#' summarize(gsca, what = "Result")
 #' @include gsca_class.R
 #' @export
 setMethod("summarize", signature = "GSCA",
@@ -95,10 +106,10 @@ setMethod("summarize", signature = "GSCA",
           })
 
 
-#' Select top significant gene sets from GSEA results
+#' Select top significant gene sets from results of GSCA object
 #'
 #' This is a generic function.
-#' This function selects top significant gene sets from GSEA results for
+#' This function selects top significant gene sets from results of an GSCA object for
 #' user-specified gene collections. If 'ntop' is given, then top 'ntop'
 #' significant gene sets in gene set collections 'gscs' will be selected
 #' and their names will be returned. If 'allSig=TRUE', then all significant
@@ -107,45 +118,57 @@ setMethod("summarize", signature = "GSCA",
 #'
 #' @rdname getTopGeneSets
 #'
-#' @param object an object. When this function is implemented as the S4 method
-#' of class GSCA, this argument is an object of class GSCA.
-#' @param resultName a single character value: 'HyperGeo.results' or
-#' 'GSEA.results'
-#' @param gscs a character vector specifying the names of gene set collections
-#' from which the top significant gene sets will be selected
-#' @param ntop a single integer or numeric value specifying to select how many
+#' @param object A GSCA object.
+#' @param resultName A single character value: 'HyperGeo.results' or
+#' 'GSEA.results'.
+#' @param gscs A character vector specifying the names of gene set collections
+#' from which the top significant gene sets will be selected.
+#' @param ntop A single integer or numeric value specifying to select how many
 #' gene sets of top significance.
-#' @param allSig a single logical value. If 'TRUE', all significant gene sets
-#' (GSEA adjusted p-value < 'pValueCutoff' of slot 'para') will be selected;
+#' @param allSig A single logical value. If 'TRUE', all significant gene sets
+#' (adjusted p-value < 'pValueCutoff' of slot 'para') will be selected regardless of 'ntop';
 #' otherwise, only top 'ntop' gene sets will be selected.
 #'
 #' @examples
-#' ## Not run:
-#' library(org.Dm.eg.db)
+#' library(org.Hs.eg.db)
 #' library(GO.db)
+#' library(KEGGREST)
 #' ## load data for enrichment analyses
-#' data(data4enrich)
-#' ## select hits
-#' hits <- names(data4enrich)[abs(data4enrich) > 2]
-#' ## set up a list of gene set collections
-#' GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
-#' ListGSC <- list(GO_MF=GO_MF)
-#' ## create an object of class 'GSCA'
-#' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
-#' ## print gsca
-#' gsca
-#' ## do preprocessing
-#' gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
-#' ## do hypergeometric tests and GSEA
-#' gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
-#' summarize(gsca)
-#' ##print top significant gene sets in GO_MF
-#' topGS_GO_MF <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
-#' ## End(Not run)
-
+#' data(d7)
+#' phenotype <- as.vector(d7$neg.lfc)
+#' names(phenotype) <- d7$id
 #'
-#' @return a list of character vectors, each of which contains the names of top
-#' significant gene sets for each gene set collection
+#' ## select hits if you also want to do GSOA, otherwise ignore it
+#' hits <-  names(phenotype[which(abs(phenotype) > 2)])
+#'
+#' ## set up a list of gene set collections
+#' GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+#' PW_KEGG <- KeggGeneSets(species="Hs")
+#' ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
+#'
+#' ## create an object of class 'GSCA'
+#' gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
+#'
+#' ## do preprocessing
+#' gsca <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+#'                    duplicateRemoverMethod="max", orderAbsValue=FALSE)
+#'
+#' ## support parallel calculation using doParallel package
+#' doParallel::registerDoParallel(cores=4)
+#'
+#' ## do hypergeometric tests and GSEA
+#' gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH",
+#'                                 nPermutations=100, minGeneSetSize=200, exponent=1),
+#'                                 doGSOA = TRUE, doGSEA = TRUE)
+#' summarize(gsca)
+#' ## print top significant gene sets in GO_MF
+#' topGS_GO_MF <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
+#'
+#' ## print top significant gene sets in GO_MF and PW_KEGG
+#' topGS <- getTopGeneSets(gsca, "GSEA.results", gscs = c("GO_MF", "PW_KEGG"), allSig=TRUE)
+#'
+#' @return A named list of character vectors, each element contains the names of top
+#' significant gene sets for each gene set collection.
 #' @include gsca_class.R
 #' @export
 setMethod("getTopGeneSets", signature = "GSCA",

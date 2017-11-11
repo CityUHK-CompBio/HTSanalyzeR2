@@ -13,38 +13,54 @@ if(!isGeneric("plotGSEA"))
 #' We suggest to print the names of top significant gene sets using the
 #' function \code{\link[HTSanalyzeR2]{getTopGeneSets}} before plotting the GSEA results.
 #'
-#' @param object an object. When this function is implemented as the S4 method of class GSCA,
-#' this argument is an object of class GSCA
-#' @param gscName a single character value specifying the name of the gene set collection where
-#' the gene set is
-#' @param gsName a single character value specifying the name of the gene set to be plotted
+#' @param object A GSCA object.
+#' @param gscName A single character value specifying the name of the gene set collection where
+#' the gene set is.
+#' @param gsName A single character value specifying the name of the gene set to be plotted.
 #'
 #' @rdname viewGSEA
 #'
 #' @examples
-#' ## Not run:
-#' library(org.Dm.eg.db)
+#' library(org.Hs.eg.db)
 #' library(GO.db)
+#' library(KEGGREST)
 #' ## load data for enrichment analyses
-#' data(data4enrich)
-#' ## select hits
-#' hits <- names(data4enrich)[abs(data4enrich) > 2]
+#' data(d7)
+#' phenotype <- as.vector(d7$neg.lfc)
+#' names(phenotype) <- d7$id
+#'
+#' ## select hits if you also want to do GSOA, otherwise ignore it
+#' hits <-  names(phenotype[which(abs(phenotype) > 2)])
+#'
 #' ## set up a list of gene set collections
-#' GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
-#' ListGSC <- list(GO_MF=GO_MF)
+#' GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+#' PW_KEGG <- KeggGeneSets(species="Hs")
+#' ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
+#'
 #' ## create an object of class 'GSCA'
-#' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
-#' ## print gsca
-#' gsca
+#' gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
+#'
 #' ## do preprocessing
-#' gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
+#' gsca <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+#'                    duplicateRemoverMethod="max", orderAbsValue=FALSE)
+#'
+#' ## support parallel calculation using doParallel package
+#' doParallel::registerDoParallel(cores=4)
+#'
 #' ## do hypergeometric tests and GSEA
-#' gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
+#' gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH",
+#'                                 nPermutations=100, minGeneSetSize=200, exponent=1),
+#'                                 doGSOA = TRUE, doGSEA = TRUE)
+#'
+#' ## summarize gsca
 #' summarize(gsca)
-#' ##print top significant gene sets in GO_MF
+#'
+#' ## print top significant gene sets in GO_MF
 #' topGS_GO_MF <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
+#'
 #' ## view GSEA results for one gene set
 #' viewGSEA(gsca, "GO_MF", topGS_GO_MF[["GO_MF"]][1])
+#'
 #' @include gsca_class.R
 #' @export
 setMethod(
@@ -80,44 +96,56 @@ setMethod(
 #' this function plots figures of the positions of genes of the gene set in the ranked gene
 #' list and the location of the enrichment score for top significant gene sets.
 #'
-#' @param object an object. When this function is implemented as the S4 method of class GSCA,
-#' this argument is an object of class GSCA.
-#' @param gscs a character vector specifying the names of gene set collections whose top
-#' significant gene sets will be plotted
-#' @param ntop a single integer or numeric value specifying how many gene sets of top
+#' @param object A GSCA object.
+#' @param gscs A character vector specifying the names of gene set collections whose top
+#' significant gene sets will be plotted.
+#' @param ntop A single integer or numeric value specifying how many gene sets of top
 #'  significance will be plotted.
-#' @param allSig a single logical value. If 'TRUE', all significant gene sets (GSEA adjusted
+#' @param allSig A single logical value. If 'TRUE', all significant gene sets (GSEA adjusted
 #'  p-value < 'pValueCutoff' of slot 'para') will be plotted; otherwise, only top 'ntop' gene
 #'   sets will be plotted.
-#' @param filepath a single character value specifying where to store GSEA figures.
-#' @param output a single character value specifying the format of output image: "pdf" or "png"
-#' @param ... other arguments used by the function png or pdf such as 'width' and 'height'
+#' @param filepath A single character value specifying where to store GSEA figures.
+#' @param output A single character value specifying the format of output image: "pdf" or "png".
+#' @param ... Other arguments used by the function png or pdf such as 'width' and 'height'
 #'
 #' @rdname plotGSEA
 #' @examples
-#' ## Not run:
-#' library(org.Dm.eg.db)
+#' library(org.Hs.eg.db)
 #' library(GO.db)
+#' library(KEGGREST)
 #' ## load data for enrichment analyses
-#' data(data4enrich)
-#' ## select hits
-#' hits <- names(data4enrich)[abs(data4enrich) > 2]
+#' data(d7)
+#' phenotype <- as.vector(d7$neg.lfc)
+#' names(phenotype) <- d7$id
+#'
+#' ## select hits if you also want to do GSOA, otherwise ignore it
+#' hits <-  names(phenotype[which(abs(phenotype) > 2)])
+#'
 #' ## set up a list of gene set collections
-#' GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
-#' PW_KEGG <- KeggGeneSets(species="Dm")
-#' H_MSig <- MSigDBGeneSets(collection = "h")
-#' ListGSC <- list(GO_MF=GO_MF, H_MSig = H_MSig, PW_KEGG=PW_KEGG)
+#' GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+#' PW_KEGG <- KeggGeneSets(species="Hs")
+#' ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
+#'
 #' ## create an object of class 'GSCA'
-#' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
-#' ## print gsca
-#' gsca
+#' gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
+#'
 #' ## do preprocessing
-#' gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
+#' gsca <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+#'                    duplicateRemoverMethod="max", orderAbsValue=FALSE)
+#'
+#' ## support parallel calculation using doParallel package
+#' doParallel::registerDoParallel(cores=4)
+#'
 #' ## do hypergeometric tests and GSEA
-#' gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
+#' gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH",
+#'                                 nPermutations=100, minGeneSetSize=200, exponent=1),
+#'                                 doGSOA = TRUE, doGSEA = TRUE)
+#'
+#' ## summarize gsca
 #' summarize(gsca)
+#'
 #' ## plot  significant gene sets in GO_MF and PW_KEGG
-#' plotGSEA(gsca, gscs=c("GO_MF","PW_KEGG"), ntop=1, filepath=".")
+#' plotGSEA(gsca, gscs=c("GO_MF","PW_KEGG"), ntop=3, filepath=".")
 #' @export
 ##plot GSEA for GSCA
 setMethod(
@@ -175,9 +203,9 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust
   ##if(output == "png" )
   ##    png(file.path(filepath, paste("gsea_plots", filename, ".png", sep="")))
   ##set the graphical parameters
-  # def.par <- par(no.readonly = TRUE)
+  def.par <- par(no.readonly = TRUE)
   gsea.layout <- layout(matrix(c(1, 2, 3)), heights = c(0.5,0.2,0.1))
-  layout.show(gsea.layout)
+  # layout.show(gsea.layout)
   par(mai=c(0, 1, 0.5, 0.2))
   ##Plot the running score and add a vertical line at the position of
   ##the enrichment score (maximal absolute value of the running score)
@@ -185,28 +213,22 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust
        cex.lab = 1.5, bg = "aliceblue", xaxt = "n", las = 1)
   grid(NULL, NULL, lwd = 1)
   abline(h=0, lty = 2)
-  # abline(v=which(runningScore == enrichmentScore), lty=3, col="red3", lwd=1.75)
 
-  # plot.coordinates <- par("usr")
   if(enrichmentScore > 0){
-  text(x = length(geneList)/7*6, y = (enrichmentScore)/4*3,
-       labels = paste("ES:", signif(enrichmentScore, 3), "\nAdjust.P.value:", signif(Adjust.P.value, 2)),
+  text(x = length(geneList)/7*5, y = (enrichmentScore)/4*3,
+       labels = paste("ES:", signif(enrichmentScore, 3), "\nAdjust.P.value:",
+                      ifelse(Adjust.P.value == 0, "<10^-4", signif(Adjust.P.value, 2))),
        cex = 1.5)} else {
-         text(x = length(geneList)/8, y = (enrichmentScore)/4*3,
-              labels = paste("ES:", signif(enrichmentScore, 3), "\nAdjust.P.value:", signif(Adjust.P.value, 2)),
+         text(x = length(geneList)/6, y = (enrichmentScore)/4*3,
+              labels = paste("ES:", signif(enrichmentScore, 3), "\nAdjust.P.value:",
+                             ifelse(Adjust.P.value == 0, "<10^-4", signif(Adjust.P.value, 2))),
               cex = 1.5)
        }
   #-------------------## plot a color barplot indicating the phenotypes
   par(mai=c(0, 1, 0, 0.2))
-  # plot(x=seq(1, length(geneList)), type="l", y=geneList,  bg = "aliceblue", yaxt="n",
-  #  xlab=NA, col="red", lwd=2, xaxt="n", cex.lab = 1.25, ylab = NA)
   plot(0, type = "n", xaxt = "n", xaxs = "i", xlab = "", yaxt = "n",
        ylab = "", xlim = c(1, length(geneList)), lwd = 3)
   abline(v=which(positions == 1), lwd = 0.75)
-  # abline(h=0)
-  # lines(x=seq(1, length(geneList)), type="l", y=geneList,
-  #       xlab=NA, col="red3", lwd=2, xaxt="n")
-
   #------------------------------------------------------------------
   ##Plot the phenotypes along the geneList, and add a vertical line
   ##for each match between geneList and gene set
@@ -227,6 +249,7 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust
   box()
   text(length(geneList) * 0.01, 0.7, "Positive", adj = c(0, NA))
   text(length(geneList) * 0.99, 0.7, "Negative", adj = c(1, NA))
+  par(def.par)  #- reset to default
 }
 
 
@@ -256,11 +279,11 @@ makeGSEAplots <- function(geneList, geneSet, exponent, filepath,
 ##position of hits for a gene set.
 gseaScores <- function(geneList, geneSet, exponent=1, mode="score", gsName = gsName,
                        GSEA.results = GSEA.results) {
-  # paraCheck("GSCAClass", "genelist", geneList)
-  # paraCheck("Analyze", "exponent", exponent)
-  # paraCheck("Report", "gs", geneSet)
-  # paraCheck("Report", "gseaScore.mode", mode)
-  # geneSet<-intersect(names(geneList), geneSet)
+  paraCheck("GSCAClass", "genelist", geneList)
+  paraCheck("Analyze", "exponent", exponent)
+  paraCheck("Report", "gs", geneSet)
+  paraCheck("Report", "gseaScore.mode", mode)
+  geneSet<-intersect(names(geneList), geneSet)
 
   nh <- length(geneSet)
   N <- length(geneList)
