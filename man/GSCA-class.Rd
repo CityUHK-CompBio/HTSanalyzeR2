@@ -49,8 +49,13 @@ hits <-  names(phenotype[which(abs(phenotype) > 2)])
 GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
 ListGSC <- list(GO_MF=GO_MF)
 
-## create an object of class 'GSCA'
+## create an object of class 'GSCA' with hits
 gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
+gsca
+gsca@summary
+
+## create an object of class 'GSCA' without hits
+gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype)
 gsca
 gsca@summary
 }

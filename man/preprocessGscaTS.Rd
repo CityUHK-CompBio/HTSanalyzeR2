@@ -11,31 +11,70 @@ preprocessGscaTS(object, species = "Hs", initialIDs = "SYMBOL",
 \arguments{
 \item{object}{A GSCABatch object.}
 
-\item{species}{A single character value specifying the species for which the
-data should be read.}
+\item{species}{A single character value specifying the species of the inputs.
+It supports all the species of OrgDb objects in AnnotationDbi.
+The format should be an abbreviation of the organism as setted by AnnotationDbi.
+For example, the commonly used ones are "Dm" ("Drosophila_melanogaster"),
+"Hs" ("Homo_sapiens"), "Rn" ("Rattus_norvegicus"), "Mm" ("Mus_musculus"),
+"Ce" ("Caenorhabditis_elegans"), and etc.}
 
-\item{initialIDs}{A single character value specifying the type of initial
-identifiers for input gscaList}
+\item{initialIDs}{A single character value specifying the type of
+initial identifiers for input phenotypeTS The valid terms need match with
+the keytypes of species db such as keytypes(org.Hs.eg.db).}
 
 \item{keepMultipleMappings}{A single logical value. If TRUE, the function
 keeps the entries with multiple mappings (first mapping is kept). If FALSE,
 the entries with multiple mappings will be discarded.}
 
 \item{duplicateRemoverMethod}{A single character value specifying the method
-to remove the duplicates. See duplicateRemover for details.}
+to remove the duplicates. See help(duplicateRemover) for details.}
 
 \item{orderAbsValue}{A single logical value indicating whether the values
 should be converted to absolute values and then ordered (if TRUE), or
-ordered as they are (if FALSE).}
+ordered as they are (if FALSE). This argument is only for class \code{\link[HTSanalyzeR2:GSCA]{GSCA}}.}
 
 \item{verbose}{A single logical value specifying to display detailed messages
-(when verbose=TRUE) or not (when verbose=FALSE), default is TRUE.}
+(when verbose=TRUE) or not (when verbose=FALSE).}
 }
 \value{
 In the end, this function will return an updated list of GSCA object.
 }
 \description{
 This function will do basic preprocessing for each GSCA object of 'GSCABatch'.
+}
+\examples{
+data(d7, d13, d25)
+
+## generate expInfor to describe the information of time series data
+expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
+                   byrow = F, dimnames = list(NULL, c("ID", "Description")))
+
+## package phenotypeTS into a list of phenotypes
+datalist <- list(d7, d13, d25)
+phenotypeTS <- lapply(datalist, function(x) {
+                      tmp <- as.vector(x$neg.lfc)
+                      names(tmp) <- x$id
+                      tmp})
+
+## set up a list of gene set collections
+GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+ListGSC <- list(GO_MF=GO_MF)
+
+## package hitsTS if you also want to do GSOA, otherwise ignore it
+hitsTS <- lapply(datalist, function(x){
+tmp <- x[x$neg.p.value < 0.01, "id"]
+tmp})
+
+## create an object of class GSCABatch with hitsTS
+GSCABatch <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
+                 listOfGeneSetCollections = ListGSC, hitsTS = hitsTS)
+
+## preprocess GSCABatch
+gscaTS <- preprocessGscaTS(GSCABatch, species="Hs", initialIDs="SYMBOL",
+                           keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
+                           orderAbsValue=FALSE)
+gscaTS
+
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{preprocess}}

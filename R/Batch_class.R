@@ -1,4 +1,53 @@
+#' An S4 class for Time series data package in Gene Set Collection Analyses on high-throughput screens
+#'
+#' This S4 class packages time-series data for further GSCA. To put it more clearly, it'll finally generate a list of
+#' GSCA objects for further analyses.
+#'
 #' @include class_union.R utils.R
+#' @slot expInfor A character matrix contains experiment information with each experiment in row and information in column.
+#' Should at least contain two columns named as 'ID' and 'Desription'.
+#' @slot listOfGeneSetCollections A list of gene set collections (a 'gene
+#' set collection' is a list of gene sets).
+#' @slot phenotypeTS A list of phenotypes, each element of this list is a numeric vector phenotypes named by gene
+#' identifiers for each time point. Note: the order of each element of this list must match the order of 'expInfor' ID.
+#' @slot hitsTS A list of hits, each element is a character vector of the gene identifiers (used as hits in
+#' the hypergeometric tests). It's needed if you want do GSOA. Note: the order of each element of this list
+#'  must match the order of 'expInfor' ID.
+#' @slot listOfGSCA A list of initialized GSCA object for futher GSCA.
+#'
+#' @export
+#' @examples
+#' data(d7, d13, d25)
+#'
+#' ## generate expInfor to describe the information of time series data
+#' expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
+#'                    byrow = F, dimnames = list(NULL, c("ID", "Description")))
+#'
+#' ## package phenotypeTS into a list of phenotypes
+#' datalist <- list(d7, d13, d25)
+#' phenotypeTS <- lapply(datalist, function(x) {
+#'                       tmp <- as.vector(x$neg.lfc)
+#'                       names(tmp) <- x$id
+#'                       tmp})
+#'
+#' ## set up a list of gene set collections
+#' GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+#' ListGSC <- list(GO_MF=GO_MF)
+#'
+#' ## package hitsTS if you also want to do GSOA, otherwise ignore it
+#' hitsTS <- lapply(datalist, function(x){
+#' tmp <- x[x$neg.p.value < 0.01, "id"]
+#' tmp})
+#'
+#' ## create an object of class GSCABatch with hitsTS
+#' GSCABatch <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
+#'                  listOfGeneSetCollections = ListGSC, hitsTS = hitsTS)
+#' GSCABatch
+#' ## create an object of class GSCABatch without hitsTS
+#' GSCABatch <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
+#'                  listOfGeneSetCollections = ListGSC)
+#' GSCABatch
+
 # GSCABatch ----------------------------------------------------------------
 setClass("GSCABatch",
          slot = c(
@@ -52,41 +101,6 @@ setMethod("initialize",
           })
 
 
-#' An S4 class for Time series data package in Gene Set Collection Analyses on high-throughput screens
-#'
-#' This S4 class packages time-series data for further GSCA. To put it more clearly, it'll finally generate a list of
-#' GSCA objects for further analyses.
-#'
-#' @slot expInfor A character matrix contains experiment information with each experiment in row and information in column.
-#' Should at least contain two columns named as 'ID' and 'Desription'.
-#' @slot listOfGeneSetCollections A list of gene set collections (a 'gene
-#' set collection' is a list of gene sets).
-#' @slot phenotypeTS A list of phenotypes, each element of this list is a numeric vector phenotypes named by gene
-#' identifiers for each time point. Note: the order of each element of this list must match the order of 'expInfor' ID.
-#' @slot hitsTS A list of hits, each element is a character vector of the gene identifiers (used as hits in
-#' the hypergeometric tests). It's needed if you want do GSOA. Note: the order of each element of this list
-#'  must match the order of 'expInfor' ID.
-#' @slot listOfGSCA A list of initialized GSCA object for futher GSCA.
-#'
-#' @export
-
-
-GSCABatch <- function(expInfor, listOfGeneSetCollections, phenotypeTS,
-                     hitsTS = list()) {
-  paraCheck("GSCABatch", "expInfor", expInfor)
-  paraCheck("GSCABatch", "phenotypeTS", phenotypeTS)
-  paraCheck("GSCAClass", "gscs", listOfGeneSetCollections)
-  if(length(hitsTS) > 0)  paraCheck("GSCABatch", "hitsTS", hitsTS)
-
-  object <- new(
-    Class = "GSCABatch",
-    expInfor = expInfor,
-    listOfGeneSetCollections = listOfGeneSetCollections,
-    phenotypeTS = phenotypeTS,
-    hitsTS = hitsTS
-  )
-}
-
 # show --------------------------------------------------------------------
 setMethod("show", signature = "GSCABatch", function(object) {
   cat("A GSCABatch object:\n\n")
@@ -111,9 +125,24 @@ setMethod("show", signature = "GSCABatch", function(object) {
   }
 })
 
-
+######################################################################
 
 # NWABatch  ----------------------------------------------------------
+## constructed function
+#'  An S4 class for Time series data package in NetWork Analysis on high-throughput screens
+#'
+#' This S4 class packages time-series data for further NWA. To put it more clearly, it'll finally generate a list of
+#' NWA objects for further analyses.
+#'
+#' @slot expInfor A character matrix contains experiment information with each experiment in row and information in column.
+#' At least contains two columns named as 'ID' and 'Desription'.
+#' @slot phenotypeTS A list of phenotypes, each element of this list is a numeric vector phenotypes named by gene
+#' identifiers for each time point. Note: the order of each element of this list must match the order of 'expInfor' ID.
+#' @slot pvalueTS  A list of pvalues, each element of this list is a numeric vector pvalues named by gene
+#' identifiers for each time point. Note: the order of each element of this list must match the order of 'expInfor' ID.
+#' @slot interactome object of class igraph.
+#'
+#' @export
 setClass(
   Class = "NWABatch",
   slots = c(
@@ -169,42 +198,6 @@ setMethod("initialize",
           })
 
 
-## constructed function
-#'  An S4 class for Time series data package in NetWork Analysis on high-throughput screens
-#'
-#' This S4 class packages time-series data for further NWA. To put it more clearly, it'll finally generate a list of
-#' NWA objects for further analyses.
-#'
-#' @slot expInfor A character matrix contains experiment information with each experiment in row and information in column.
-#' At least contains two columns named as 'ID' and 'Desription'.
-#' @slot phenotypeTS A list of phenotypes, each element of this list is a numeric vector phenotypes named by gene
-#' identifiers for each time point. Note: the order of each element of this list must match the order of 'expInfor' ID.
-#' @slot pvalueTS  A list of pvalues, each element of this list is a numeric vector pvalues named by gene
-#' identifiers for each time point. Note: the order of each element of this list must match the order of 'expInfor' ID.
-#' @slot interactome object of class igraph.
-#'
-#' @export
-
-NWABatch <- function(expInfor, pvalueTS , phenotypeTS = list(), interactome = NA) {
-  ## check input arguments
-  paraCheck("NWABatch", "expInfor", expInfor)
-  paraCheck("NWABatch", "pvalueTS", pvalueTS)
-  if (length(phenotypeTS) > 0){
-    paraCheck("NWABatch", "phenotypeTS", phenotypeTS)
-  }
-  if (!is.na(interactome))
-    paraCheck("NWABatch", "interactome", interactome)
-
-  ##
-  object <- new(
-    Class = "NWABatch",
-    expInfor = expInfor,
-    pvalueTS = pvalueTS,
-    phenotypeTS = phenotypeTS,
-    interactome = interactome
-  )
-}
-
 # show --------------------------------------------------------------------
 setMethod("show", signature = "NWABatch", function(object) {
   cat("A NWABatch object:\n\n")
@@ -228,17 +221,4 @@ setMethod("show", signature = "NWABatch", function(object) {
     cat("\n")
   }
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
 

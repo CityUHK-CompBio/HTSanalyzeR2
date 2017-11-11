@@ -10,16 +10,64 @@ appendGSTermsTS(gscaList, keggGSCs = NULL, goGSCs = NULL,
 \arguments{
 \item{gscaList}{A named list of GSCA object.}
 
-\item{keggGSCs}{a character vector of names of all KEGG gene set collections}
+\item{keggGSCs}{A character vector of names of all KEGG gene set collections.}
 
-\item{goGSCs}{a character vector of names of all GO gene set collections}
+\item{goGSCs}{A character vector of names of all GO gene set collections.}
 
-\item{msigdbGSCs}{a character vector of names of all MSigDB gene set collections}
+\item{msigdbGSCs}{A character vector of names of all MSigDB gene set collections.}
 }
 \description{
 For each GSCA object in 'gscaList', this function
 finds corresponding annotation terms for GO, KEGG and MSigDB gene sets and
 inserts a column named "Gene.Set.Term" to each data frame in the GSCA results.
+}
+\examples{
+
+data(d7, d13, d25)
+
+## generate expInfor to describe the information of time series data
+expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
+                   byrow = F, dimnames = list(NULL, c("ID", "Description")))
+
+## package phenotypeTS into a list of phenotypes
+datalist <- list(d7, d13, d25)
+phenotypeTS <- lapply(datalist, function(x) {
+                      tmp <- as.vector(x$neg.lfc)
+                      names(tmp) <- x$id
+                      tmp})
+
+## set up a list of gene set collections
+GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+ListGSC <- list(GO_MF=GO_MF)
+
+## package hitsTS if you also want to do GSOA, otherwise ignore it
+hitsTS <- lapply(datalist, function(x){
+tmp <- x[x$neg.p.value < 0.01, "id"]
+tmp})
+
+## create an object of class GSCABatch with hitsTS
+GSCABatch <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
+                 listOfGeneSetCollections = ListGSC, hitsTS = hitsTS)
+
+## preprocess GSCABatch
+gscaTS <- preprocessGscaTS(GSCABatch, species="Hs", initialIDs="SYMBOL",
+                           keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
+                           orderAbsValue=FALSE)
+
+## support parallel calculation using doParallel package
+doParallel::registerDoParallel(cores=4)
+
+## do hypergeometric tests and GSEA
+gscaTS <- analyzeGscaTS(gscaTS, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
+                        nPermutations=100, minGeneSetSize=200,
+                        exponent=1), doGSOA = TRUE, doGSEA = TRUE)
+head(gscaTS[[1]]@result$GSEA.results$GO_MF, 3)
+
+## append gene set terms to results
+gscaTS <- appendGSTermsTS(gscaTS, goGSCs=c("GO_MF"))
+head(gscaTS[[1]]@result$GSEA.results$GO_MF, 3)
+
+
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{appendGSTerms}}
