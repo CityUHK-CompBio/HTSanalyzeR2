@@ -10,30 +10,35 @@
   options = list(), seriesObjs = NULL)
 }
 \arguments{
-\item{object}{an object. When this function is implemented as the S4 method
-of class GSCA, this argument is an object of class GSCA.}
+\item{object}{A GSCA object.}
 
-\item{resultName}{a single character value: 'HyperGeo.results' or 'GSEA.results'}
+\item{resultName}{A single character value specifying draw an enrichment map based on
+which result. Could only be 'HyperGeo.results' or 'GSEA.results'.}
 
-\item{gscs}{a character vector specifying the names of gene set collections
-of which the top significant gene sets will be plotted}
+\item{gscs}{A character vector specifying the names of gene set collections
+of which the top significant gene sets will be plotted.}
 
-\item{ntop}{a single integer or numeric value specifying how many gene
+\item{ntop}{A single integer or numeric value specifying how many gene
 sets of top significance will be plotted.}
 
-\item{allSig}{a single logical value. If 'TRUE', all significant gene sets
+\item{allSig}{A single logical value. If 'TRUE', all significant gene sets
 (GSEA adjusted p-value < 'pValueCutoff' of slot 'para') will be used; otherwise,
 only top 'ntop' gene sets will be used.}
 
-\item{gsNameType}{a single character value specifying the type of the gene set names that
+\item{gsNameType}{A single character value specifying the type of the gene set names that
 will be displayed as the names of nodes in the enrichment map. The type of the gene
 set names should be one of the following: "id", "term" or "none".}
+
+\item{specificGeneset}{A named list of specific gene sets. Specifically, this term needs to be
+a subset of all analyzed gene sets which can be roughly gotten by
+\strong{getTopGeneSets(object, resultName, gscs, ntop = 20000, allSig = FALSE)} with warning.
+The order of the list must match the order of results gotten by aboved function \strong{getTopGeneSets}.}
 }
 \value{
-an object of igraph with all attributes about the enrichement map
+An object of igraph with all attributes about the enrichement map.
 }
 \description{
-This is a generic function.When implemented as the S4 method for objects
+This is a generic function. When implemented as the S4 method for objects
 of class GSCA, this function will plot an enrichment map for GSEA or
 Hypergeometric test results.
 }
@@ -47,28 +52,79 @@ Node colors are scaled according to the adjusted p-values (the darker the more s
 For GSEA, nodes are colored by the sign of the enrichment scores (red:+, blue: -).
 The size of nodes illustrates the size of gene sets, while the width of edges denotes the
 Jaccard coefficient.
+
+A useful application of this function is that user can define specificGeneset to plot an
+enrichment map with their interested gene sets instead of the top significant ones or all the significant
+ones. Especially when the number of the significant gene sets are huge, which would make the enrichment
+map a mess as well as of no information. To this end, user can set the parameter \strong{specificGeneset}.
 }
 \examples{
-#' ## Not run:
-library(org.Dm.eg.db)
+library(org.Hs.eg.db)
 library(GO.db)
+library(KEGGREST)
 ## load data for enrichment analyses
-data(data4enrich)
-## select hits
-hits <- names(data4enrich)[abs(data4enrich) > 2]
+data(d7)
+phenotype <- as.vector(d7$neg.lfc)
+names(phenotype) <- d7$id
+
+## select hits if you also want to do GSOA, otherwise ignore it
+hits <-  names(phenotype[which(abs(phenotype) > 2)])
+
 ## set up a list of gene set collections
-GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
-ListGSC <- list(GO_MF=GO_MF)
+GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+PW_KEGG <- KeggGeneSets(species="Hs")
+ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
+
 ## create an object of class 'GSCA'
-gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
-## print gsca
-gsca
+gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
+
 ## do preprocessing
-gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
+gsca <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+                   duplicateRemoverMethod="max", orderAbsValue=FALSE)
+
+## support parallel calculation using doParallel package
+doParallel::registerDoParallel(cores=4)
+
 ## do hypergeometric tests and GSEA
-gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
+gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH",
+                                nPermutations=100, minGeneSetSize=200, exponent=1),
+                                doGSOA = TRUE, doGSEA = TRUE)
+
 ## append gene set terms to results
 gsca <- appendGSTerms(gsca, goGSCs=c("GO_MF"), keggGSCs=NULL, msigdbGSCs=NULL)
-## view an enrichment map for GSEA results
-viewEnrichMap(gsca, gscs="GO_MF", allSig = F, ntop = 7, gsNameType = "term")
+
+
+#' ## view an enrichment map for top 7 significant 'GO_MF' gene sets of GSEA results
+library(igraph)
+viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
+              allSig = F, ntop = 7, gsNameType = "term")
+
+## view an enrichment map for top 7 significant 'GO_MF' and 'PW_KEGG' gene sets of GSEA results
+library(igraph)
+viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
+              allSig = F, ntop = 7, gsNameType = "term")
+
+## view an enrichment map with specificGenesets in 'GO_MF' gene sets of GSEA results
+library(igraph)
+## As told previously, specificGeneset needs to be a subset of all analyzed gene sets
+## which can be roughly gotten by getTopGeneSets(object, resultName, gscs, ntop = 20000, allSig = FALSE)
+tmp <- getTopGeneSets(gsca, resultName = "GSEA.results", gscs=c("GO_MF"), ntop = 20000, allSig = FALSE)
+In that case, we can define specificGeneset as below:
+GO_MF_geneset <- tmp$GO_MF[c(4,2,6,9,12)]
+## the name of specificGenesets also needs to match with the names of tmp
+specificGeneset <- list("GO_MF"=GO_MF_geneset)
+viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_MF"), allSig = F, gsNameType = "term",
+              ntop = NULL, specificGeneset = specificGeneset)
+
+
+## view an enrichment map with specificGenesets in 'GO_MF' and 'PW_KEGG' gene sets of GSEA results
+tmp <- getTopGeneSets(gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
+                      ntop = 20000, allSig = FALSE)
+GO_MF_geneset <- tmp$GO_MF[c(6,3,5,9,12)]
+PW_KEGG_geneset <- tmp$PW_KEGG[c(7,2,5,1,9)]
+specificGeneset <- list("GO_MF"=GO_MF_geneset, "PW_KEGG"=PW_KEGG_geneset)
+viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"), allSig = F,
+              gsNameType = "term", ntop = NULL, specificGeneset = specificGeneset)
+
+
 }

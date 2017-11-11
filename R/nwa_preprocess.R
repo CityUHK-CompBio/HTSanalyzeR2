@@ -10,6 +10,8 @@ if (!isGeneric("interactome")) {
 
 #' @rdname preprocess
 #' @examples
+#' # ===========================================================
+#' # NWA class
 #' # loading the pre_selected sample data
 #' data(xn)
 #' data(data4enrich)

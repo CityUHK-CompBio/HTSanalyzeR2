@@ -4,7 +4,7 @@
 \alias{GOGeneSets}
 \title{Create a list of gene sets based on GO terms}
 \usage{
-GOGeneSets(species = "Dm", ontologies = c("MF"))
+GOGeneSets(species = "Hs", ontologies = c("MF"))
 }
 \arguments{
 \item{species}{A single character value specifying a choice of species,
@@ -12,7 +12,8 @@ such as "Dm" ("Drosophila_melanogaster"), "Hs" ("Homo_sapiens"),
 "Rn" ("Rattus_norvegicus") or "Mm" ("Mus_musculus").}
 
 \item{ontologies}{A single character value or a character vector
-specifying an ontology or multiple ontologies.}
+specifying an ontology or multiple ontologies. Valid format could be any
+combination of "BP", "MF" and "CC".}
 }
 \value{
 A list of gene sets, with names as GO IDs. Each gene set is

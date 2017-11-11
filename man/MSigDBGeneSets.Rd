@@ -11,14 +11,16 @@ MSigDBGeneSets(collection = "h")
 It should be one of the following character strings: 'h'(hallmark gene sets),
 'c1'(positional gene sets), 'c2'(curated gene sets), 'c3'(motif gene sets),
 'c4'(computational gene sets), 'c5'(GO gene sets), 'c6'(oncogenic signatures),
-'c7'(immunologic signatures).}
+'c7'(immunologic signatures). More details please refer to
+\href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB}.}
 }
 \value{
-Return a list of gene sets.
+Return a list of gene sets of specific collection in
+\href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB}.
 }
 \description{
 This function creates gene set collections based on MSigDB.
-It is collection-specific, and returns a GeneSetCollection object with
+It is collection-specific, and returns a list of gene sets collection with
 the elements of the gene sets represented by Entrez Gene IDs.
 }
 \examples{

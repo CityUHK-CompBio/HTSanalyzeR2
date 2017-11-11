@@ -1,16 +1,18 @@
 #' Create a list of gene sets based on MSigDB collection terms
 #'
 #' This function creates gene set collections based on MSigDB.
-#' It is collection-specific, and returns a GeneSetCollection object with
+#' It is collection-specific, and returns a list of gene sets collection with
 #' the elements of the gene sets represented by Entrez Gene IDs.
 #'
 #' @param collection A single character value specifying a choice of collection.
 #' It should be one of the following character strings: 'h'(hallmark gene sets),
 #' 'c1'(positional gene sets), 'c2'(curated gene sets), 'c3'(motif gene sets),
 #' 'c4'(computational gene sets), 'c5'(GO gene sets), 'c6'(oncogenic signatures),
-#' 'c7'(immunologic signatures).
+#' 'c7'(immunologic signatures). More details please refer to
+#' \href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB}.
 #'
-#' @return Return a list of gene sets.
+#' @return Return a list of gene sets of specific collection in
+#' \href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB}.
 #'
 #' @seealso \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{KeggGeneSets}}
 #'
@@ -27,7 +29,7 @@ MSigDBGeneSets <- function(collection = "h") {
 
 
 
-#' Create a list of gene sets based on KEGG pathways terms
+#' Create a list of KEGG gene sets
 #'
 #' This function creates a list of gene sets based on KEGG pathways terms.
 #' It is species-specific, and returns a list of gene sets, each of which
@@ -38,10 +40,10 @@ MSigDBGeneSets <- function(collection = "h") {
 #' "Rn" ("Rattus_norvegicus") or "Mm" ("Mus_musculus").
 #'
 #' @return A list of gene sets, with names as KEGG pathway IDs. Each gene
-#' set is a character vector of Entrez gene identifiers.
+#' set is a group of genes named by Entrez gene identifiers.
 #'
 #' @details This function needs Internet connection and relies on the
-#' following packages: KEGGREST
+#' following packages: KEGGREST.
 #'
 #' @seealso \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{MSigDBGeneSets}}
 #'
@@ -52,7 +54,7 @@ MSigDBGeneSets <- function(collection = "h") {
 #' @export
 #' @importFrom KEGGREST keggLink keggConv
 #' @importFrom stringr str_replace
-KeggGeneSets <- function(species = "Dm") {
+KeggGeneSets <- function(species = "Hs") {
   paraCheck("LoadGeneSets", "species", species)
   species <- switch(
     species,
@@ -119,7 +121,8 @@ KeggGeneSets <- function(species = "Dm") {
 #' "Rn" ("Rattus_norvegicus") or "Mm" ("Mus_musculus").
 #'
 #' @param ontologies A single character value or a character vector
-#' specifying an ontology or multiple ontologies.
+#' specifying an ontology or multiple ontologies. Valid format could be any
+#' combination of "BP", "MF" and "CC".
 #'
 #' @return A list of gene sets, with names as GO IDs. Each gene set is
 #' a character vector of Entrez identifiers.
@@ -137,7 +140,7 @@ KeggGeneSets <- function(species = "Dm") {
 #' @export
 #' @importFrom AnnotationDbi GOID Ontology as.list
 
-GOGeneSets <- function(species = "Dm", ontologies = c("MF")) {
+GOGeneSets <- function(species = "Hs", ontologies = c("MF")) {
   paraCheck("LoadGeneSets", "species", species)
   paraCheck("LoadGeneSets", "ontologies", ontologies)
 

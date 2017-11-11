@@ -153,7 +153,7 @@ networkAnalysis <-
     #  model will produce a diagnostic plot on the screen, to check the
     #  fitting
     dataForNw <- pvalues[scoredNodes]
-    fb <- fitBumModel(dataForNw, plot = F)
+    fb <- fitBumModel(dataForNw)
     ## Score the nodes of the network
     #  The nodes without pvalues will get a NA value instead of a score
     scores <- scoreNodes(graph, fb = fb, fdr = fdr)

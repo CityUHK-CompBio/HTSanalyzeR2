@@ -15,51 +15,58 @@
   keepMultipleMappings = TRUE, verbose = TRUE)
 }
 \arguments{
-\item{object}{A GSCA object.}
+\item{object}{A \code{\link[HTSanalyzeR2:GSCA]{GSCA}} or \code{\link[HTSanalyzeR2:NWA]{NWA}} object.}
 
-\item{species}{A single character value specifying the species for which the
-data should be read.}
+\item{species}{A single character value specifying the species of the input.
+It supports all the species of OrgDb objects in AnnotationDbi.
+The format should be an abbreviation of the organism as setted by AnnotationDbi.
+For example, the commonly used ones are "Dm" ("Drosophila_melanogaster"),
+"Hs" ("Homo_sapiens"), "Rn" ("Rattus_norvegicus"), "Mm" ("Mus_musculus"),
+"Ce" ("Caenorhabditis_elegans"), and etc.}
 
-\item{initialIDs}{A single character value specifying the type of initial
-identifiers for input geneList.}
+\item{initialIDs}{A single character value specifying the type of
+initial identifiers for input geneList. The valid terms need match with
+the keytypes of species db such as keytypes(org.Hs.eg.db).}
 
 \item{keepMultipleMappings}{A single logical value. If TRUE, the function
 keeps the entries with multiple mappings (first mapping is kept). If FALSE,
 the entries with multiple mappings will be discarded.}
 
 \item{duplicateRemoverMethod}{A single character value specifying the method
-to remove the duplicates. See duplicateRemover for details.}
+to remove the duplicates. See help(duplicateRemover) for details.}
 
 \item{orderAbsValue}{A single logical value indicating whether the values
 should be converted to absolute values and then ordered (if TRUE), or
-ordered as they are (if FALSE).}
+ordered as they are (if FALSE). This argument is only for class \code{\link[HTSanalyzeR2:GSCA]{GSCA}}.}
 
 \item{verbose}{A single logical value specifying to display detailed messages
-(when verbose=TRUE) or not (when verbose=FALSE)}
+(when verbose=TRUE) or not (when verbose=FALSE).}
 }
 \value{
-In the end, this function will return an updated object of class GSCA or NWA.
+In the end, this function will return an updated object of class
+\code{\link[HTSanalyzeR2:GSCA]{GSCA}} or \code{\link[HTSanalyzeR2:NWA]{NWA}}.
 }
 \description{
 This is a generic function. When implemented as the S4 method for objects of
-class GSCA or NWA, this function filters out invalid data, removes duplicated
+class \code{\link[HTSanalyzeR2:GSCA]{GSCA}} or \code{\link[HTSanalyzeR2:NWA]{NWA}},
+this function filters out invalid data, removes duplicated
 genes, converts annotations to Entrez identifiers, etc.
 }
 \details{
 This function will do the following preprocessing steps:
 
-1:filter out p-values (the slot **pvalues** of class NWA), phenotypes
- (the slot **phenotypes** of class NWA) and data for enrichment (the slot
- **geneList** of class GSCA) with NA values or without valid names, and invalid
-  gene names (the slot **hits** of class GSCA);
+1:filter out p-values (the slot \emph{pvalues} of class NWA), phenotypes
+ (the slot \emph{phenotypes} of class NWA) and data for enrichment (the slot
+ \emph{geneList} of class GSCA) with NA values or without valid names, and invalid
+  gene names (the slot \emph{hits} of class GSCA);
 
-2:invoke function duplicateRemover to remove duplicated genes in the slot **pvalues**,
- **phenotypes** of class NWA, and the slot **geneList** and **hits** of class GSCA;
+2:invoke function duplicateRemover to remove duplicated genes in the slot \emph{pvalues},
+ \emph{phenotypes} of class NWA, and the slot \emph{geneList} and \emph{hits} of class GSCA;
 
 3:invoke function annotationConvertor to convert annotations from initialIDs
-to Entrez identifiers. Please note that the slot **hits** and the names of the slot
-**geneList** of class GSCA, the names of the slot **pvalues** and the names of the slot
-**phenotypes** of class NWA must have the same type of gene annotation specified by
+to Entrez identifiers. Please note that the slot \emph{hits} and the names of the slot
+\emph{geneList} of class GSCA, the names of the slot \emph{pvalues} and the names of the slot
+\emph{phenotypes} of class NWA must have the same type of gene annotation specified by
 initialIDs;
 
 4:order the data for enrichment decreasingly for objects of class GSCA.
@@ -73,25 +80,34 @@ annotations.
 \examples{
 # ===========================================================
 # GSCA class
-## Not run:
-library(org.Dm.eg.db)
+library(org.Hs.eg.db)
 library(GO.db)
+library(KEGGREST)
 ## load data for enrichment analyses
-data(data4enrich)
-## select hits
-hits <- names(data4enrich)[abs(data4enrich) > 2]
+data(d7)
+phenotype <- as.vector(d7$neg.lfc)
+names(phenotype) <- d7$id
+
+## select hits if you also want to do GSOA, otherwise ignore it
+hits <-  names(phenotype[which(abs(phenotype) > 2)])
+
 ## set up a list of gene set collections
-GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
-ListGSC <- list(GO_MF=GO_MF)
+GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+PW_KEGG <- KeggGeneSets(species="Hs")
+ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
+
 ## create an object of class 'GSCA'
-gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
+gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
+
 ## do preprocessing
-gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
+gsca <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+                   duplicateRemoverMethod="max", orderAbsValue=FALSE)
+
 ## print gsca
 gsca
+
 # ===========================================================
 # NWA class
-
 # loading the pre_selected sample data
 data(xn)
 data(data4enrich)

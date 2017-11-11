@@ -2,7 +2,7 @@
 % Please edit documentation in R/gsca_preprocess.R
 \name{duplicateRemover}
 \alias{duplicateRemover}
-\title{Remove duplicates in a named vector of phenotypes}
+\title{Remove duplicates in a named vector of phenotypes.}
 \usage{
 duplicateRemover(geneList, method = "max")
 }
@@ -28,9 +28,9 @@ with gene identifiers as names. It is used to prepare the named vector
 of phenotypes for the over-representation and gene set enrichment analysis.
 }
 \examples{
-x<-c(5,1,3,-2,6)
-names(x)<-c("gene1", "gene3", "gene7", "gene3", "gene4")
-xprocessed<-duplicateRemover(geneList=x, method="max")
+x <- c(5,1,3,-2,6)
+names(x) <-c ("gene1", "gene3", "gene7", "gene3", "gene4")
+xprocessed <- duplicateRemover(geneList=x, method="max")
 
 }
 \seealso{

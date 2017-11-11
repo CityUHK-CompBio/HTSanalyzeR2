@@ -178,5 +178,7 @@ HTSanalyzeR4MAGeCK <- function(file,
                      verbose = verbose)
   ##do analysis
   nwa <- analyze(nwa, fdr = nwAnalysisFdr, species = species, verbose = verbose)
+  save(gsca, nwa, file.path(reportDir,
+                            paste(deparse(substitute(file)), ".RData", sep="")))
   reportAll(gsca, nwa)
 }

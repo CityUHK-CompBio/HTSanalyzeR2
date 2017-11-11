@@ -9,13 +9,18 @@ finalIDs="ENTREZID", keepMultipleMappings=TRUE, verbose=TRUE)
 }
 \arguments{
 \item{geneList}{A named integer or numeric vector, or a matrix with
-rows named by gene identifiers}
+rows named by gene identifiers.}
 
-\item{species}{A single character value specifying the species for
-which the data should be read.}
+\item{species}{A single character value specifying the species of the input.
+It supports all the species of OrgDb objects in AnnotationDbi.
+The format should be an abbreviation of the organism as setted by AnnotationDbi.
+For example, the commonly used ones are "Dm" ("Drosophila_melanogaster"),
+"Hs" ("Homo_sapiens"), "Rn" ("Rattus_norvegicus"), "Mm" ("Mus_musculus"),
+"Ce" ("Caenorhabditis_elegans"), and etc.}
 
 \item{initialIDs}{A single character value specifying the type of
-initial identifiers for input geneList.}
+initial identifiers for input geneList. The valid terms need match with
+the keytypes of species db such as keytypes(org.Hs.eg.db).}
 
 \item{finalIDs}{A single character value specifying the type of
 final identifiers for input geneList.}
@@ -24,8 +29,8 @@ final identifiers for input geneList.}
 function keeps the entries with multiple mappings (first mapping
 is kept). If FALSE, the entries with multiple mappings will be discarded.}
 
-\item{verbose}{A single logical value specifying to display detailed
-messages (when verbose=TRUE) or not (when verbose=FALSE)}
+\item{verbose}{A single logical value specifying whether to display detailed
+messages (when verbose=TRUE) or not (when verbose=FALSE).}
 }
 \value{
 The same data vector/matrix but with names/row names converted.
@@ -43,6 +48,7 @@ x<-runif(10)
 names(x)<-names(as.list(org.Dm.egSYMBOL2EG))[1:10]
 xEntrez<-annotationConvertor(geneList=x, species="Dm", initialIDs="SYMBOL",
 finalIDs="ENTREZID")
+
 ##example 2: convert a data matrix with row names as gene ids
 x<-cbind(runif(10),runif(10))
 rownames(x)<-names(as.list(org.Dm.egSYMBOL2EG))[1:10]
