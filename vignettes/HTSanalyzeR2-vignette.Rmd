@@ -1,0 +1,361 @@
+---
+title: "HTSanalyzeR2"
+author: "Lina ZHU, Feng Gao, Xiupei Mei, Xin Wang"
+date: "`r Sys.Date()`"
+output: 
+    BiocStyle::html_document:
+        toc: true
+        number_sections: true
+        toc_depth: 2
+        highlight: haddock
+    
+vignette: >
+  %\VignetteIndexEntry{HTSanalyzeR2}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = "#")
+library(HTSanalyzeR2)
+library(org.Hs.eg.db)
+library(KEGGREST)
+library(GO.db)
+library(igraph)
+```
+
+# Introduction
+
+
+# An overview of HTSanalyzeR2
+
+ 
+
+# Case study1:Single dataset analysis for CRISPR data
+
+This case study is using **HTSanalyzeR2** to perform a series analysis on CRISPR data pre-processed by MAGeCK. This data is from a Cell Reports paper where the authors use their optimized CRISPR system to perform a longitudinal drop-out screening on a human colon cancer cell line-HT29. Then they sequenced the gRNA library every 3 days from day 7 to day 25 and thus to get 7 CRISPR raw data. Using the most popular pre-processed software dealing with raw CRISPR data-MAGeCK, we can get 7 files with log2 fold change and pvalue for each gene. Here, we just use three of them to demonstrate the power of HTSanalyzeR2.  
+
+## Hypergeometric test and Gene set enrichment analysis 
+
+### Prepare the input data
+
+To perform gene set enrichment analysis for single dataset, one must preprare the following inputs:
+
+1. a named numeric vector called phenotypes(normally this would be a list of genes with log2 fold change)
+1. a list of gene set collections with known functions which can be gotten by our package
+
+```{r, eval=TRUE}
+data(d7)
+phenotype <- as.vector(d7$neg.lfc)
+names(phenotype) <- d7$id
+```
+
+If you also want to do hypergeometric test using differentially expressed genes, you need to define the hits consisting of a list of genes based on some cutoff such as log2 fold change and *p* values. In this case, the names of phenotpe, that's to say, all the genes, are taken as the background gene list to perform the hypergeometric test. **Note**:In cases if you want to do hypergeometric test with only a list of hits instead of phenotype, HTSanalyzeR2 can also realize it. For details please go to part 5:Special using of HTSanalyzeR2.
+
+```{r, eval=TRUE}
+hits <-  names(phenotype[which(abs(phenotype) > 2)])
+```
+
+Then we must define the gene set collections. HTSanalyzeR2 provides facilities which greatly simplify the creation of up-to-date gene set collections including three Gene Ontology terms: molecular function(MF), Biological Process(BP), Cellular components(CC), KEGG pathways as well as all the gene sets in a comprehensive database-MSigDB. Here to simplfy the demonstration, we will only use one GO, KEGG and one MSigDB gene set collection for Homo Sapiens. To work properly, these gene set collections must be provided as a named list.
+
+```{r}
+GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+PW_KEGG <- KeggGeneSets(species="Hs")
+MSig_C2 <- MSigDBGeneSets(collection = "c2")
+ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG, MSig_C2=MSig_C2)
+```
+
+### Initialize and preprocess
+
+An S4 class named GSCA needs to be created to perform hypergeometric test to find the gene sets sharing significant overlapping with hits. Gene set enrichment analysis, as described by Subramanian et al. can also be conducted.
+
+To initialize a new GSCA object, the previous prepared phenotype and a list of gene sets collections is needed. In addition, as said before, if you also want to do hypergeometric test, hits is needed.
+
+```{r}
+gsca <- new("GSCA", listOfGeneSetCollections=ListGSC, geneList=phenotype, hits=hits)
+gsca
+```
+
+Then a preprocess step including invalid input data removing, duplication removing by different methods, initial gene identifiers converting to Entrez ID and phenotype ordering would be performed to fit for the next analysis.
+
+```{r, message = FALSE, warning=FALSE}
+gsca <- preprocess(gsca, species="Hs", initialIDs="SYMBOL",
+                     keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
+                     orderAbsValue=FALSE)
+gsca
+```
+
+### Perform analysis
+
+After getting a preprocessed GSCA object, one can perform hypergeometric test and gene set enrichment analysis using the function named *analyze*. This funciton needs an argument called *para*, which is a list of parameters including:
+
++ *pValueCutoff*: a single numeric value specifying the cutoff for adjusted pvalues considered significant.
++ *pAdjustMethod*: a single character value specifying the pvalue adjustment method.
++ *nPermutations*: a single integer or numeric value specifying the number of permutations for deriving p-values in GSEA.
++ *minGeneSetSize*: a single integer or numeric value specifying the minimum number of elements shared by a gene set and the background genes, here it's the phenotype. Gene sets with fewer than this number are removed from both hypergeometric analysis and GSEA.
++ *exponent*: a single integer or numeric value used in weighting phenotypes in GSEA. Details please refer to 
+
+
+```{r, message = FALSE, warning=FALSE}
+gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod="BH", 
+                                nPermutations=100, minGeneSetSize=180, 
+                                exponent=1), doGSOA = T, doGSEA = T)
+gsca
+```
+
+In this case study, we only used 100 permutations and set a very large *minGeneSetSize* just for a fast compilation of this vigennete. In real applications, the user may want a much smaller threshold (e.g. 15) and more permutations to get a more robust GSEA result(e.g. 1000)
+
+During the enrichment analysis of gene sets, the function evaluates the statistical significance of the gene set scores by performing a large number of permutations. To perform it more efficiently, our package allows parallel calculation based on the *doParallel* package. To do this, the user simply needs to register and claim to use multiple cores **before** running *analyze*.
+
+```{r}
+doParallel::registerDoParallel(cores=10)
+```
+
+After analyzing, all the result would be stored in slot *result*. If hypergeometric test and GSEA are both performed, gene sets which are both significant based either on pvalue or adjusted pvalue in this two analysis can be get.
+
+```{r}
+head(gsca@result$HyperGeo.results$GO_MF, 3)
+head(gsca@result$GSEA.results$PW_KEGG, 3)
+head(gsca@result$Sig.pvals.in.both$MSig_C2, 3)
+head(gsca@result$Sig.adj.pvals.in.both$MSig_C2, 3)
+```
+
+In addition, to make the results more easier to be understood, you can annotate the gene sets ID to terms by *appendGSTerms*.
+
+```{r, message = FALSE, warning=FALSE}
+gsca <- appendGSTerms(gsca, goGSCs=c("GO_MF"), keggGSCs=c("PW_KEGG"), msigdbGSCs = c("MSig_C2"))
+head(gsca@result$GSEA.results$PW_KEGG, 3)
+```
+
+### Summarize the results
+
+A *summarize* method could be performed to get a generalized summary for a GSCA object including the gene set collections, genelist, hits, parameters for analysis and the summary of result.
+
+```{r}
+HTSanalyzeR2::summarize(gsca)
+```
+
+### Plot gene sets
+
+To better view the GSEA result for a single gene set, you can use *viewGSEA* to plot the positions of the genes of the gene set in the ranked phenotypes and the location of the enrichment score. To realize it, you must first get the gene set ID by *getTopGeneSets*, which can return all or the top significant gene sets from GSEA results.  Basically, the user need to specify the name of results–“HyperGeo.results” or “GSEA.results”, the name(s) of the gene set collection(s) as well as the type of selection– all (by argument allSig) or top (by argument ntop) significant gene sets.
+ 
+
+```{r, fig.width=6, fig.height=4}
+topGS_GO_BP <- getTopGeneSets(gsca, resultName="GSEA.results", 
+                              gscs=c("GO_MF", "PW_KEGG"), allSig=TRUE)
+topGS_GO_BP
+viewGSEA(gsca, "PW_KEGG", topGS_GO_BP[["PW_KEGG"]][2])  ## A bug! 
+```
+
+You can also plot all or the top significant gene sets in one time and store them as png or pdf format into a specificed path by using *plotGSEA*.
+```{r, eval=FALSE}
+plotGSEA(gsca, gscs=c("GO_MF", "PW_KEGG"), ntop=3, filepath=".")
+```
+
+### Enrichment Map
+
+To get a comprehensive view of the hypergeometric test result or GSEA resut instead of a table of significant gene sets with no relations, our package provide *viewEnrichMap* function to draw an enrichment map for gene set collections for better interpretation. More specifically, in the enrichment map, nodes represent significant gene sets sized by the genes it contains and the edge represent the Jaccard similarity coefficient bwtween two gene sets. Nodes color are scaled according to the adjusted pvalues(the darker, the more significant). For hypergeometric test, there is only one color for nodes whereas for GSEA enrichment map, the default color is setted by the sign of enrichment scores(red:+, blue:-). You can also set your favourite format by changing the argument named *options*.
+
+```{r, eval=FALSE}
+viewEnrichMap(gsca, gscs=c("PW_KEGG", "GO_MF"), allSig = F, gsNameType = "term", ntop = 5)
+```
+
+## Enriched subnetwork analysis
+
+You can also perform subnetwork analysis to extract the subnetwork enriched with nodes which are associated with a significant phenotype. The network can be gotten by our package to download specific species network from BioGRID database or defined by users.
+
+### Prepare input, initialize and preprocess
+
+An S4 class named NWA needs to be created to perform subnetwork analysis. To initiate an NWA object, you need to prepare a named numeric vector called pvalues. If phenotypes for genes are also available, they can be inputted during the initialization stage and used to highlight nodes with different colors in the identified subnetwork. In that case, the nodes are colored by the sign of phenotypes(red:+, blue:-).
+
+When initializing an object of class NWA, the user also has the possibility to specify the argument interactome which is an object of class graphNEL. If it is not available, the interactome can be set up later.
+
+```{r}
+pvalues <- as.vector(d7$neg.p.value)
+names(pvalues) <- d7$id
+nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotype)
+```
+
+The next step is to preprocess the inputs. Similar to GSCA class, the function *preprocess* can conduct invalid input data removing, duplication removing by different methods, initial gene identifiers converting to Entrez ID.
+
+```{r}
+nwa <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
+```
+
+
+Then, you need to create an interactome for the network analysis if you have not input your own interactome in the initial step. To this end, you can either specify the species and fetch the corresponding network from BioGRID by our package, or input an interaction matrix if it is in right format: a matrix with a row for each interactions, and at least contain the three columns “InteractorA”, “InteractorB” and “InteractionType”, where the interactors are specified by Entrez ID.
+
+```{r}
+nwa <- interactome(nwa, species="Hs", genetic=FALSE)
+nwa@interactome
+```
+
+
+### Perform analysis
+
+Having preprocessed the input data and created the interactome, the subnetwork analysis could be performed by using the *analyze* method. This function will plot a figure showing the fitting of the BioNet model to your distribution of pvalues, which is a good plot to check the choice of statistics used in this function. The argument fdr of the method analyze is the false discovery rate for BioNet to fit the BUM model. The parameters of the fitted model will then be used for the scoring function, which subsequently enables the BioNet package to search the optimal scoring subnetwork.
+
+```{r}
+nwa <- analyze(nwa, fdr=0.0001, species="Hs")
+```
+
+Similar to GSCA, you can also view the subnetwork by *viewSubNet*. 
+
+```{r, eval=FALSE}
+viewSubNet(nwa)
+```
+
+### Summarize results
+
+Again, like GSCA, the method *summarize* could also be used to get a general summary of an NWA object including inputs, interactome, parameters for analysis and the size of identified subnetwork.
+
+```{r}
+HTSanalyzeR2::summarize(nwa)
+```
+
+# Case study2:Time series data analysis for CRISPR data
+
+This case study is performed on a time series CRISPR data.
+
+## Hypergeometric test and Gene set enrichment analysis
+
+### Prepare the input data
+
+To perform analysis for time series data, one must prepare the following inputs:
+
+1. A character matrix contains experiment information with each experiment in row and information in column. Specifically, it should at least contain two columns named as 'ID' and 'Desription'.
+1. A list of phenptypes, each element of this list is a phenotype as in the single data set analysis. **An important thing need to be noted is the order of each element of this list must match the order of 'expInfor' ID**.
+1. A list of gene set collections with known functions which can be gotten by our package.
+
+```{r}
+data(d7, d13, d25)
+expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2, byrow = F, dimnames = list(NULL, c("ID", "Description")))
+datalist <- list(d7, d13, d25)
+phenotypeTS <- lapply(datalist, function(x) {
+  tmp <- as.vector(x$neg.lfc)
+  names(tmp) <- x$id
+  tmp
+})
+ListGSC <- list(GO_MF=GO_MF)
+```
+
+Similar as single data set analysis, if you also want to do hypergeometric test, a list of hits is needed. Here, each element of this list is a hits as in the single data set analysis. Also, the order of each element of this list must match the order of 'expInfor' ID. Here, for each data set, we choose genes with pvalue less than 0.01 as hits.
+
+```{r}
+hitsTS <- lapply(datalist, function(x){
+  tmp <- x[x$neg.p.value < 0.01, "id"]
+  tmp
+})
+```
+
+### Initialize and preprocess
+
+Here, to perform analysis for time series data, an S4 class named *GSCABatch* need to be created. 
+
+```{r}
+GSCABatch <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS, listOfGeneSetCollections = ListGSC, hitsTS = hitsTS)
+```
+
+Similar as single data set analysis, the GSCABatch object need to be preprocessed using *preprocessGscaTS* method. The preprocess procedure here is the same as single data set. This step would return a list of preprocessed GSCA object.
+
+```{r}
+gscaTS <- preprocessGscaTS(GSCABatch, species="Hs", initialIDs="SYMBOL",
+                         keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
+                         orderAbsValue=FALSE)
+```
+
+### Perform analysis
+
+After get a list of preprocessed GSCA object, you can use *analyzeGscaTS* to perform hypergeometric test as well as GSEA on it. The parameters here is the same as single data set. Similarly, to speed up you can use multiple cores using doParallel package. This step would return a list of analyzed GSCA object.
+
+```{r}
+doParallel::registerDoParallel(cores=40)
+gscaTS <- analyzeGscaTS(gscaTS, para=list(pValueCutoff=0.05, pAdjustMethod="BH", 
+                                nPermutations=100, minGeneSetSize=180, 
+                                exponent=1), doGSOA = TRUE, doGSEA = TRUE)
+head(gscaTS[[1]]@result$GSEA.results$GO_MF, 3)
+```
+
+## Enriched subnetwork analysis
+
+### Prepare input, initialize and preprocess
+To perform subnetwork analsyis on time series data, one must create a S4 class named *NWABatch*. To this end, a list of pvalues is needed. Each element of this list is a pvalues as in the single data set analysis. **Again, an important thing need to be noted is the order of each element of this list must match the order of 'expInfor' ID**. If a list of phenotypes is available, they can be inputted during the initialization stage and used to highlight nodes with different colors in the identified subnetwork. Also, the order of each element of this phenotypes list must match the order of 'expInfor' ID. 
+
+```{r, eval=FALSE}
+pvalueTS <- lapply(datalist, function(x){
+  tmp <- as.vector(x$neg.p.value)
+  names(tmp) <- x$id
+  tmp
+})
+NWABatch <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
+```
+
+After creating an object of NWABatch, a preprocessing step needs to be performed which will return a list of preprocessed NWA objects.
+
+```{r, eval=FALSE}
+nwaTS <- preprocessNwaTS(NWABatch, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
+```
+
+### Perform analysis
+
+Similarly, an interactome needs to be created before performing subnetwork analysis using *interactomeNwaTS*. Then, *analyzeNwaTS* could perform the subnetwork analysis for a list of NWA object. This step would return a list of analyzed NWA objects.
+```{r, eval=FALSE}
+nwaTS <- interactomeNwaTS(nwaTS, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
+nwaTS <- analyzeNwaTS(nwaTS, fdr=0.0001, species="Hs")
+HTSanalyzeR2::summarize(nwaTS[[1]])
+viewSubNet(nwaTS[[1]])
+```
+
+
+# Shiny report of results
+
+To better visualize all the results, our package could generate a dynamic shiny report containing all the results in.
+
+```{r, eval = FALSE}
+report(gsca)
+report(nwa)
+reportAll(gsca, nwa)
+reportAll(gscaTS)
+reportAll(nwa = nwaTS2)
+```
+
+# Special using of HTSanalyzeR2
+
+
+
+# Pipeline function for CRISPR data pre-processed by MAGeCK 
+
+For the CRISPR data pre-processed by MAGeCK, we also provide a pipeline function to do a comprehensive analysis including GSEA and subnetwork analysis, which would be seamless linking with MAGeCK and provide great convenience to the users. 
+
+```{r, eval=FALSE}
+ListGSC = list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
+HTSanalyzeR4MAGeCK(file = d7,selectDirection = "negative",
+                             doGSOA = FALSE,
+                             doGSEA = TRUE,
+                             hitsCutoffLogFC = 1,
+                             hitsCutoffPval = NULL,
+                             listOfGeneSetCollections = ListGSC,
+                             species = "Hs",
+                             initialIDs = "SYMBOL",
+                             keepMultipleMappings = TRUE,
+                             duplicateRemoverMethod = "max",
+                             orderAbsValue = FALSE,
+                             pValueCutoff = 0.05,
+                             pAdjustMethod = "BH",
+                             nPermutations = 100,
+                             minGeneSetSize = 180,
+                             exponent = 1,
+                             verbose  = TRUE,
+                             keggGSCs=c("PW_KEGG"), 
+                             goGSCs = c("GO_MF"),
+                             msigdbGSCs = NULL,
+                             interactionMatrix = NULL,
+                             reportDir = "HTSanalyzerReport",
+                             nwAnalysisGenetic = FALSE,
+                             nwAnalysisFdr = 0.001)
+
+```
+
+# SessionInfor 
+
+# References inserted by Rmd
