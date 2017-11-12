@@ -4,6 +4,9 @@
 \name{GSCA-class}
 \alias{GSCA-class}
 \title{An S4 class for Gene Set Collection Analyses on high-throughput data}
+\usage{
+new("GSCA", listOfGeneSetCollections, geneList, hits = character())
+}
 \description{
 This S4 class includes a series of methods to do gene set enrichment analysis
 and hypergeometric test for high-throughput data.
@@ -49,12 +52,12 @@ hits <-  names(phenotype[which(abs(phenotype) > 2)])
 GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
 ListGSC <- list(GO_MF=GO_MF)
 
-## create an object of class 'GSCA' with hits
+## Example1: create an object of class 'GSCA' with hits
 gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
 gsca
 gsca@summary
 
-## create an object of class 'GSCA' without hits
+## Example2: create an object of class 'GSCA' without hits
 gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype)
 gsca
 gsca@summary

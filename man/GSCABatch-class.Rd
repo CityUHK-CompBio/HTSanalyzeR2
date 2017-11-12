@@ -4,6 +4,9 @@
 \name{GSCABatch-class}
 \alias{GSCABatch-class}
 \title{An S4 class for Time series data package in Gene Set Collection Analyses on high-throughput screens}
+\usage{
+new("GSCABatch", expInfor, listOfGeneSetCollections, phenotypeTS, hitsTS = list())
+}
 \description{
 This S4 class packages time-series data for further GSCA. To put it more clearly, it'll finally generate a list of
 GSCA objects for further analyses.
@@ -50,11 +53,12 @@ hitsTS <- lapply(datalist, function(x){
 tmp <- x[x$neg.p.value < 0.01, "id"]
 tmp})
 
-## create an object of class GSCABatch with hitsTS
+## Example1: create an object of class GSCABatch with hitsTS
 GSCABatch <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
                  listOfGeneSetCollections = ListGSC, hitsTS = hitsTS)
 GSCABatch
-## create an object of class GSCABatch without hitsTS
+
+## Example2: create an object of class GSCABatch without hitsTS
 GSCABatch <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
                  listOfGeneSetCollections = ListGSC)
 GSCABatch

@@ -12,32 +12,25 @@ if (!isGeneric("interactome")) {
 #' @examples
 #' # ===========================================================
 #' # NWA class
-#' # loading the pre_selected sample data
-#' data(xn)
-#' data(data4enrich)
-#' # Conducting one sample t-test & compute the p-values
-#' test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn,annotationColumn="GeneID", alternative="two.sided",tests=c("T-test"))
-#' library(BioNet)
-#' pvalues <- BioNet::aggrPvals(test.stats, order=2, plot=FALSE)
-#' # Case1: Using the enrich vector
-#' nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
-#' nwa <- preprocess(nwa, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
-#' # Case2: Using the enrich matrix
-#' # generate the simulated enrich matrix
-#' colCount <- 10
-#' data4enrichMat <- matrix(rep(data4enrich, colCount), length(data4enrich), colCount)
-#' factor <- matrix(0, length(data4enrich), colCount)
-#' factor[, 0] <- runif(length(data4enrich), 0, 0.4)
-#' for(i in c(2:colCount)) factor[, i] <- factor[, i - 1] + runif(length(data4enrich), 0, 0.4)
-#' factor[,colCount] <- 1
-#' factor[factor > 1] <- 1
-#' data4enrichMat <- data4enrichMat * factor
-#' rownames(data4enrichMat) <- names(data4enrich)
-#' colnames(data4enrichMat) <- paste0(c(1:colCount), "h")
-#' nwam <- NWA(pvalues=pvalues, phenotypes=data4enrichMat)
-#' nwam <- preprocess(nwam, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
+#' library(org.Hs.eg.db)
+#' library(GO.db)
+#' ## load data for enrichment analyses
+#' data(d7)
+#' pvalues <- d7$neg.p.value
+#' names(pvalues) <- d7$id
+#'
+#' ## input phenotypes if you want to color nodes by it
+#' phenotypes <- as.vector(d7$neg.lfc)
+#' names(phenotypes) <- d7$id
+#'
+#' ## create an object of class 'NWA' with phenotypes
+#' nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
+#'
+#' ## do preprocessing
+#' nwa <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+#'                   duplicateRemoverMethod="max")
 #' @export
-#' @include gsca_class.R
+#' @include nwa_class.R
 setMethod("preprocess", signature = "NWA",
   function(object,
            species = "Hs",
@@ -78,9 +71,6 @@ setMethod("preprocess", signature = "NWA",
         object@summary$input[2,"valid"] <- length(phenotypes)
         if(length(phenotypes) == 0)
           stop("Input 'phenotypes' contains no useful data!\n")
-        # if(!identical(names(pvalues), names(phenotypes))){
-        #   stop("'pvalues' and 'phenotypes' should have the same length and be one-to-one match!\n")
-        # }
     }
 
     ## 2.duplicate remover
@@ -136,38 +126,67 @@ setMethod("preprocess", signature = "NWA",
 )
 
 
-#' Create an interactome from BioGRID data sets
+#' Create an interactome from BioGRID database
 #'
 #' This is a generic function.
 #' When implemented as the S4 method of class NWA, this function creates an
 #' interactome before conducting network analysis.
 #'
 #' @rdname interactome
-#' @param object an object. When this function is implemented as the S4
-#' method of class NWA, this argument is an object of class 'NWA'
-#' @param interactionMatrix an interaction matrix including columns
+#' @param object An NWA object.
+#' @param interactionMatrix An interaction matrix including columns
 #' 'InteractionType', 'InteractorA' and 'InteractorB'. If this matrix
 #' is available, the interactome can be directly built based on it.
-#' @param species a single character value specifying the species for
-#' which the data should be read.
-#' @param link the link (url) where the data should be downloaded (in
-#' tab2 format). The default link is version 3.4.138
-#' @param reportDir a single character value specifying the directory
+#' @param species A single character value specifying the species for which the data should be downloaded.
+#' The current version supports one of the following species: "Dm" ("Drosophila_melanogaster"),
+#'  "Hs" ("Homo_sapiens"), "Rn" ("Rattus_norvegicus"), "Mm" ("Mus_musculus"),
+#'  "Ce" ("Caenorhabditis_elegans").
+#' @param link The link (url) where the data should be downloaded (in
+#' tab2 format). The default link is version 3.4.138 of BioGRID.
+#' @param reportDir A single character value specifying the directory
 #' to store reports. The BioGRID data set will be downloaded and stored
 #' in a subdirectory called 'Data' in 'reportDir'.
-#' @param genetic a single logical value. If TRUE, genetic interactions
+#' @param genetic A single logical value. If TRUE, genetic interactions
 #' will be kept; otherwise, they will be removed from the data set.
-#' @param force force to download the data set.
-#' @param verbose a single logical value indicating to display detailed
+#' @param force Force to download the data set.
+#' @param verbose A single logical value indicating to display detailed
 #' messages (when verbose=TRUE) or not (when verbose=FALSE)
+#' @details
+#' This function provides two options to create an interactome for network analysis.
+#' The user can either input an interaction matrix including columns 'InteractionType',
+#' 'InteractionA' and 'InteractionB', or set 'species', 'link' and 'genetic' to download
+#' data set from BioGRID and extract corresponding interactions to build the interactome.
+#'
+#' Another way to set up the interactome is to input an igraph object when the NWA object
+#' is created (i.e. nwa=new("NWA", pvalues, phenotypes, interactome)).
 #' @examples
-#' #' # load the preprocessed p-values and phenotypes data of S4 class, either nwa or nwam,
-#' # Case1: using "nwa" (without the interactionMatrix)
-#' data(nwa)
-#' nwa_inter <- interactome(nwa, species="Dm", reportDir="biogrid", genetic=FALSE)
-#' # Case2: using "nwa" (when the interactionMatrix is available)
-#' data(nwam)
-#' nwam <- interactome(nwam, species="Dm", reportDir="biogrid", genetic=FALSE)
+#' library(org.Hs.eg.db)
+#' library(GO.db)
+#' ## load data for enrichment analyses
+#' data(d7)
+#' pvalues <- d7$neg.p.value
+#' names(pvalues) <- d7$id
+#'
+#' ## input phenotypes if you want to color nodes by it
+#' phenotypes <- as.vector(d7$neg.lfc)
+#' names(phenotypes) <- d7$id
+#'
+#' ## Example1: create an object of class 'NWA' by inputting an igraph object as the interactome
+#' data(Biogrid_HS_Interactome)
+#' nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes, interactome=Biogrid_HS_Interactome)
+#'
+#'
+#' ## Example2: create an object of class 'NWA' without interactome
+#' nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
+#' ## create an interactome for nwa by inputting an interaction matrix
+#' data(Biogrid_HS_Mat)
+#' nwa <- interactome(nwa, interactionMatrix = Biogrid_HS_Mat, genetic=FALSE)
+#'
+#' ## Example3: create an object of class 'NWA' without interactome
+#' nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
+#' ## create an interactome for nwa by downloading for BioGRID database
+#' nwa <- interactome(nwa, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
+#'
 #' @export
 #' @importFrom BioNet makeNetwork
 #' @importFrom igraph vcount ecount
@@ -221,8 +240,8 @@ setMethod(
     if(!genetic)
       InteractionsData <- InteractionsData[
         which(InteractionsData[, "InteractionType"] != "genetic"), ]
-    ## Make a igraph object from the data
-    object@interactome <- makeNetwork(
+    ## Make an igraph object from the data
+    object@interactome <- BioNet::makeNetwork(
       source = InteractionsData[, "InteractorA"],
       target = InteractionsData[, "InteractorB"],
       edgemode = "undirected",

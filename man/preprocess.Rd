@@ -108,30 +108,23 @@ gsca
 
 # ===========================================================
 # NWA class
-# loading the pre_selected sample data
-data(xn)
-data(data4enrich)
-# Conducting one sample t-test & compute the p-values
-test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn,annotationColumn="GeneID", alternative="two.sided",tests=c("T-test"))
-library(BioNet)
-pvalues <- BioNet::aggrPvals(test.stats, order=2, plot=FALSE)
-# Case1: Using the enrich vector
-nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
-nwa <- preprocess(nwa, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
-# Case2: Using the enrich matrix
-# generate the simulated enrich matrix
-colCount <- 10
-data4enrichMat <- matrix(rep(data4enrich, colCount), length(data4enrich), colCount)
-factor <- matrix(0, length(data4enrich), colCount)
-factor[, 0] <- runif(length(data4enrich), 0, 0.4)
-for(i in c(2:colCount)) factor[, i] <- factor[, i - 1] + runif(length(data4enrich), 0, 0.4)
-factor[,colCount] <- 1
-factor[factor > 1] <- 1
-data4enrichMat <- data4enrichMat * factor
-rownames(data4enrichMat) <- names(data4enrich)
-colnames(data4enrichMat) <- paste0(c(1:colCount), "h")
-nwam <- NWA(pvalues=pvalues, phenotypes=data4enrichMat)
-nwam <- preprocess(nwam, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
+library(org.Hs.eg.db)
+library(GO.db)
+## load data for enrichment analyses
+data(d7)
+pvalues <- d7$neg.p.value
+names(pvalues) <- d7$id
+
+## input phenotypes if you want to color nodes by it
+phenotypes <- as.vector(d7$neg.lfc)
+names(phenotypes) <- d7$id
+
+## create an object of class 'NWA' with phenotypes
+nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
+
+## do preprocessing
+nwa <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+                  duplicateRemoverMethod="max")
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{duplicateRemover}}, \code{\link[HTSanalyzeR2]{annotationConvertor}}

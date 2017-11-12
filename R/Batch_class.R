@@ -14,7 +14,7 @@
 #' the hypergeometric tests). It's needed if you want do GSOA. Note: the order of each element of this list
 #'  must match the order of 'expInfor' ID.
 #' @slot listOfGSCA A list of initialized GSCA object for futher GSCA.
-#'
+#' @usage new("GSCABatch", expInfor, listOfGeneSetCollections, phenotypeTS, hitsTS = list())
 #' @export
 #' @examples
 #' data(d7, d13, d25)
@@ -39,11 +39,12 @@
 #' tmp <- x[x$neg.p.value < 0.01, "id"]
 #' tmp})
 #'
-#' ## create an object of class GSCABatch with hitsTS
+#' ## Example1: create an object of class GSCABatch with hitsTS
 #' GSCABatch <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
 #'                  listOfGeneSetCollections = ListGSC, hitsTS = hitsTS)
 #' GSCABatch
-#' ## create an object of class GSCABatch without hitsTS
+#'
+#' ## Example2: create an object of class GSCABatch without hitsTS
 #' GSCABatch <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
 #'                  listOfGeneSetCollections = ListGSC)
 #' GSCABatch

@@ -33,6 +33,13 @@ set names should be one of the following: "id", "term" or "none".}
 a subset of all analyzed gene sets which can be roughly gotten by
 \strong{getTopGeneSets(object, resultName, gscs, ntop = 20000, allSig = FALSE)} with warning.
 The order of the list must match the order of results gotten by aboved function \strong{getTopGeneSets}.}
+
+\item{options}{A list of options to modify the enrichmentmap. Details are not showed here due to too
+many options. Users are highly recommended to modify the enrichment map in a shiny report by
+\code{\link[HTSanalyzeR2]{report}}.}
+
+\item{seriesObjs}{A list of GSCA object. Used in the shiny report for visualizing the
+enrichment map of time series data. No need to explicitly set it!}
 }
 \value{
 An object of igraph with all attributes about the enrichement map.

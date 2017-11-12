@@ -20,7 +20,7 @@
 #'  geneList, hits, para, and result.
 #' @slot preprocessed A single logical value specifying whether or not the
 #' input data has been preprocessed.
-#'
+#' @usage new("GSCA", listOfGeneSetCollections, geneList, hits = character())
 #' @seealso \code{\link[HTSanalyzeR2]{preprocess}},
 #' \code{\link[HTSanalyzeR2]{analyze}},
 #' \code{\link[HTSanalyzeR2]{appendGSTerms}},
@@ -43,12 +43,12 @@
 #' GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
 #' ListGSC <- list(GO_MF=GO_MF)
 #'
-#' ## create an object of class 'GSCA' with hits
+#' ## Example1: create an object of class 'GSCA' with hits
 #' gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
 #' gsca
 #' gsca@@summary
 #'
-#' ## create an object of class 'GSCA' without hits
+#' ## Example2: create an object of class 'GSCA' without hits
 #' gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype)
 #' gsca
 #' gsca@@summary

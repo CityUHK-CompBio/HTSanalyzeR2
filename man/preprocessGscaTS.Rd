@@ -31,7 +31,7 @@ to remove the duplicates. See help(duplicateRemover) for details.}
 
 \item{orderAbsValue}{A single logical value indicating whether the values
 should be converted to absolute values and then ordered (if TRUE), or
-ordered as they are (if FALSE). This argument is only for class \code{\link[HTSanalyzeR2:GSCA]{GSCA}}.}
+ordered as they are (if FALSE).}
 
 \item{verbose}{A single logical value specifying to display detailed messages
 (when verbose=TRUE) or not (when verbose=FALSE).}

@@ -29,13 +29,13 @@ setMethod("summarize", signature = "NWA",
             if (any(c("ALL", "Pval") %in% what)) {
               cat("\n")
               cat("-p-values: \n")
-              print(object@summary$input[1,], quote = FALSE)
+              print(object@summary$input["p-values",], quote = FALSE)
               cat("\n")
             }
             if (any(c("ALL", "Phenotype") %in% what)) {
               cat("\n")
               cat("-Phenotypes: \n")
-              print(object@summary$input[1,], quote = FALSE)
+              print(object@summary$input["phenotypes",], quote = FALSE)
               cat("\n")
             }
             if (any(c("ALL", "Interactome") %in% what)) {
