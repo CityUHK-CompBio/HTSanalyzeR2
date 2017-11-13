@@ -223,14 +223,20 @@ renderNWASummary <- function(input, output) {
 }
 
 create_enrich_map <- function(gscaObj, seriesObjs, input) {
-  genesets <- ifelse(is.null(specificGeneset), input$genesets_map, names(gscaObj@listOfGeneSetCollections))
+  genesets <- input$genesets_map
+  specGeneset <- NULL
+  if(!is.null(specificGeneset) && input$genesets_map == "SpecificGeneset") {
+    genesets <- names(gscaObj@listOfGeneSetCollections)
+    specGeneset <- specificGeneset
+  }
+
   HTSanalyzeR2::viewEnrichMap(
     gscaObj,
     resultName=paste0(input$analysis_map, ".results"),
     gscs = genesets,
     allSig=TRUE,
     gsNameType="id",
-    specificGeneset = specificGeneset,
+    specificGeneset = specGeneset,
     seriesObjs = seriesObjs)
 }
 
