@@ -6,7 +6,7 @@
 #' @slot pvalues A numeric or integer vector of pvalues named by gene identifiers.
 #' @slot phenotypes A numeric or integer vector of phenotypes named by gene identifiers.
 #' When it is available, nodes in identified subnetwork would be coloured by it
-#' (red:+, blue:- in default). Otherwise, all nodes in the subnetwork have no difference.
+#' (red:+, blue:- as default). Otherwise, all nodes in the subnetwork would have no difference.
 #' @slot interactome An object of class igraph.
 #' @slot fdr One parameter for BioNet to score nodes in the interactome.
 #' @slot result A list consisting of subnetwork module identified by BioNet
@@ -25,7 +25,7 @@
 #' @examples
 #' library(org.Hs.eg.db)
 #' library(GO.db)
-#' ## load data for enrichment analyses
+#' ## load data for network analyses
 #' data(d7)
 #' pvalues <- d7$neg.p.value
 #' names(pvalues) <- d7$id
@@ -37,7 +37,7 @@
 #' ## Example1: create an object of class 'NWA' with phenotypes
 #' nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
 #'
-#' ## Example2: reate an object of class 'NWA' without phenotypes
+#' ## Example2: create an object of class 'NWA' without phenotypes
 #' nwa <- new("NWA", pvalues=pvalues)
 #'
 #' @export
@@ -79,8 +79,8 @@ setMethod("initialize",
               #   stop("'pvalues' and 'phenotypes' should have the same length and be one-to-one match!\n")
               # }
             }
-            if (!is.na(interactome))
-              paraCheck("NWAClass", "interactome", interactome)
+            if (any(!is.na(interactome))){
+              paraCheck("NWAClass", "interactome", interactome)}
 
             ##
             .Object@pvalues <- pvalues
@@ -121,7 +121,7 @@ setMethod("initialize",
 
             .Object@summary$db[1, "name"] <- "Unknown"
 
-            if (!is.na(interactome)) {
+            if (any(!is.na(interactome))){
               .Object@summary$db[1, "node No"] <- igraph::vcount(interactome)
               .Object@summary$db[1, "edge No"] <- igraph::ecount(interactome)
             }

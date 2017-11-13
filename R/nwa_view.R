@@ -7,9 +7,23 @@ if (!isGeneric("viewSubNet")) {
     standardGeneric("viewSubNet"), package = "HTSanalyzeR2")
 }
 
-## generate the igraph object for "plotD3Graph"
+## Generate the igraph object for "plotD3Graph"
+#' Extract the subnetwork as an igraph object
+#'
+#' Extract the subnetwork form an analyzed NWA object as an igraph object
+#' for further external using. Users can also use it to modify the subnetwork.
+#' @param object An NWA object.
+#'
 #' @importFrom igraph V E
 #' @export
+#' @examples
+#' ## load a NWA object(see the examples of analyze NWA for details)
+#' data(nwa)
+#'
+#' ## extract the subnetwork as an igraph object
+#' subnetwork <- extractSubNet(nwa)
+#'
+#'
 setMethod("extractSubNet", signature = "NWA",
           function(object) {
             subnw <- object@result$subnw
@@ -28,8 +42,23 @@ setMethod("extractSubNet", signature = "NWA",
             subnw
           })
 
-
+#' Plot the identified subnetwork of an NWA object
+#'
+#' Plot the identified subnetwork of an NWA object.
+#' @param object An NWA object.
+#' @param options A list of options to modify the enrichmentmap. Details are not showed
+#' here due to too many options. Users are highly recommended to modify the enrichment
+#' map in a shiny report by  \code{\link[HTSanalyzeR2]{report}}.
+#' @param seriesObjs A list of NWA object. Internally used in the shiny report for visualizing
+#' the subnetwork of time series data. No need to explicitly set it!
 #' @export
+#' @examples
+#' ## load a NWA object(see the examples of analyze NWA for details)
+#' data(nwa)
+#'
+#' ## plot the subnetwork
+#' viewSubNet(nwa)
+#'
 #' @importFrom igraph as_data_frame
 setMethod("viewSubNet", signature = "NWA",
           function(object,

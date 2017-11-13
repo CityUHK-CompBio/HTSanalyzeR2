@@ -31,8 +31,8 @@
 #'                       tmp})
 #'
 #' ## set up a list of gene set collections
-#' GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
-#' ListGSC <- list(GO_MF=GO_MF)
+#' GO_BP <- GOGeneSets(species="Hs", ontologies=c("BP"))
+#' ListGSC <- list(GO_BP=GO_BP)
 #'
 #' ## package hitsTS if you also want to do GSOA, otherwise ignore it
 #' hitsTS <- lapply(datalist, function(x){
@@ -40,14 +40,14 @@
 #' tmp})
 #'
 #' ## Example1: create an object of class GSCABatch with hitsTS
-#' GSCABatch <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
-#'                  listOfGeneSetCollections = ListGSC, hitsTS = hitsTS)
-#' GSCABatch
+#' gscaTS <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
+#'                listOfGeneSetCollections = ListGSC, hitsTS = hitsTS)
+#' gscaTS
 #'
 #' ## Example2: create an object of class GSCABatch without hitsTS
-#' GSCABatch <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
+#' gscaTS <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
 #'                  listOfGeneSetCollections = ListGSC)
-#' GSCABatch
+#' gscaTS
 
 # GSCABatch ----------------------------------------------------------------
 setClass("GSCABatch",
@@ -129,19 +129,46 @@ setMethod("show", signature = "GSCABatch", function(object) {
 ######################################################################
 
 # NWABatch  ----------------------------------------------------------
-## constructed function
-#'  An S4 class for Time series data package in NetWork Analysis on high-throughput screens
+#' An S4 class for Time series data package in NetWork Analysis on high-throughput screens
 #'
-#' This S4 class packages time-series data for further NWA. To put it more clearly, it'll finally generate a list of
-#' NWA objects for further analyses.
+#' This S4 class packages time-series data for further time series analysis. To put it more clearly,
+#' it'll finally initialize a list of NWA objects for further analyses.
 #'
 #' @slot expInfor A character matrix contains experiment information with each experiment in row and information in column.
-#' At least contains two columns named as 'ID' and 'Desription'.
+#' Should at least contain two columns named as 'ID' and 'Desription'.
 #' @slot phenotypeTS A list of phenotypes, each element of this list is a numeric vector phenotypes named by gene
 #' identifiers for each time point. Note: the order of each element of this list must match the order of 'expInfor' ID.
+#' When it is available, nodes in identified subnetworks would be coloured by it
+#' (red:+, blue:- as default). Otherwise, all nodes in the subnetworks would have no difference.
 #' @slot pvalueTS  A list of pvalues, each element of this list is a numeric vector pvalues named by gene
 #' identifiers for each time point. Note: the order of each element of this list must match the order of 'expInfor' ID.
-#' @slot interactome object of class igraph.
+#' @slot interactome An object of class igraph.
+#' @usage new("NWABatch", expInfor, pvalueTS, phenotypeTS = list(), interactome = NA)
+#' @examples
+#' data(d7, d13, d25)
+#'
+#' ## generate expInfor to describe the information of time series data
+#' expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
+#'                    byrow = F, dimnames = list(NULL, c("ID", "Description")))
+#'
+#' ## package pvalueTS into a list of pvalues
+#' datalist <- list(d7, d13, d25)
+#' pvalueTS <- lapply(datalist, function(x){
+#'                    tmp <- as.vector(x$neg.p.value)
+#'                    names(tmp) <- x$id
+#'                    tmp})
+#'
+#' ## package phenotypeTS into a list of phenotypes if you want to color nodes by it,
+#' ## otherwise ignore it!
+#' phenotypeTS <- lapply(datalist, function(x) {
+#'                       tmp <- as.vector(x$neg.lfc)
+#'                       names(tmp) <- x$id
+#'                       tmp})
+#' ## Example1: create an object of class 'NWABatch' with phenotypes
+#' nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
+#'
+#' ## Example2: create an object of class 'NWABatch' without phenotypes
+#' nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS)
 #'
 #' @export
 setClass(
@@ -167,7 +194,7 @@ setMethod("initialize",
             paraCheck("NWABatch", "expInfor", expInfor)
             paraCheck("NWABatch", "pvalueTS", pvalueTS)
             ## interactome
-            if (!is.na(interactome))
+            if (any(!is.na(interactome)))
               paraCheck("NWAClass", "interactome", interactome)
             ## pvalueTS
             if(nrow(expInfor) != length(pvalueTS)){

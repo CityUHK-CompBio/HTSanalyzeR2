@@ -3,7 +3,7 @@
 \docType{methods}
 \name{interactome,NWA-method}
 \alias{interactome,NWA-method}
-\title{Create an interactome from BioGRID database}
+\title{Create an interactome from BioGRID database or input custom interactome}
 \usage{
 \S4method{interactome}{NWA}(object, interactionMatrix = NULL, species,
   link = "http://thebiogrid.org/downloads/archives/Release\%20Archive/BIOGRID-3.4.138/BIOGRID-ORGANISM-3.4.138.tab2.zip",
@@ -15,7 +15,8 @@
 
 \item{interactionMatrix}{An interaction matrix including columns
 'InteractionType', 'InteractorA' and 'InteractorB'. If this matrix
-is available, the interactome can be directly built based on it.}
+is available, the interactome can be directly built based on it instead
+of downloading from BioGRID.}
 
 \item{species}{A single character value specifying the species for which the data should be downloaded.
 The current version supports one of the following species: "Dm" ("Drosophila_melanogaster"),
@@ -54,7 +55,7 @@ is created (i.e. nwa=new("NWA", pvalues, phenotypes, interactome)).
 \examples{
 library(org.Hs.eg.db)
 library(GO.db)
-## load data for enrichment analyses
+## load data for subnetwork analyses
 data(d7)
 pvalues <- d7$neg.p.value
 names(pvalues) <- d7$id
@@ -72,11 +73,11 @@ nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes, interactome=Biogrid_HS
 nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
 ## create an interactome for nwa by inputting an interaction matrix
 data(Biogrid_HS_Mat)
-nwa <- interactome(nwa, interactionMatrix = Biogrid_HS_Mat, genetic=FALSE)
+nwa1 <- interactome(nwa, interactionMatrix = Biogrid_HS_Mat, genetic=FALSE)
 
 ## Example3: create an object of class 'NWA' without interactome
 nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
 ## create an interactome for nwa by downloading for BioGRID database
-nwa <- interactome(nwa, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
+nwa1 <- interactome(nwa, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
 
 }

@@ -38,41 +38,14 @@ and their names will be returned. If 'allSig=TRUE', then all significant
 be selected and their names will be returned.
 }
 \examples{
-library(org.Hs.eg.db)
-library(GO.db)
-library(KEGGREST)
-## load data for enrichment analyses
-data(d7)
-phenotype <- as.vector(d7$neg.lfc)
-names(phenotype) <- d7$id
+## load a GSCA object(see the examples of analyze GSCA for details)
+data(gsca)
 
-## select hits if you also want to do GSOA, otherwise ignore it
-hits <-  names(phenotype[which(abs(phenotype) > 2)])
-
-## set up a list of gene set collections
-GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
-PW_KEGG <- KeggGeneSets(species="Hs")
-ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
-
-## create an object of class 'GSCA'
-gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
-
-## do preprocessing
-gsca <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
-                   duplicateRemoverMethod="max", orderAbsValue=FALSE)
-
-## support parallel calculation using doParallel package
-doParallel::registerDoParallel(cores=4)
-
-## do hypergeometric tests and GSEA
-gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH",
-                                nPermutations=100, minGeneSetSize=200, exponent=1),
-                                doGSOA = TRUE, doGSEA = TRUE)
 summarize(gsca)
-## print top significant gene sets in GO_MF
-topGS_GO_MF <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
+## print top significant gene sets in GO_BP
+topGS_GO_BP <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_BP", allSig=TRUE)
 
-## print top significant gene sets in GO_MF and PW_KEGG
-topGS <- getTopGeneSets(gsca, "GSEA.results", gscs = c("GO_MF", "PW_KEGG"), allSig=TRUE)
+## print top significant gene sets in GO_BP and PW_KEGG
+topGS <- getTopGeneSets(gsca, "GSEA.results", gscs = c("GO_BP", "PW_KEGG"), allSig=TRUE)
 
 }

@@ -13,9 +13,12 @@ enrichment analysis is based on the GSEA algorithm (Subramanian et al. PNAS
 2005). The network analysis identifies enriched subnetworks based on
 algorithms from the BioNet package (Beisser et al., Bioinformatics 2010). A shiny point of
 this package compared to other similar packages lies in that it can deal with "Time series" data
-with high efficiency. A pipeline is also specifically designed for CRISPR data pre-processed
-by MAGeCK to perform integrative analyses of genome-wide CRISPR knockout. The
-users can also build their own analysis pipeline for their own data set based on
+with high efficiency. In addition, it can generate a dynamic shiny report including all the results
+in, which would be easily for users to download, modify visualizations and even share with others.
+A pipeline is also specifically designed for CRISPR data pre-processed
+by MAGeCK to perform integrative analyses including
+gene set over-representation, enrichment and network analyses. The
+users can also build their own analysis pipeline for their data based on
 this package.
 }
 \section{Details}{

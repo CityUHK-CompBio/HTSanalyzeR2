@@ -30,7 +30,7 @@ function prints a summary of information about the slots of these classes.
 'result') and 'ALL' (all slots).
 
 \item \code{NWA}: For an object of class NWA, the key words include 'Pval'
-(the slot 'pvalue'), 'Phenotype' (the slot 'phenotype'), 'Interactome' (the
+(the slot 'pvalues'), 'Phenotype' (the slot 'phenotypes'), 'Interactome' (the
 slot 'interactome'), 'Para' (the slot 'fdr'), 'Result' (the slot 'result')
 and 'ALL' (all slots).
 }}
@@ -38,51 +38,19 @@ and 'ALL' (all slots).
 \examples{
 # =================================================================
 # GSCA class
-library(org.Hs.eg.db)
-library(GO.db)
-library(KEGGREST)
-## load data for enrichment analyses
-data(d7)
-phenotype <- as.vector(d7$neg.lfc)
-names(phenotype) <- d7$id
-
-## select hits if you also want to do GSOA, otherwise ignore it
-hits <-  names(phenotype[which(abs(phenotype) > 2)])
-
-## set up a list of gene set collections
-GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
-PW_KEGG <- KeggGeneSets(species="Hs")
-ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
-
-## create an object of class 'GSCA'
-gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
-
-## do preprocessing
-gsca <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
-                   duplicateRemoverMethod="max", orderAbsValue=FALSE)
-
-## support parallel calculation using doParallel package
-doParallel::registerDoParallel(cores=4)
-
-## do hypergeometric tests and GSEA
-gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH",
-                                nPermutations=100, minGeneSetSize=200, exponent=1),
-                                doGSOA = TRUE, doGSEA = TRUE)
+## load a GSCA object(see the examples of analyze GSCA for details)
+data(gsca)
 
 ## summarize gsca
 summarize(gsca, what = "ALL")
 summarize(gsca, what = "Result")
-# Conducting the preparation steps
-data(xn)
-data(data4enrich)
-# Conducting one sample t-test & compute the p-values
-test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn,annotationColumn="GeneID", alternative="two.sided",tests=c("T-test"))
-library(BioNet)
-pvalues <- BioNet::aggrPvals(test.stats, order=2, plot=FALSE)
-nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
-nwa <- preprocess(nwa, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
-nwa_inter <- interactome(nwa, species="Dm", reportDir="biogrid", genetic=FALSE)
-nwa_result <- analyze(nwa_inter, fdr=0.0001, species="Dm")
-# Conducting the summary of the results
-summer_result<-summarize(nwa_result)
+
+# =================================================================
+# NWA class
+## load a NWA object(see the examples of analyze NWA for details)
+data(nwa)
+
+## summarize nwa
+summarize(nwa, what = "ALL")
+summarize(nwa, what = "Result")
 }

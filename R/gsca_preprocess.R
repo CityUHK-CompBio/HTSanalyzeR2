@@ -21,7 +21,7 @@ if (!isGeneric("preprocess")) {
 #' "Ce" ("Caenorhabditis_elegans"), and etc.
 #'
 #' @param initialIDs A single character value specifying the type of
-#' initial identifiers for input geneList. The valid terms need match with
+#' initial identifiers for input 'geneList'. The valid terms need match with
 #' the keytypes of species db such as keytypes(org.Hs.eg.db).
 #' @param keepMultipleMappings A single logical value. If TRUE, the function
 #'   keeps the entries with multiple mappings (first mapping is kept). If FALSE,
@@ -60,11 +60,11 @@ if (!isGeneric("preprocess")) {
 #' gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
 #'
 #' ## do preprocessing
-#' gsca <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+#' gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
 #'                    duplicateRemoverMethod="max", orderAbsValue=FALSE)
 #'
-#' ## print gsca
-#' gsca
+#' ## print gsca1
+#' gsca1
 #'
 #' @details
 #' This function will do the following preprocessing steps:
@@ -208,7 +208,7 @@ setMethod("preprocess", signature = "GSCA",
 #' of phenotypes for the over-representation and gene set enrichment analysis.
 #'
 #' @param geneList A single named numeric or integer vector with gene
-#' identifiers as names
+#' identifiers as names.
 #' @param method A single character value specifying the method to remove
 #' the duplicates (should the minimum, maximum or average observation for
 #' a same construct be kept). The current version provides "min" (minimum),
@@ -216,15 +216,15 @@ setMethod("preprocess", signature = "GSCA",
 #' The minimum and maximum should be understood in terms of absolute values
 #' (i.e. min/max effect, no matter the sign). The fold change average method
 #' converts the fold changes to ratios, averages them and converts the average
-#' back to a fold change
+#' back to a fold change.
 #'
-#' @return A named vector of phenotypes with duplicates removed
+#' @return A named vector of phenotypes with duplicates removed.
 #'
 #' @seealso \code{\link[HTSanalyzeR2]{preprocess}}
 #'
 #' @examples
 #' x <- c(5,1,3,-2,6)
-#' names(x) <-c ("gene1", "gene3", "gene7", "gene3", "gene4")
+#' names(x) <- c("gene1", "gene3", "gene7", "gene3", "gene4")
 #' xprocessed <- duplicateRemover(geneList=x, method="max")
 #'
 #' @export
@@ -305,17 +305,17 @@ duplicateRemover <- function(geneList, method = "max") {
 #'
 #' @examples
 #' library(org.Dm.eg.db)
-#' ##example 1: convert a named vector
-#' x<-runif(10)
-#' names(x)<-names(as.list(org.Dm.egSYMBOL2EG))[1:10]
-#' xEntrez<-annotationConvertor(geneList=x, species="Dm", initialIDs="SYMBOL",
-#' finalIDs="ENTREZID")
+#' ## Example1: convert a named vector
+#' x <- runif(10)
+#' names(x) <- names(as.list(org.Dm.egSYMBOL2EG))[1:10]
+#' xEntrez <- annotationConvertor(geneList=x, species="Dm", initialIDs="SYMBOL",
+#'                                finalIDs="ENTREZID")
 #'
-#' ##example 2: convert a data matrix with row names as gene ids
-#' x<-cbind(runif(10),runif(10))
-#' rownames(x)<-names(as.list(org.Dm.egSYMBOL2EG))[1:10]
-#' xEntrez<-annotationConvertor(geneList=x, species="Dm", initialIDs="SYMBOL",
-#' finalIDs="ENTREZID")
+#' ## Example2: convert a data matrix with row names as gene ids
+#' x <- cbind(runif(10),runif(10))
+#' rownames(x) <- names(as.list(org.Dm.egSYMBOL2EG))[1:10]
+#' xEntrez <- annotationConvertor(geneList=x, species="Dm", initialIDs="SYMBOL",
+#'                                finalIDs="ENTREZID")
 #'
 #' @export
 #' @importFrom AnnotationDbi mapIds columns

@@ -4,22 +4,54 @@
 \name{NWABatch-class}
 \alias{NWABatch-class}
 \title{An S4 class for Time series data package in NetWork Analysis on high-throughput screens}
+\usage{
+new("NWABatch", expInfor, pvalueTS, phenotypeTS = list(), interactome = NA)
+}
 \description{
-This S4 class packages time-series data for further NWA. To put it more clearly, it'll finally generate a list of
-NWA objects for further analyses.
+This S4 class packages time-series data for further time series analysis. To put it more clearly,
+it'll finally initialize a list of NWA objects for further analyses.
 }
 \section{Slots}{
 
 \describe{
 \item{\code{expInfor}}{A character matrix contains experiment information with each experiment in row and information in column.
-At least contains two columns named as 'ID' and 'Desription'.}
+Should at least contain two columns named as 'ID' and 'Desription'.}
 
 \item{\code{phenotypeTS}}{A list of phenotypes, each element of this list is a numeric vector phenotypes named by gene
-identifiers for each time point. Note: the order of each element of this list must match the order of 'expInfor' ID.}
+identifiers for each time point. Note: the order of each element of this list must match the order of 'expInfor' ID.
+When it is available, nodes in identified subnetworks would be coloured by it
+(red:+, blue:- as default). Otherwise, all nodes in the subnetworks would have no difference.}
 
 \item{\code{pvalueTS}}{A list of pvalues, each element of this list is a numeric vector pvalues named by gene
 identifiers for each time point. Note: the order of each element of this list must match the order of 'expInfor' ID.}
 
-\item{\code{interactome}}{object of class igraph.}
+\item{\code{interactome}}{An object of class igraph.}
 }}
 
+\examples{
+data(d7, d13, d25)
+
+## generate expInfor to describe the information of time series data
+expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
+                   byrow = F, dimnames = list(NULL, c("ID", "Description")))
+
+## package pvalueTS into a list of pvalues
+datalist <- list(d7, d13, d25)
+pvalueTS <- lapply(datalist, function(x){
+                   tmp <- as.vector(x$neg.p.value)
+                   names(tmp) <- x$id
+                   tmp})
+
+## package phenotypeTS into a list of phenotypes if you want to color nodes by it,
+## otherwise ignore it!
+phenotypeTS <- lapply(datalist, function(x) {
+                      tmp <- as.vector(x$neg.lfc)
+                      names(tmp) <- x$id
+                      tmp})
+## Example1: create an object of class 'NWABatch' with phenotypes
+nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
+
+## Example2: create an object of class 'NWABatch' without phenotypes
+nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS)
+
+}

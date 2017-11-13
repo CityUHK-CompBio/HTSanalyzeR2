@@ -8,17 +8,35 @@ reportAll(gsca = NULL, nwa = NULL, TSOrder = NULL,
   specificGeneset = NULL, reportDir = "AnalysisReport")
 }
 \arguments{
-\item{gsca}{a GSCA object or a list of GSCA objects}
+\item{gsca}{A GSCA object or a list of GSCA objects.}
 
-\item{nwa}{a NWA object or a list of NWA objects}
+\item{nwa}{An NWA object or a list of NWA objects.}
 
 \item{TSOrder}{A character specifying the visulization order of 'Time Series' data in shiny report. Only works when
-reporting for 'Time Series' data, default is the ID order in 'expInfor'}
+reporting for 'Time Series' data, default is the ID order in 'expInfor'.}
 
-\item{reportDir}{a single character value specifying the directory to store reports. For default both the
-enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport"}
+\item{specificGeneset}{A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap}}
+for details.}
+
+\item{reportDir}{A single character value specifying the directory to store reports. For default both the
+enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport".}
 }
 \description{
-This function can create HTML reports for both gene sets enrichment analysis and network analysis using
-shiny.
+This function can create shiny reports for both gene sets enrichment analysis and network analysis.
+}
+\examples{
+## load data
+data(gsca, nwa, gscaTS, nwaTS)
+
+## report both gsca and nwa
+reportAll(gsca=gsca, nwa=nwa)
+
+## report gscaTS
+reportAll(gscaTS)
+
+## report nwaTS
+reportAll(nwaTS)
+
+## report both gscaTS and nwaTS
+reportAll(gscaTS, nwaTS)
 }

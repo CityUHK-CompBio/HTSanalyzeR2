@@ -3,25 +3,22 @@ if (!isGeneric("summarize")) {
     standardGeneric("summarize"), package = "HTSanalyzeR2")
 }
 
-
+#' @include nwa_class.R
 #' @describeIn summarize For an object of class NWA, the key words include 'Pval'
-#' (the slot 'pvalue'), 'Phenotype' (the slot 'phenotype'), 'Interactome' (the
+#' (the slot 'pvalues'), 'Phenotype' (the slot 'phenotypes'), 'Interactome' (the
 #' slot 'interactome'), 'Para' (the slot 'fdr'), 'Result' (the slot 'result')
 #' and 'ALL' (all slots).
+#'
 #' @examples
-#' # Conducting the preparation steps
-#' data(xn)
-#' data(data4enrich)
-#' # Conducting one sample t-test & compute the p-values
-#' test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn,annotationColumn="GeneID", alternative="two.sided",tests=c("T-test"))
-#' library(BioNet)
-#' pvalues <- BioNet::aggrPvals(test.stats, order=2, plot=FALSE)
-#' nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
-#' nwa <- preprocess(nwa, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
-#' nwa_inter <- interactome(nwa, species="Dm", reportDir="biogrid", genetic=FALSE)
-#' nwa_result <- analyze(nwa_inter, fdr=0.0001, species="Dm")
-#' # Conducting the summary of the results
-#' summer_result<-summarize(nwa_result)
+#'
+#' # =================================================================
+#' # NWA class
+#' ## load a NWA object(see the examples of analyze NWA for details)
+#' data(nwa)
+#'
+#' ## summarize nwa
+#' summarize(nwa, what = "ALL")
+#' summarize(nwa, what = "Result")
 #' @export
 setMethod("summarize", signature = "NWA",
           function(object, what = "ALL") {

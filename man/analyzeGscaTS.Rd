@@ -48,8 +48,8 @@ phenotypeTS <- lapply(datalist, function(x) {
                       tmp})
 
 ## set up a list of gene set collections
-GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
-ListGSC <- list(GO_MF=GO_MF)
+GO_BP <- GOGeneSets(species="Hs", ontologies=c("BP"))
+ListGSC <- list(GO_BP=GO_BP)
 
 ## package hitsTS if you also want to do GSOA, otherwise ignore it
 hitsTS <- lapply(datalist, function(x){
@@ -57,11 +57,11 @@ tmp <- x[x$neg.p.value < 0.01, "id"]
 tmp})
 
 ## create an object of class GSCABatch with hitsTS
-GSCABatch <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
+gscaTS <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
                  listOfGeneSetCollections = ListGSC, hitsTS = hitsTS)
 
 ## preprocess GSCABatch
-gscaTS <- preprocessGscaTS(GSCABatch, species="Hs", initialIDs="SYMBOL",
+gscaTS1 <- preprocessGscaTS(gscaTS, species="Hs", initialIDs="SYMBOL",
                            keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
                            orderAbsValue=FALSE)
 
@@ -69,10 +69,10 @@ gscaTS <- preprocessGscaTS(GSCABatch, species="Hs", initialIDs="SYMBOL",
 doParallel::registerDoParallel(cores=4)
 
 ## do hypergeometric tests and GSEA
-gscaTS <- analyzeGscaTS(gscaTS, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
+gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
                         nPermutations=100, minGeneSetSize=200,
                         exponent=1), doGSOA = TRUE, doGSEA = TRUE)
-head(gscaTS[[1]]@result$GSEA.results$GO_MF, 3)
+head(gscaTS2[[1]]@result$GSEA.results$GO_BP, 3)
 
 
 

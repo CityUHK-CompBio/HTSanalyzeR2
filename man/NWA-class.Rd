@@ -18,7 +18,7 @@ high-throughput data.
 
 \item{\code{phenotypes}}{A numeric or integer vector of phenotypes named by gene identifiers.
 When it is available, nodes in identified subnetwork would be coloured by it
-(red:+, blue:- in default). Otherwise, all nodes in the subnetwork have no difference.}
+(red:+, blue:- as default). Otherwise, all nodes in the subnetwork would have no difference.}
 
 \item{\code{interactome}}{An object of class igraph.}
 
@@ -37,7 +37,7 @@ has been preprocessed.}
 \examples{
 library(org.Hs.eg.db)
 library(GO.db)
-## load data for enrichment analyses
+## load data for network analyses
 data(d7)
 pvalues <- d7$neg.p.value
 names(pvalues) <- d7$id
@@ -49,7 +49,7 @@ names(phenotypes) <- d7$id
 ## Example1: create an object of class 'NWA' with phenotypes
 nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
 
-## Example2: reate an object of class 'NWA' without phenotypes
+## Example2: create an object of class 'NWA' without phenotypes
 nwa <- new("NWA", pvalues=pvalues)
 
 }

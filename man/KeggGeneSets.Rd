@@ -26,7 +26,8 @@ following packages: KEGGREST.
 }
 \examples{
 library(KEGGREST)
-DM_KEGG<-KeggGeneSets(species = "Dm")
+library(org.Dm.eg.db)
+DM_KEGG <- KeggGeneSets(species = "Dm")
 
 }
 \seealso{

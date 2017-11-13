@@ -49,7 +49,8 @@ MSigDBGeneSets <- function(collection = "h") {
 #'
 #' @examples
 #' library(KEGGREST)
-#' DM_KEGG<-KeggGeneSets(species = "Dm")
+#' library(org.Dm.eg.db)
+#' DM_KEGG <- KeggGeneSets(species = "Dm")
 #'
 #' @export
 #' @importFrom KEGGREST keggLink keggConv
@@ -135,8 +136,9 @@ KeggGeneSets <- function(species = "Hs") {
 #' @examples
 #' library(GO.db)
 #' library(org.Dm.eg.db)
-#' DM_GO_CC<-GOGeneSets(species="Dm",ontologies=c("CC"))
+#' DM_GO_CC <- GOGeneSets(species="Dm",ontologies=c("CC"))
 #'
+#' DM_GO <- GOGeneSets(species="Dm",ontologies=c("CC", "MF", "BP"))
 #' @export
 #' @importFrom AnnotationDbi GOID Ontology as.list
 

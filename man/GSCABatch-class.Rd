@@ -45,8 +45,8 @@ phenotypeTS <- lapply(datalist, function(x) {
                       tmp})
 
 ## set up a list of gene set collections
-GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
-ListGSC <- list(GO_MF=GO_MF)
+GO_BP <- GOGeneSets(species="Hs", ontologies=c("BP"))
+ListGSC <- list(GO_BP=GO_BP)
 
 ## package hitsTS if you also want to do GSOA, otherwise ignore it
 hitsTS <- lapply(datalist, function(x){
@@ -54,12 +54,12 @@ tmp <- x[x$neg.p.value < 0.01, "id"]
 tmp})
 
 ## Example1: create an object of class GSCABatch with hitsTS
-GSCABatch <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
-                 listOfGeneSetCollections = ListGSC, hitsTS = hitsTS)
-GSCABatch
+gscaTS <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
+               listOfGeneSetCollections = ListGSC, hitsTS = hitsTS)
+gscaTS
 
 ## Example2: create an object of class GSCABatch without hitsTS
-GSCABatch <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
+gscaTS <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
                  listOfGeneSetCollections = ListGSC)
-GSCABatch
+gscaTS
 }

@@ -14,7 +14,7 @@ if (!isGeneric("interactome")) {
 #' # NWA class
 #' library(org.Hs.eg.db)
 #' library(GO.db)
-#' ## load data for enrichment analyses
+#' ## load data for subnetwork analyses
 #' data(d7)
 #' pvalues <- d7$neg.p.value
 #' names(pvalues) <- d7$id
@@ -27,8 +27,8 @@ if (!isGeneric("interactome")) {
 #' nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
 #'
 #' ## do preprocessing
-#' nwa <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
-#'                   duplicateRemoverMethod="max")
+#' nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+#'                    duplicateRemoverMethod="max")
 #' @export
 #' @include nwa_class.R
 setMethod("preprocess", signature = "NWA",
@@ -126,7 +126,7 @@ setMethod("preprocess", signature = "NWA",
 )
 
 
-#' Create an interactome from BioGRID database
+#' Create an interactome from BioGRID database or input custom interactome
 #'
 #' This is a generic function.
 #' When implemented as the S4 method of class NWA, this function creates an
@@ -136,7 +136,8 @@ setMethod("preprocess", signature = "NWA",
 #' @param object An NWA object.
 #' @param interactionMatrix An interaction matrix including columns
 #' 'InteractionType', 'InteractorA' and 'InteractorB'. If this matrix
-#' is available, the interactome can be directly built based on it.
+#' is available, the interactome can be directly built based on it instead
+#' of downloading from BioGRID.
 #' @param species A single character value specifying the species for which the data should be downloaded.
 #' The current version supports one of the following species: "Dm" ("Drosophila_melanogaster"),
 #'  "Hs" ("Homo_sapiens"), "Rn" ("Rattus_norvegicus"), "Mm" ("Mus_musculus"),
@@ -162,7 +163,7 @@ setMethod("preprocess", signature = "NWA",
 #' @examples
 #' library(org.Hs.eg.db)
 #' library(GO.db)
-#' ## load data for enrichment analyses
+#' ## load data for subnetwork analyses
 #' data(d7)
 #' pvalues <- d7$neg.p.value
 #' names(pvalues) <- d7$id
@@ -180,12 +181,12 @@ setMethod("preprocess", signature = "NWA",
 #' nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
 #' ## create an interactome for nwa by inputting an interaction matrix
 #' data(Biogrid_HS_Mat)
-#' nwa <- interactome(nwa, interactionMatrix = Biogrid_HS_Mat, genetic=FALSE)
+#' nwa1 <- interactome(nwa, interactionMatrix = Biogrid_HS_Mat, genetic=FALSE)
 #'
 #' ## Example3: create an object of class 'NWA' without interactome
 #' nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
 #' ## create an interactome for nwa by downloading for BioGRID database
-#' nwa <- interactome(nwa, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
+#' nwa1 <- interactome(nwa, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
 #'
 #' @export
 #' @importFrom BioNet makeNetwork
@@ -202,7 +203,7 @@ setMethod(
     if(missing(species) && is.null(interactionMatrix))
       stop("You should either input 'interactionMatrix' or ",
            "specifiy 'species' to download biogrid dataset!\n")
-    if(!missing(species)) {
+    if(is.null(interactionMatrix) && !missing(species)) {
       paraCheck("LoadGeneSets", "species", species)
       object@summary$db[, "species"] <- species
     }

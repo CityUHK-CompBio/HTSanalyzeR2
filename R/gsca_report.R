@@ -11,42 +11,41 @@ if (!isGeneric("report")) {
 #' When implemented as the method of class GSCA or NWA, this function produces reports for
 #' either the Gene Set Collection Analysis or the NetWork Analysis.
 #'
-#' @param object  an object. When this function is implemented as the S4
+#' @param object  An object. When this function is implemented as the S4
 #' method of class 'GSCA' or 'NWA', this argument is an object of class
 #' 'GSCA' or 'NWA'.
-#' @param reportDir a single character value specifying the directory to store reports. For default
-#' the enrichment analysis reports will be stored in the directory called "GSCAReport"
+#' @param reportDir A single character value specifying the directory to store reports. For default
+#' the enrichment analysis reports will be stored in the directory called "GSCAReport".
+#' @param specificGeneset A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap}}
+#' for details.
+#'
+#' @details
+#' This will generate a shiny report including all the GSCA or NWA results.
+#' For GSCA object, users can download the table of GSOA and/or GSEA result in different format
+#' such as 'csv' and 'pdf'. The enrichment map could be modified according to the user's preferences
+#' such as layout, node, label, and etc. Details please see the vignette of our package.
+#'
+#' For NWA object, the identified subnetwork could be modified according to the user's preferences
+#' in many ways such as layout, color, and etc. Details please see the vignette of our package.
 #'
 #' @examples
 #' # =======================================================
 #' # GSCA class
-#' ## Not run:
-#' library(org.Dm.eg.db)
-#' library(GO.db)
-#' ## load data for enrichment analyses
-#' data(data4enrich)
-#' ## select hits
-#' hits <- names(data4enrich)[abs(data4enrich) > 2]
-#' ## set up a list of gene set collections
-#' GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
-#' ListGSC <- list(GO_MF=GO_MF)
-#' ## create an object of class 'GSCA'
-#' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
-#' ## print gsca
-#' gsca
-#' ## do preprocessing
-#' gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
-#' ## do hypergeometric tests and GSEA
-#' gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
-#' summarize(gsca)
-#' ## append gene set terms to results
-#' gsca <- appendGSTerms(gsca, goGSCs=c("GO_MF"), keggGSCs= NULL, msigdbGSCs=NULL)
-#' ## view an enrichment map for GSEA results
-#' viewEnrichMap(gsca, gscs="GO_MF", allSig = F, ntop = 7)
-#' ## report for a GSCA object
+#' ## load a GSCA object(see the examples of analyze GSCA for details)
+#' data(gsca)
+#'
+#' ## Example1: report gsca
 #' report(gsca)
-#' # ======================================================
-#' # NWA class
+#'
+#' ## Example2: report gsca containing enrichment map with specificGeneset
+#' tmp <- getTopGeneSets(gsca, resultName = "GSEA.results", gscs=c("GO_BP"),
+#'                       ntop = 20000, allSig = FALSE)
+#' ## In that case, we can define specificGeneset as below:
+#' GO_BP_geneset <- tmp$GO_BP[c(4,2,6,9,12)]
+#' ## the name of specificGenesets also needs to match with the names of tmp
+#' specificGeneset <- list("GO_BP"=GO_BP_geneset)
+#' report(gsca, specificGeneset=specificGeneset)
+#'
 #' @rdname report
 #'
 #' @export
@@ -59,18 +58,34 @@ setMethod("report", signature = "GSCA",
 
 #' Write HTML reports for both enrichment and network analyses
 #'
-#'This function can create HTML reports for both gene sets enrichment analysis and network analysis using
-#'shiny.
+#'This function can create shiny reports for both gene sets enrichment analysis and network analysis.
 #'
-#'@param gsca a GSCA object or a list of GSCA objects
-#'@param nwa a NWA object or a list of NWA objects
+#'@param gsca A GSCA object or a list of GSCA objects.
+#'@param nwa An NWA object or a list of NWA objects.
 #'@param TSOrder A character specifying the visulization order of 'Time Series' data in shiny report. Only works when
-#'reporting for 'Time Series' data, default is the ID order in 'expInfor'
-#'@param reportDir a single character value specifying the directory to store reports. For default both the
-#'  enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport"
+#'reporting for 'Time Series' data, default is the ID order in 'expInfor'.
+#'@param specificGeneset A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap}}
+#' for details.
+#'@param reportDir A single character value specifying the directory to store reports. For default both the
+#'  enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport".
 #'
 #'
 #' @export
+#' @examples
+#' ## load data
+#' data(gsca, nwa, gscaTS, nwaTS)
+#'
+#' ## report both gsca and nwa
+#' reportAll(gsca=gsca, nwa=nwa)
+#'
+#' ## report gscaTS
+#' reportAll(gscaTS)
+#'
+#' ## report nwaTS
+#' reportAll(nwaTS)
+#'
+#' ## report both gscaTS and nwaTS
+#' reportAll(gscaTS, nwaTS)
 reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL, specificGeneset = NULL, reportDir = "AnalysisReport") {
   if(!is.null(gsca) && class(gsca) != "GSCA") {
     if(class(gsca) != "list" || any(sapply(gsca, class) != "GSCA")) {

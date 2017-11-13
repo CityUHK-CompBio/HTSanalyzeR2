@@ -9,7 +9,7 @@ preprocessNwaTS(object, species = "Hs", initialIDs = "SYMBOL",
   verbose = TRUE)
 }
 \arguments{
-\item{object}{A NWABatch object}
+\item{object}{An NWABatch object.}
 
 \item{species}{A single character value specifying the species for which the
 data should be read.}
@@ -32,6 +32,37 @@ In the end, this function will return an updated list of NWA object.
 }
 \description{
 This function will do basic preprocessing for each NWA object of 'nwaList'.
+}
+\examples{
+
+data(d7, d13, d25)
+
+## generate expInfor to describe the information of time series data
+expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
+                   byrow = F, dimnames = list(NULL, c("ID", "Description")))
+
+## package pvalueTS into a list of pvalues
+datalist <- list(d7, d13, d25)
+pvalueTS <- lapply(datalist, function(x){
+                   tmp <- as.vector(x$neg.p.value)
+                   names(tmp) <- x$id
+                   tmp})
+
+## package phenotypeTS into a list of phenotypes if you want to color nodes by it,
+## otherwise ignore it!
+phenotypeTS <- lapply(datalist, function(x) {
+                      tmp <- as.vector(x$neg.lfc)
+                      names(tmp) <- x$id
+                      tmp})
+
+## create an object of class 'NWABatch' with phenotypes
+nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
+
+## preprocess nwaTS
+nwaTS1 <- preprocessNwaTS(nwaTS, species="Hs", initialIDs="SYMBOL",
+                         keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
+
+
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{preprocess}}

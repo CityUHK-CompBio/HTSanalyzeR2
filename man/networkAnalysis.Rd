@@ -7,20 +7,20 @@
 networkAnalysis(pvalues, graph, fdr = 0.001, verbose = TRUE)
 }
 \arguments{
-\item{pvalues}{a numeric vector of p-values}
+\item{pvalues}{A numeric vector of p-values.}
 
-\item{graph}{an object of class igraph, used as the interactome in
-the network analysis}
+\item{graph}{An object of class igraph, used as the interactome in
+the network analysis.}
 
-\item{fdr}{a single numeric value specifying the false discovery for
+\item{fdr}{A single numeric value specifying the false discovery for
 the scoring of nodes (see BioNet::scoreNodes and Dittrich et al., 2008
-for details)}
+for details).}
 
-\item{verbose}{a single logical value indicating to display detailed
-messages (when verbose=TRUE) or not (when verbose=FALSE)}
+\item{verbose}{A single logical value indicating to display detailed
+messages (when verbose=TRUE) or not (when verbose=FALSE).}
 }
 \value{
-a subnetwork module of class igraph
+A subnetwork module of class igraph.
 }
 \description{
 This function finds subnetworks enriched for genes with significant
@@ -30,4 +30,32 @@ phenotypes based on the package 'BioNet'.
 This function takes in a vector of p-values and a graph standing
 for the interactome to identify the maximum scoring subnetwork based on
 the BioNet package.
+}
+\examples{
+library(org.Hs.eg.db)
+library(GO.db)
+## load data for subnetwork analyses
+data(d7)
+pvalues <- d7$neg.p.value
+names(pvalues) <- d7$id
+
+## create an object of class NWA
+nwa <- new("NWA", pvalues=pvalues)
+
+## interactome
+data(Biogrid_HS_Interactome)
+
+##identify subnetworks
+enrichedSubNet <- networkAnalysis(pvalues=pvalues, graph=Biogrid_HS_Interactome,
+                                  fdr = 0.001, verbose = TRUE)
+
+}
+\references{
+Beisser D, Klau GW, Dandekar T, Muller T, Dittrich MT. BioNet: an R-Package
+for the functional analysis of biological networks. Bioinformatics.
+2010 Apr 15;26(8):1129-30.
+
+Dittrich MT, Klau GW, Rosenwald A., Dandekar T and Muller T. Identifying functional modules
+in protein-protein interaction networks: an integrated exact approach. Bioinformatics
+2008 24(13):i223-i231.
 }

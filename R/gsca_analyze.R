@@ -41,6 +41,11 @@ if (!isGeneric("analyze")) {
 #' class GSCA or NWA. All the analyzed results could be found in slot \emph{result}.
 #' @include gsca_class.R
 #' @export
+#' @references
+#' Aravind Subramanian, Pablo Tamayo, Vamsi K. Mootha, Sayan Mukherjee, Benjamin L. Ebert,
+#' Michael A. Gillette, Amanda Paulovich, Scott L. Pomeroy, Todd R. Golub, Eric S. Lander, and Jill P. Mesirov
+#' Gene set enrichment analysis: A knowledge-based approach for interpreting genome-wide expression profiles
+#' PNAS 2005 102 (43) 15545-15550; published ahead of print September 30, 2005, doi:10.1073/pnas.0506580102
 #' @examples
 #' # ====================================================
 #' # Gene Set Collection Analysis Part
@@ -56,29 +61,29 @@ if (!isGeneric("analyze")) {
 #' hits <-  names(phenotype[which(abs(phenotype) > 2)])
 #'
 #' ## set up a list of gene set collections
-#' GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+#' GO_BP <- GOGeneSets(species="Hs", ontologies=c("BP"))
 #' PW_KEGG <- KeggGeneSets(species="Hs")
-#' ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
+#' ListGSC <- list(GO_BP=GO_BP, PW_KEGG=PW_KEGG)
 #'
 #' ## create an object of class 'GSCA'
 #' gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
 #'
 #' ## do preprocessing
-#' gsca <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+#' gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
 #'                    duplicateRemoverMethod="max", orderAbsValue=FALSE)
 #'
 #' ## support parallel calculation using doParallel package
 #' doParallel::registerDoParallel(cores=4)
 #'
 #' ## do hypergeometric tests and GSEA
-#' gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH",
+#' gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.05, pAdjustMethod ="BH",
 #'                                 nPermutations=100, minGeneSetSize=200, exponent=1),
 #'                                 doGSOA = TRUE, doGSEA = TRUE)
 #'
-#' ## summarize gsca
-#' summarize(gsca)
-#' head(gsca@@result$GSEA.results$GO_MF)
-#' head(gsca@@result$HyperGeo.results$PW_KEGG)
+#' ## summarize gsca2
+#' summarize(gsca2)
+#' head(gsca2@@result$GSEA.results$GO_BP)
+#' head(gsca2@@result$HyperGeo.results$PW_KEGG)
 
 
 

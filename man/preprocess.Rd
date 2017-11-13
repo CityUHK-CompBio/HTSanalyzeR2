@@ -25,7 +25,7 @@ For example, the commonly used ones are "Dm" ("Drosophila_melanogaster"),
 "Ce" ("Caenorhabditis_elegans"), and etc.}
 
 \item{initialIDs}{A single character value specifying the type of
-initial identifiers for input geneList. The valid terms need match with
+initial identifiers for input 'geneList'. The valid terms need match with
 the keytypes of species db such as keytypes(org.Hs.eg.db).}
 
 \item{keepMultipleMappings}{A single logical value. If TRUE, the function
@@ -100,17 +100,17 @@ ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
 gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
 
 ## do preprocessing
-gsca <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
                    duplicateRemoverMethod="max", orderAbsValue=FALSE)
 
-## print gsca
-gsca
+## print gsca1
+gsca1
 
 # ===========================================================
 # NWA class
 library(org.Hs.eg.db)
 library(GO.db)
-## load data for enrichment analyses
+## load data for subnetwork analyses
 data(d7)
 pvalues <- d7$neg.p.value
 names(pvalues) <- d7$id
@@ -123,8 +123,8 @@ names(phenotypes) <- d7$id
 nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
 
 ## do preprocessing
-nwa <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
-                  duplicateRemoverMethod="max")
+nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+                   duplicateRemoverMethod="max")
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{duplicateRemover}}, \code{\link[HTSanalyzeR2]{annotationConvertor}}

@@ -53,28 +53,31 @@ names(phenotype) <- d7$id
 hits <-  names(phenotype[which(abs(phenotype) > 2)])
 
 ## set up a list of gene set collections
-GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+GO_BP <- GOGeneSets(species="Hs", ontologies=c("BP"))
 PW_KEGG <- KeggGeneSets(species="Hs")
-ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
+ListGSC <- list(GO_BP=GO_BP, PW_KEGG=PW_KEGG)
 
 ## create an object of class 'GSCA'
 gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
 
 ## do preprocessing
-gsca <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
                    duplicateRemoverMethod="max", orderAbsValue=FALSE)
 
 ## support parallel calculation using doParallel package
 doParallel::registerDoParallel(cores=4)
 
 ## do hypergeometric tests and GSEA
-gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH",
+gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.05, pAdjustMethod ="BH",
                                 nPermutations=100, minGeneSetSize=200, exponent=1),
                                 doGSOA = TRUE, doGSEA = TRUE)
-head(gsca@result$GSEA.results$GO_MF)
+
+## summarize gsca2
+summarize(gsca2)
+head(gsca2@result$GSEA.results$GO_BP)
 
 ## append gene set terms to results
-gsca <- appendGSTerms(gsca, goGSCs=c("GO_MF"), keggGSCs=c("PW_KEGG"), msigdbGSCs=NULL)
-head(gsca@result$GSEA.results$GO_MF)
+gsca3 <- appendGSTerms(gsca2, goGSCs=c("GO_BP"), keggGSCs=c("PW_KEGG"), msigdbGSCs=NULL)
+head(gsca3@result$GSEA.results$GO_BP)
 
 }

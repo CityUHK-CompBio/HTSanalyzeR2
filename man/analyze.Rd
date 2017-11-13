@@ -29,10 +29,10 @@ overrepresentation analysis(hypergeometric test) (when doGSOA=TRUE) or not (when
 \item{doGSEA}{A single logical value specifying to perform gene set
 enrichment analysis (when doGSEA=TRUE) or not (when doGSEA=FALSE).}
 
-\item{fdr}{a single numeric value specifying the false discovery for the scoring of nodes
+\item{fdr}{A single numeric value specifying the false discovery for the scoring of nodes
 (see BioNet::scoreNodes and Dittrich et al., 2008 for details)}
 
-\item{species}{a single character value specifying the species for which the data should be read.}
+\item{species}{A single character value specifying the species for which the data should be read.}
 
 \item{para$pValueCutoff}{A single numeric value specifying the cutoff for adjusted p-values considered
 significant.}
@@ -83,43 +83,68 @@ names(phenotype) <- d7$id
 hits <-  names(phenotype[which(abs(phenotype) > 2)])
 
 ## set up a list of gene set collections
-GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+GO_BP <- GOGeneSets(species="Hs", ontologies=c("BP"))
 PW_KEGG <- KeggGeneSets(species="Hs")
-ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
+ListGSC <- list(GO_BP=GO_BP, PW_KEGG=PW_KEGG)
 
 ## create an object of class 'GSCA'
 gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
 
 ## do preprocessing
-gsca <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
                    duplicateRemoverMethod="max", orderAbsValue=FALSE)
 
 ## support parallel calculation using doParallel package
 doParallel::registerDoParallel(cores=4)
 
 ## do hypergeometric tests and GSEA
-gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH",
+gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.05, pAdjustMethod ="BH",
                                 nPermutations=100, minGeneSetSize=200, exponent=1),
                                 doGSOA = TRUE, doGSEA = TRUE)
 
-## summarize gsca
-summarize(gsca)
-head(gsca@result$GSEA.results$GO_MF)
-head(gsca@result$HyperGeo.results$PW_KEGG)
-# Conducting the preparation steps
-data(xn)
-data(data4enrich)
-# Conducting one sample t-test & compute the p-values
-test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn,annotationColumn="GeneID", alternative="two.sided",tests=c("T-test"))
-library(BioNet)
-pvalues <- BioNet::aggrPvals(test.stats, order=2, plot=FALSE)
-nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
-nwa <- preprocess(nwa, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
-nwa_inter <- interactome(nwa, species="Dm", reportDir="biogrid", genetic=FALSE)
-# Case1: Conducting the network analysis step
-nwa_result <- analyze(nwa_inter, fdr=0.0001, species="Dm")
-# Case2: Conducting the network analysis step(with the interactionMatrix)
-data(nwam)
-nwam_inter <- interactome(nwam, species="Dm", reportDir="biogrid", genetic=FALSE)
-nwam_result <- analyze(nwam_inter, fdr=0.0001, species="Dm")
+## summarize gsca2
+summarize(gsca2)
+head(gsca2@result$GSEA.results$GO_BP)
+head(gsca2@result$HyperGeo.results$PW_KEGG)
+
+# ===========================================================
+# Network Analysis
+library(org.Hs.eg.db)
+library(GO.db)
+## load data for network analyses
+data(d7)
+pvalues <- d7$neg.p.value
+names(pvalues) <- d7$id
+
+## input phenotypes if you want to color nodes by it
+phenotypes <- as.vector(d7$neg.lfc)
+names(phenotypes) <- d7$id
+
+## create an object of class 'NWA' with phenotypes
+nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
+
+## do preprocessing
+nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+                  duplicateRemoverMethod="max")
+
+## create an interactome for nwa by downloading for BioGRID database
+nwa2 <- interactome(nwa1, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
+
+## analyze
+nwa3 <- analyze(nwa2, fdr=0.0001, species="Hs")
+
+}
+\references{
+Aravind Subramanian, Pablo Tamayo, Vamsi K. Mootha, Sayan Mukherjee, Benjamin L. Ebert,
+Michael A. Gillette, Amanda Paulovich, Scott L. Pomeroy, Todd R. Golub, Eric S. Lander, and Jill P. Mesirov
+Gene set enrichment analysis: A knowledge-based approach for interpreting genome-wide expression profiles
+PNAS 2005 102 (43) 15545-15550; published ahead of print September 30, 2005, doi:10.1073/pnas.0506580102
+
+Beisser D, Klau GW, Dandekar T, Muller T, Dittrich MT. BioNet: an R-Package
+for the functional analysis of biological networks. Bioinformatics.
+2010 Apr 15;26(8):1129-30.
+
+Dittrich MT, Klau GW, Rosenwald A., Dandekar T and Muller T. Identifying functional modules
+in protein-protein interaction networks: an integrated exact approach. Bioinformatics
+2008 24(13):i223-i231.
 }
