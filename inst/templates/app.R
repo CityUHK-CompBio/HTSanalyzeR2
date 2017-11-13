@@ -78,7 +78,7 @@ trim_result <- function(result, digits = 3) {
 }
 
 create_data_table <- function(gscaObj, analysis, genesets) {
-  jsRender <- JS("function(data, type, row, meta) { return type === 'display' && Number(data) == 0 ? '<0.0001' : data }")
+  jsRender <- JS("function(data, type, row, meta) { return type === 'display' && Number(data) == 0 ? '<1e-4' : data }")
   jsCallback <- JS("table.page(0).draw(false)")
 
   analysis_to_show <- ifelse(analysis == "Significant in both", "Sig.adj.pvals.in.both", paste0(analysis, ".results"))
