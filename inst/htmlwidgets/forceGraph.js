@@ -591,12 +591,13 @@ HTMLWidgets.widget(fg = {
 
             // Target
             fg.store.currentTab = el;
-            var state = fg.getElementState(el);
-            if(state.hasOwnProperty("supervisor")) {
-                var config = fg.getConfig(state);
-                fg.build(state, config);
-                fg.initPlugins(state);
-            }
+        }
+
+        var state = fg.getElementState(el);
+        if(state.hasOwnProperty("supervisor")) {
+            var config = fg.getConfig(state);
+            fg.build(state, config);
+            fg.initPlugins(state);
         }
     },
 

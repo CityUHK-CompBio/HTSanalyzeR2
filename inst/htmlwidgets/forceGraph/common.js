@@ -106,6 +106,7 @@ var initReportFramework = function() {
 
   // Active first tab
   var tabId = $('section.sidebar ul.sidebar-menu li a:first-child').attr("href");
+  tabId = tabId.substring(tabId.lastIndexOf('#'));
   $(".tab-content .tab-pane" + tabId).addClass("active");
 
   // Add Listeners
@@ -117,6 +118,7 @@ var initReportFramework = function() {
   $('section.sidebar ul.sidebar-menu li').click(function(ev) {
     $(".tab-content .tab-pane.active").removeClass("active");
     var tabId = $("a", ev.currentTarget).attr("href");
+    tabId = tabId.substring(tabId.lastIndexOf('#'));
     $(".tab-content .tab-pane" + tabId).addClass("active");
 
     $('li.messages-menu').css("display", tabId == "#shiny-tab-table_tab" ? "none" : "block");
@@ -145,6 +147,3 @@ var initReportFramework = function() {
 $(function() {
   initReportFramework();
 });
-
-
-
