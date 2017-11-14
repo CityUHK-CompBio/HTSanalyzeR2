@@ -5,6 +5,8 @@ library(dplyr)
 library(DT)
 library(colourpicker)
 library(HTSanalyzeR2)
+library(KEGGREST)
+library(data.table)
 
 ## ============================================ Loading results ============================================
 ## results: list(gsca = gsca, nwa = nwa)
