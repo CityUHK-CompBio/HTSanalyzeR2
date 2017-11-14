@@ -5,7 +5,7 @@ dependencies:
     script: 
       - common.js
       - settings.js
-      - linkurious/sigma.min.js
-      - linkurious/plugins.min.js
+      - sigma.min.js
+      - plugins.min.js
     stylesheet:
       - common.css
