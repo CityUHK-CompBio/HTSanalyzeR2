@@ -71,8 +71,8 @@ var hex2rgba = function(hex) {
 
 /// Connect forceGraph.js and setting panel.
 var forceGraphObj = null;
-var registerForceGraph = function(global) {
-  forceGraphObj = global;
+var registerForceGraph = function(fg) {
+  forceGraphObj = fg;
 }
 
 var tabSwitched = function(tabId) {
