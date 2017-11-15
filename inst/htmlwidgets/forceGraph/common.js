@@ -111,6 +111,7 @@ var initReportFramework = function() {
   $('li.messages-menu').css("display", tabId == "#shiny-tab-table_tab" ? "none" : "block");
 
   // Add Listeners
+  $('li.messages-menu a').removeAttr("href");
   $('li.messages-menu').click(function (ev) {
     ev.stopPropagation();
     $('#settingBar').toggleClass('active');
