@@ -2,22 +2,38 @@
 % Please edit documentation in R/HTSanalyzeR4MAGeCK.R
 \name{HTSanalyzeR4MAGeCK}
 \alias{HTSanalyzeR4MAGeCK}
-\title{An analysis pipeline for MAGeCK data.}
+\title{An analysis pipeline for CRISPR data preprocessed by MAGeCK}
 \usage{
-HTSanalyzeR4MAGeCK(file, selectDirection = "negative", doGSOA = FALSE,
-  doGSEA = TRUE, hitsCutoffLogFC = NULL, hitsCutoffPval = NULL,
-  listOfGeneSetCollections, species = "Hs", initialIDs = "SYMBOL",
-  keepMultipleMappings = TRUE, duplicateRemoverMethod = "max",
-  orderAbsValue = FALSE, pValueCutoff = 0.05, pAdjustMethod = "BH",
-  nPermutations = 1000, minGeneSetSize = 15, exponent = 1,
-  verbose = TRUE, keggGSCs = NULL, goGSCs = NULL, msigdbGSCs = NULL,
-  interactionMatrix = NULL, reportDir = "HTSanalyzerReport",
-  nwAnalysisGenetic = FALSE, nwAnalysisFdr = 0.001)
+HTSanalyzeR4MAGeCK <- function(MAGeCKdata,
+                               selectDirection = "negative",
+                               doGSOA = FALSE,
+                               doGSEA = TRUE,
+                               hitsCutoffLogFC = NULL,
+                               hitsCutoffPval = NULL,
+                               listOfGeneSetCollections,
+                               species = "Hs",
+                               initialIDs = "SYMBOL",
+                               keepMultipleMappings = TRUE,
+                               duplicateRemoverMethod = "max",
+                               orderAbsValue = FALSE,
+                               pValueCutoff = 0.05,
+                               pAdjustMethod = "BH",
+                               nPermutations = 1000,
+                               minGeneSetSize = 15,
+                               exponent = 1,
+                               verbose  = TRUE,
+                               keggGSCs = NULL,
+                               goGSCs = NULL,
+                               msigdbGSCs = NULL,
+                               interactionMatrix = NULL,
+                               reportDir = "HTSanalyzerReport",
+                               nwAnalysisGenetic = FALSE,
+                               nwAnalysisFdr = 0.001)
 }
 \arguments{
-\item{file}{A result file for CRISPR data using MAGeCK to do preprocessing.}
+\item{MAGeCKdata}{A result file for CRISPR data preprocessed by MAGeCK.}
 
-\item{selectDirection}{A character specifying which direction to choose form MAGeCK result, should either be
+\item{selectDirection}{A character specifying which direction to choose from MAGeCK result, should either be
 'positive' or 'negative'.}
 
 \item{doGSOA}{A logic value specifying whether to do hypergeometric test or not, default is FALSE.}
@@ -52,45 +68,78 @@ to remove the duplicates. See duplicateRemover for details.}
 should be converted to absolute values and then ordered (if TRUE), or
 ordered as they are (if FALSE).}
 
-\item{pValueCutoff}{a single numeric value specifying the cutoff for p-values considered
-significant in gene set collection analysis}
+\item{pValueCutoff}{A single numeric value specifying the cutoff for p-values considered
+significant in gene set collection analysis.}
 
-\item{pAdjustMethod}{a single character value specifying the p-value adjustment method to be used
-(see 'p.adjust' for details) in gene set collection analysis}
+\item{pAdjustMethod}{A single character value specifying the p-value adjustment method to be used
+(see 'p.adjust' for details) in gene set collection analysis.}
 
-\item{nPermutations}{a single integer or numeric value specifying the number of permutations for
-deriving p-values in GSEA}
+\item{nPermutations}{A single integer or numeric value specifying the number of permutations for
+deriving p-values in GSEA.}
 
-\item{minGeneSetSize}{a single integer or numeric value specifying the minimum number of elements
-in a gene set that must map to elements of the gene universe. Gene sets with
-fewer than this number are removed from both hypergeometric analysis and GSEA.}
+\item{minGeneSetSize}{A single integer or numeric value specifying the minimum number of elements
+shared by a gene set and the input total genes. Gene sets with fewer than this number are removed
+from both hypergeometric analysis and GSEA.}
 
-\item{exponent}{a single integer or numeric value used in weighting phenotypes in GSEA.}
+\item{exponent}{A single integer or numeric value used in weighting phenotypes in GSEA.}
 
 \item{verbose}{A single logical value specifying to display detailed messages
 (when verbose=TRUE) or not (when verbose=FALSE)}
 
-\item{keggGSCs}{a character vector of names of all KEGG gene set collections}
+\item{keggGSCs}{A character vector of names of all KEGG gene set collections.}
 
-\item{goGSCs}{a character vector of names of all GO gene set collections}
+\item{goGSCs}{A character vector of names of all GO gene set collections.}
 
-\item{msigdbGSCs}{a character vector of names of all MSigDB gene set collections}
+\item{msigdbGSCs}{A character vector of names of all MSigDB gene set collections.}
 
-\item{interactionMatrix}{an interaction matrix including columns
+\item{interactionMatrix}{An interaction matrix including columns
 'InteractionType', 'InteractorA' and 'InteractorB'. If this matrix
 is available, the interactome can be directly built based on it.}
 
-\item{reportDir}{reportDir a single character value specifying the directory to store reports. For default
-the enrichment analysis reports will be stored in the directory called "GSCAReport".}
+\item{reportDir}{A single character value specifying the directory to store reports. For default
+the enrichment analysis reports will be stored in the directory called "HTSanalyzerReport".}
 
-\item{nwAnalysisGenetic}{a single logical value. If TRUE, genetic interactions
+\item{nwAnalysisGenetic}{A single logical value. If TRUE, genetic interactions
 will be kept; otherwise, they will be removed from the data set.}
 
-\item{nwAnalysisFdr}{a single numeric value specifying the false discovery for the scoring of nodes
+\item{nwAnalysisFdr}{A single numeric value specifying the false discovery for the scoring of nodes
 (see BioNet::scoreNodes and Dittrich et al., 2008 for details)}
 }
+\value{
+This pipeline function will finally generate a shiny report including all
+the results in. All the results would be stored as RData named 'results.RData' under
+a new automatic generated directory. It can be loaded into R by 'readRDS(results.RData)'.
+}
 \description{
-This function writes an html report following a complete analyses of
-a dataset based on the two classes GSCA (Gene Set Collection Analysis) and
+This function writes a shiny report following a complete analyses of
+CRISPR data preprocessed by MAGeCK based on the two classes GSCA (Gene Set Collection Analysis) and
 NWA (NetWork Analysis) of this package.
+}
+\examples{
+data(d7)
+
+library(GO.db)
+library(org.Hs.eg.db)
+library(KEGGREST)
+
+## set up a list of gene set collections
+GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+PW_KEGG <- KeggGeneSets(species="Hs")
+ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
+
+## start analysis
+HTSanalyzeR4MAGeCK(MAGeCKdata = d7,
+                   selectDirection = "negative",
+                   doGSOA = FALSE,
+                   doGSEA = TRUE,
+                   listOfGeneSetCollections = ListGSC,
+                   species = "Hs",
+                   initialIDs = "SYMBOL",
+                   pValueCutoff = 0.05,
+                   nPermutations = 1000,
+                   minGeneSetSize = 200,
+                   keggGSCs=c("PW_KEGG"),
+                   goGSCs = c("GO_MF"),
+                   nwAnalysisFdr = 0.0001)
+
 }

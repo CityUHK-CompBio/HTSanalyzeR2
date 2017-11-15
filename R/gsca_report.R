@@ -75,17 +75,34 @@ setMethod("report", signature = "GSCA",
 #' ## load data
 #' data(gsca, nwa, gscaTS, nwaTS)
 #'
-#' ## report both gsca and nwa
+#' ## Example1: report both gsca and nwa
 #' reportAll(gsca=gsca, nwa=nwa)
 #'
-#' ## report gscaTS
+#' ## Example2: report gscaTS
 #' reportAll(gscaTS)
 #'
-#' ## report nwaTS
-#' reportAll(nwaTS)
+#' ## Example3: report nwaTS
+#' reportAll(nwa = nwaTS)
 #'
-#' ## report both gscaTS and nwaTS
+#' ## Example4: report both gscaTS and nwaTS
 #' reportAll(gscaTS, nwaTS)
+#'
+#' ## Example5: change order for time series data
+#' reportAll(gscaTS, TSOrder = names(gscaTS)[c(3, 1, 2)])
+#' reportAll(nwa = nwaTS, TSOrder = names(nwaTS)[c(3, 2, 1)])
+#'
+#' ## Example6: view specificGeneset enrichment map for gscaTS using reportAll
+#' library(igraph)
+#' ## As told previously, specificGeneset needs to be a subset of all analyzed gene sets
+#' ## which can be roughly gotten by:
+#' tmp <- getTopGeneSets(gscaTS[[1]], resultName = "GSEA.results",
+#'                       gscs=c("GO_BP"), ntop = 20000, allSig = FALSE)
+#' ## In that case, we can define specificGeneset as below:
+#' GO_BP_geneset <- tmp$GO_BP[c(4,2,6,9,12)]
+#' ## the name of specificGenesets also needs to match with the names of tmp
+#' specificGeneset <- list("GO_BP"=GO_BP_geneset)
+#' reportAll(gscaTS, specificGeneset=specificGeneset)
+#'
 reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL, specificGeneset = NULL, reportDir = "AnalysisReport") {
   if(!is.null(gsca) && class(gsca) != "GSCA") {
     if(class(gsca) != "list" || any(sapply(gsca, class) != "GSCA")) {
@@ -109,7 +126,7 @@ reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL, specificGeneset =
     if(!is.null(TSOrder)){
       ## check TSOrder
       if(length(intersect(TSOrder, names(nwa))) < length(names(nwa)) ||
-         length(TSOrder) != length(names(gsca))){
+         length(TSOrder) != length(names(nwa))){
         stop("'TSOrder' is not valid, should be experiment ID in 'expInfor'!\n")
       }else{
         nwa <- nwa[TSOrder]

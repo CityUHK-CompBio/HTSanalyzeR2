@@ -9,32 +9,32 @@ cellHTS2OutputStatTests(cellHTSobject, annotationColumn = "GeneID",
   tests = "T-test")
 }
 \arguments{
-\item{cellHTSobject}{an object of class cellHTS}
+\item{cellHTSobject}{An object of class cellHTS.}
 
-\item{annotationColumn}{a single character value specifying the name of the
+\item{annotationColumn}{A single character value specifying the name of the
 column in the fData(cellHTSobject) data frame from which the feature
-identifiers will be extracted}
+identifiers will be extracted.}
 
-\item{controls}{a single character value specifying the name of the controls
+\item{controls}{A single character value specifying the name of the controls
 to be used as a control population in the two-sample tests (this HAS to be
 corresponding to how these control wells have been annotated in the column
 "controlStatus" of the fData(cellHTSobject) data frame). If nothing is
 specified, the function will look for negative controls labelled "neg".}
 
-\item{alternative}{a single character value specifying the alternative
-hypothesis: "two.sided", "less" or "greater"}
+\item{alternative}{A single character value specifying the alternative
+hypothesis: "two.sided", "less" or "greater".}
 
-\item{logged}{a single logical value specifying whether or not the data has
-been logged during the normalization process}
+\item{logged}{A single logical value specifying whether or not the data has
+been logged during the normalization process.}
 
-\item{tests}{a single character value specifying the tests to be performed:
+\item{tests}{A single character value specifying the tests to be performed:
 "T-test", "MannWhitney" or "RankProduct". If nothing is specified, all three
 tests will be performed. Be aware that the Rank Product test is slower than
 the other two, and returns a percent false discovery (equivalent to a FDR,
 not a p-value).}
 }
 \value{
-a matrix with two columns, one for each type of test (two-sample and
+A matrix with two columns, one for each type of test (two-sample and
 one-sample test) except the Rank Product (no alternative), and a row for each
 construct (row names corresponding to the identifiers given by the
 "annotationcolumn" entry).
