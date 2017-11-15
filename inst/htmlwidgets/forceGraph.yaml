@@ -2,7 +2,8 @@ dependencies:
   - name: forceGraph
     version: 0.1.0.9
     src: "htmlwidgets/forceGraph"
-    script: 
+    script:
+      - jquery.min.js
       - common.js
       - settings.js
       - sigma.min.js
