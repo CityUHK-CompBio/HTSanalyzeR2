@@ -1,3 +1,6 @@
+if(jQueryLoaded) {
+  $.noConflict(true);
+}
 
 renderPalette = function(canvas, palette) {
     // width should be 100, height should be 1

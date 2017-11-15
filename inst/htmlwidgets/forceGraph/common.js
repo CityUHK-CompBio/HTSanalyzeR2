@@ -143,7 +143,7 @@ var initReportFramework = function() {
 
 }
 
-
-$(function() {
-  initReportFramework();
-});
+var jQueryLoaded = (typeof $ != 'undefined')
+if(jQueryLoaded) {
+  $(function() { initReportFramework() });
+}

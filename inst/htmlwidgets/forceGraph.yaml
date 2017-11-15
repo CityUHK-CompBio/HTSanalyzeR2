@@ -3,8 +3,8 @@ dependencies:
     version: 0.1.0.9
     src: "htmlwidgets/forceGraph"
     script:
-      - jquery.min.js
       - common.js
+      - jquery.min.js
       - settings.js
       - sigma.min.js
       - plugins.min.js
