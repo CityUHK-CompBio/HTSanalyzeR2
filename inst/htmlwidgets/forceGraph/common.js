@@ -108,6 +108,7 @@ var initReportFramework = function() {
   var tabId = $('section.sidebar ul.sidebar-menu li a:first-child').attr("href");
   tabId = tabId.substring(tabId.lastIndexOf('#'));
   $(".tab-content .tab-pane" + tabId).addClass("active");
+  $('li.messages-menu').css("display", tabId == "#shiny-tab-table_tab" ? "none" : "block");
 
   // Add Listeners
   $('li.messages-menu').click(function (ev) {
