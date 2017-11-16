@@ -148,13 +148,13 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust
   ##    png(file.path(filepath, paste("gsea_plots", filename, ".png", sep="")))
   ##set the graphical parameters
   def.par <- par(no.readonly = TRUE)
-  gsea.layout <- layout(matrix(c(1, 2, 3)), heights = c(0.5,0.2,0.1))
+  gsea.layout <- layout(matrix(c(1, 2, 3)), heights = c(0.9,0.3,0.1))
   # layout.show(gsea.layout)
   par(mai=c(0, 1, 0.5, 0.2))
   ##Plot the running score and add a vertical line at the position of
   ##the enrichment score (maximal absolute value of the running score)
   plot(x=c(1:length(runningScore)), y=runningScore, type="l", ylab="Enrichment score(ES)", lwd=3, col="green",
-       cex.lab = 1.5, bg = "aliceblue", xaxt = "n", las = 1)
+       cex.lab = 1.2, bg = "aliceblue", xaxt = "n", las = 1)
   grid(NULL, NULL, lwd = 1)
   abline(h=0, lty = 2)
 
