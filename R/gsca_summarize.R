@@ -129,7 +129,7 @@ setMethod("getTopGeneSets", signature = "GSCA",
             paraCheck("Summarize", "resultName", resultName)
 
             if (!(resultName %in% names(object@result)))
-              stop("Please input 'HyperGeo.results' or 'GSEA.results'!\n")
+              stop("Please input 'HyperGeo.res ults' or 'GSEA.results'!\n")
             if (is.null(object@result[[resultName]]))
               stop("Please run Hypergeometric or GSEA analysis before using this function!\n")
             gsc.names <- names(object@result[[resultName]])
@@ -153,10 +153,10 @@ setMethod("getTopGeneSets", signature = "GSCA",
                 if (ntop > nrow(object@result[[resultName]][[gsc]])) {
                   # stop("'ntop' is larger than the number of gene sets in specified gene set collection!\n")
                   warning("'ntop' is larger than the number of gene sets in specified gene set collection!\n")
-                  ntop <- nrow(object@result[[resultName]][[gsc]])
+                  this.ntop <- nrow(object@result[[resultName]][[gsc]])
                 }
-                if (ntop > 0)
-                  gs.names <- all.gs.names[1:ntop]
+                if (this.ntop > 0)
+                  gs.names <- all.gs.names[1:this.ntop]
                 else
                   gs.names <- character(0)
               }
