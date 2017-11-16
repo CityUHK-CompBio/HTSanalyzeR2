@@ -97,6 +97,7 @@ setMethod("viewSubNet", signature = "NWA",
 
             options$nodeScheme = "dual"
             defaultOptions = list(type = "NWA")
+            defaultOptions$label = list(text = "term")
             graphOptions <- modifyList(defaultOptions, options)
 
             forceGraph(em_nodes, em_links, nMappings, lMappings, graphOptions, seriesData = series)
