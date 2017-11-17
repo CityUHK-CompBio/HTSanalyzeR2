@@ -154,9 +154,10 @@ setMethod("getTopGeneSets", signature = "GSCA",
                   # stop("'ntop' is larger than the number of gene sets in specified gene set collection!\n")
                   warning("'ntop' is larger than the number of gene sets in specified gene set collection!\n")
                   this.ntop <- nrow(object@result[[resultName]][[gsc]])
-                }
-                if (this.ntop > 0)
                   gs.names <- all.gs.names[1:this.ntop]
+                } else
+                if (ntop > 0)
+                  gs.names <- all.gs.names[1:ntop]
                 else
                   gs.names <- character(0)
               }
