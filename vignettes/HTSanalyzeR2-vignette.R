@@ -10,7 +10,7 @@ library(igraph)
 library(Homo.sapiens)
 
 ## --------------------------------------------------------------------------
-data(GSE33113.limma)  
+data(GSE33113.limma)
 phenotype <- as.vector(GSE33113.limma$logFC)
 names(phenotype) <- rownames(GSE33113.limma)
 
@@ -90,7 +90,7 @@ names(pvalues) <- rownames(GSE33113.limma)
 nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotype)
 
 ## ---- results='hide', message=FALSE----------------------------------------
-nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", 
+nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL",
                    keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
 
 ## ---- message=FALSE, results='hide'----------------------------------------
