@@ -3,6 +3,7 @@
 \docType{methods}
 \name{preprocess,GSCA-method}
 \alias{preprocess,GSCA-method}
+\alias{preprocess}
 \alias{preprocess,NWA-method}
 \title{A preprocessing method for objects of class GSCA or NWA}
 \usage{
@@ -15,7 +16,7 @@
   keepMultipleMappings = TRUE, verbose = TRUE)
 }
 \arguments{
-\item{object}{A \code{\link[HTSanalyzeR2:GSCA]{GSCA}} or \code{\link[HTSanalyzeR2:NWA]{NWA}} object.}
+\item{object}{A \code{\link[HTSanalyzeR2]{GSCA-class}} or \code{\link[HTSanalyzeR2]{NWA-class}} object.}
 
 \item{species}{A single character value specifying the species of the input.
 It supports all the species of OrgDb objects in AnnotationDbi.
@@ -37,18 +38,18 @@ to remove the duplicates. See help(duplicateRemover) for details.}
 
 \item{orderAbsValue}{A single logical value indicating whether the values
 should be converted to absolute values and then ordered (if TRUE), or
-ordered as they are (if FALSE). This argument is only for class \code{\link[HTSanalyzeR2:GSCA]{GSCA}}.}
+ordered as they are (if FALSE). This argument is only for class \code{\link[HTSanalyzeR2]{GSCA-class}}.}
 
 \item{verbose}{A single logical value specifying to display detailed messages
 (when verbose=TRUE) or not (when verbose=FALSE).}
 }
 \value{
 In the end, this function will return an updated object of class
-\code{\link[HTSanalyzeR2:GSCA]{GSCA}} or \code{\link[HTSanalyzeR2:NWA]{NWA}}.
+\code{\link[HTSanalyzeR2]{GSCA-class}} or \code{\link[HTSanalyzeR2]{NWA-class}}.
 }
 \description{
 This is a generic function. When implemented as the S4 method for objects of
-class \code{\link[HTSanalyzeR2:GSCA]{GSCA}} or \code{\link[HTSanalyzeR2:NWA]{NWA}},
+class \code{\link[HTSanalyzeR2]{GSCA-class}} or \code{\link[HTSanalyzeR2]{NWA-class}},
 this function filters out invalid data, removes duplicated
 genes, converts annotations to Entrez identifiers, etc.
 }
@@ -78,6 +79,7 @@ See the function annotationConvertor for more details about how to convert
 annotations.
 }
 \examples{
+\dontrun{
 # ===========================================================
 # GSCA class
 library(org.Hs.eg.db)
@@ -105,7 +107,8 @@ gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMapping
 
 ## print gsca1
 gsca1
-
+}
+\dontrun{
 # ===========================================================
 # NWA class
 library(org.Hs.eg.db)
@@ -125,6 +128,7 @@ nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
 ## do preprocessing
 nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
                    duplicateRemoverMethod="max")
+}
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{duplicateRemover}}, \code{\link[HTSanalyzeR2]{annotationConvertor}}

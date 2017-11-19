@@ -42,6 +42,7 @@ for which no mapping were found will be removed. This function can
 also take a matrix, with gene identifiers as row names.
 }
 \examples{
+\dontrun{
 library(org.Dm.eg.db)
 ## Example1: convert a named vector
 x <- runif(10)
@@ -54,5 +55,5 @@ x <- cbind(runif(10),runif(10))
 rownames(x) <- names(as.list(org.Dm.egSYMBOL2EG))[1:10]
 xEntrez <- annotationConvertor(geneList=x, species="Dm", initialIDs="SYMBOL",
                                finalIDs="ENTREZID")
-
+}
 }

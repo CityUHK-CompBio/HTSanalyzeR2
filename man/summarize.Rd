@@ -3,6 +3,7 @@
 \docType{methods}
 \name{summarize,GSCA-method}
 \alias{summarize,GSCA-method}
+\alias{summarize}
 \alias{summarize,NWA-method}
 \title{Print summary information for an object of class GSCA or NWA}
 \usage{
@@ -36,6 +37,7 @@ and 'ALL' (all slots).
 }}
 
 \examples{
+\dontrun{
 # =================================================================
 # GSCA class
 ## load a GSCA object(see the examples of analyze GSCA for details)
@@ -44,7 +46,8 @@ data(gsca)
 ## summarize gsca
 summarize(gsca, what = "ALL")
 summarize(gsca, what = "Result")
-
+}
+\dontrun{
 # =================================================================
 # NWA class
 ## load a NWA object(see the examples of analyze NWA for details)
@@ -53,4 +56,5 @@ data(nwa)
 ## summarize nwa
 summarize(nwa, what = "ALL")
 summarize(nwa, what = "Result")
+}
 }

@@ -116,6 +116,7 @@ CRISPR data preprocessed by MAGeCK based on the two classes GSCA (Gene Set Colle
 NWA (NetWork Analysis) of this package.
 }
 \examples{
+\dontrun{
 data(d7)
 
 library(GO.db)
@@ -141,5 +142,5 @@ HTSanalyzeR4MAGeCK(MAGeCKdata = d7,
                    keggGSCs=c("PW_KEGG"),
                    goGSCs = c("GO_MF"),
                    nwAnalysisFdr = 0.0001)
-
+}
 }

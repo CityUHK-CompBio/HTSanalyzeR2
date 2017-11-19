@@ -16,18 +16,23 @@ Imports:
     Rcpp,
     doParallel,
     foreach,
-    AnnotationDbi,
     stringr,
     igraph,
     GSEABase,
     dygraphs,
     BioNet,
     DT,
-    knitr,
     dplyr,
     shiny,
     shinydashboard,
-    colourpicker
+    colourpicker,
+    KEGGREST,
+    data.table,
+    htmlwidgets,
+    methods,
+    RankProd,
+    htmltools,
+    AnnotationDbi
 Collate: 
     'utils.R'
     'class_union.R'
@@ -36,6 +41,7 @@ Collate:
     'HTSanalyzeR4MAGeCK.R'
     'RcppExports.R'
     'd3plot.R'
+    'data.R'
     'gscaTS.R'
     'gsca_class.R'
     'gsca_analyze.R'
@@ -55,9 +61,14 @@ Collate:
     'stat_test.R'
     'zzz.R'
 LinkingTo: Rcpp
-Suggests: 
+Suggests:
     BiocStyle,
-    knitr,
+    GO.db,
     rmarkdown,
-    testthat
+    testthat,
+    knitr,
+    Homo.sapiens,
+    org.Hs.eg.db,
+    org.Dm.eg.db
 VignetteBuilder: knitr
+Depends: R(>= 2.10.0)

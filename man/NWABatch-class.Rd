@@ -3,10 +3,8 @@
 \docType{class}
 \name{NWABatch-class}
 \alias{NWABatch-class}
+\alias{NWABatch}
 \title{An S4 class for Time series data package in NetWork Analysis on high-throughput screens}
-\usage{
-new("NWABatch", expInfor, pvalueTS, phenotypeTS = list(), interactome = NA)
-}
 \description{
 This S4 class packages time-series data for further time series analysis. To put it more clearly,
 it'll finally initialize a list of NWA objects for further analyses.
@@ -28,12 +26,20 @@ identifiers for each time point. Note: the order of each element of this list mu
 \item{\code{interactome}}{An object of class igraph.}
 }}
 
+\section{Objects from the Class}{
+
+Objects of class \code{NWABatch} can be created
+from \code{new("NWABatch", expInfor, pvalueTS, phenotypeTS = list(), interactome = NA)}
+(see the examples below)
+}
+
 \examples{
+\dontrun{
 data(d7, d13, d25)
 
 ## generate expInfor to describe the information of time series data
 expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
-                   byrow = F, dimnames = list(NULL, c("ID", "Description")))
+                   byrow = FALSE, dimnames = list(NULL, c("ID", "Description")))
 
 ## package pvalueTS into a list of pvalues
 datalist <- list(d7, d13, d25)
@@ -53,5 +59,5 @@ nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS =
 
 ## Example2: create an object of class 'NWABatch' without phenotypes
 nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS)
-
+}
 }

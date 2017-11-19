@@ -16,13 +16,15 @@ if (!isGeneric("viewSubNet")) {
 #'
 #' @importFrom igraph V E
 #' @export
+#' @aliases extractSubNet
 #' @examples
+#' \dontrun{
 #' ## load a NWA object(see the examples of analyze NWA for details)
 #' data(nwa)
 #'
 #' ## extract the subnetwork as an igraph object
 #' subnetwork <- extractSubNet(nwa)
-#'
+#' }
 #'
 setMethod("extractSubNet", signature = "NWA",
           function(object) {
@@ -45,6 +47,7 @@ setMethod("extractSubNet", signature = "NWA",
 #' Plot the identified subnetwork of an NWA object
 #'
 #' Plot the identified subnetwork of an NWA object.
+#' @aliases viewSubNet
 #' @param object An NWA object.
 #' @param options A list of options to modify the enrichmentmap. Details are not showed
 #' here due to too many options. Users are highly recommended to modify the enrichment
@@ -53,13 +56,15 @@ setMethod("extractSubNet", signature = "NWA",
 #' the subnetwork of time series data. No need to explicitly set it!
 #' @export
 #' @examples
+#' \dontrun{
 #' ## load a NWA object(see the examples of analyze NWA for details)
 #' data(nwa)
 #'
 #' ## plot the subnetwork
 #' viewSubNet(nwa)
-#'
+#' }
 #' @importFrom igraph as_data_frame
+#' @importFrom utils modifyList
 setMethod("viewSubNet", signature = "NWA",
           function(object,
                    options = list(),

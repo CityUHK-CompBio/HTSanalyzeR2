@@ -10,13 +10,13 @@ if (!isGeneric("report")) {
 #'
 #' When implemented as the method of class GSCA or NWA, this function produces reports for
 #' either the Gene Set Collection Analysis or the NetWork Analysis.
-#'
+#' @aliases report
 #' @param object  An object. When this function is implemented as the S4
 #' method of class 'GSCA' or 'NWA', this argument is an object of class
 #' 'GSCA' or 'NWA'.
 #' @param reportDir A single character value specifying the directory to store reports. For default
 #' the enrichment analysis reports will be stored in the directory called "GSCAReport".
-#' @param specificGeneset A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap}}
+#' @param specificGeneset A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap,GSCA-method}}
 #' for details.
 #'
 #' @details
@@ -29,6 +29,7 @@ if (!isGeneric("report")) {
 #' in many ways such as layout, color, and etc. Details please see the vignette of our package.
 #'
 #' @examples
+#' \dontrun{
 #' # =======================================================
 #' # GSCA class
 #' ## load a GSCA object(see the examples of analyze GSCA for details)
@@ -45,7 +46,7 @@ if (!isGeneric("report")) {
 #' ## the name of specificGenesets also needs to match with the names of tmp
 #' specificGeneset <- list("GO_BP"=GO_BP_geneset)
 #' report(gsca, specificGeneset=specificGeneset)
-#'
+#' }
 #' @rdname report
 #'
 #' @export
@@ -64,7 +65,7 @@ setMethod("report", signature = "GSCA",
 #'@param nwa An NWA object or a list of NWA objects.
 #'@param TSOrder A character specifying the visulization order of 'Time Series' data in shiny report. Only works when
 #'reporting for 'Time Series' data, default is the ID order in 'expInfor'.
-#'@param specificGeneset A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap}}
+#'@param specificGeneset A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap,GSCA-method}}
 #' for details.
 #'@param reportDir A single character value specifying the directory to store reports. For default both the
 #'  enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport".
@@ -72,6 +73,7 @@ setMethod("report", signature = "GSCA",
 #'
 #' @export
 #' @examples
+#' \dontrun{
 #' ## load data
 #' data(gsca, nwa, gscaTS, nwaTS)
 #'
@@ -102,7 +104,7 @@ setMethod("report", signature = "GSCA",
 #' ## the name of specificGenesets also needs to match with the names of tmp
 #' specificGeneset <- list("GO_BP"=GO_BP_geneset)
 #' reportAll(gscaTS, specificGeneset=specificGeneset)
-#'
+#' }
 reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL, specificGeneset = NULL, reportDir = "AnalysisReport") {
   if(!is.null(gsca) && class(gsca) != "GSCA") {
     if(class(gsca) != "list" || any(sapply(gsca, class) != "GSCA")) {
@@ -186,7 +188,7 @@ generateGSCASummary <- function(gsca) {
     ))
   }
   method <- tags$ul(hypgeo, gsea)
-  tagList(title, desc, p1, analysis, p2, method)
+  htmltools::tagList(title, desc, p1, analysis, p2, method)
 }
 
 

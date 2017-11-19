@@ -18,7 +18,7 @@ setGeneric("getTopGeneSets", function(object,
 #' (the slot 'listOfGeneSetCollections'), 'GeneList' (the slot 'geneList'),
 #' 'Hits' (the slot 'hits'), 'Para' (the slot 'para'), 'Result' (the slot
 #' 'result') and 'ALL' (all slots).
-#'
+#' @aliases summarize
 #' @param object A GSCA object or NWA object.
 #' @param what A single character value or a character vector of key words
 #' specifying what to print (see Methods below). Default will print a summary of all
@@ -26,6 +26,7 @@ setGeneric("getTopGeneSets", function(object,
 #'
 #'
 #' @examples
+#' \dontrun{
 #' # =================================================================
 #' # GSCA class
 #' ## load a GSCA object(see the examples of analyze GSCA for details)
@@ -34,6 +35,7 @@ setGeneric("getTopGeneSets", function(object,
 #' ## summarize gsca
 #' summarize(gsca, what = "ALL")
 #' summarize(gsca, what = "Result")
+#' }
 #' @include gsca_class.R
 #' @export
 setMethod("summarize", signature = "GSCA",
@@ -89,7 +91,7 @@ setMethod("summarize", signature = "GSCA",
 #' be selected and their names will be returned.
 #'
 #' @rdname getTopGeneSets
-#'
+#' @aliases getTopGeneSets
 #' @param object A GSCA object.
 #' @param resultName A single character value: 'HyperGeo.results' or
 #' 'GSEA.results'.
@@ -102,6 +104,7 @@ setMethod("summarize", signature = "GSCA",
 #' otherwise, only top 'ntop' gene sets will be selected.
 #'
 #' @examples
+#' \dontrun{
 #' ## load a GSCA object(see the examples of analyze GSCA for details)
 #' data(gsca)
 #'
@@ -111,7 +114,7 @@ setMethod("summarize", signature = "GSCA",
 #'
 #' ## print top significant gene sets in GO_BP and PW_KEGG
 #' topGS <- getTopGeneSets(gsca, "GSEA.results", gscs = c("GO_BP", "PW_KEGG"), allSig=TRUE)
-#'
+#' }
 #' @return A named list of character vectors, each element contains the names of top
 #' significant gene sets for each gene set collection.
 #' @include gsca_class.R

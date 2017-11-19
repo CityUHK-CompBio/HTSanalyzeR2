@@ -6,7 +6,7 @@ if (!isGeneric("report")) {
 
 #' @rdname report
 #' @examples
-#'
+#' \dontrun{
 #' # =================================================================
 #' # NWA class
 #' ## load a NWA object(see the examples of analyze NWA for details)
@@ -14,7 +14,7 @@ if (!isGeneric("report")) {
 #'
 #' ## report nwa
 #' report(nwa)
-#'
+#' }
 #' @export
 setMethod("report",
           "NWA",

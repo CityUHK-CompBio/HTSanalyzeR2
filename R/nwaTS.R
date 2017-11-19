@@ -22,12 +22,12 @@
 #'
 #' @export
 #' @examples
-#'
+#' \dontrun{
 #' data(d7, d13, d25)
 #'
 #' ## generate expInfor to describe the information of time series data
 #' expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
-#'                    byrow = F, dimnames = list(NULL, c("ID", "Description")))
+#'                    byrow = FALSE, dimnames = list(NULL, c("ID", "Description")))
 #'
 #' ## package pvalueTS into a list of pvalues
 #' datalist <- list(d7, d13, d25)
@@ -49,7 +49,7 @@
 #' ## preprocess nwaTS
 #' nwaTS1 <- preprocessNwaTS(nwaTS, species="Hs", initialIDs="SYMBOL",
 #'                          keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
-#'
+#' }
 #'
 preprocessNwaTS <- function(object, species="Hs", initialIDs="SYMBOL",
                             keepMultipleMappings=TRUE, duplicateRemoverMethod="max", verbose = TRUE){
@@ -96,11 +96,12 @@ preprocessNwaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #'
 #' @seealso \code{\link[HTSanalyzeR2]{interactome}}
 #' @examples
+#' \dontrun{
 #' data(d7, d13, d25)
 #'
 #' ## generate expInfor to describe the information of time series data
 #' expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
-#'                    byrow = F, dimnames = list(NULL, c("ID", "Description")))
+#'                    byrow = FALSE, dimnames = list(NULL, c("ID", "Description")))
 #'
 #' ## package pvalueTS into a list of pvalues
 #' datalist <- list(d7, d13, d25)
@@ -137,11 +138,11 @@ preprocessNwaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #'                          keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
 #' ## create an interactome for nwa by downloading for BioGRID database
 #' nwaTS2 <- interactomeNwaTS(nwaTS1, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
-#'
+#' }
 #'
 #' @export
 interactomeNwaTS <- function(nwaList, interactionMatrix = NULL, species,
-                             link = "http://thebiogrid.org/downloads/archives/Release%20Archive/BIOGRID-3.4.138/BIOGRID-ORGANISM-3.4.138.tab2.zip",
+                             link = "http://bit.ly/2jDsTFM",
                              reportDir = "HTSanalyzerReport", genetic = FALSE,
                              force = FALSE, verbose = TRUE){
   paraCheck("nwaTS", "nwaList", nwaList)
@@ -176,11 +177,12 @@ interactomeNwaTS <- function(nwaList, interactionMatrix = NULL, species,
 #'
 #' @export
 #' @examples
+#' \dontrun{
 #' data(d7, d13, d25)
 #'
 #' ## generate expInfor to describe the information of time series data
 #' expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
-#'                    byrow = F, dimnames = list(NULL, c("ID", "Description")))
+#'                    byrow = FALSE, dimnames = list(NULL, c("ID", "Description")))
 #'
 #' ## package pvalueTS into a list of pvalues
 #' datalist <- list(d7, d13, d25)
@@ -208,7 +210,7 @@ interactomeNwaTS <- function(nwaList, interactionMatrix = NULL, species,
 #'
 #' ## analyze
 #' nwaTS3 <- analyzeNwaTS(nwaTS2, fdr=0.0001, species="Hs")
-#'
+#' }
 analyzeNwaTS <- function(nwaList,  fdr = 0.001,
                          species,
                          verbose = TRUE){

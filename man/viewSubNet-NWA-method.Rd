@@ -3,6 +3,7 @@
 \docType{methods}
 \name{viewSubNet,NWA-method}
 \alias{viewSubNet,NWA-method}
+\alias{viewSubNet}
 \title{Plot the identified subnetwork of an NWA object}
 \usage{
 \S4method{viewSubNet}{NWA}(object, options = list(), seriesObjs = NULL)
@@ -21,10 +22,11 @@ the subnetwork of time series data. No need to explicitly set it!}
 Plot the identified subnetwork of an NWA object.
 }
 \examples{
+\dontrun{
 ## load a NWA object(see the examples of analyze NWA for details)
 data(nwa)
 
 ## plot the subnetwork
 viewSubNet(nwa)
-
+}
 }

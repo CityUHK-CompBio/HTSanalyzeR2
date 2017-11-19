@@ -17,7 +17,7 @@ if (!isGeneric("viewEnrichMap"))
 #' inserts a column named "Gene.Set.Term" to each data frame in the GSCA results.
 #'
 #' @rdname appendGSTerms
-#'
+#' @aliases appendGSTerms
 #' @param object A GSCA object.
 #' @param keggGSCs A character vector of names of all KEGG gene set collections.
 #' @param goGSCs A character vector of names of all GO gene set collections.
@@ -40,6 +40,7 @@ if (!isGeneric("viewEnrichMap"))
 #' built-in database in this package.
 #'
 #' @examples
+#' \dontrun{
 #' library(org.Hs.eg.db)
 #' library(GO.db)
 #' library(KEGGREST)
@@ -78,7 +79,7 @@ if (!isGeneric("viewEnrichMap"))
 #' ## append gene set terms to results
 #' gsca3 <- appendGSTerms(gsca2, goGSCs=c("GO_BP"), keggGSCs=c("PW_KEGG"), msigdbGSCs=NULL)
 #' head(gsca3@@result$GSEA.results$GO_BP)
-#'
+#' }
 #' @export
 #'
 setMethod(
@@ -184,7 +185,8 @@ appendMSigDBTerm <- function(df) {
 #' Extract the enrichment map result from GSCA object
 #'
 #' This is a generic function.
-#' @importFrom igraph V graph.adjacency simplify
+#' @aliases extractEnrichMap
+#' @importFrom igraph V graph.adjacency simplify E
 setMethod("extractEnrichMap", signature = "GSCA",
           function(object,
                    resultName = "GSEA.results",
@@ -377,6 +379,7 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #'
 #' @return An object of igraph with all attributes about the enrichement map.
 #' @examples
+#' \dontrun{
 #' ## load a GSCA object(see the examples of 'analyze' GSCA for details)
 #' data(gsca)
 #'
@@ -385,7 +388,8 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #' viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_BP"),
 #'               allSig = F, ntop = 7, gsNameType = "term")
 #'
-#' ## Example2: view an enrichment map for top 7 significant 'GO_BP' and 'PW_KEGG' gene sets of GSEA results
+#' ## Example2: view an enrichment map for top 7 significant 'GO_BP'
+#' ## and 'PW_KEGG' gene sets of GSEA results
 #' library(igraph)
 #' viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_BP", "PW_KEGG"),
 #'               allSig = F, ntop = 7, gsNameType = "term")
@@ -394,7 +398,8 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #' library(igraph)
 #' ## As told previously, specificGeneset needs to be a subset of all analyzed gene sets
 #' ## which can be roughly gotten by:
-#' tmp <- getTopGeneSets(gsca, resultName = "GSEA.results", gscs=c("GO_BP"), ntop = 20000, allSig = FALSE)
+#' tmp <- getTopGeneSets(gsca, resultName = "GSEA.results", gscs=c("GO_BP"),
+#'                       ntop = 20000, allSig = FALSE)
 #' ## In that case, we can define specificGeneset as below:
 #' GO_BP_geneset <- tmp$GO_BP[c(4,2,6,9,12)]
 #' ## the name of specificGenesets also needs to match with the names of tmp
@@ -403,7 +408,8 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #'               ntop = NULL, specificGeneset = specificGeneset)
 #'
 #'
-#' ## Example4: view an enrichment map with specificGenesets in 'GO_BP' and 'PW_KEGG' gene sets of GSEA results
+#' ## Example4: view an enrichment map with specificGenesets in 'GO_BP'
+#' ## and 'PW_KEGG' gene sets of GSEA results
 #' tmp <- getTopGeneSets(gsca, resultName = "GSEA.results", gscs=c("GO_BP", "PW_KEGG"),
 #'                       ntop = 20000, allSig = FALSE)
 #' GO_BP_geneset <- tmp$GO_BP[c(6,3,5,9,12)]
@@ -411,7 +417,7 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #' specificGeneset <- list("GO_BP"=GO_BP_geneset, "PW_KEGG"=PW_KEGG_geneset)
 #' viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_BP", "PW_KEGG"), allSig = F,
 #'               gsNameType = "term", ntop = NULL, specificGeneset = specificGeneset)
-#'
+#' }
 #'
 #' @export
 #' @references
@@ -420,6 +426,8 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #' PLoS ONE5(11): e13984. https://doi.org/10.1371/journal.pone.0013984
 #' @importFrom igraph as_data_frame
 #' @importFrom stringr str_replace
+#' @importFrom utils modifyList
+#' @aliases viewEnrichMap
 setMethod("viewEnrichMap", signature = "GSCA",
           function(object,
                    resultName = "GSEA.results",

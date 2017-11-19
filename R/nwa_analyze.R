@@ -22,7 +22,7 @@ if (!isGeneric("analyze")) {
 #' in protein-protein interaction networks: an integrated exact approach. Bioinformatics
 #' 2008 24(13):i223-i231.
 #' @examples
-#'
+#' \dontrun{
 #' # ===========================================================
 #' # Network Analysis
 #' library(org.Hs.eg.db)
@@ -48,7 +48,7 @@ if (!isGeneric("analyze")) {
 #'
 #' ## analyze
 #' nwa3 <- analyze(nwa2, fdr=0.0001, species="Hs")
-#'
+#' }
 #' @export
 #' @include nwa_class.R gsca_preprocess.R
 #' @importFrom igraph vertex_attr vcount ecount
@@ -137,6 +137,7 @@ setMethod("analyze",
 #' @return A subnetwork module of class igraph.
 #' @export
 #' @examples
+#' \dontrun{
 #' library(org.Hs.eg.db)
 #' library(GO.db)
 #' ## load data for subnetwork analyses
@@ -153,7 +154,7 @@ setMethod("analyze",
 #' ##identify subnetworks
 #' enrichedSubNet <- networkAnalysis(pvalues=pvalues, graph=Biogrid_HS_Interactome,
 #'                                   fdr = 0.001, verbose = TRUE)
-#'
+#' }
 #' @importFrom BioNet fitBumModel scoreNodes runFastHeinz
 #' @importFrom igraph vertex_attr vcount
 #'

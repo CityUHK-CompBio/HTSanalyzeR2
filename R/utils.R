@@ -14,6 +14,7 @@ namesToList <- function(x) {
 }
 
 ## This is the central function for argument checking
+#' @importFrom methods is
 paraCheck <- function(group, paraName, para) {
   switch(group,
          LoadGeneSets = {
@@ -275,13 +276,13 @@ paraCheck <- function(group, paraName, para) {
            if (paraName == "normCellHTSobject") {
              if (!is(para,"cellHTS"))
                stop("The argument 'cellHTSobject/normCellHTSobject' should be a cellHTS object")
-             if (!state(para)["configured"])
+             if (!cellHTS2::state(para)["configured"])
                stop("The cellHTS object should be configured to perform the statistical tests")
-             if (!state(para)["normalized"])
+             if (!cellHTS2::state(para)["normalized"])
                warning("Your cellHTS object has not been normalized, this could impact the results of these tests", immediate.=TRUE)
-             if (state(para)["scored"])
+             if (cellHTS2::state(para)["scored"])
                stop("This cellHTS object has been scored; the statistical analysis should be performed on the normalized signal intensities", immediate.=TRUE)
-             if (!state(para)["annotated"])
+             if (!cellHTS2::state(para)["annotated"])
                stop("This cellHTS object has not been annotated",immediate.=TRUE)
            }
            if (paraName == "annotationColumn") {

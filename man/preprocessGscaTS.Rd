@@ -43,11 +43,12 @@ In the end, this function will return an updated list of GSCA object.
 This function will do basic preprocessing for each GSCA object of 'GSCABatch'.
 }
 \examples{
+\dontrun{
 data(d7, d13, d25)
 
 ## generate expInfor to describe the information of time series data
 expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
-                   byrow = F, dimnames = list(NULL, c("ID", "Description")))
+                   byrow = FALSE, dimnames = list(NULL, c("ID", "Description")))
 
 ## package phenotypeTS into a list of phenotypes
 datalist <- list(d7, d13, d25)
@@ -57,6 +58,8 @@ phenotypeTS <- lapply(datalist, function(x) {
                       tmp})
 
 ## set up a list of gene set collections
+library(org.Hs.eg.db)
+library(GO.db)
 GO_BP <- GOGeneSets(species="Hs", ontologies=c("BP"))
 ListGSC <- list(GO_BP=GO_BP)
 
@@ -74,7 +77,7 @@ gscaTS1 <- preprocessGscaTS(gscaTS, species="Hs", initialIDs="SYMBOL",
                            keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
                            orderAbsValue=FALSE)
 gscaTS1
-
+}
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{preprocess}}

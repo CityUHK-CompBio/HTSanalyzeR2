@@ -24,7 +24,9 @@ It is collection-specific, and returns a list of gene sets collection with
 the elements of the gene sets represented by Entrez Gene IDs.
 }
 \examples{
+\dontrun{
 H_MSig <- MSigDBGeneSets(collection = "h")
+}
 
 }
 \seealso{

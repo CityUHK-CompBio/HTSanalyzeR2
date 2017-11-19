@@ -2,7 +2,12 @@
 #'
 #' This class includes a series of methods to do network analysis for
 #' high-throughput data.
+#' @section Objects from the Class:
+#' Objects of class \code{NWA} can be created
+#' from \code{new("NWA", pvalues, phenotypes = numeric(), interactome = NA)}
+#' (see the examples below)
 #' @include class_union.R utils.R
+#' @aliases NWA
 #' @slot pvalues A numeric or integer vector of pvalues named by gene identifiers.
 #' @slot phenotypes A numeric or integer vector of phenotypes named by gene identifiers.
 #' When it is available, nodes in identified subnetwork would be coloured by it
@@ -15,7 +20,6 @@
 #' interactome and result.
 #' @slot preprocessed A logical value specifying whether or not input data
 #' has been preprocessed.
-#' @usage new("NWA", pvalues, phenotypes = numeric(), interactome = NA)
 #'
 #' @seealso \code{\link[HTSanalyzeR2]{preprocess}},
 #'  \code{\link[HTSanalyzeR2]{analyze}},
@@ -23,6 +27,7 @@
 #'    \code{\link[HTSanalyzeR2]{interactome}},
 #'     \code{\link[HTSanalyzeR2]{report}}
 #' @examples
+#' \dontrun{
 #' library(org.Hs.eg.db)
 #' library(GO.db)
 #' ## load data for network analyses
@@ -39,7 +44,7 @@
 #'
 #' ## Example2: create an object of class 'NWA' without phenotypes
 #' nwa <- new("NWA", pvalues=pvalues)
-#'
+#' }
 #' @export
 setClass(
   Class = "NWA",

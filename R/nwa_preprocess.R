@@ -10,6 +10,7 @@ if (!isGeneric("interactome")) {
 
 #' @rdname preprocess
 #' @examples
+#' \dontrun{
 #' # ===========================================================
 #' # NWA class
 #' library(org.Hs.eg.db)
@@ -29,6 +30,7 @@ if (!isGeneric("interactome")) {
 #' ## do preprocessing
 #' nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
 #'                    duplicateRemoverMethod="max")
+#' }
 #' @export
 #' @include nwa_class.R
 setMethod("preprocess", signature = "NWA",
@@ -132,6 +134,7 @@ setMethod("preprocess", signature = "NWA",
 #' When implemented as the S4 method of class NWA, this function creates an
 #' interactome before conducting network analysis.
 #'
+#' @aliases interactome
 #' @rdname interactome
 #' @param object An NWA object.
 #' @param interactionMatrix An interaction matrix including columns
@@ -161,6 +164,7 @@ setMethod("preprocess", signature = "NWA",
 #' Another way to set up the interactome is to input an igraph object when the NWA object
 #' is created (i.e. nwa=new("NWA", pvalues, phenotypes, interactome)).
 #' @examples
+#' \dontrun{
 #' library(org.Hs.eg.db)
 #' library(GO.db)
 #' ## load data for subnetwork analyses
@@ -187,7 +191,7 @@ setMethod("preprocess", signature = "NWA",
 #' nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
 #' ## create an interactome for nwa by downloading for BioGRID database
 #' nwa1 <- interactome(nwa, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
-#'
+#' }
 #' @export
 #' @importFrom BioNet makeNetwork
 #' @importFrom igraph vcount ecount
@@ -195,7 +199,7 @@ setMethod(
   "interactome",
   signature = "NWA",
   function(object, interactionMatrix = NULL, species,
-           link = "http://thebiogrid.org/downloads/archives/Release%20Archive/BIOGRID-3.4.138/BIOGRID-ORGANISM-3.4.138.tab2.zip",
+           link = "http://bit.ly/2jDsTFM",
            reportDir = "HTSanalyzerReport", genetic = FALSE,
            force = FALSE, verbose = TRUE) {
     ## check arguments
@@ -261,13 +265,14 @@ setMethod(
 # user-specified folder and extracts the interactions data for a given
 # species.
 #' @importFrom data.table fread
+#' @importFrom utils download.file unzip
 biogridDataDownload <- function(link, species = "Hs", dataDirectory = ".",
                                 force = FALSE, verbose = TRUE) {
   ## check arguments
   if(!missing(link) && !is.null(link))
     paraCheck("PreProcess", "link", link)
   else
-    link <- "http://thebiogrid.org/downloads/archives/Release%20Archive/BIOGRID-3.4.138/BIOGRID-ORGANISM-3.4.138.tab2.zip"
+    link <- "http://bit.ly/2jDsTFM"
   paraCheck("LoadGeneSets", "species", species)
   paraCheck("PreProcess", "dataDirectory", dataDirectory)
   paraCheck("General", "verbose", verbose)

@@ -46,6 +46,8 @@
 #' RNAi screens. Genome Biology 7:7 R66 (2006)."
 #'
 #' @export
+#' @importFrom cellHTS2 Data
+#' @importFrom stats median t.test wilcox.test
 cellHTS2OutputStatTests <- function(cellHTSobject,
                                     annotationColumn = "GeneID",
                                     controls = "neg",
@@ -178,7 +180,7 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
     })
     rownames(replicatesmatrix) <- names(replicates)
     #Compute the Rank Product test
-    rankptest <- RP(data = replicatesmatrix,
+    rankptest <- RankProd::RP(data = replicatesmatrix,
                     cl=rep(1, ncol(replicatesmatrix)), logged=logged,
                     gene.names = rownames(replicatesmatrix))
   }

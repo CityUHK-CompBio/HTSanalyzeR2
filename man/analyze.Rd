@@ -3,6 +3,7 @@
 \docType{methods}
 \name{analyze,GSCA-method}
 \alias{analyze,GSCA-method}
+\alias{analyze}
 \alias{analyze,NWA-method}
 \title{Gene Set Collection Analysis or NetWork Analysis}
 \usage{
@@ -69,6 +70,7 @@ slot summary of class NWA.
 }}
 
 \examples{
+\dontrun{
 # ====================================================
 # Gene Set Collection Analysis Part
 library(org.Hs.eg.db)
@@ -106,7 +108,8 @@ gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.05, pAdjustMethod ="BH",
 summarize(gsca2)
 head(gsca2@result$GSEA.results$GO_BP)
 head(gsca2@result$HyperGeo.results$PW_KEGG)
-
+}
+\dontrun{
 # ===========================================================
 # Network Analysis
 library(org.Hs.eg.db)
@@ -132,7 +135,7 @@ nwa2 <- interactome(nwa1, species="Hs", reportDir="HTSanalyzerReport", genetic=F
 
 ## analyze
 nwa3 <- analyze(nwa2, fdr=0.0001, species="Hs")
-
+}
 }
 \references{
 Aravind Subramanian, Pablo Tamayo, Vamsi K. Mootha, Sayan Mukherjee, Benjamin L. Ebert,

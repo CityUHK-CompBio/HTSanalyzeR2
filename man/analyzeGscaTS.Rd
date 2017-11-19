@@ -34,11 +34,12 @@ analyzeGeneSetCollections in slot result, and update information about
 these results to slot summary of class GSCA.
 }
 \examples{
+\dontrun{
 data(d7, d13, d25)
 
 ## generate expInfor to describe the information of time series data
 expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
-                   byrow = F, dimnames = list(NULL, c("ID", "Description")))
+                   byrow = FALSE, dimnames = list(NULL, c("ID", "Description")))
 
 ## package phenotypeTS into a list of phenotypes
 datalist <- list(d7, d13, d25)
@@ -48,6 +49,8 @@ phenotypeTS <- lapply(datalist, function(x) {
                       tmp})
 
 ## set up a list of gene set collections
+library(org.Hs.eg.db)
+library(GO.db)
 GO_BP <- GOGeneSets(species="Hs", ontologies=c("BP"))
 ListGSC <- list(GO_BP=GO_BP)
 
@@ -73,7 +76,7 @@ gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05, pAdjustMethod="BH
                         nPermutations=100, minGeneSetSize=200,
                         exponent=1), doGSOA = TRUE, doGSEA = TRUE)
 head(gscaTS2[[1]]@result$GSEA.results$GO_BP, 3)
-
+}
 
 
 }

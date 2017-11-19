@@ -27,7 +27,7 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 ```
 
 # An overview of HTSanalyzeR2
@@ -127,7 +127,7 @@ During the enrichment analysis of gene sets, the function evaluates the statisti
 
 ```{r, results='hide', message=FALSE}
 ## analyze using multiple cores
-doParallel::registerDoParallel(cores=10)
+doParallel::registerDoParallel(cores=2)
 gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
                                   nPermutations=100, minGeneSetSize=180,
                                   exponent=1), doGSOA = T, doGSEA = T)
@@ -330,7 +330,7 @@ gscaTS1 <- preprocessGscaTS(gscaTS, species="Hs", initialIDs="SYMBOL",
 After get a list of preprocessed 'GSCA' object, you can use *analyzeGscaTS* to perform hypergeometric test as well as GSEA on it. The parameters here is the same as single data set. Similarly, to speed up you can use multiple cores via *doParallel* package. This step would return a list of analyzed 'GSCA' object.
 
 ```{r, results='hide', message=FALSE}
-doParallel::registerDoParallel(cores=10)
+doParallel::registerDoParallel(cores=2)
 gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
                                             nPermutations=100, minGeneSetSize=180,
                                             exponent=1), doGSOA = TRUE, doGSEA = TRUE)

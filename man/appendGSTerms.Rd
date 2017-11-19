@@ -3,6 +3,7 @@
 \docType{methods}
 \name{appendGSTerms,GSCA-method}
 \alias{appendGSTerms,GSCA-method}
+\alias{appendGSTerms}
 \title{Append gene set terms to GSCA results}
 \usage{
 \S4method{appendGSTerms}{GSCA}(object, keggGSCs = NULL, goGSCs = NULL,
@@ -41,6 +42,7 @@ For each MSigDB gene set, the corresponding annotation terms are based on the
 built-in database in this package.
 }
 \examples{
+\dontrun{
 library(org.Hs.eg.db)
 library(GO.db)
 library(KEGGREST)
@@ -79,5 +81,5 @@ head(gsca2@result$GSEA.results$GO_BP)
 ## append gene set terms to results
 gsca3 <- appendGSTerms(gsca2, goGSCs=c("GO_BP"), keggGSCs=c("PW_KEGG"), msigdbGSCs=NULL)
 head(gsca3@result$GSEA.results$GO_BP)
-
+}
 }

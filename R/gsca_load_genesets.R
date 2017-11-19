@@ -17,7 +17,9 @@
 #' @seealso \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{KeggGeneSets}}
 #'
 #' @examples
+#' \dontrun{
 #' H_MSig <- MSigDBGeneSets(collection = "h")
+#' }
 #'
 #' @export
 MSigDBGeneSets <- function(collection = "h") {
@@ -48,10 +50,11 @@ MSigDBGeneSets <- function(collection = "h") {
 #' @seealso \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{MSigDBGeneSets}}
 #'
 #' @examples
+#' \dontrun{
 #' library(KEGGREST)
 #' library(org.Dm.eg.db)
 #' DM_KEGG <- KeggGeneSets(species = "Dm")
-#'
+#' }
 #' @export
 #' @importFrom KEGGREST keggLink keggConv
 #' @importFrom stringr str_replace
@@ -134,11 +137,13 @@ KeggGeneSets <- function(species = "Hs") {
 #' @seealso \code{\link[HTSanalyzeR2]{KeggGeneSets}}, \code{\link[HTSanalyzeR2]{MSigDBGeneSets}}
 #'
 #' @examples
+#' \dontrun{
 #' library(GO.db)
 #' library(org.Dm.eg.db)
 #' DM_GO_CC <- GOGeneSets(species="Dm",ontologies=c("CC"))
 #'
 #' DM_GO <- GOGeneSets(species="Dm",ontologies=c("CC", "MF", "BP"))
+#' }
 #' @export
 #' @importFrom AnnotationDbi GOID Ontology as.list
 

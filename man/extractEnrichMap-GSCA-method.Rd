@@ -3,6 +3,7 @@
 \docType{methods}
 \name{extractEnrichMap,GSCA-method}
 \alias{extractEnrichMap,GSCA-method}
+\alias{extractEnrichMap}
 \title{Extract the enrichment map result from GSCA object}
 \usage{
 \S4method{extractEnrichMap}{GSCA}(object, resultName = "GSEA.results", gscs,

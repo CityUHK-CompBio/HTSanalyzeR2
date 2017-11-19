@@ -3,10 +3,8 @@
 \docType{class}
 \name{GSCA-class}
 \alias{GSCA-class}
+\alias{GSCA}
 \title{An S4 class for Gene Set Collection Analyses on high-throughput data}
-\usage{
-new("GSCA", listOfGeneSetCollections, geneList, hits = character())
-}
 \description{
 This S4 class includes a series of methods to do gene set enrichment analysis
 and hypergeometric test for high-throughput data.
@@ -37,7 +35,15 @@ geneList, hits, para, and result.}
 input data has been preprocessed.}
 }}
 
+\section{Objects from the Class}{
+
+Objects of class \code{GSCA} can be created
+from \code{new("GSCA", listOfGeneSetCollections, geneList, hits = character())}
+(see the examples below)
+}
+
 \examples{
+\dontrun{
 library(org.Hs.eg.db)
 library(GO.db)
 ## load data for enrichment analyses
@@ -61,6 +67,7 @@ gsca@summary
 gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype)
 gsca
 gsca@summary
+}
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{preprocess}},

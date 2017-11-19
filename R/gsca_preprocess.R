@@ -6,13 +6,14 @@ if (!isGeneric("preprocess")) {
 #' A preprocessing method for objects of class GSCA or NWA
 #'
 #' This is a generic function. When implemented as the S4 method for objects of
-#' class \code{\link[HTSanalyzeR2:GSCA]{GSCA}} or \code{\link[HTSanalyzeR2:NWA]{NWA}},
+#' class \code{\link[HTSanalyzeR2]{GSCA-class}} or \code{\link[HTSanalyzeR2]{NWA-class}},
 #' this function filters out invalid data, removes duplicated
 #' genes, converts annotations to Entrez identifiers, etc.
 #'
 #' @include gsca_class.R
 #' @rdname preprocess
-#' @param object A \code{\link[HTSanalyzeR2:GSCA]{GSCA}} or \code{\link[HTSanalyzeR2:NWA]{NWA}} object.
+#' @aliases preprocess
+#' @param object A \code{\link[HTSanalyzeR2]{GSCA-class}} or \code{\link[HTSanalyzeR2]{NWA-class}} object.
 #' @param species A single character value specifying the species of the input.
 #' It supports all the species of OrgDb objects in AnnotationDbi.
 #' The format should be an abbreviation of the organism as setted by AnnotationDbi.
@@ -31,13 +32,14 @@ if (!isGeneric("preprocess")) {
 #'   to remove the duplicates. See help(duplicateRemover) for details.
 #' @param orderAbsValue A single logical value indicating whether the values
 #'   should be converted to absolute values and then ordered (if TRUE), or
-#'   ordered as they are (if FALSE). This argument is only for class \code{\link[HTSanalyzeR2:GSCA]{GSCA}}.
+#'   ordered as they are (if FALSE). This argument is only for class \code{\link[HTSanalyzeR2]{GSCA-class}}.
 #' @param verbose A single logical value specifying to display detailed messages
 #'   (when verbose=TRUE) or not (when verbose=FALSE).
 #' @return In the end, this function will return an updated object of class
-#' \code{\link[HTSanalyzeR2:GSCA]{GSCA}} or \code{\link[HTSanalyzeR2:NWA]{NWA}}.
+#' \code{\link[HTSanalyzeR2]{GSCA-class}} or \code{\link[HTSanalyzeR2]{NWA-class}}.
 #' @seealso \code{\link[HTSanalyzeR2]{duplicateRemover}}, \code{\link[HTSanalyzeR2]{annotationConvertor}}
 #' @examples
+#' \dontrun{
 #' # ===========================================================
 #' # GSCA class
 #' library(org.Hs.eg.db)
@@ -65,7 +67,7 @@ if (!isGeneric("preprocess")) {
 #'
 #' ## print gsca1
 #' gsca1
-#'
+#' }
 #' @details
 #' This function will do the following preprocessing steps:
 #'
@@ -223,10 +225,11 @@ setMethod("preprocess", signature = "GSCA",
 #' @seealso \code{\link[HTSanalyzeR2]{preprocess}}
 #'
 #' @examples
+#' \dontrun{
 #' x <- c(5,1,3,-2,6)
 #' names(x) <- c("gene1", "gene3", "gene7", "gene3", "gene4")
 #' xprocessed <- duplicateRemover(geneList=x, method="max")
-#'
+#' }
 #' @export
 duplicateRemover <- function(geneList, method = "max") {
   paraCheck("GSCAClass", "genelist", geneList)
@@ -304,6 +307,7 @@ duplicateRemover <- function(geneList, method = "max") {
 #' @return The same data vector/matrix but with names/row names converted.
 #'
 #' @examples
+#' \dontrun{
 #' library(org.Dm.eg.db)
 #' ## Example1: convert a named vector
 #' x <- runif(10)
@@ -316,9 +320,11 @@ duplicateRemover <- function(geneList, method = "max") {
 #' rownames(x) <- names(as.list(org.Dm.egSYMBOL2EG))[1:10]
 #' xEntrez <- annotationConvertor(geneList=x, species="Dm", initialIDs="SYMBOL",
 #'                                finalIDs="ENTREZID")
-#'
+#' }
 #' @export
 #' @importFrom AnnotationDbi mapIds columns
+#' @importFrom utils installed.packages
+#' @importFrom utils getFromNamespace
 annotationConvertor <- function(geneList,
                                 species = "Hs",
                                 initialIDs = "SYMBOL",

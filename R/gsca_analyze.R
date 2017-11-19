@@ -10,7 +10,7 @@ if (!isGeneric("analyze")) {
 #' @describeIn analyze The function will perform gene set collection analysis
 #' on a GSCA object and update information about these results to slot
 #' \emph{summary} of class GSCA.
-#'
+#' @aliases analyze
 #' @param object An object. When this function is implemented as the S4
 #' method of class 'GSCA' or 'NWA', this argument is an object of class
 #' 'GSCA' or 'NWA'.
@@ -47,6 +47,7 @@ if (!isGeneric("analyze")) {
 #' Gene set enrichment analysis: A knowledge-based approach for interpreting genome-wide expression profiles
 #' PNAS 2005 102 (43) 15545-15550; published ahead of print September 30, 2005, doi:10.1073/pnas.0506580102
 #' @examples
+#' \dontrun{
 #' # ====================================================
 #' # Gene Set Collection Analysis Part
 #' library(org.Hs.eg.db)
@@ -84,6 +85,7 @@ if (!isGeneric("analyze")) {
 #' summarize(gsca2)
 #' head(gsca2@@result$GSEA.results$GO_BP)
 #' head(gsca2@@result$HyperGeo.results$PW_KEGG)
+#' }
 
 
 
@@ -365,6 +367,7 @@ analyzeGeneSetCollections <-
   }
 
 #================================================================================
+#' @importFrom stats p.adjust
 calcHyperGeo <- function (listOfGeneSetCollections,
                           geneList,
                           hits,
@@ -457,6 +460,7 @@ calcHGTScore <- function(geneSet, universe, hits) {
 
 
 #' @import foreach
+#' @importFrom  stats p.adjust
 calcGSEA <-
   function(listOfGeneSetCollections,
            geneList,

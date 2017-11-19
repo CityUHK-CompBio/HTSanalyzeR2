@@ -10,7 +10,7 @@ if (!isGeneric("summarize")) {
 #' and 'ALL' (all slots).
 #'
 #' @examples
-#'
+#' \dontrun{
 #' # =================================================================
 #' # NWA class
 #' ## load a NWA object(see the examples of analyze NWA for details)
@@ -19,6 +19,7 @@ if (!isGeneric("summarize")) {
 #' ## summarize nwa
 #' summarize(nwa, what = "ALL")
 #' summarize(nwa, what = "Result")
+#' }
 #' @export
 setMethod("summarize", signature = "NWA",
           function(object, what = "ALL") {

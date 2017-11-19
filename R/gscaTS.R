@@ -30,11 +30,12 @@
 #' @seealso \code{\link[HTSanalyzeR2]{preprocess}}
 #' @export
 #' @examples
+#' \dontrun{
 #' data(d7, d13, d25)
 #'
 #' ## generate expInfor to describe the information of time series data
 #' expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
-#'                    byrow = F, dimnames = list(NULL, c("ID", "Description")))
+#'                    byrow = FALSE, dimnames = list(NULL, c("ID", "Description")))
 #'
 #' ## package phenotypeTS into a list of phenotypes
 #' datalist <- list(d7, d13, d25)
@@ -44,6 +45,8 @@
 #'                       tmp})
 #'
 #' ## set up a list of gene set collections
+#' library(org.Hs.eg.db)
+#' library(GO.db)
 #' GO_BP <- GOGeneSets(species="Hs", ontologies=c("BP"))
 #' ListGSC <- list(GO_BP=GO_BP)
 #'
@@ -61,7 +64,7 @@
 #'                            keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
 #'                            orderAbsValue=FALSE)
 #' gscaTS1
-#'
+#' }
 preprocessGscaTS <- function(object, species="Hs", initialIDs="SYMBOL",
                          keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
                          orderAbsValue=FALSE, verbose = TRUE){
@@ -98,11 +101,12 @@ preprocessGscaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #' @seealso \code{\link[HTSanalyzeR2]{analyze}}
 #' @export
 #' @examples
+#' \dontrun{
 #' data(d7, d13, d25)
 #'
 #' ## generate expInfor to describe the information of time series data
 #' expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
-#'                    byrow = F, dimnames = list(NULL, c("ID", "Description")))
+#'                    byrow = FALSE, dimnames = list(NULL, c("ID", "Description")))
 #'
 #' ## package phenotypeTS into a list of phenotypes
 #' datalist <- list(d7, d13, d25)
@@ -112,6 +116,8 @@ preprocessGscaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #'                       tmp})
 #'
 #' ## set up a list of gene set collections
+#' library(org.Hs.eg.db)
+#' library(GO.db)
 #' GO_BP <- GOGeneSets(species="Hs", ontologies=c("BP"))
 #' ListGSC <- list(GO_BP=GO_BP)
 #'
@@ -137,7 +143,7 @@ preprocessGscaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #'                         nPermutations=100, minGeneSetSize=200,
 #'                         exponent=1), doGSOA = TRUE, doGSEA = TRUE)
 #' head(gscaTS2[[1]]@@result$GSEA.results$GO_BP, 3)
-#'
+#' }
 #'
 #'
 analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
@@ -167,11 +173,12 @@ analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="
 #' @seealso \code{\link[HTSanalyzeR2]{appendGSTerms}}
 #' @export
 #' @examples
+#' \dontrun{
 #' data(d7, d13, d25)
 #'
 #' ## generate expInfor to describe the information of time series data
 #' expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
-#'                    byrow = F, dimnames = list(NULL, c("ID", "Description")))
+#'                    byrow = FALSE, dimnames = list(NULL, c("ID", "Description")))
 #'
 #' ## package phenotypeTS into a list of phenotypes
 #' datalist <- list(d7, d13, d25)
@@ -181,6 +188,8 @@ analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="
 #'                       tmp})
 #'
 #' ## set up a list of gene set collections
+#' library(org.Hs.eg.db)
+#' library(GO.db)
 #' GO_BP <- GOGeneSets(species="Hs", ontologies=c("BP"))
 #' ListGSC <- list(GO_BP=GO_BP)
 #'
@@ -210,7 +219,7 @@ analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="
 #' ## append gene set terms to results
 #' gscaTS3 <- appendGSTermsTS(gscaTS2, goGSCs=c("GO_BP"))
 #' head(gscaTS3[[1]]@@result$GSEA.results$GO_BP, 3)
-#'
+#' }
 #'
 appendGSTermsTS <- function(gscaList, keggGSCs=NULL, goGSCs=NULL, msigdbGSCs=NULL){
              paraCheck("gscaTS", "gscaList", gscaList)

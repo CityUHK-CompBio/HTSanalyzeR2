@@ -2,8 +2,12 @@
 #'
 #' This S4 class includes a series of methods to do gene set enrichment analysis
 #' and hypergeometric test for high-throughput data.
-#'
+#' @section Objects from the Class:
+#' Objects of class \code{GSCA} can be created
+#' from \code{new("GSCA", listOfGeneSetCollections, geneList, hits = character())}
+#' (see the examples below)
 #' @include class_union.R utils.R
+#' @aliases GSCA
 #' @slot listOfGeneSetCollections A list of gene set collections (a 'gene
 #' set collection' is a list of gene sets).
 #' @slot geneList A numeric or integer vector of phenotypes named by gene
@@ -20,7 +24,6 @@
 #'  geneList, hits, para, and result.
 #' @slot preprocessed A single logical value specifying whether or not the
 #' input data has been preprocessed.
-#' @usage new("GSCA", listOfGeneSetCollections, geneList, hits = character())
 #' @seealso \code{\link[HTSanalyzeR2]{preprocess}},
 #' \code{\link[HTSanalyzeR2]{analyze}},
 #' \code{\link[HTSanalyzeR2]{appendGSTerms}},
@@ -29,6 +32,7 @@
 #'
 #' @export
 #' @examples
+#' \dontrun{
 #' library(org.Hs.eg.db)
 #' library(GO.db)
 #' ## load data for enrichment analyses
@@ -52,6 +56,7 @@
 #' gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype)
 #' gsca
 #' gsca@@summary
+#' }
 
 setClass(
   Class = "GSCA",

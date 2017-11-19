@@ -3,6 +3,7 @@
 \docType{methods}
 \name{extractSubNet,NWA-method}
 \alias{extractSubNet,NWA-method}
+\alias{extractSubNet}
 \title{Extract the subnetwork as an igraph object}
 \usage{
 \S4method{extractSubNet}{NWA}(object)
@@ -15,11 +16,12 @@ Extract the subnetwork form an analyzed NWA object as an igraph object
 for further external using. Users can also use it to modify the subnetwork.
 }
 \examples{
+\dontrun{
 ## load a NWA object(see the examples of analyze NWA for details)
 data(nwa)
 
 ## extract the subnetwork as an igraph object
 subnetwork <- extractSubNet(nwa)
-
+}
 
 }

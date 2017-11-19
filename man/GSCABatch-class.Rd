@@ -3,10 +3,8 @@
 \docType{class}
 \name{GSCABatch-class}
 \alias{GSCABatch-class}
+\alias{GSCABatch}
 \title{An S4 class for Time series data package in Gene Set Collection Analyses on high-throughput screens}
-\usage{
-new("GSCABatch", expInfor, listOfGeneSetCollections, phenotypeTS, hitsTS = list())
-}
 \description{
 This S4 class packages time-series data for further GSCA. To put it more clearly, it'll finally generate a list of
 GSCA objects for further analyses.
@@ -30,12 +28,20 @@ the hypergeometric tests). It's needed if you want do GSOA. Note: the order of e
 \item{\code{listOfGSCA}}{A list of initialized GSCA object for futher GSCA.}
 }}
 
+\section{Objects from the Class}{
+
+Objects of class \code{GSCABatch} can be created from
+\code{new("GSCABatch", expInfor, listOfGeneSetCollections, phenotypeTS, hitsTS = list())}
+(see the examples below)
+}
+
 \examples{
+\dontrun{
 data(d7, d13, d25)
 
 ## generate expInfor to describe the information of time series data
 expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
-                   byrow = F, dimnames = list(NULL, c("ID", "Description")))
+                   byrow = FALSE, dimnames = list(NULL, c("ID", "Description")))
 
 ## package phenotypeTS into a list of phenotypes
 datalist <- list(d7, d13, d25)
@@ -45,6 +51,8 @@ phenotypeTS <- lapply(datalist, function(x) {
                       tmp})
 
 ## set up a list of gene set collections
+library(org.Hs.eg.db)
+library(GO.db)
 GO_BP <- GOGeneSets(species="Hs", ontologies=c("BP"))
 ListGSC <- list(GO_BP=GO_BP)
 
@@ -62,4 +70,5 @@ gscaTS
 gscaTS <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
                  listOfGeneSetCollections = ListGSC)
 gscaTS
+}
 }

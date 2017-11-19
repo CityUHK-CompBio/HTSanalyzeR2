@@ -3,6 +3,7 @@
 \docType{methods}
 \name{getTopGeneSets,GSCA-method}
 \alias{getTopGeneSets,GSCA-method}
+\alias{getTopGeneSets}
 \title{Select top significant gene sets from results of GSCA object}
 \usage{
 \S4method{getTopGeneSets}{GSCA}(object, resultName, gscs, ntop = NULL,
@@ -38,6 +39,7 @@ and their names will be returned. If 'allSig=TRUE', then all significant
 be selected and their names will be returned.
 }
 \examples{
+\dontrun{
 ## load a GSCA object(see the examples of analyze GSCA for details)
 data(gsca)
 
@@ -47,5 +49,5 @@ topGS_GO_BP <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_BP", allSig=TRUE)
 
 ## print top significant gene sets in GO_BP and PW_KEGG
 topGS <- getTopGeneSets(gsca, "GSEA.results", gscs = c("GO_BP", "PW_KEGG"), allSig=TRUE)
-
+}
 }

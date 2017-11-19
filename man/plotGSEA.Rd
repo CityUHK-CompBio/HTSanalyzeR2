@@ -3,6 +3,7 @@
 \docType{methods}
 \name{plotGSEA,GSCA-method}
 \alias{plotGSEA,GSCA-method}
+\alias{plotGSEA}
 \title{Plot and save figures of GSEA results for top significant gene sets}
 \usage{
 \S4method{plotGSEA}{GSCA}(object, gscs, ntop = NULL, allSig = FALSE,
@@ -33,6 +34,7 @@ this function plots figures of the positions of genes of the gene set in the ran
 list and the location of the enrichment score for top significant gene sets.
 }
 \examples{
+\dontrun{
 ## load a GSCA object(see the examples of analyze GSCA for details)
 data(gsca)
 
@@ -41,4 +43,5 @@ summarize(gsca)
 
 ## plot  significant gene sets in GO_BP and PW_KEGG
 plotGSEA(gsca, gscs=c("GO_BP","PW_KEGG"), ntop=3, filepath=".")
+}
 }

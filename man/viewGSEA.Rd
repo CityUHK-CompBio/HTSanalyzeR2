@@ -3,6 +3,7 @@
 \docType{methods}
 \name{viewGSEA,GSCA-method}
 \alias{viewGSEA,GSCA-method}
+\alias{viewGSEA}
 \title{Plot a figure of GSEA results for one gene set}
 \usage{
 \S4method{viewGSEA}{GSCA}(object, gscName, gsName)
@@ -25,6 +26,7 @@ We suggest to print the names of top significant gene sets using the
 function \code{\link[HTSanalyzeR2]{getTopGeneSets}} before plotting the GSEA results.
 }
 \examples{
+\dontrun{
 ## load a GSCA object(see the examples of analyze GSCA for details)
 data(gsca)
 
@@ -36,5 +38,5 @@ topGS_GO_BP <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_BP", allSig=TRUE)
 
 ## view GSEA results for one gene set
 viewGSEA(gsca, "GO_BP", topGS_GO_BP[["GO_BP"]][1])
-
+}
 }

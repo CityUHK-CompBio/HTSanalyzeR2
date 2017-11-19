@@ -3,12 +3,12 @@
 \docType{methods}
 \name{interactome,NWA-method}
 \alias{interactome,NWA-method}
+\alias{interactome}
 \title{Create an interactome from BioGRID database or input custom interactome}
 \usage{
 \S4method{interactome}{NWA}(object, interactionMatrix = NULL, species,
-  link = "http://thebiogrid.org/downloads/archives/Release\%20Archive/BIOGRID-3.4.138/BIOGRID-ORGANISM-3.4.138.tab2.zip",
-  reportDir = "HTSanalyzerReport", genetic = FALSE, force = FALSE,
-  verbose = TRUE)
+  link = "http://bit.ly/2jDsTFM", reportDir = "HTSanalyzerReport",
+  genetic = FALSE, force = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{object}{An NWA object.}
@@ -53,6 +53,7 @@ Another way to set up the interactome is to input an igraph object when the NWA 
 is created (i.e. nwa=new("NWA", pvalues, phenotypes, interactome)).
 }
 \examples{
+\dontrun{
 library(org.Hs.eg.db)
 library(GO.db)
 ## load data for subnetwork analyses
@@ -79,5 +80,5 @@ nwa1 <- interactome(nwa, interactionMatrix = Biogrid_HS_Mat, genetic=FALSE)
 nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
 ## create an interactome for nwa by downloading for BioGRID database
 nwa1 <- interactome(nwa, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
-
+}
 }

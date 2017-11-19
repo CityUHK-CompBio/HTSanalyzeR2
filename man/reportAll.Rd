@@ -15,7 +15,7 @@ reportAll(gsca = NULL, nwa = NULL, TSOrder = NULL,
 \item{TSOrder}{A character specifying the visulization order of 'Time Series' data in shiny report. Only works when
 reporting for 'Time Series' data, default is the ID order in 'expInfor'.}
 
-\item{specificGeneset}{A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap}}
+\item{specificGeneset}{A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap,GSCA-method}}
 for details.}
 
 \item{reportDir}{A single character value specifying the directory to store reports. For default both the
@@ -25,6 +25,7 @@ enrichment analysis and network analysis reports will be stored in the directory
 This function can create shiny reports for both gene sets enrichment analysis and network analysis.
 }
 \examples{
+\dontrun{
 ## load data
 data(gsca, nwa, gscaTS, nwaTS)
 
@@ -55,5 +56,5 @@ GO_BP_geneset <- tmp$GO_BP[c(4,2,6,9,12)]
 ## the name of specificGenesets also needs to match with the names of tmp
 specificGeneset <- list("GO_BP"=GO_BP_geneset)
 reportAll(gscaTS, specificGeneset=specificGeneset)
-
+}
 }

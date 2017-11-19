@@ -3,6 +3,7 @@
 \docType{methods}
 \name{report,GSCA-method}
 \alias{report,GSCA-method}
+\alias{report}
 \alias{report,NWA-method}
 \title{Write HTML reports for enrichment or network analyses}
 \usage{
@@ -16,7 +17,7 @@
 method of class 'GSCA' or 'NWA', this argument is an object of class
 'GSCA' or 'NWA'.}
 
-\item{specificGeneset}{A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap}}
+\item{specificGeneset}{A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap,GSCA-method}}
 for details.}
 
 \item{reportDir}{A single character value specifying the directory to store reports. For default
@@ -39,6 +40,7 @@ For NWA object, the identified subnetwork could be modified according to the use
 in many ways such as layout, color, and etc. Details please see the vignette of our package.
 }
 \examples{
+\dontrun{
 # =======================================================
 # GSCA class
 ## load a GSCA object(see the examples of analyze GSCA for details)
@@ -55,8 +57,8 @@ GO_BP_geneset <- tmp$GO_BP[c(4,2,6,9,12)]
 ## the name of specificGenesets also needs to match with the names of tmp
 specificGeneset <- list("GO_BP"=GO_BP_geneset)
 report(gsca, specificGeneset=specificGeneset)
-
-
+}
+\dontrun{
 # =================================================================
 # NWA class
 ## load a NWA object(see the examples of analyze NWA for details)
@@ -64,5 +66,5 @@ data(nwa)
 
 ## report nwa
 report(nwa)
-
+}
 }

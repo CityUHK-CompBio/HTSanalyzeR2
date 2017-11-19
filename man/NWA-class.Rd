@@ -3,10 +3,8 @@
 \docType{class}
 \name{NWA-class}
 \alias{NWA-class}
+\alias{NWA}
 \title{An S4 class for NetWork Analysis on high-throughput data}
-\usage{
-new("NWA", pvalues, phenotypes = numeric(), interactome = NA)
-}
 \description{
 This class includes a series of methods to do network analysis for
 high-throughput data.
@@ -34,7 +32,15 @@ interactome and result.}
 has been preprocessed.}
 }}
 
+\section{Objects from the Class}{
+
+Objects of class \code{NWA} can be created
+from \code{new("NWA", pvalues, phenotypes = numeric(), interactome = NA)}
+(see the examples below)
+}
+
 \examples{
+\dontrun{
 library(org.Hs.eg.db)
 library(GO.db)
 ## load data for network analyses
@@ -51,7 +57,7 @@ nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
 
 ## Example2: create an object of class 'NWA' without phenotypes
 nwa <- new("NWA", pvalues=pvalues)
-
+}
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{preprocess}},

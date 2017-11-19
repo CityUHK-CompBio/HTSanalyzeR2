@@ -22,11 +22,12 @@ finds corresponding annotation terms for GO, KEGG and MSigDB gene sets and
 inserts a column named "Gene.Set.Term" to each data frame in the GSCA results.
 }
 \examples{
+\dontrun{
 data(d7, d13, d25)
 
 ## generate expInfor to describe the information of time series data
 expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
-                   byrow = F, dimnames = list(NULL, c("ID", "Description")))
+                   byrow = FALSE, dimnames = list(NULL, c("ID", "Description")))
 
 ## package phenotypeTS into a list of phenotypes
 datalist <- list(d7, d13, d25)
@@ -36,6 +37,8 @@ phenotypeTS <- lapply(datalist, function(x) {
                       tmp})
 
 ## set up a list of gene set collections
+library(org.Hs.eg.db)
+library(GO.db)
 GO_BP <- GOGeneSets(species="Hs", ontologies=c("BP"))
 ListGSC <- list(GO_BP=GO_BP)
 
@@ -65,7 +68,7 @@ head(gscaTS2[[1]]@result$GSEA.results$GO_BP, 3)
 ## append gene set terms to results
 gscaTS3 <- appendGSTermsTS(gscaTS2, goGSCs=c("GO_BP"))
 head(gscaTS3[[1]]@result$GSEA.results$GO_BP, 3)
-
+}
 
 }
 \seealso{
