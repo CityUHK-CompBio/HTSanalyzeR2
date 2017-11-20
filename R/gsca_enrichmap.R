@@ -152,8 +152,8 @@ setMethod(
 )
 
 #' @importFrom AnnotationDbi mapIds
+#' @import GO.db
 appendGOTerm <- function(df) {
-  require(GO.db)
   goterms <- mapIds(GO.db, keys=row.names(df), keytype = "GOID", column = "TERM")
   goterms[which(is.na(goterms))] <- "NA"
   names(goterms)[which(is.na(names(goterms)))] <-
@@ -182,10 +182,8 @@ appendMSigDBTerm <- function(df) {
   data.frame(Gene.Set.Term = row.names(df), df, stringsAsFactors = FALSE)
 }
 
-#' Extract the enrichment map result from GSCA object
-#'
-#' This is a generic function.
-#' @aliases extractEnrichMap
+
+
 #' @importFrom igraph V graph.adjacency simplify E
 setMethod("extractEnrichMap", signature = "GSCA",
           function(object,
@@ -489,7 +487,6 @@ setMethod("viewEnrichMap", signature = "GSCA",
 ## Available graphOptions:
 
 
-#' FetchGSCASeriesValues
 #' @importFrom igraph as_data_frame
 fetchGSCASeriesValues <- function(gscaObjs, resultName = "GSEA.results", gscs,
                             ntop = NULL, allSig = TRUE, gsNameType = "id", specificGeneset = NULL) {

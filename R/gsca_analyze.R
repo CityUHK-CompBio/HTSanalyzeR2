@@ -6,7 +6,6 @@ if (!isGeneric("analyze")) {
 #' Gene Set Collection Analysis or NetWork Analysis
 #'
 #' This is a generic function.
-#'
 #' @describeIn analyze The function will perform gene set collection analysis
 #' on a GSCA object and update information about these results to slot
 #' \emph{summary} of class GSCA.
@@ -16,20 +15,20 @@ if (!isGeneric("analyze")) {
 #' 'GSCA' or 'NWA'.
 #' @param para A list of parameters for GSEA and hypergeometric tests.
 #' This argument is only for class GSCA.
-#' @param para$pValueCutoff
+#' @param pValueCutoff
 #' A single numeric value specifying the cutoff for adjusted p-values considered
 #' significant.
-#' @param para$pAdjustMethod
+#' @param pAdjustMethod
 #' A single character value specifying the p-value adjustment method to be used
 #' (see 'p.adjust' for details).
-#' @param para$nPermutations
+#' @param nPermutations
 #' A single integer or numeric value specifying the number of permutations for
 #' deriving p-values in GSEA.
-#' @param para$minGeneSetSize
+#' @param minGeneSetSize
 #' A single integer or numeric value specifying the minimum number of elements
 #' shared by a gene set and the input total genes. Gene sets with
 #' fewer than this number are removed from both hypergeometric analysis and GSEA.
-#' @param para$exponent A single integer or numeric value used in weighting phenotypes in GSEA.
+#' @param exponent A single integer or numeric value used in weighting phenotypes in GSEA.
 #' @param verbose A single logical value specifying to display detailed messages
 #'  (when verbose=TRUE) or not (when verbose=FALSE).
 #' @param doGSOA A single logical value specifying to perform gene set
@@ -469,6 +468,7 @@ calcGSEA <-
            minGeneSetSize = 15,
            pAdjustMethod = "BH",
            verbose = TRUE) {
+    if(getRversion() >= "2.10.1")  utils::globalVariables(c("idx"))
     listNames <- names(geneList)
 
     combinedGeneSets <-

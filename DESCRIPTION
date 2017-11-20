@@ -12,6 +12,7 @@ License: Artistic-2.0
 LazyData: TRUE
 RoxygenNote: 6.0.1
 Imports: 
+    GO.db,
     cellHTS2,
     Rcpp,
     doParallel,
@@ -63,7 +64,6 @@ Collate:
 LinkingTo: Rcpp
 Suggests:
     BiocStyle,
-    GO.db,
     rmarkdown,
     testthat,
     knitr,

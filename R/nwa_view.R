@@ -109,7 +109,6 @@ setMethod("viewSubNet", signature = "NWA",
           })
 
 
-#' fetchNWASeriesValues
 #' @importFrom igraph as_data_frame
 fetchNWASeriesValues <- function(nwaObjs) {
   # TODO: check the objs

@@ -153,6 +153,7 @@ setMethod("show", signature = "GSCABatch", function(object) {
 #' @slot pvalueTS  A list of pvalues, each element of this list is a numeric vector pvalues named by gene
 #' identifiers for each time point. Note: the order of each element of this list must match the order of 'expInfor' ID.
 #' @slot interactome An object of class igraph.
+#' @slot listOfNWA A list of 'NWA' object.
 #' @examples
 #' \dontrun{
 #' data(d7, d13, d25)
@@ -200,8 +201,7 @@ setMethod("initialize",
                    expInfor,
                    pvalueTS,
                    phenotypeTS = list(),
-                   interactome = NA,
-                   listOfNWA) {
+                   interactome = NA) {
             paraCheck("NWABatch", "expInfor", expInfor)
             paraCheck("NWABatch", "pvalueTS", pvalueTS)
             ## interactome

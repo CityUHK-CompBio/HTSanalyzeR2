@@ -55,32 +55,6 @@
 #' will be kept; otherwise, they will be removed from the data set.
 #' @param nwAnalysisFdr A single numeric value specifying the false discovery for the scoring of nodes
 #' (see BioNet::scoreNodes and Dittrich et al., 2008 for details)
-#' @usage
-#' HTSanalyzeR4MAGeCK <- function(MAGeCKdata,
-#'                                selectDirection = "negative",
-#'                                doGSOA = FALSE,
-#'                                doGSEA = TRUE,
-#'                                hitsCutoffLogFC = NULL,
-#'                                hitsCutoffPval = NULL,
-#'                                listOfGeneSetCollections,
-#'                                species = "Hs",
-#'                                initialIDs = "SYMBOL",
-#'                                keepMultipleMappings = TRUE,
-#'                                duplicateRemoverMethod = "max",
-#'                                orderAbsValue = FALSE,
-#'                                pValueCutoff = 0.05,
-#'                                pAdjustMethod = "BH",
-#'                                nPermutations = 1000,
-#'                                minGeneSetSize = 15,
-#'                                exponent = 1,
-#'                                verbose  = TRUE,
-#'                                keggGSCs = NULL,
-#'                                goGSCs = NULL,
-#'                                msigdbGSCs = NULL,
-#'                                interactionMatrix = NULL,
-#'                                reportDir = "HTSanalyzerReport",
-#'                                nwAnalysisGenetic = FALSE,
-#'                                nwAnalysisFdr = 0.001)
 #' @return This pipeline function will finally generate a shiny report including all
 #' the results in. All the results would be stored as RData named 'results.RData' under
 #' a new automatic generated directory. It can be loaded into R by 'readRDS(results.RData)'.

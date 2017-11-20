@@ -35,20 +35,20 @@ enrichment analysis (when doGSEA=TRUE) or not (when doGSEA=FALSE).}
 
 \item{species}{A single character value specifying the species for which the data should be read.}
 
-\item{para$pValueCutoff}{A single numeric value specifying the cutoff for adjusted p-values considered
+\item{pValueCutoff}{A single numeric value specifying the cutoff for adjusted p-values considered
 significant.}
 
-\item{para$pAdjustMethod}{A single character value specifying the p-value adjustment method to be used
+\item{pAdjustMethod}{A single character value specifying the p-value adjustment method to be used
 (see 'p.adjust' for details).}
 
-\item{para$nPermutations}{A single integer or numeric value specifying the number of permutations for
+\item{nPermutations}{A single integer or numeric value specifying the number of permutations for
 deriving p-values in GSEA.}
 
-\item{para$minGeneSetSize}{A single integer or numeric value specifying the minimum number of elements
+\item{minGeneSetSize}{A single integer or numeric value specifying the minimum number of elements
 shared by a gene set and the input total genes. Gene sets with
 fewer than this number are removed from both hypergeometric analysis and GSEA.}
 
-\item{para$exponent}{A single integer or numeric value used in weighting phenotypes in GSEA.}
+\item{exponent}{A single integer or numeric value used in weighting phenotypes in GSEA.}
 }
 \value{
 In the end, this function will return an updated object of

@@ -24,6 +24,8 @@ When it is available, nodes in identified subnetworks would be coloured by it
 identifiers for each time point. Note: the order of each element of this list must match the order of 'expInfor' ID.}
 
 \item{\code{interactome}}{An object of class igraph.}
+
+\item{\code{listOfNWA}}{A list of 'NWA' object.}
 }}
 
 \section{Objects from the Class}{
