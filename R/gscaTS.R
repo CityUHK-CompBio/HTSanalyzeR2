@@ -30,7 +30,6 @@
 #' @seealso \code{\link[HTSanalyzeR2]{preprocess}}
 #' @export
 #' @examples
-#' \dontrun{
 #' data(d7, d13, d25)
 #'
 #' ## generate expInfor to describe the information of time series data
@@ -64,7 +63,6 @@
 #'                            keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
 #'                            orderAbsValue=FALSE)
 #' gscaTS1
-#' }
 preprocessGscaTS <- function(object, species="Hs", initialIDs="SYMBOL",
                          keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
                          orderAbsValue=FALSE, verbose = TRUE){
@@ -101,7 +99,6 @@ preprocessGscaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #' @seealso \code{\link[HTSanalyzeR2]{analyze}}
 #' @export
 #' @examples
-#' \dontrun{
 #' data(d7, d13, d25)
 #'
 #' ## generate expInfor to describe the information of time series data
@@ -143,7 +140,6 @@ preprocessGscaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #'                         nPermutations=100, minGeneSetSize=200,
 #'                         exponent=1), doGSOA = TRUE, doGSEA = TRUE)
 #' head(gscaTS2[[1]]@@result$GSEA.results$GO_BP, 3)
-#' }
 #'
 #'
 analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
@@ -172,8 +168,8 @@ analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="
 #'
 #' @seealso \code{\link[HTSanalyzeR2]{appendGSTerms}}
 #' @export
+#' @return In the end, this function will return an updated list of GSCA object.
 #' @examples
-#' \dontrun{
 #' data(d7, d13, d25)
 #'
 #' ## generate expInfor to describe the information of time series data
@@ -219,7 +215,6 @@ analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="
 #' ## append gene set terms to results
 #' gscaTS3 <- appendGSTermsTS(gscaTS2, goGSCs=c("GO_BP"))
 #' head(gscaTS3[[1]]@@result$GSEA.results$GO_BP, 3)
-#' }
 #'
 appendGSTermsTS <- function(gscaList, keggGSCs=NULL, goGSCs=NULL, msigdbGSCs=NULL){
              paraCheck("gscaTS", "gscaList", gscaList)

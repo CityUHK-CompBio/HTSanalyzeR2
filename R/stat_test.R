@@ -48,6 +48,10 @@
 #' @export
 #' @importFrom cellHTS2 Data
 #' @importFrom stats median t.test wilcox.test
+#' @examples
+#' data(xn)
+#' test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn, annotationColumn="GeneID",
+#'                                       alternative="two.sided", tests=c("T-test"))
 cellHTS2OutputStatTests <- function(cellHTSobject,
                                     annotationColumn = "GeneID",
                                     controls = "neg",
@@ -61,14 +65,14 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
 
   ## check that the annotationColumn is one column in the
   #  fData(cellHTSobject) dataframe
-  if(!(annotationColumn %in% colnames(fData(cellHTSobject))))
+  if(!(annotationColumn %in% colnames(Biobase::fData(cellHTSobject))))
     stop(paste("The 'annotationColumn' parameter does not match ",
                "any column in your cellHTS object", sep=""))
 
   ##check that 'controls' matches a status in the 'controlStatus'
   # column of the cellHTS cellHTSobject
   paraCheck("StatTest", "nwStatsControls", controls)
-  if(!(controls %in% fData(cellHTSobject)[, "controlStatus"]))
+  if(!(controls %in% Biobase::fData(cellHTSobject)[, "controlStatus"]))
     stop(paste("The 'controls' parameter does not match to any ",
                "status in the 'controlStatus' column of your cellHTS object",
                sep=""))
@@ -81,13 +85,13 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
   ##columns=replicates, with row names = identifiers in the
   ##"annotationColumn" of the fData() data frame
   dataNw <- Data(cellHTSobject)[, 1:ncol(Data(cellHTSobject)), 1]
-  rownames(dataNw) <- fData(cellHTSobject)[, annotationColumn]
-  dataNw <- dataNw[which(fData(cellHTSobject)[, "controlStatus"] ==
+  rownames(dataNw) <- Biobase::fData(cellHTSobject)[, annotationColumn]
+  dataNw <- dataNw[which(Biobase::fData(cellHTSobject)[, "controlStatus"] ==
                            "sample"), ]
   dataNw <- dataNw[which(!is.na(rownames(dataNw))), ]
   ##make a vector of data for the control 	population
   controlData <- Data(cellHTSobject)[
-    which(fData(cellHTSobject)[, "controlStatus"] == controls),
+    which(Biobase::fData(cellHTSobject)[, "controlStatus"] == controls),
     1:ncol(Data(cellHTSobject)), 1]
   controlData <- as.vector(controlData)
   ##compute the median of all samples, for the one sample tests
@@ -102,7 +106,7 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
   names(replicates) <- replicatesNames
   nreplicates <- length(replicates)
   sapply(1:nreplicates, function(i) {
-    replicates[[i]] <<- c(dataNw[
+    replicates[[i]] <- c(dataNw[
       which(rownames(dataNw) == names(replicates)[i]), ])
   })
   if("T-test" %in% tests) {
@@ -113,7 +117,7 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
     names(t.test.pvalues.one.sample)<-names(replicates)
     sapply(1:nreplicates, function(i) {
       if(sum(!is.na(replicates[[i]])) >= 2)
-        t.test.pvalues.one.sample[i] <<-
+        t.test.pvalues.one.sample[i] <-
           t.test(x = replicates[[i]], mu = mu ,
                  alternative = alternative)$p.value
     })
@@ -124,7 +128,7 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
     names(t.test.pvalues.two.samples) <- names(replicates)
     sapply(1:nreplicates, function(i) {
       if(sum(!is.na(replicates[[i]])) >= 2)
-        t.test.pvalues.two.samples[i] <<-
+        t.test.pvalues.two.samples[i] <-
           t.test(x = replicates[[i]], y = controlData,
                  alternative = alternative)$p.value
     })
@@ -138,7 +142,7 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
     names(mannW.test.pvalues.one.sample)<-names(replicates)
     sapply(1:nreplicates, function(i) {
       if(sum(!is.na(replicates[[i]])) >= 2)
-        mannW.test.pvalues.one.sample[i] <<-
+        mannW.test.pvalues.one.sample[i] <-
           wilcox.test(x = replicates[[i]], mu = mu,
                       alternative = alternative)$p.value
     })
@@ -150,7 +154,7 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
     names(mannW.test.pvalues.two.samples)<-names(replicates)
     sapply(1:nreplicates, function(i) {
       if(sum(!is.na(replicates[[i]])) >= 2)
-        mannW.test.pvalues.two.samples[i] <<-
+        mannW.test.pvalues.two.samples[i] <-
           wilcox.test(x = replicates[[i]], y = controlData,
                       alternative = alternative)$p.value
     })
@@ -172,10 +176,10 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
                           rep(NA, (maxlength-length(replicates[[1]]))))
     sapply(2:length(replicates), function(i) {
       if(length(replicates[[i]]) < maxlength)
-        replicatesmatrix <<- rbind(replicatesmatrix,
+        replicatesmatrix <- rbind(replicatesmatrix,
                                    c(replicates[[i]], rep(NA,(maxlength-length(replicates[[i]])))))
       if(length(replicates[[i]]) == maxlength)
-        replicatesmatrix <<- rbind(replicatesmatrix, c(replicates[[i]]))
+        replicatesmatrix <- rbind(replicatesmatrix, c(replicates[[i]]))
       NULL
     })
     rownames(replicatesmatrix) <- names(replicates)

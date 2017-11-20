@@ -20,8 +20,8 @@ if(!isGeneric("plotGSEA"))
 #'
 #' @rdname viewGSEA
 #' @aliases viewGSEA
+#' @return In the end, this function would draw a GSEA figure for specified gene set.
 #' @examples
-#' \dontrun{
 #' ## load a GSCA object(see the examples of analyze GSCA for details)
 #' data(gsca)
 #'
@@ -33,7 +33,6 @@ if(!isGeneric("plotGSEA"))
 #'
 #' ## view GSEA results for one gene set
 #' viewGSEA(gsca, "GO_BP", topGS_GO_BP[["GO_BP"]][1])
-#' }
 #' @include gsca_class.R
 #' @export
 setMethod(
@@ -82,9 +81,9 @@ setMethod(
 #' @param ... Other arguments used by the function png or pdf such as 'width' and 'height'
 #'
 #' @rdname plotGSEA
+#' @return In the end, this function would plot GSEA figure and store them into the specified path.
 #' @aliases plotGSEA
 #' @examples
-#' \dontrun{
 #' ## load a GSCA object(see the examples of analyze GSCA for details)
 #' data(gsca)
 #'
@@ -93,7 +92,6 @@ setMethod(
 #'
 #' ## plot  significant gene sets in GO_BP and PW_KEGG
 #' plotGSEA(gsca, gscs=c("GO_BP","PW_KEGG"), ntop=3, filepath=".")
-#' }
 #' @export
 ##plot GSEA for GSCA
 setMethod(

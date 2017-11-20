@@ -34,7 +34,6 @@ analyzeGeneSetCollections in slot result, and update information about
 these results to slot summary of class GSCA.
 }
 \examples{
-\dontrun{
 data(d7, d13, d25)
 
 ## generate expInfor to describe the information of time series data
@@ -76,7 +75,6 @@ gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05, pAdjustMethod="BH
                         nPermutations=100, minGeneSetSize=200,
                         exponent=1), doGSOA = TRUE, doGSEA = TRUE)
 head(gscaTS2[[1]]@result$GSEA.results$GO_BP, 3)
-}
 
 
 }

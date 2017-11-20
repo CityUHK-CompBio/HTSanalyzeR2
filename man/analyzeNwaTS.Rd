@@ -27,7 +27,6 @@ Entrez IDs to gene symbols), and update information about these results to
 slot summary of class NWA.
 }
 \examples{
-\dontrun{
 data(d7, d13, d25)
 
 ## generate expInfor to describe the information of time series data
@@ -60,7 +59,6 @@ nwaTS2 <- interactomeNwaTS(nwaTS1, species="Hs", reportDir="HTSanalyzerReport", 
 
 ## analyze
 nwaTS3 <- analyzeNwaTS(nwaTS2, fdr=0.0001, species="Hs")
-}
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{analyze}}

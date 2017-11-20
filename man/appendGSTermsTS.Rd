@@ -16,13 +16,15 @@ appendGSTermsTS(gscaList, keggGSCs = NULL, goGSCs = NULL,
 
 \item{msigdbGSCs}{A character vector of names of all MSigDB gene set collections.}
 }
+\value{
+In the end, this function will return an updated list of GSCA object.
+}
 \description{
 For each GSCA object in 'gscaList', this function
 finds corresponding annotation terms for GO, KEGG and MSigDB gene sets and
 inserts a column named "Gene.Set.Term" to each data frame in the GSCA results.
 }
 \examples{
-\dontrun{
 data(d7, d13, d25)
 
 ## generate expInfor to describe the information of time series data
@@ -68,7 +70,6 @@ head(gscaTS2[[1]]@result$GSEA.results$GO_BP, 3)
 ## append gene set terms to results
 gscaTS3 <- appendGSTermsTS(gscaTS2, goGSCs=c("GO_BP"))
 head(gscaTS3[[1]]@result$GSEA.results$GO_BP, 3)
-}
 
 }
 \seealso{

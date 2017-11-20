@@ -43,7 +43,6 @@ In the end, this function will return an updated list of GSCA object.
 This function will do basic preprocessing for each GSCA object of 'GSCABatch'.
 }
 \examples{
-\dontrun{
 data(d7, d13, d25)
 
 ## generate expInfor to describe the information of time series data
@@ -77,7 +76,6 @@ gscaTS1 <- preprocessGscaTS(gscaTS, species="Hs", initialIDs="SYMBOL",
                            keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
                            orderAbsValue=FALSE)
 gscaTS1
-}
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{preprocess}}

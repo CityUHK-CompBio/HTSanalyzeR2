@@ -42,7 +42,6 @@ For each MSigDB gene set, the corresponding annotation terms are based on the
 built-in database in this package.
 }
 \examples{
-\dontrun{
 library(org.Hs.eg.db)
 library(GO.db)
 library(KEGGREST)
@@ -81,5 +80,4 @@ head(gsca2@result$GSEA.results$GO_BP)
 ## append gene set terms to results
 gsca3 <- appendGSTerms(gsca2, goGSCs=c("GO_BP"), keggGSCs=c("PW_KEGG"), msigdbGSCs=NULL)
 head(gsca3@result$GSEA.results$GO_BP)
-}
 }

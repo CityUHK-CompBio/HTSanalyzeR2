@@ -18,6 +18,11 @@
 specifying what to print (see Methods below). Default will print a summary of all
 information.}
 }
+\value{
+In the end, this function would return a summary of the NWA object.
+
+In the end, this function would return a summary of the NWA object.
+}
 \description{
 This is a generic function.
 When implemented as the S4 method for objects of class GSCA or NWA, this
@@ -37,7 +42,6 @@ and 'ALL' (all slots).
 }}
 
 \examples{
-\dontrun{
 # =================================================================
 # GSCA class
 ## load a GSCA object(see the examples of analyze GSCA for details)
@@ -46,7 +50,6 @@ data(gsca)
 ## summarize gsca
 summarize(gsca, what = "ALL")
 summarize(gsca, what = "Result")
-}
 \dontrun{
 # =================================================================
 # NWA class

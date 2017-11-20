@@ -16,6 +16,7 @@ if (!isGeneric("report")) {
 #' report(nwa)
 #' }
 #' @export
+#' @return in the end, this function would generate a shiny report.
 setMethod("report",
           "NWA",
           function(object, reportDir = "NWAReport") {
@@ -25,6 +26,7 @@ setMethod("report",
 
 
 ## helper functions for shiny app
+#' @importFrom shiny tagList
 generateNWASummary <- function(nwa) {
   tagList(
     tags$h3("Summary"),

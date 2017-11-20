@@ -23,10 +23,9 @@ setGeneric("getTopGeneSets", function(object,
 #' @param what A single character value or a character vector of key words
 #' specifying what to print (see Methods below). Default will print a summary of all
 #' information.
-#'
+#' @return In the end, this function would return a summary of the NWA object.
 #'
 #' @examples
-#' \dontrun{
 #' # =================================================================
 #' # GSCA class
 #' ## load a GSCA object(see the examples of analyze GSCA for details)
@@ -35,7 +34,6 @@ setGeneric("getTopGeneSets", function(object,
 #' ## summarize gsca
 #' summarize(gsca, what = "ALL")
 #' summarize(gsca, what = "Result")
-#' }
 #' @include gsca_class.R
 #' @export
 setMethod("summarize", signature = "GSCA",
@@ -104,7 +102,6 @@ setMethod("summarize", signature = "GSCA",
 #' otherwise, only top 'ntop' gene sets will be selected.
 #'
 #' @examples
-#' \dontrun{
 #' ## load a GSCA object(see the examples of analyze GSCA for details)
 #' data(gsca)
 #'
@@ -114,7 +111,6 @@ setMethod("summarize", signature = "GSCA",
 #'
 #' ## print top significant gene sets in GO_BP and PW_KEGG
 #' topGS <- getTopGeneSets(gsca, "GSEA.results", gscs = c("GO_BP", "PW_KEGG"), allSig=TRUE)
-#' }
 #' @return A named list of character vectors, each element contains the names of top
 #' significant gene sets for each gene set collection.
 #' @include gsca_class.R

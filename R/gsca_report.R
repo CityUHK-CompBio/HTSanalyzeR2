@@ -27,9 +27,8 @@ if (!isGeneric("report")) {
 #'
 #' For NWA object, the identified subnetwork could be modified according to the user's preferences
 #' in many ways such as layout, color, and etc. Details please see the vignette of our package.
-#'
+#' @return in the end, this function would generate a shiny report.
 #' @examples
-#' \dontrun{
 #' # =======================================================
 #' # GSCA class
 #' ## load a GSCA object(see the examples of analyze GSCA for details)
@@ -46,7 +45,6 @@ if (!isGeneric("report")) {
 #' ## the name of specificGenesets also needs to match with the names of tmp
 #' specificGeneset <- list("GO_BP"=GO_BP_geneset)
 #' report(gsca, specificGeneset=specificGeneset)
-#' }
 #' @rdname report
 #'
 #' @export
@@ -72,8 +70,8 @@ setMethod("report", signature = "GSCA",
 #'
 #'
 #' @export
+#' @return in the end, this function would generate a shiny report.
 #' @examples
-#' \dontrun{
 #' ## load data
 #' data(gsca, nwa, gscaTS, nwaTS)
 #'
@@ -104,7 +102,6 @@ setMethod("report", signature = "GSCA",
 #' ## the name of specificGenesets also needs to match with the names of tmp
 #' specificGeneset <- list("GO_BP"=GO_BP_geneset)
 #' reportAll(gscaTS, specificGeneset=specificGeneset)
-#' }
 reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL, specificGeneset = NULL, reportDir = "AnalysisReport") {
   if(!is.null(gsca) && class(gsca) != "GSCA") {
     if(class(gsca) != "list" || any(sapply(gsca, class) != "GSCA")) {
@@ -153,6 +150,7 @@ reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL, specificGeneset =
 
 
 ## helper functions for shiny app
+#' @importFrom shiny tagList
 generateGSCASummary <- function(gsca) {
   title <- tags$h3("Summary")
   desc  <- tags$p(paste("The enrichment analysis was performed using the phenotype vector including",
@@ -188,7 +186,7 @@ generateGSCASummary <- function(gsca) {
     ))
   }
   method <- tags$ul(hypgeo, gsea)
-  htmltools::tagList(title, desc, p1, analysis, p2, method)
+  tagList(title, desc, p1, analysis, p2, method)
 }
 
 

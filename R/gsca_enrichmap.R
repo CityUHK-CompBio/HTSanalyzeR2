@@ -40,7 +40,6 @@ if (!isGeneric("viewEnrichMap"))
 #' built-in database in this package.
 #'
 #' @examples
-#' \dontrun{
 #' library(org.Hs.eg.db)
 #' library(GO.db)
 #' library(KEGGREST)
@@ -79,7 +78,6 @@ if (!isGeneric("viewEnrichMap"))
 #' ## append gene set terms to results
 #' gsca3 <- appendGSTerms(gsca2, goGSCs=c("GO_BP"), keggGSCs=c("PW_KEGG"), msigdbGSCs=NULL)
 #' head(gsca3@@result$GSEA.results$GO_BP)
-#' }
 #' @export
 #'
 setMethod(
@@ -131,13 +129,13 @@ setMethod(
 
              if (nrow(result[[rs]][[gsc]]) >= 1) {
                if (gsc %in% keggGSCs)
-                 result[[rs]][[gsc]] <<- appendKEGGTerm(result[[rs]][[gsc]])
+                 result[[rs]][[gsc]] <- appendKEGGTerm(result[[rs]][[gsc]])
                else if (gsc %in% goGSCs)
-                 result[[rs]][[gsc]] <<- appendGOTerm(result[[rs]][[gsc]])
+                 result[[rs]][[gsc]] <- appendGOTerm(result[[rs]][[gsc]])
                else if (gsc %in% msigdbGSCs)
-                 result[[rs]][[gsc]] <<- appendMSigDBTerm(result[[rs]][[gsc]])
+                 result[[rs]][[gsc]] <- appendMSigDBTerm(result[[rs]][[gsc]])
                else
-                 result[[rs]][[gsc]] <<- data.frame(Gene.Set.Term = "--",
+                 result[[rs]][[gsc]] <- data.frame(Gene.Set.Term = "--",
                                                     result[[rs]][[gsc]],
                                                     stringsAsFactors = FALSE)
              }
@@ -184,7 +182,7 @@ appendMSigDBTerm <- function(df) {
 
 
 
-#' @importFrom igraph V graph.adjacency simplify E
+#' @importFrom igraph graph.adjacency simplify V V<- E E<-
 setMethod("extractEnrichMap", signature = "GSCA",
           function(object,
                    resultName = "GSEA.results",
@@ -227,18 +225,18 @@ setMethod("extractEnrichMap", signature = "GSCA",
               if (length(topGS[[i]]) > 0) {
                 gscName <- names(topGS)[i]
                 ## compute overlapped genes between gene sets and universe
-                gsInUni[[i]] <<- list()
-                gsInUni[[i]] <<- sapply(topGS[[i]], function(j)
+                gsInUni[[i]] <- list()
+                gsInUni[[i]] <- sapply(topGS[[i]], function(j)
                   intersect(object@listOfGeneSetCollections[[gscName]][[j]],
                             uniIDs), simplify = FALSE)
 
-                names(gsInUni)[i] <<- gscName
-                tempList[[i]] <<-
+                names(gsInUni)[i] <- gscName
+                tempList[[i]] <-
                   data.frame(gsID = topGS[[i]],
                              gscID = gscName,
                              object@result[[resultName]][[gscName]][topGS[[i]], , drop =
                                                                       FALSE])
-                names(tempList)[i] <<- gscName
+                names(tempList)[i] <- gscName
               }
             })
 
@@ -265,14 +263,14 @@ setMethod("extractEnrichMap", signature = "GSCA",
               gscID <- as.character(tempdf[["gscID"]])
               sapply(1:(nrow(tempdf) - 1), function(i) {
                 a <- gsInUni[[gscID[i]]][[gsID[i]]]
-                map.mat[i, (i + 1):nrow(tempdf)] <<-
+                map.mat[i, (i + 1):nrow(tempdf)] <-
                   sapply((i + 1):nrow(tempdf),
                          function(j) {
                            b <- gsInUni[[gscID[j]]][[gsID[j]]]
                            length(intersect(a, b)) / length(union(a,b))
                          }
                   )
-                map.mat[(i + 1):nrow(tempdf), i] <<- map.mat[i, (i + 1):nrow(tempdf)]
+                map.mat[(i + 1):nrow(tempdf), i] <- map.mat[i, (i + 1):nrow(tempdf)]
               })
 
               ## generate igraph from adjacency matrix
@@ -377,20 +375,19 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #'
 #' @return An object of igraph with all attributes about the enrichement map.
 #' @examples
-#' \dontrun{
 #' ## load a GSCA object(see the examples of 'analyze' GSCA for details)
 #' data(gsca)
 #'
 #' ## Example1: view an enrichment map for top 7 significant 'GO_BP' gene sets of GSEA results
 #' library(igraph)
 #' viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_BP"),
-#'               allSig = F, ntop = 7, gsNameType = "term")
+#'               allSig = FALSE, ntop = 7, gsNameType = "term")
 #'
 #' ## Example2: view an enrichment map for top 7 significant 'GO_BP'
 #' ## and 'PW_KEGG' gene sets of GSEA results
 #' library(igraph)
 #' viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_BP", "PW_KEGG"),
-#'               allSig = F, ntop = 7, gsNameType = "term")
+#'               allSig = FALSE, ntop = 7, gsNameType = "term")
 #'
 #' ## Example3: view an enrichment map with specificGenesets in 'GO_BP' gene sets of GSEA results
 #' library(igraph)
@@ -402,7 +399,8 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #' GO_BP_geneset <- tmp$GO_BP[c(4,2,6,9,12)]
 #' ## the name of specificGenesets also needs to match with the names of tmp
 #' specificGeneset <- list("GO_BP"=GO_BP_geneset)
-#' viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_BP"), allSig = F, gsNameType = "term",
+#' viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_BP"),
+#'               allSig = FALSE, gsNameType = "term",
 #'               ntop = NULL, specificGeneset = specificGeneset)
 #'
 #'
@@ -413,9 +411,9 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #' GO_BP_geneset <- tmp$GO_BP[c(6,3,5,9,12)]
 #' PW_KEGG_geneset <- tmp$PW_KEGG[c(7,2,5,1,9)]
 #' specificGeneset <- list("GO_BP"=GO_BP_geneset, "PW_KEGG"=PW_KEGG_geneset)
-#' viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_BP", "PW_KEGG"), allSig = F,
-#'               gsNameType = "term", ntop = NULL, specificGeneset = specificGeneset)
-#' }
+#' viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_BP", "PW_KEGG"),
+#'               allSig = FALSE, gsNameType = "term",
+#'               ntop = NULL, specificGeneset = specificGeneset)
 #'
 #' @export
 #' @references

@@ -46,7 +46,6 @@ if (!isGeneric("analyze")) {
 #' Gene set enrichment analysis: A knowledge-based approach for interpreting genome-wide expression profiles
 #' PNAS 2005 102 (43) 15545-15550; published ahead of print September 30, 2005, doi:10.1073/pnas.0506580102
 #' @examples
-#' \dontrun{
 #' # ====================================================
 #' # Gene Set Collection Analysis Part
 #' library(org.Hs.eg.db)
@@ -84,7 +83,7 @@ if (!isGeneric("analyze")) {
 #' summarize(gsca2)
 #' head(gsca2@@result$GSEA.results$GO_BP)
 #' head(gsca2@@result$HyperGeo.results$PW_KEGG)
-#' }
+
 
 
 
@@ -341,12 +340,12 @@ analyzeGeneSetCollections <-
         GSEA.Adj.Pvalue <-
           GSEA.results.list[[i]][a2, "Adjusted.Pvalue", drop = FALSE]
 
-        overlap[[i]] <<- cbind(Hypergeometric.Pvalue, GSEA.Pvalue)
-        colnames(overlap[[i]]) <<-
+        overlap[[i]] <- cbind(Hypergeometric.Pvalue, GSEA.Pvalue)
+        colnames(overlap[[i]]) <-
           c("HyperGeo.Pvalue", "GSEA.Pvalue")
-        overlap.adj[[i]] <<-
+        overlap.adj[[i]] <-
           cbind(Hypergeometric.Adj.Pvalue, GSEA.Adj.Pvalue)
-        colnames(overlap.adj[[i]]) <<-
+        colnames(overlap.adj[[i]]) <-
           c("HyperGeo.Adj.Pvalue", "GSEA.Adj.Pvalue")
       })
       names(overlap) <- names(listOfGeneSetCollections)
@@ -382,7 +381,7 @@ calcHyperGeo <- function (listOfGeneSetCollections,
            recursive = FALSE,
            use.names = FALSE)
   names(combinedGeneSets) <-
-    unlist(lapply(listOfGeneSetCollections, names), use.names = F)
+    unlist(lapply(listOfGeneSetCollections, names), use.names = FALSE)
 
   universe = names(geneList)
   overlappedSize <-
@@ -416,7 +415,7 @@ calcHyperGeo <- function (listOfGeneSetCollections,
       res[rownames(res) %in% names(listOfGeneSetCollections[[i]]), , drop = FALSE]
     extracted <-
       extracted[order(extracted[, "Adjusted.Pvalue"]), , drop = FALSE]
-    results[[i]] <<- extracted
+    results[[i]] <- extracted
   })
 
   names(results) <- names(listOfGeneSetCollections)
@@ -442,7 +441,7 @@ calcHGTScore <- function(geneSet, universe, hits) {
   n <- length(hits)
   ex <- (n / N) * m
   HGTresult <-
-    ifelse(m == 0, NA, stats::phyper(k - 1, m, N - m, n, lower.tail = F))
+    ifelse(m == 0, NA, stats::phyper(k - 1, m, N - m, n, lower.tail = FALSE))
   hyp.vec <- c(N, m, n, ex, k, HGTresult, NA)
   names(hyp.vec) <-
     c(
@@ -460,6 +459,7 @@ calcHGTScore <- function(geneSet, universe, hits) {
 
 #' @import foreach
 #' @importFrom  stats p.adjust
+#' @import doParallel
 calcGSEA <-
   function(listOfGeneSetCollections,
            geneList,
@@ -476,7 +476,7 @@ calcGSEA <-
              recursive = FALSE,
              use.names = FALSE)
     names(combinedGeneSets) <-
-      unlist(lapply(listOfGeneSetCollections, names), use.names = F)
+      unlist(lapply(listOfGeneSetCollections, names), use.names = FALSE)
     groupInfo <-
       rep(names(listOfGeneSetCollections),
           lapply(listOfGeneSetCollections, length))
@@ -563,7 +563,7 @@ calcGSEA <-
         res[rownames(res) %in% names(listOfGeneSetCollections[[i]]), , drop = FALSE]
       GSEA.res.mat <-
         GSEA.res.mat[order(GSEA.res.mat[, "Adjusted.Pvalue"]), , drop = FALSE]
-      results[[i]] <<- GSEA.res.mat
+      results[[i]] <- GSEA.res.mat
     })
 
     names(results) <- names(listOfGeneSetCollections)

@@ -164,7 +164,6 @@ setMethod("preprocess", signature = "NWA",
 #' Another way to set up the interactome is to input an igraph object when the NWA object
 #' is created (i.e. nwa=new("NWA", pvalues, phenotypes, interactome)).
 #' @examples
-#' \dontrun{
 #' library(org.Hs.eg.db)
 #' library(GO.db)
 #' ## load data for subnetwork analyses
@@ -191,8 +190,9 @@ setMethod("preprocess", signature = "NWA",
 #' nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
 #' ## create an interactome for nwa by downloading for BioGRID database
 #' nwa1 <- interactome(nwa, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
-#' }
 #' @export
+#' @return In the end, this function will return an updated object with slot 'interactome'
+#' as an object of class 'igraph'.
 #' @importFrom BioNet makeNetwork
 #' @importFrom igraph vcount ecount
 setMethod(
@@ -309,7 +309,7 @@ biogridDataDownload <- function(link, species = "Hs", dataDirectory = ".",
 
   biogridSpecies <- fread(
     file.path(dataDirectory, grep(bionet.species[species],
-            listfiles, value = TRUE)), header = T, skip=0, data.table = F, stringsAsFactors = F)
+            listfiles, value = TRUE)), header = TRUE, skip=0, data.table = FALSE, stringsAsFactors = FALSE)
 
   ## Extract the relevant columns from the tab-delimited file that was read
   source <- as.character(biogridSpecies[, "Entrez Gene Interactor A"])

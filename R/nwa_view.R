@@ -17,14 +17,14 @@ if (!isGeneric("viewSubNet")) {
 #' @importFrom igraph V E
 #' @export
 #' @aliases extractSubNet
+#' @return This function would return a subnetwork as an 'igraph' object.
 #' @examples
-#' \dontrun{
 #' ## load a NWA object(see the examples of analyze NWA for details)
 #' data(nwa)
 #'
 #' ## extract the subnetwork as an igraph object
+#' library(igraph)
 #' subnetwork <- extractSubNet(nwa)
-#' }
 #'
 setMethod("extractSubNet", signature = "NWA",
           function(object) {
@@ -55,14 +55,13 @@ setMethod("extractSubNet", signature = "NWA",
 #' @param seriesObjs A list of NWA object. Internally used in the shiny report for visualizing
 #' the subnetwork of time series data. No need to explicitly set it!
 #' @export
+#' @return In the end, this function would plot the identified subnetwork.
 #' @examples
-#' \dontrun{
 #' ## load a NWA object(see the examples of analyze NWA for details)
 #' data(nwa)
 #'
 #' ## plot the subnetwork
 #' viewSubNet(nwa)
-#' }
 #' @importFrom igraph as_data_frame
 #' @importFrom utils modifyList
 setMethod("viewSubNet", signature = "NWA",

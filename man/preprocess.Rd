@@ -79,7 +79,6 @@ See the function annotationConvertor for more details about how to convert
 annotations.
 }
 \examples{
-\dontrun{
 # ===========================================================
 # GSCA class
 library(org.Hs.eg.db)
@@ -107,7 +106,6 @@ gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMapping
 
 ## print gsca1
 gsca1
-}
 \dontrun{
 # ===========================================================
 # NWA class

@@ -57,6 +57,11 @@ pre-screened for being associated with a phenotype.
 Please be aware that both types of tests are less reliable when the number
 of replicates for each construct is low.
 }
+\examples{
+data(xn)
+test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn, annotationColumn="GeneID",
+                                      alternative="two.sided", tests=c("T-test"))
+}
 \references{
 Michael Boutros, Ligia P. Bras L and Wolfgang Huber. Analysis of cell-based
 RNAi screens. Genome Biology 7:7 R66 (2006)."

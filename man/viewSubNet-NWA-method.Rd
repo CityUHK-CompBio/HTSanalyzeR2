@@ -18,15 +18,16 @@ map in a shiny report by  \code{\link[HTSanalyzeR2]{report}}.}
 \item{seriesObjs}{A list of NWA object. Internally used in the shiny report for visualizing
 the subnetwork of time series data. No need to explicitly set it!}
 }
+\value{
+In the end, this function would plot the identified subnetwork.
+}
 \description{
 Plot the identified subnetwork of an NWA object.
 }
 \examples{
-\dontrun{
 ## load a NWA object(see the examples of analyze NWA for details)
 data(nwa)
 
 ## plot the subnetwork
 viewSubNet(nwa)
-}
 }

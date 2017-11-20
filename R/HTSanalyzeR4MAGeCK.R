@@ -59,7 +59,6 @@
 #' the results in. All the results would be stored as RData named 'results.RData' under
 #' a new automatic generated directory. It can be loaded into R by 'readRDS(results.RData)'.
 #' @examples
-#' \dontrun{
 #' data(d7)
 #'
 #' library(GO.db)
@@ -85,7 +84,6 @@
 #'                    keggGSCs=c("PW_KEGG"),
 #'                    goGSCs = c("GO_MF"),
 #'                    nwAnalysisFdr = 0.0001)
-#' }
 #' @export
 #' @importFrom methods new
 HTSanalyzeR4MAGeCK <- function(MAGeCKdata,
@@ -147,7 +145,7 @@ HTSanalyzeR4MAGeCK <- function(MAGeCKdata,
   if(any(!(c("neg.lfc", "neg.p.value", "pos.lfc", "pos.p.value") %in% colnames(MAGeCKdata) ))){
     stop("'MAGeCKdata' should be a result file directly from MAGecCK!\n")
   }
-  MAGeCKdata <- as.data.frame(MAGeCKdata, stringsAsFactors = F)
+  MAGeCKdata <- as.data.frame(MAGeCKdata, stringsAsFactors = FALSE)
   MAGeCKdata$neg.p.value <- as.numeric(MAGeCKdata$neg.p.value)
   MAGeCKdata$neg.lfc <- as.numeric(MAGeCKdata$neg.lfc)
   MAGeCKdata$pos.p.value <- as.numeric(MAGeCKdata$pos.p.value)

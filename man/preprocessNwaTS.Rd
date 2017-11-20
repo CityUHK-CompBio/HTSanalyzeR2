@@ -34,7 +34,6 @@ In the end, this function will return an updated list of NWA object.
 This function will do basic preprocessing for each NWA object of 'nwaList'.
 }
 \examples{
-\dontrun{
 data(d7, d13, d25)
 
 ## generate expInfor to describe the information of time series data
@@ -61,7 +60,6 @@ nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS =
 ## preprocess nwaTS
 nwaTS1 <- preprocessNwaTS(nwaTS, species="Hs", initialIDs="SYMBOL",
                          keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
-}
 
 }
 \seealso{

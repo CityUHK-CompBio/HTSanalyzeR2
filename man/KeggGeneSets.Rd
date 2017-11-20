@@ -25,11 +25,9 @@ This function needs Internet connection and relies on the
 following packages: KEGGREST.
 }
 \examples{
-\dontrun{
 library(KEGGREST)
 library(org.Dm.eg.db)
 DM_KEGG <- KeggGeneSets(species = "Dm")
-}
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{MSigDBGeneSets}}

@@ -32,7 +32,6 @@ for the interactome to identify the maximum scoring subnetwork based on
 the BioNet package.
 }
 \examples{
-\dontrun{
 library(org.Hs.eg.db)
 library(GO.db)
 ## load data for subnetwork analyses
@@ -49,7 +48,6 @@ data(Biogrid_HS_Interactome)
 ##identify subnetworks
 enrichedSubNet <- networkAnalysis(pvalues=pvalues, graph=Biogrid_HS_Interactome,
                                   fdr = 0.001, verbose = TRUE)
-}
 }
 \references{
 Beisser D, Klau GW, Dandekar T, Muller T, Dittrich MT. BioNet: an R-Package

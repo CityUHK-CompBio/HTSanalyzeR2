@@ -16,6 +16,9 @@ the gene set is.}
 
 \item{gsName}{A single character value specifying the name of the gene set to be plotted.}
 }
+\value{
+In the end, this function would draw a GSEA figure for specified gene set.
+}
 \description{
 This is a generic function. When implemented as the S4 method for objects of class GSCA,
  this function plots a figure
@@ -26,7 +29,6 @@ We suggest to print the names of top significant gene sets using the
 function \code{\link[HTSanalyzeR2]{getTopGeneSets}} before plotting the GSEA results.
 }
 \examples{
-\dontrun{
 ## load a GSCA object(see the examples of analyze GSCA for details)
 data(gsca)
 
@@ -38,5 +40,4 @@ topGS_GO_BP <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_BP", allSig=TRUE)
 
 ## view GSEA results for one gene set
 viewGSEA(gsca, "GO_BP", topGS_GO_BP[["GO_BP"]][1])
-}
 }

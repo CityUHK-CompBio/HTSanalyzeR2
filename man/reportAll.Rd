@@ -21,11 +21,13 @@ for details.}
 \item{reportDir}{A single character value specifying the directory to store reports. For default both the
 enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport".}
 }
+\value{
+in the end, this function would generate a shiny report.
+}
 \description{
 This function can create shiny reports for both gene sets enrichment analysis and network analysis.
 }
 \examples{
-\dontrun{
 ## load data
 data(gsca, nwa, gscaTS, nwaTS)
 
@@ -56,5 +58,4 @@ GO_BP_geneset <- tmp$GO_BP[c(4,2,6,9,12)]
 ## the name of specificGenesets also needs to match with the names of tmp
 specificGeneset <- list("GO_BP"=GO_BP_geneset)
 reportAll(gscaTS, specificGeneset=specificGeneset)
-}
 }

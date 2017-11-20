@@ -67,20 +67,19 @@ ones. Especially when the number of the significant gene sets are huge, which wo
 map a mess as well as of no information. To this end, user can set the parameter \strong{specificGeneset}.
 }
 \examples{
-\dontrun{
 ## load a GSCA object(see the examples of 'analyze' GSCA for details)
 data(gsca)
 
 ## Example1: view an enrichment map for top 7 significant 'GO_BP' gene sets of GSEA results
 library(igraph)
 viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_BP"),
-              allSig = F, ntop = 7, gsNameType = "term")
+              allSig = FALSE, ntop = 7, gsNameType = "term")
 
 ## Example2: view an enrichment map for top 7 significant 'GO_BP'
 ## and 'PW_KEGG' gene sets of GSEA results
 library(igraph)
 viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_BP", "PW_KEGG"),
-              allSig = F, ntop = 7, gsNameType = "term")
+              allSig = FALSE, ntop = 7, gsNameType = "term")
 
 ## Example3: view an enrichment map with specificGenesets in 'GO_BP' gene sets of GSEA results
 library(igraph)
@@ -92,7 +91,8 @@ tmp <- getTopGeneSets(gsca, resultName = "GSEA.results", gscs=c("GO_BP"),
 GO_BP_geneset <- tmp$GO_BP[c(4,2,6,9,12)]
 ## the name of specificGenesets also needs to match with the names of tmp
 specificGeneset <- list("GO_BP"=GO_BP_geneset)
-viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_BP"), allSig = F, gsNameType = "term",
+viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_BP"),
+              allSig = FALSE, gsNameType = "term",
               ntop = NULL, specificGeneset = specificGeneset)
 
 
@@ -103,9 +103,9 @@ tmp <- getTopGeneSets(gsca, resultName = "GSEA.results", gscs=c("GO_BP", "PW_KEG
 GO_BP_geneset <- tmp$GO_BP[c(6,3,5,9,12)]
 PW_KEGG_geneset <- tmp$PW_KEGG[c(7,2,5,1,9)]
 specificGeneset <- list("GO_BP"=GO_BP_geneset, "PW_KEGG"=PW_KEGG_geneset)
-viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_BP", "PW_KEGG"), allSig = F,
-              gsNameType = "term", ntop = NULL, specificGeneset = specificGeneset)
-}
+viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_BP", "PW_KEGG"),
+              allSig = FALSE, gsNameType = "term",
+              ntop = NULL, specificGeneset = specificGeneset)
 
 }
 \references{

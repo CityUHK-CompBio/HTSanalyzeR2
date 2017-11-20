@@ -38,6 +38,10 @@ will be kept; otherwise, they will be removed from the data set.}
 \item{verbose}{A single logical value indicating to display detailed
 messages (when verbose=TRUE) or not (when verbose=FALSE)}
 }
+\value{
+In the end, this function will return an updated object with slot 'interactome'
+as an object of class 'igraph'.
+}
 \description{
 This is a generic function.
 When implemented as the S4 method of class NWA, this function creates an
@@ -53,7 +57,6 @@ Another way to set up the interactome is to input an igraph object when the NWA 
 is created (i.e. nwa=new("NWA", pvalues, phenotypes, interactome)).
 }
 \examples{
-\dontrun{
 library(org.Hs.eg.db)
 library(GO.db)
 ## load data for subnetwork analyses
@@ -80,5 +83,4 @@ nwa1 <- interactome(nwa, interactionMatrix = Biogrid_HS_Mat, genetic=FALSE)
 nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
 ## create an interactome for nwa by downloading for BioGRID database
 nwa1 <- interactome(nwa, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
-}
 }

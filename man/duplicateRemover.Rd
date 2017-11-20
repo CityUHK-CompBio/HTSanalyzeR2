@@ -28,11 +28,9 @@ with gene identifiers as names. It is used to prepare the named vector
 of phenotypes for the over-representation and gene set enrichment analysis.
 }
 \examples{
-\dontrun{
 x <- c(5,1,3,-2,6)
 names(x) <- c("gene1", "gene3", "gene7", "gene3", "gene4")
 xprocessed <- duplicateRemover(geneList=x, method="max")
-}
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{preprocess}}

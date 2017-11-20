@@ -28,13 +28,15 @@ p-value < 'pValueCutoff' of slot 'para') will be plotted; otherwise, only top 'n
 
 \item{...}{Other arguments used by the function png or pdf such as 'width' and 'height'}
 }
+\value{
+In the end, this function would plot GSEA figure and store them into the specified path.
+}
 \description{
 This is a generic function.When implemented as the S4 method for objects of class GSCA,
 this function plots figures of the positions of genes of the gene set in the ranked gene
 list and the location of the enrichment score for top significant gene sets.
 }
 \examples{
-\dontrun{
 ## load a GSCA object(see the examples of analyze GSCA for details)
 data(gsca)
 
@@ -43,5 +45,4 @@ summarize(gsca)
 
 ## plot  significant gene sets in GO_BP and PW_KEGG
 plotGSEA(gsca, gscs=c("GO_BP","PW_KEGG"), ntop=3, filepath=".")
-}
 }

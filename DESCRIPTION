@@ -2,7 +2,7 @@ Package: HTSanalyzeR2
 Type: Package
 Title: Gene set over-representation, enrichment and network analyses for high-
     throughput data and corresponding time-series data
-Version: 0.1.0.9000
+Version: 0.99.0 
 Author: Lina ZHU, Xiupei MEI, Feng GAO, Xin WANG
 Maintainer: Lina ZHU<zhulina0609@gmail.com>, Xiupei MEI <meixiupei@gmail.com>, Feng GAO <gaofeng21cn@gmail.com>
 Description: This package provides classes and methods for gene set over-
@@ -14,16 +14,13 @@ RoxygenNote: 6.0.1
 Imports: 
     GO.db,
     cellHTS2,
-    Rcpp,
     doParallel,
+    Rcpp,
     foreach,
     stringr,
     igraph,
-    GSEABase,
-    dygraphs,
     BioNet,
     DT,
-    dplyr,
     shiny,
     shinydashboard,
     colourpicker,
@@ -32,8 +29,11 @@ Imports:
     htmlwidgets,
     methods,
     RankProd,
-    htmltools,
-    AnnotationDbi
+    AnnotationDbi,
+    graphics,
+    grDevices,
+    stats,
+    utils 
 Collate: 
     'utils.R'
     'class_union.R'
@@ -69,6 +69,9 @@ Suggests:
     knitr,
     Homo.sapiens,
     org.Hs.eg.db,
-    org.Dm.eg.db
+    org.Dm.eg.db,
+    Biobase
 VignetteBuilder: knitr
-Depends: R(>= 2.10.0)
+Depends: R(>= 3.4)
+biocViews: GeneSetEnrichment, NetworkEnrichment, TimeCourse, 
+           GeneExpression, GO, KEGG

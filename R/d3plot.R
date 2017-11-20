@@ -1,5 +1,7 @@
-
-
+# import package in Namesapce as in description for passing biocCheck
+#' @importFrom shinydashboard dashboardPage
+#' @import colourpicker
+#' @import DT
 forceGraph <- function(nodes, links, nMappings, lMappings, options,
                        width = NULL, height = NULL, seriesData = NULL) {
 

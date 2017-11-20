@@ -8,7 +8,7 @@ if (!isGeneric("summarize")) {
 #' (the slot 'pvalues'), 'Phenotype' (the slot 'phenotypes'), 'Interactome' (the
 #' slot 'interactome'), 'Para' (the slot 'fdr'), 'Result' (the slot 'result')
 #' and 'ALL' (all slots).
-#'
+#' @return In the end, this function would return a summary of the NWA object.
 #' @examples
 #' \dontrun{
 #' # =================================================================

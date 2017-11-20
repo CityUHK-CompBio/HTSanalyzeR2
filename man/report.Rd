@@ -23,6 +23,11 @@ for details.}
 \item{reportDir}{A single character value specifying the directory to store reports. For default
 the enrichment analysis reports will be stored in the directory called "GSCAReport".}
 }
+\value{
+in the end, this function would generate a shiny report.
+
+in the end, this function would generate a shiny report.
+}
 \description{
 This is a generic function.
 }
@@ -40,7 +45,6 @@ For NWA object, the identified subnetwork could be modified according to the use
 in many ways such as layout, color, and etc. Details please see the vignette of our package.
 }
 \examples{
-\dontrun{
 # =======================================================
 # GSCA class
 ## load a GSCA object(see the examples of analyze GSCA for details)
@@ -57,7 +61,6 @@ GO_BP_geneset <- tmp$GO_BP[c(4,2,6,9,12)]
 ## the name of specificGenesets also needs to match with the names of tmp
 specificGeneset <- list("GO_BP"=GO_BP_geneset)
 report(gsca, specificGeneset=specificGeneset)
-}
 \dontrun{
 # =================================================================
 # NWA class

@@ -39,7 +39,6 @@ if (!isGeneric("preprocess")) {
 #' \code{\link[HTSanalyzeR2]{GSCA-class}} or \code{\link[HTSanalyzeR2]{NWA-class}}.
 #' @seealso \code{\link[HTSanalyzeR2]{duplicateRemover}}, \code{\link[HTSanalyzeR2]{annotationConvertor}}
 #' @examples
-#' \dontrun{
 #' # ===========================================================
 #' # GSCA class
 #' library(org.Hs.eg.db)
@@ -67,7 +66,6 @@ if (!isGeneric("preprocess")) {
 #'
 #' ## print gsca1
 #' gsca1
-#' }
 #' @details
 #' This function will do the following preprocessing steps:
 #'
@@ -225,11 +223,9 @@ setMethod("preprocess", signature = "GSCA",
 #' @seealso \code{\link[HTSanalyzeR2]{preprocess}}
 #'
 #' @examples
-#' \dontrun{
 #' x <- c(5,1,3,-2,6)
 #' names(x) <- c("gene1", "gene3", "gene7", "gene3", "gene4")
 #' xprocessed <- duplicateRemover(geneList=x, method="max")
-#' }
 #' @export
 duplicateRemover <- function(geneList, method = "max") {
   paraCheck("GSCAClass", "genelist", geneList)
@@ -307,7 +303,6 @@ duplicateRemover <- function(geneList, method = "max") {
 #' @return The same data vector/matrix but with names/row names converted.
 #'
 #' @examples
-#' \dontrun{
 #' library(org.Dm.eg.db)
 #' ## Example1: convert a named vector
 #' x <- runif(10)
@@ -320,7 +315,6 @@ duplicateRemover <- function(geneList, method = "max") {
 #' rownames(x) <- names(as.list(org.Dm.egSYMBOL2EG))[1:10]
 #' xEntrez <- annotationConvertor(geneList=x, species="Dm", initialIDs="SYMBOL",
 #'                                finalIDs="ENTREZID")
-#' }
 #' @export
 #' @importFrom AnnotationDbi mapIds columns
 #' @importFrom utils installed.packages

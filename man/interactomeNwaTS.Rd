@@ -44,7 +44,6 @@ Different from \code{\link[HTSanalyzeR2]{interactome}} which can either be perfo
 must be performed after \code{\link[HTSanalyzeR2]{preprocessNwaTS}}.
 }
 \examples{
-\dontrun{
 data(d7, d13, d25)
 
 ## generate expInfor to describe the information of time series data
@@ -86,7 +85,6 @@ nwaTS1 <- preprocessNwaTS(nwaTS, species="Hs", initialIDs="SYMBOL",
                          keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
 ## create an interactome for nwa by downloading for BioGRID database
 nwaTS2 <- interactomeNwaTS(nwaTS1, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
-}
 
 }
 \seealso{

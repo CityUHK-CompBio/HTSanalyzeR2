@@ -114,13 +114,13 @@ setMethod("show", signature = "GSCABatch", function(object) {
   cat("A GSCABatch object:\n\n")
   ## experimentName
   cat("-expInfor:\n")
-  print(object@expInfor, quote = F)
+  print(object@expInfor, quote = FALSE)
   cat("\n")
   ## phenotypeTS
   phenotypeTSLength <- unlist(lapply(object@phenotypeTS, length))
   phenotypeTSLength <- matrix(phenotypeTSLength, nrow = 1, dimnames = list(c("length"), c(object@expInfor[, "ID"])))
   cat("-phenotypeTS:\n")
-  print(phenotypeTSLength, quote = F)
+  print(phenotypeTSLength, quote = FALSE)
   cat("\n")
   ## hitsTS
   if(length(object@hitsTS) == 0){
@@ -128,7 +128,7 @@ setMethod("show", signature = "GSCABatch", function(object) {
   } else{
     hitsTSLength <- unlist(lapply(object@hitsTS, length))
     cat("-hitsTS:\n")
-    print(matrix(hitsTSLength, nrow = 1, dimnames = list(c("length"), c(object@expInfor[, "ID"]))), quote = F)
+    print(matrix(hitsTSLength, nrow = 1, dimnames = list(c("length"), c(object@expInfor[, "ID"]))), quote = FALSE)
     cat("\n")
   }
 })
@@ -242,13 +242,13 @@ setMethod("show", signature = "NWABatch", function(object) {
   cat("A NWABatch object:\n\n")
   ## experimentName
   cat("-expInfor:\n")
-  print(object@expInfor, quote = F)
+  print(object@expInfor, quote = FALSE)
   cat("\n")
   ## phenotypeTS
   phenotypeTSLength <- unlist(lapply(object@phenotypeTS, length))
   phenotypeTSLength <- matrix(phenotypeTSLength, nrow = 1, dimnames = list(c("length"), c(object@expInfor[, "ID"])))
   cat("-phenotypeTS:\n")
-  print(phenotypeTSLength, quote = F)
+  print(phenotypeTSLength, quote = FALSE)
   cat("\n")
   ## pvalueTS
   if(length(object@pvalueTS) == 0){
@@ -256,7 +256,7 @@ setMethod("show", signature = "NWABatch", function(object) {
   } else{
     pvalueTSLength <- unlist(lapply(object@pvalueTS, length))
     cat("-pvalueTS:\n")
-    print(matrix(pvalueTSLength, nrow = 1, dimnames = list(c("length"), c(object@expInfor[, "ID"]))), quote = F)
+    print(matrix(pvalueTSLength, nrow = 1, dimnames = list(c("length"), c(object@expInfor[, "ID"]))), quote = FALSE)
     cat("\n")
   }
 })

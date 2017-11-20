@@ -9,6 +9,6 @@
 xn
 }
 \description{
-An object of class 'cellHTS2'.
+An object of class 'cellHTS2' which has been normalized, configured and annotated.
 }
 \keyword{datasets}
