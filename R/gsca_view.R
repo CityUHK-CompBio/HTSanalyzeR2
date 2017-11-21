@@ -200,7 +200,7 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust
 }
 
 
-##Write html reports
+## Write html reports
 #' @importFrom grDevices dev.off pdf png
 makeGSEAplots <- function(geneList, geneSet, exponent, filepath,
                           filename, output,
@@ -210,11 +210,13 @@ makeGSEAplots <- function(geneList, geneSet, exponent, filepath,
                      exponent = exponent, mode = "graph", GSEA.results = GSEA.results,
                      gsName = gsName)
   filename<-sub("\\W","_", filename, perl=TRUE)
+  if(!file.exists(file.path(filepath, "gsea_plots")))
+    dir.create(file.path(filepath, "gsea_plots"))
   if(output == "pdf" )
-    pdf(file=file.path(filepath, paste("gsea_plots", filename, ".pdf", sep="")),
+    pdf(file=file.path(filepath, "gsea_plots", paste(filename, ".pdf", sep="")),
         onefile = FALSE, ...=...)
   if(output == "png" )
-    png(filename=file.path(filepath, paste("gsea_plots", filename, ".png", sep="")), ...=...)
+    png(filename=file.path(filepath, "gsea_plots", paste(filename, ".png", sep="")), ...=...)
   gseaPlots(runningScore = test[['runningScore']],
             enrichmentScore = test[['enrichmentScore']],
             positions = test[['positions']], geneList = geneList,
