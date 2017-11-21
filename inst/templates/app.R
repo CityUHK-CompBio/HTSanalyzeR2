@@ -1,12 +1,8 @@
 library(shiny)
 library(shinydashboard)
-library(igraph)
-library(dplyr)
 library(DT)
 library(colourpicker)
 library(HTSanalyzeR2)
-library(KEGGREST)
-library(data.table)
 
 ## ============================================ Loading results ============================================
 ## results: list(gsca = gsca, nwa = nwa)
@@ -78,7 +74,6 @@ trim_result <- function(result, digits = 3) {
 
   result
 }
-
 
 create_data_table <- function(gscaObj, analysis, genesets) {
   jsRender <- JS("function(data, type, row, meta) { return type === 'display' && Number(data) == 0 ? '<1e-4' : data }")
