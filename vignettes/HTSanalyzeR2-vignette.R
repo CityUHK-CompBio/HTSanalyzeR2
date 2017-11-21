@@ -25,7 +25,8 @@ MSig_C2 <- MSigDBGeneSets(collection = "c2")
 ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG, MSig_C2=MSig_C2)
 
 ## --------------------------------------------------------------------------
-gsca <- new("GSCA", listOfGeneSetCollections=ListGSC, geneList=phenotype, hits=hits)
+gsca <- new("GSCA", listOfGeneSetCollections=ListGSC, 
+            geneList=phenotype, hits=hits)
 
 ## ---- results='hide', message=FALSE----------------------------------------
 gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL",
@@ -33,16 +34,20 @@ gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL",
                     orderAbsValue=FALSE)
 
 ## ---- results='hide', eval=FALSE-------------------------------------------
-#  gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
-#                                    nPermutations=100, minGeneSetSize=180,
-#                                    exponent=1), doGSOA = TRUE, doGSEA = TRUE)
+#  gsca2 <- analyze(gsca1,
+#                   para=list(pValueCutoff=0.05, pAdjustMethod="BH",
+#                             nPermutations=100, minGeneSetSize=180,
+#                             exponent=1),
+#                   doGSOA = TRUE, doGSEA = TRUE)
 
 ## ---- results='hide', message=FALSE----------------------------------------
 ## analyze using multiple cores
 doParallel::registerDoParallel(cores=2)
-gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
-                                  nPermutations=100, minGeneSetSize=180,
-                                  exponent=1), doGSOA = TRUE, doGSEA = TRUE)
+gsca2 <- analyze(gsca1, 
+                 para=list(pValueCutoff=0.05, pAdjustMethod="BH",
+                           nPermutations=100, minGeneSetSize=180,
+                           exponent=1), 
+                 doGSOA = TRUE, doGSEA = TRUE)
 
 ## --------------------------------------------------------------------------
 head(gsca2@result$HyperGeo.results$GO_MF, 3)
@@ -67,22 +72,23 @@ viewGSEA(gsca3, gscName="GO_MF", gsName=topGS[["GO_MF"]][1])
 ## ---- eval=FALSE-----------------------------------------------------------
 #  plotGSEA(gsca3, gscs=c("GO_MF", "PW_KEGG"), ntop=3, filepath=".")
 
-## ---- fig.height=4, fig.width=6--------------------------------------------
-## the enrichment map for top 5 significant gene sets in 'PW_KEGG' and 'GO_MF'
-viewEnrichMap(gsca3, gscs=c("PW_KEGG", "GO_MF"),
-              allSig = FALSE, gsNameType = "term", ntop = 5)
+## ---- fig.height=4, fig.width=6, eval=FALSE--------------------------------
+#  ## the enrichment map for top 5 significant gene sets in 'PW_KEGG' and 'GO_MF'
+#  viewEnrichMap(gsca3, gscs=c("PW_KEGG", "GO_MF"),
+#                allSig = FALSE, gsNameType = "term", ntop = 5)
 
-## ---- warning=FALSE, fig.height=3.5, fig.width=6---------------------------
-## specificGeneset needs to be a subset of all analyzed gene sets
-## which can be roughly gotten by:
-tmp <- getTopGeneSets(gsca3, resultName = "GSEA.results", gscs=c("PW_KEGG"),
-                      ntop = 20000, allSig = FALSE)
-## In that case, we can define specificGeneset as below:
-PW_KEGG_geneset <- tmp$PW_KEGG[c(2, 3, 9, 11, 12, 13)]
-## the name of specificGenesets also needs to match with the names of tmp
-specificGeneset <- list("PW_KEGG"=PW_KEGG_geneset)
-viewEnrichMap(gsca3, resultName = "GSEA.results", gscs=c("PW_KEGG"), allSig = FALSE, gsNameType = "term",
-              ntop = NULL, specificGeneset = specificGeneset)
+## ---- warning=FALSE, fig.height=3.5, fig.width=6, eval=FALSE---------------
+#  ## specificGeneset needs to be a subset of all analyzed gene sets
+#  ## which can be roughly gotten by:
+#  tmp <- getTopGeneSets(gsca3, resultName = "GSEA.results", gscs=c("PW_KEGG"),
+#                        ntop = 20000, allSig = FALSE)
+#  ## In that case, we can define specificGeneset as below:
+#  PW_KEGG_geneset <- tmp$PW_KEGG[c(2, 3, 9, 11, 12, 13)]
+#  ## the name of specificGenesets also needs to match with the names of tmp
+#  specificGeneset <- list("PW_KEGG"=PW_KEGG_geneset)
+#  viewEnrichMap(gsca3, resultName = "GSEA.results", gscs=c("PW_KEGG"),
+#                allSig = FALSE, gsNameType = "term",
+#                ntop = NULL, specificGeneset = specificGeneset)
 
 ## --------------------------------------------------------------------------
 pvalues <- GSE33113.limma$adj.P.Val
@@ -102,16 +108,16 @@ nwa2@interactome
 ## ---- results='hide', message=FALSE, warning=FALSE-------------------------
 nwa3 <- analyze(nwa2, fdr=1e-06, species="Hs")
 
-## --------------------------------------------------------------------------
-viewSubNet(nwa3)
+## ---- eval=FALSE-----------------------------------------------------------
+#  viewSubNet(nwa3)
 
 ## --------------------------------------------------------------------------
 HTSanalyzeR2::summarize(nwa3)
 
 ## --------------------------------------------------------------------------
 data(d7, d13, d25)
-expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
-                   byrow = FALSE, dimnames = list(NULL, c("ID", "Description")))
+expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2, byrow = FALSE, 
+                   dimnames = list(NULL, c("ID", "Description")))
 datalist <- list(d7, d13, d25)
 phenotypeTS <- lapply(datalist, function(x) {
   tmp <- as.vector(x$neg.lfc)
@@ -135,14 +141,18 @@ gscaTS <- new("GSCABatch", expInfor = expInfor,
 
 ## ---- results='hide', message=FALSE----------------------------------------
 gscaTS1 <- preprocessGscaTS(gscaTS, species="Hs", initialIDs="SYMBOL",
-                            keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
+                            keepMultipleMappings=TRUE, 
+                            duplicateRemoverMethod="max",
                             orderAbsValue=FALSE)
 
 ## ---- results='hide', message=FALSE----------------------------------------
 doParallel::registerDoParallel(cores=2)
-gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
-                                            nPermutations=100, minGeneSetSize=180,
-                                            exponent=1), doGSOA = TRUE, doGSEA = TRUE)
+gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05, 
+                                            pAdjustMethod="BH",
+                                            nPermutations=100, 
+                                            minGeneSetSize=180,
+                                            exponent=1), 
+                         doGSOA = TRUE, doGSEA = TRUE)
 head(gscaTS2[[1]]@result$GSEA.results$GO_BP, 3)
 
 ## ---- message=FALSE--------------------------------------------------------
@@ -160,10 +170,12 @@ nwaTS <- new("NWABatch", expInfor = expInfor,
 
 ## ---- results='hide', message=FALSE, eval=FALSE----------------------------
 #  nwaTS1 <- preprocessNwaTS(nwaTS, species="Hs", initialIDs="SYMBOL",
-#                            keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
+#                            keepMultipleMappings=TRUE,
+#                            duplicateRemoverMethod="max")
 
 ## ---- results='hide', message=FALSE, eval=FALSE----------------------------
-#  nwaTS2 <- interactomeNwaTS(nwaTS1, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
+#  nwaTS2 <- interactomeNwaTS(nwaTS1, species="Hs",
+#                             reportDir="HTSanalyzerReport", genetic=FALSE)
 #  nwaTS3 <- analyzeNwaTS(nwaTS2, fdr=0.0001, species="Hs")
 
 ## ---- eval=FALSE-----------------------------------------------------------
@@ -202,7 +214,8 @@ nwaTS <- new("NWABatch", expInfor = expInfor,
 #  names(phenotype) <- allgenes
 
 ## ---- eval=FALSE-----------------------------------------------------------
-#  gsca <- new("GSCA", listOfGeneSetCollections=ListGSC, geneList=phenotype, hits=hits)
+#  gsca <- new("GSCA", listOfGeneSetCollections=ListGSC,
+#              geneList=phenotype, hits=hits)
 #  ## the following analysis is the same as before
 
 ## ---- eval=FALSE-----------------------------------------------------------
