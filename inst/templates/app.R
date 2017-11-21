@@ -1,12 +1,8 @@
 library(shiny)
 library(shinydashboard)
-library(igraph)
-library(dplyr)
 library(DT)
 library(colourpicker)
 library(HTSanalyzeR2)
-library(KEGGREST)
-library(data.table)
 
 ## ============================================ Loading results ============================================
 ## results: list(gsca = gsca, nwa = nwa)
@@ -78,7 +74,6 @@ trim_result <- function(result, digits = 3) {
 
   result
 }
-
 
 create_data_table <- function(gscaObj, analysis, genesets) {
   jsRender <- JS("function(data, type, row, meta) { return type === 'display' && Number(data) == 0 ? '<1e-4' : data }")
@@ -155,7 +150,7 @@ body <- dashboardBody(
               column(width = 12,
                      box(width = NULL, status = "success", solidHeader = TRUE,
                          title = "Enrichment Map",
-                         forceGraphOutput("map_output")))
+                         HTSanalyzeR2:::forceGraphOutput("map_output")))
             )
     ),
 
@@ -164,7 +159,7 @@ body <- dashboardBody(
               column(width = 12,
                      box(width = NULL, status = "success", solidHeader = TRUE,
                          title = "Network Analysis",
-                         forceGraphOutput("network_output")))
+                         HTSanalyzeR2:::forceGraphOutput("network_output")))
             )
     ),
 
@@ -270,25 +265,25 @@ server <- function(input, output, session) {
   )
 
   observeEvent(input$process_map, {
-    output$map_output <- updateForceGraph(list(process = input$process_map))
+    output$map_output <- HTSanalyzeR2:::updateForceGraph(list(process = input$process_map))
   })
 
   observeEvent(
     { input$analysis_map
       input$genesets_map },
     {
-      output$map_output <- renderForceGraph(create_enrich_map(gsca, gscaObjs, input))
+      output$map_output <- HTSanalyzeR2:::renderForceGraph(create_enrich_map(gsca, gscaObjs, input))
     }
   )
 
   observeEvent(input$process_net, {
-    output$network_output <- updateForceGraph(list(process = input$process_net))
+    output$network_output <- HTSanalyzeR2:::updateForceGraph(list(process = input$process_net))
     renderNWASummary(input, output) # nwaObjs[[input$process_net]]
   })
 
   ## TODO: undefined behavior
   observeEvent({42}, {
-    output$network_output <- renderForceGraph(create_network(nwa, nwaObjs))
+    output$network_output <- HTSanalyzeR2:::renderForceGraph(create_network(nwa, nwaObjs))
     renderNWASummary(input, output) # nwaObjs[[input$process_net]]
   })
 }
