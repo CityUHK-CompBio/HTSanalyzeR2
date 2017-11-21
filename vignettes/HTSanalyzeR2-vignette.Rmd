@@ -2,9 +2,9 @@
 title: "HTSanalyzeR2: A R/Bioconductor package for gene set enrichment and network analysis of various high-throughput data"
 author: 
 - name: Lina Zhu 
-  affiliation: College of Veterinary Medicine and Life Sciences, City University of Hong Kong, Hong Kong
+  affiliation: Department of Biomedical Sciences, City University of Hong Kong, Hong Kong
 - name: Feng Gao
-  affiliation: College of Veterinary Medicine and Life Sciences, City University of Hong Kong, Hong Kong
+  affiliation: Department of Biomedical Sciences, City University of Hong Kong, Hong Kong
 - name: Xiupei Mei
   affiliation: Department of Computer Science, City University of Hong Kong, Hong Kong
 - name: Xin Wang
@@ -118,7 +118,7 @@ After getting a preprocessed 'GSCA' object, you can perform hypergeometric test 
 ```{r, results='hide', eval=FALSE}
 gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
                                   nPermutations=100, minGeneSetSize=180,
-                                  exponent=1), doGSOA = T, doGSEA = T)
+                                  exponent=1), doGSOA = TRUE, doGSEA = TRUE)
 ```
 
 In this case study, we only use 100 permutations and set a very large *minGeneSetSize* just for a fast compilation of this vignette. In real applications, you may want a much smaller threshold (e.g. 10) and more permutations(e.g. 1000) to get a more robust GSEA result.
@@ -130,7 +130,7 @@ During the enrichment analysis of gene sets, the function evaluates the statisti
 doParallel::registerDoParallel(cores=2)
 gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
                                   nPermutations=100, minGeneSetSize=180,
-                                  exponent=1), doGSOA = T, doGSEA = T)
+                                  exponent=1), doGSOA = TRUE, doGSEA = TRUE)
 ```
 
 After analyzing, all the results would be stored in slot *result*. If hypergeometric test and GSEA are both performed, gene sets which are both significant in this two analysis based on either pvalue or adjusted pvalue can be gotten.
@@ -186,7 +186,7 @@ However, you are always highly recommended to use *report* to visualize and modi
 ```{r, fig.height=4, fig.width=6}
 ## the enrichment map for top 5 significant gene sets in 'PW_KEGG' and 'GO_MF'
 viewEnrichMap(gsca3, gscs=c("PW_KEGG", "GO_MF"),
-              allSig = F, gsNameType = "term", ntop = 5)
+              allSig = FALSE, gsNameType = "term", ntop = 5)
 ```
 
 
@@ -203,7 +203,7 @@ tmp <- getTopGeneSets(gsca3, resultName = "GSEA.results", gscs=c("PW_KEGG"),
 PW_KEGG_geneset <- tmp$PW_KEGG[c(2, 3, 9, 11, 12, 13)]
 ## the name of specificGenesets also needs to match with the names of tmp
 specificGeneset <- list("PW_KEGG"=PW_KEGG_geneset)
-viewEnrichMap(gsca3, resultName = "GSEA.results", gscs=c("PW_KEGG"), allSig = F, gsNameType = "term",
+viewEnrichMap(gsca3, resultName = "GSEA.results", gscs=c("PW_KEGG"), allSig = FALSE, gsNameType = "term",
               ntop = NULL, specificGeneset = specificGeneset)
 ```
 
@@ -286,7 +286,7 @@ To make it easy to compile this vignette, here we only use Biological Process(BP
 ```{r}
 data(d7, d13, d25)
 expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
-                   byrow = F, dimnames = list(NULL, c("ID", "Description")))
+                   byrow = FALSE, dimnames = list(NULL, c("ID", "Description")))
 datalist <- list(d7, d13, d25)
 phenotypeTS <- lapply(datalist, function(x) {
   tmp <- as.vector(x$neg.lfc)
