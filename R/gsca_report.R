@@ -150,7 +150,7 @@ reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL, specificGeneset =
 
 
 ## helper functions for shiny app
-
+#' @importFrom shiny tagList
 generateGSCASummary <- function(gsca) {
   title <- tags$h3("Summary")
   desc  <- tags$p(paste("The enrichment analysis was performed using the phenotype vector including",
