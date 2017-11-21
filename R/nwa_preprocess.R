@@ -199,7 +199,7 @@ setMethod(
   "interactome",
   signature = "NWA",
   function(object, interactionMatrix = NULL, species,
-           link = "http://bit.ly/2jDsTFM",
+           link = "https://bit.ly/2jDsTFM",
            reportDir = "HTSanalyzerReport", genetic = FALSE,
            force = FALSE, verbose = TRUE) {
     ## check arguments
@@ -272,7 +272,7 @@ biogridDataDownload <- function(link, species = "Hs", dataDirectory = ".",
   if(!missing(link) && !is.null(link))
     paraCheck("PreProcess", "link", link)
   else
-    link <- "http://bit.ly/2jDsTFM"
+    link <- "https://bit.ly/2jDsTFM"
   paraCheck("LoadGeneSets", "species", species)
   paraCheck("PreProcess", "dataDirectory", dataDirectory)
   paraCheck("General", "verbose", verbose)
@@ -309,7 +309,8 @@ biogridDataDownload <- function(link, species = "Hs", dataDirectory = ".",
 
   biogridSpecies <- fread(
     file.path(dataDirectory, grep(bionet.species[species],
-            listfiles, value = TRUE)), header = TRUE, skip=0, data.table = FALSE, stringsAsFactors = FALSE)
+              listfiles, value = TRUE)), header = TRUE, skip=0,
+              data.table = FALSE, stringsAsFactors = FALSE)
 
   ## Extract the relevant columns from the tab-delimited file that was read
   source <- as.character(biogridSpecies[, "Entrez Gene Interactor A"])

@@ -178,7 +178,7 @@ GOGeneSets <- function(species = "Hs", ontologies = c("MF")) {
   this.go.id <- names(this.go.list)
   sapply(seq_along(this.go.id),
          function(s)
-           names(this.go.list[[s]]) <- NULL)
+           names(this.go.list[[s]]) <<- NULL)
 
   ## tag all GO terms of types in 'ontologies'
   this.go.ontology.tag <- rep(FALSE, length(this.go.id))

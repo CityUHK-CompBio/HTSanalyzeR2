@@ -48,14 +48,14 @@ forceGraph <- function(nodes, links, nMappings, lMappings, options,
 }
 
 #' @importFrom htmlwidgets shinyWidgetOutput
-
+#' @export
 forceGraphOutput <- function(outputId, width = "100%", height = "750px") {
   shinyWidgetOutput(outputId, "forceGraph", width, height,
                     package = "HTSanalyzeR2")
 }
 
 #' @importFrom htmlwidgets shinyRenderWidget
-
+#' @export
 renderForceGraph <- function(expr, env = parent.frame(), quoted = FALSE) {
   if (!quoted) { expr <- substitute(expr) }
   shinyRenderWidget(expr, forceGraphOutput, env, quoted = TRUE)
@@ -63,7 +63,7 @@ renderForceGraph <- function(expr, env = parent.frame(), quoted = FALSE) {
 
 
 #' @importFrom htmlwidgets shinyRenderWidget createWidget
-
+#' @export
 updateForceGraph <- function(options) {
   x <- list(update = TRUE)
   x <- c(x, options)

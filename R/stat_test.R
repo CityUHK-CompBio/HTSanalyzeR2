@@ -106,7 +106,7 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
   names(replicates) <- replicatesNames
   nreplicates <- length(replicates)
   sapply(1:nreplicates, function(i) {
-    replicates[[i]] <- c(dataNw[
+    replicates[[i]] <<- c(dataNw[
       which(rownames(dataNw) == names(replicates)[i]), ])
   })
   if("T-test" %in% tests) {
@@ -117,7 +117,7 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
     names(t.test.pvalues.one.sample)<-names(replicates)
     sapply(1:nreplicates, function(i) {
       if(sum(!is.na(replicates[[i]])) >= 2)
-        t.test.pvalues.one.sample[i] <-
+        t.test.pvalues.one.sample[i] <<-
           t.test(x = replicates[[i]], mu = mu ,
                  alternative = alternative)$p.value
     })
@@ -128,7 +128,7 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
     names(t.test.pvalues.two.samples) <- names(replicates)
     sapply(1:nreplicates, function(i) {
       if(sum(!is.na(replicates[[i]])) >= 2)
-        t.test.pvalues.two.samples[i] <-
+        t.test.pvalues.two.samples[i] <<-
           t.test(x = replicates[[i]], y = controlData,
                  alternative = alternative)$p.value
     })
@@ -142,7 +142,7 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
     names(mannW.test.pvalues.one.sample)<-names(replicates)
     sapply(1:nreplicates, function(i) {
       if(sum(!is.na(replicates[[i]])) >= 2)
-        mannW.test.pvalues.one.sample[i] <-
+        mannW.test.pvalues.one.sample[i] <<-
           wilcox.test(x = replicates[[i]], mu = mu,
                       alternative = alternative)$p.value
     })
@@ -154,7 +154,7 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
     names(mannW.test.pvalues.two.samples)<-names(replicates)
     sapply(1:nreplicates, function(i) {
       if(sum(!is.na(replicates[[i]])) >= 2)
-        mannW.test.pvalues.two.samples[i] <-
+        mannW.test.pvalues.two.samples[i] <<-
           wilcox.test(x = replicates[[i]], y = controlData,
                       alternative = alternative)$p.value
     })
@@ -176,10 +176,10 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
                           rep(NA, (maxlength-length(replicates[[1]]))))
     sapply(2:length(replicates), function(i) {
       if(length(replicates[[i]]) < maxlength)
-        replicatesmatrix <- rbind(replicatesmatrix,
+        replicatesmatrix <<- rbind(replicatesmatrix,
                                    c(replicates[[i]], rep(NA,(maxlength-length(replicates[[i]])))))
       if(length(replicates[[i]]) == maxlength)
-        replicatesmatrix <- rbind(replicatesmatrix, c(replicates[[i]]))
+        replicatesmatrix <<- rbind(replicatesmatrix, c(replicates[[i]]))
       NULL
     })
     rownames(replicatesmatrix) <- names(replicates)

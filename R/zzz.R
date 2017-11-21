@@ -11,5 +11,7 @@
 }
 
 .onLoad <- function(libname, pkgname) {
-  if(getRversion() >= "2.10.1")  utils::globalVariables(c("idx", "tags"))
+  if(getRversion() >= "3.4") {
+    utils::globalVariables(names = c("idx", "tags"), add=F, package = "HTSanalyzeR2")
+    }
 }

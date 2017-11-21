@@ -26,7 +26,7 @@ setMethod("report",
 
 
 ## helper functions for shiny app
-#' @importFrom shiny tagList
+
 generateNWASummary <- function(nwa) {
   tagList(
     tags$h3("Summary"),

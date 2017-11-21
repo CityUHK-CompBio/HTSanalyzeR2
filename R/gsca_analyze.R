@@ -340,12 +340,12 @@ analyzeGeneSetCollections <-
         GSEA.Adj.Pvalue <-
           GSEA.results.list[[i]][a2, "Adjusted.Pvalue", drop = FALSE]
 
-        overlap[[i]] <- cbind(Hypergeometric.Pvalue, GSEA.Pvalue)
-        colnames(overlap[[i]]) <-
+        overlap[[i]] <<- cbind(Hypergeometric.Pvalue, GSEA.Pvalue)
+        colnames(overlap[[i]]) <<-
           c("HyperGeo.Pvalue", "GSEA.Pvalue")
-        overlap.adj[[i]] <-
+        overlap.adj[[i]] <<-
           cbind(Hypergeometric.Adj.Pvalue, GSEA.Adj.Pvalue)
-        colnames(overlap.adj[[i]]) <-
+        colnames(overlap.adj[[i]]) <<-
           c("HyperGeo.Adj.Pvalue", "GSEA.Adj.Pvalue")
       })
       names(overlap) <- names(listOfGeneSetCollections)
@@ -415,7 +415,7 @@ calcHyperGeo <- function (listOfGeneSetCollections,
       res[rownames(res) %in% names(listOfGeneSetCollections[[i]]), , drop = FALSE]
     extracted <-
       extracted[order(extracted[, "Adjusted.Pvalue"]), , drop = FALSE]
-    results[[i]] <- extracted
+    results[[i]] <<- extracted
   })
 
   names(results) <- names(listOfGeneSetCollections)
@@ -468,7 +468,7 @@ calcGSEA <-
            minGeneSetSize = 15,
            pAdjustMethod = "BH",
            verbose = TRUE) {
-    if(getRversion() >= "2.10.1")  utils::globalVariables(c("idx"))
+
     listNames <- names(geneList)
 
     combinedGeneSets <-
@@ -563,7 +563,7 @@ calcGSEA <-
         res[rownames(res) %in% names(listOfGeneSetCollections[[i]]), , drop = FALSE]
       GSEA.res.mat <-
         GSEA.res.mat[order(GSEA.res.mat[, "Adjusted.Pvalue"]), , drop = FALSE]
-      results[[i]] <- GSEA.res.mat
+      results[[i]] <<- GSEA.res.mat
     })
 
     names(results) <- names(listOfGeneSetCollections)

@@ -129,13 +129,13 @@ setMethod(
 
              if (nrow(result[[rs]][[gsc]]) >= 1) {
                if (gsc %in% keggGSCs)
-                 result[[rs]][[gsc]] <- appendKEGGTerm(result[[rs]][[gsc]])
+                 result[[rs]][[gsc]] <<- appendKEGGTerm(result[[rs]][[gsc]])
                else if (gsc %in% goGSCs)
-                 result[[rs]][[gsc]] <- appendGOTerm(result[[rs]][[gsc]])
+                 result[[rs]][[gsc]] <<- appendGOTerm(result[[rs]][[gsc]])
                else if (gsc %in% msigdbGSCs)
-                 result[[rs]][[gsc]] <- appendMSigDBTerm(result[[rs]][[gsc]])
+                 result[[rs]][[gsc]] <<- appendMSigDBTerm(result[[rs]][[gsc]])
                else
-                 result[[rs]][[gsc]] <- data.frame(Gene.Set.Term = "--",
+                 result[[rs]][[gsc]] <<- data.frame(Gene.Set.Term = "--",
                                                     result[[rs]][[gsc]],
                                                     stringsAsFactors = FALSE)
              }
@@ -225,18 +225,18 @@ setMethod("extractEnrichMap", signature = "GSCA",
               if (length(topGS[[i]]) > 0) {
                 gscName <- names(topGS)[i]
                 ## compute overlapped genes between gene sets and universe
-                gsInUni[[i]] <- list()
-                gsInUni[[i]] <- sapply(topGS[[i]], function(j)
+                gsInUni[[i]] <<- list()
+                gsInUni[[i]] <<- sapply(topGS[[i]], function(j)
                   intersect(object@listOfGeneSetCollections[[gscName]][[j]],
                             uniIDs), simplify = FALSE)
 
-                names(gsInUni)[i] <- gscName
-                tempList[[i]] <-
+                names(gsInUni)[i] <<- gscName
+                tempList[[i]] <<-
                   data.frame(gsID = topGS[[i]],
                              gscID = gscName,
                              object@result[[resultName]][[gscName]][topGS[[i]], , drop =
                                                                       FALSE])
-                names(tempList)[i] <- gscName
+                names(tempList)[i] <<- gscName
               }
             })
 
@@ -263,14 +263,14 @@ setMethod("extractEnrichMap", signature = "GSCA",
               gscID <- as.character(tempdf[["gscID"]])
               sapply(1:(nrow(tempdf) - 1), function(i) {
                 a <- gsInUni[[gscID[i]]][[gsID[i]]]
-                map.mat[i, (i + 1):nrow(tempdf)] <-
+                map.mat[i, (i + 1):nrow(tempdf)] <<-
                   sapply((i + 1):nrow(tempdf),
                          function(j) {
                            b <- gsInUni[[gscID[j]]][[gsID[j]]]
                            length(intersect(a, b)) / length(union(a,b))
                          }
                   )
-                map.mat[(i + 1):nrow(tempdf), i] <- map.mat[i, (i + 1):nrow(tempdf)]
+                map.mat[(i + 1):nrow(tempdf), i] <<- map.mat[i, (i + 1):nrow(tempdf)]
               })
 
               ## generate igraph from adjacency matrix
