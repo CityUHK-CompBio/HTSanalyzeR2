@@ -94,7 +94,8 @@ An S4 class named 'GSCA' is developed to perform hypergeometric test in order to
 To initialize a new 'GSCA' object, the previous prepared phenotype and a named list of gene sets collections are needed. In addition, as said before, if you also want to do hypergeometric test, hits is needed.
 
 ```{r}
-gsca <- new("GSCA", listOfGeneSetCollections=ListGSC, geneList=phenotype, hits=hits)
+gsca <- new("GSCA", listOfGeneSetCollections=ListGSC, 
+            geneList=phenotype, hits=hits)
 ```
 
 Then a preprocess step including invalid input data removing, duplication removing by different methods, initial gene identifiers converting to Entrez ID and phenotype ordering needs to be performed to fit for the next analysis. See the help documentation of funciton *preprocess* for details.
@@ -116,9 +117,11 @@ After getting a preprocessed 'GSCA' object, you can perform hypergeometric test 
 + *exponent*: a single integer or numeric value used in weighting phenotypes in GSEA, as described by Subramanian et al(@Subramanian2005).
 
 ```{r, results='hide', eval=FALSE}
-gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
-                                  nPermutations=100, minGeneSetSize=180,
-                                  exponent=1), doGSOA = TRUE, doGSEA = TRUE)
+gsca2 <- analyze(gsca1, 
+                 para=list(pValueCutoff=0.05, pAdjustMethod="BH",
+                           nPermutations=100, minGeneSetSize=180,
+                           exponent=1), 
+                 doGSOA = TRUE, doGSEA = TRUE)
 ```
 
 In this case study, we only use 100 permutations and set a very large *minGeneSetSize* just for a fast compilation of this vignette. In real applications, you may want a much smaller threshold (e.g. 10) and more permutations(e.g. 1000) to get a more robust GSEA result.
@@ -128,9 +131,11 @@ During the enrichment analysis of gene sets, the function evaluates the statisti
 ```{r, results='hide', message=FALSE}
 ## analyze using multiple cores
 doParallel::registerDoParallel(cores=2)
-gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
-                                  nPermutations=100, minGeneSetSize=180,
-                                  exponent=1), doGSOA = TRUE, doGSEA = TRUE)
+gsca2 <- analyze(gsca1, 
+                 para=list(pValueCutoff=0.05, pAdjustMethod="BH",
+                           nPermutations=100, minGeneSetSize=180,
+                           exponent=1), 
+                 doGSOA = TRUE, doGSEA = TRUE)
 ```
 
 After analyzing, all the results would be stored in slot *result*. If hypergeometric test and GSEA are both performed, gene sets which are both significant in this two analysis based on either pvalue or adjusted pvalue can be gotten.
@@ -203,7 +208,8 @@ tmp <- getTopGeneSets(gsca3, resultName = "GSEA.results", gscs=c("PW_KEGG"),
 PW_KEGG_geneset <- tmp$PW_KEGG[c(2, 3, 9, 11, 12, 13)]
 ## the name of specificGenesets also needs to match with the names of tmp
 specificGeneset <- list("PW_KEGG"=PW_KEGG_geneset)
-viewEnrichMap(gsca3, resultName = "GSEA.results", gscs=c("PW_KEGG"), allSig = FALSE, gsNameType = "term",
+viewEnrichMap(gsca3, resultName = "GSEA.results", gscs=c("PW_KEGG"), 
+              allSig = FALSE, gsNameType = "term",
               ntop = NULL, specificGeneset = specificGeneset)
 ```
 
@@ -285,8 +291,8 @@ To make it easy to compile this vignette, here we only use Biological Process(BP
 
 ```{r}
 data(d7, d13, d25)
-expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2,
-                   byrow = FALSE, dimnames = list(NULL, c("ID", "Description")))
+expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2, byrow = FALSE, 
+                   dimnames = list(NULL, c("ID", "Description")))
 datalist <- list(d7, d13, d25)
 phenotypeTS <- lapply(datalist, function(x) {
   tmp <- as.vector(x$neg.lfc)
@@ -321,7 +327,8 @@ Then, the 'GSCABatch' object need to be preprocessed using *preprocessGscaTS* me
 
 ```{r, results='hide', message=FALSE}
 gscaTS1 <- preprocessGscaTS(gscaTS, species="Hs", initialIDs="SYMBOL",
-                            keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
+                            keepMultipleMappings=TRUE, 
+                            duplicateRemoverMethod="max",
                             orderAbsValue=FALSE)
 ```
 
@@ -331,9 +338,12 @@ After get a list of preprocessed 'GSCA' object, you can use *analyzeGscaTS* to p
 
 ```{r, results='hide', message=FALSE}
 doParallel::registerDoParallel(cores=2)
-gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
-                                            nPermutations=100, minGeneSetSize=180,
-                                            exponent=1), doGSOA = TRUE, doGSEA = TRUE)
+gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05, 
+                                            pAdjustMethod="BH",
+                                            nPermutations=100, 
+                                            minGeneSetSize=180,
+                                            exponent=1), 
+                         doGSOA = TRUE, doGSEA = TRUE)
 head(gscaTS2[[1]]@result$GSEA.results$GO_BP, 3)
 ```
 
@@ -365,7 +375,8 @@ After creating an object of 'NWABatch', a preprocessing step needs to be perform
 
 ```{r, results='hide', message=FALSE, eval=FALSE}
 nwaTS1 <- preprocessNwaTS(nwaTS, species="Hs", initialIDs="SYMBOL",
-                          keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
+                          keepMultipleMappings=TRUE, 
+                          duplicateRemoverMethod="max")
 ```
 
 ### Perform analysis
@@ -374,7 +385,8 @@ Similarly, an interactome needs to be created before performing subnetwork analy
 
 Then, *analyzeNwaTS* could perform the subnetwork analysis for a list of 'NWA' object, which would take a few minutes. Finally, this step would return a list of analyzed 'NWA' objects.
 ```{r, results='hide', message=FALSE, eval=FALSE}
-nwaTS2 <- interactomeNwaTS(nwaTS1, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
+nwaTS2 <- interactomeNwaTS(nwaTS1, species="Hs", 
+                           reportDir="HTSanalyzerReport", genetic=FALSE)
 nwaTS3 <- analyzeNwaTS(nwaTS2, fdr=0.0001, species="Hs")
 ```
 
@@ -442,7 +454,8 @@ names(phenotype) <- allgenes
 
 Then, you can use the artificial phenotype and your hits to perform hypergeometric test.
 ```{r, eval=FALSE}
-gsca <- new("GSCA", listOfGeneSetCollections=ListGSC, geneList=phenotype, hits=hits)
+gsca <- new("GSCA", listOfGeneSetCollections=ListGSC, 
+            geneList=phenotype, hits=hits)
 ## the following analysis is the same as before
 ```
 
