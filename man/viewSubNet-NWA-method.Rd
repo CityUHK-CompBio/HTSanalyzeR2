@@ -25,9 +25,11 @@ In the end, this function would plot the identified subnetwork.
 Plot the identified subnetwork of an NWA object.
 }
 \examples{
+\donttest{
 ## load a NWA object(see the examples of analyze NWA for details)
 data(d7_nwa)
 
 ## plot the subnetwork
 viewSubNet(d7_nwa)
+}
 }

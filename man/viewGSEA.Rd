@@ -29,6 +29,7 @@ We suggest to print the names of top significant gene sets using the
 function \code{\link[HTSanalyzeR2]{getTopGeneSets}} before plotting the GSEA results.
 }
 \examples{
+\donttest{
 ## load a GSCA object(see the examples of analyze GSCA for details)
 data(d7_gsca)
 
@@ -40,4 +41,5 @@ topGS_GO_MF <- getTopGeneSets(d7_gsca, "GSEA.results", gscs = "GO_MF", allSig=TR
 
 ## view GSEA results for one gene set
 viewGSEA(d7_gsca, "GO_MF", topGS_GO_MF[["GO_MF"]][1])
+}
 }

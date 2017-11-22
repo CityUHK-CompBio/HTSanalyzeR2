@@ -57,11 +57,13 @@ setMethod("extractSubNet", signature = "NWA",
 #' @export
 #' @return In the end, this function would plot the identified subnetwork.
 #' @examples
+#' \donttest{
 #' ## load a NWA object(see the examples of analyze NWA for details)
 #' data(d7_nwa)
 #'
 #' ## plot the subnetwork
 #' viewSubNet(d7_nwa)
+#' }
 #' @importFrom igraph as_data_frame
 #' @importFrom utils modifyList
 setMethod("viewSubNet", signature = "NWA",

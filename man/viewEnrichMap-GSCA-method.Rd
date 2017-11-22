@@ -67,6 +67,7 @@ ones. Especially when the number of the significant gene sets are huge, which wo
 map a mess as well as of no information. To this end, user can set the parameter \strong{specificGeneset}.
 }
 \examples{
+\donttest{
 ## load a GSCA object(see the examples of 'analyze' GSCA for details)
 library(igraph)
 data(d7_gsca)
@@ -104,6 +105,7 @@ specificGeneset <- list("GO_MF"=GO_MF_geneset, "PW_KEGG"=PW_KEGG_geneset)
 viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
               allSig = FALSE, gsNameType = "term",
               ntop = NULL, specificGeneset = specificGeneset)
+}
 }
 \references{
 Merico D, Isserlin R, Stueker O, Emili A, Bader GD (2010) Enrichment Map:

@@ -171,6 +171,7 @@ interactomeNwaTS <- function(nwaList, interactionMatrix = NULL, species,
 #'
 #' @export
 #' @examples
+#' \donttest{
 #' data(d7, d13, d25)
 #'
 #' ## generate expInfor to describe the information of time series data
@@ -203,6 +204,7 @@ interactomeNwaTS <- function(nwaList, interactionMatrix = NULL, species,
 #'
 #' ## analyze
 #' nwaTS3 <- analyzeNwaTS(nwaTS2, fdr=0.0001, species="Hs")
+#' }
 analyzeNwaTS <- function(nwaList,  fdr = 0.001,
                          species,
                          verbose = TRUE){
