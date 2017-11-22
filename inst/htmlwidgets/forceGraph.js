@@ -141,7 +141,7 @@ HTMLWidgets.widget(fg = {
     },
 
     initialize: function(el, width, height) {
-        console.log("====================   initialize   ========================");
+        // console.log("====================   initialize   ========================");
         el.style.height = ($("#settingBar").length > 0) ? "85vh" : "97vh";
         fg.store.currentTab = el;
         var initState = fg.getElementState(el);
@@ -153,7 +153,7 @@ HTMLWidgets.widget(fg = {
     },
 
     resize: function(el, width, height) {
-        console.log("====================   resize   ========================");
+        // console.log("====================   resize   ========================");
         var state = fg.getElementState(el);
         var config = fg.getConfig(state);
 
@@ -161,8 +161,8 @@ HTMLWidgets.widget(fg = {
     },
 
     renderValue: function(el, x) {
-        console.log("====================   renderValue   ========================");
-        console.log(x);
+        // console.log("====================   renderValue   ========================");
+        // console.log(x);
         var state = fg.getElementState(el);
 
         if (x.update) {
@@ -173,8 +173,8 @@ HTMLWidgets.widget(fg = {
     },
 
     update: function(state, u) {
-        console.log("====================   Update    ========================");
-        console.log(u);
+        // console.log("====================   Update    ========================");
+        // console.log(u);
         var config = fg.getConfig(state);
         var sv = state.supervisor;
         var meta = config.metadata;
@@ -199,8 +199,8 @@ HTMLWidgets.widget(fg = {
     },
 
     construct: function(state, x) {
-        console.log("====================   Construct   ========================");
-        console.log(x);
+        // console.log("====================   Construct   ========================");
+        // console.log(x);
 
         var config = fg.setConfig(state, x);
         fg.initSupervisor(state);
@@ -326,7 +326,7 @@ HTMLWidgets.widget(fg = {
     },
 
     initHandlers: function() {
-        console.log("==================== Init Handlers ========================");
+        // console.log("==================== Init Handlers ========================");
 
         if(fg.store.hasOwnProperty("handlers")) {
             return;
@@ -337,7 +337,7 @@ HTMLWidgets.widget(fg = {
         // Layout
         createLayoutRefreshFunc = function(key) {
             return function(val) {
-                console.log(key + ": " + val);
+                // console.log(key + ": " + val);
                 var cur = fg.currentSituation();
                 cur.config.layout[key] = val;
                 cur.config.metadata.forceConfig[key] = val;
@@ -358,7 +358,7 @@ HTMLWidgets.widget(fg = {
 
         // Label
         handlers.labelOption = function(val) {
-            console.log("labelOption" + ": " + val);
+            // console.log("labelOption" + ": " + val);
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
             var meta = cur.config.metadata;
@@ -375,7 +375,7 @@ HTMLWidgets.widget(fg = {
             sv.sigInst.refresh();
         }
         handlers.labelScale = function(val) {
-            console.log("labelScale" + ": " + val);
+            // console.log("labelScale" + ": " + val);
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
 
@@ -384,7 +384,7 @@ HTMLWidgets.widget(fg = {
             sv.sigInst.refresh();
         }
         handlers.labelColor = function(val) {
-            console.log("labelColor" + ": " + val);
+            // console.log("labelColor" + ": " + val);
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
 
@@ -395,7 +395,7 @@ HTMLWidgets.widget(fg = {
 
         // Node
         handlers.nodeScale = function(val) {
-            console.log("nodeScale" + ": " + val);
+            // console.log("nodeScale" + ": " + val);
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
             var meta = cur.config.metadata;
@@ -408,7 +408,7 @@ HTMLWidgets.widget(fg = {
             sv.sigInst.refresh();
         }
         handlers.nodeOpacity = function(val) {
-            console.log("nodeOpacity" + ": " + val);
+            // console.log("nodeOpacity" + ": " + val);
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
             var meta = cur.config.metadata;
@@ -423,7 +423,7 @@ HTMLWidgets.widget(fg = {
             sv.sigInst.refresh();
         }
         handlers.nodeBorderWidth = function(val) {
-            console.log("nodeBorderWidth" + ": " + val);
+            // console.log("nodeBorderWidth" + ": " + val);
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
 
@@ -432,7 +432,7 @@ HTMLWidgets.widget(fg = {
             sv.sigInst.refresh();
         }
         handlers.nodeBorderColor = function(val) {
-            console.log("nodeBorderColor" + ": " + val);
+            // console.log("nodeBorderColor" + ": " + val);
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
 
@@ -443,7 +443,7 @@ HTMLWidgets.widget(fg = {
 
         // Edge
         handlers.edgeScale = function(val) {
-            console.log("edgeScale" + ": " + val);
+            // console.log("edgeScale" + ": " + val);
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
             var meta = cur.config.metadata;
@@ -456,7 +456,7 @@ HTMLWidgets.widget(fg = {
             sv.sigInst.refresh();
         }
         handlers.edgeColor = function(val) {
-            console.log("edgeColor" + ": " + val);
+            // console.log("edgeColor" + ": " + val);
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
 
@@ -467,7 +467,7 @@ HTMLWidgets.widget(fg = {
 
         // Color Scheme
         handlers.scheme = function(schemeId, subScheme, type, idx, value) {
-            console.log("scheme" + ": " + schemeId + " " + subScheme + " " + type + " " + value);
+            // console.log("scheme" + ": " + schemeId + " " + subScheme + " " + type + " " + value);
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
             var meta = cur.config.metadata;
@@ -488,7 +488,7 @@ HTMLWidgets.widget(fg = {
 
         // Custom Buttons
         handlers.pause = function() {
-            console.log("pause");
+            // console.log("pause");
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
 
@@ -496,7 +496,7 @@ HTMLWidgets.widget(fg = {
         }
 
         handlers.refresh = function() {
-            console.log("refresh");
+            // console.log("refresh");
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
 
@@ -542,7 +542,7 @@ HTMLWidgets.widget(fg = {
         }
 
         handlers.saveSVG = function() {
-            console.log("saveSVG");
+            // console.log("saveSVG");
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
             var elem = $(cur.state.container);
@@ -582,7 +582,7 @@ HTMLWidgets.widget(fg = {
     },
 
     switchTab: function(el) {
-        console.log("====================   switchTab   ========================");
+        // console.log("====================   switchTab   ========================");
         if(fg.store.currentTab != el) {
             // Current
             var state = fg.getElementState(fg.store.currentTab);
@@ -602,7 +602,7 @@ HTMLWidgets.widget(fg = {
     },
 
     build: function(state, config) {
-        console.log("======================   Build   ========================");
+        // console.log("======================   Build   ========================");
         var sv = state.supervisor;
         var meta = config.metadata;
 
@@ -622,7 +622,7 @@ HTMLWidgets.widget(fg = {
     },
 
     refreshLegend: function(state, config) {
-        console.log("====================   Draw Legend   =====================");
+        // console.log("====================   Draw Legend   =====================");
         // console.log(state);
         // console.log(config);
 

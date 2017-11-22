@@ -140,7 +140,7 @@ preprocessNwaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #' }
 #' @export
 interactomeNwaTS <- function(nwaList, interactionMatrix = NULL, species,
-                             link = "http://bit.ly/2jDsTFM",
+                             link = "http://thebiogrid.org/downloads/archives/Release%20Archive/BIOGRID-3.4.138/BIOGRID-ORGANISM-3.4.138.tab2.zip",
                              reportDir = "HTSanalyzerReport", genetic = FALSE,
                              force = FALSE, verbose = TRUE){
   paraCheck("nwaTS", "nwaList", nwaList)
