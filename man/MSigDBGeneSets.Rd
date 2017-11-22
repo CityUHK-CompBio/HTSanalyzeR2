@@ -4,14 +4,11 @@
 \alias{MSigDBGeneSets}
 \title{Create a list of gene sets based on MSigDB collection terms}
 \usage{
-MSigDBGeneSets(collection = "h")
+MSigDBGeneSets(collection = "c2")
 }
 \arguments{
 \item{collection}{A single character value specifying a choice of collection.
-It should be one of the following character strings: 'h'(hallmark gene sets),
-'c1'(positional gene sets), 'c2'(curated gene sets), 'c3'(motif gene sets),
-'c4'(computational gene sets), 'c5'(GO gene sets), 'c6'(oncogenic signatures),
-'c7'(immunologic signatures). More details please refer to
+It should be either 'c2'(curated gene sets) or 'c5'(GO gene sets). More details please refer to
 \href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB}.}
 }
 \value{
@@ -24,7 +21,7 @@ It is collection-specific, and returns a list of gene sets collection with
 the elements of the gene sets represented by Entrez Gene IDs.
 }
 \examples{
-H_MSig <- MSigDBGeneSets(collection = "h")
+C2_MSig <- MSigDBGeneSets(collection = "c2")
 
 }
 \seealso{

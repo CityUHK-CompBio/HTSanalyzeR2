@@ -72,23 +72,23 @@ viewGSEA(gsca3, gscName="GO_MF", gsName=topGS[["GO_MF"]][1])
 ## ---- eval=FALSE-----------------------------------------------------------
 #  plotGSEA(gsca3, gscs=c("GO_MF", "PW_KEGG"), ntop=3, filepath=".")
 
-## ---- fig.height=4, fig.width=6, eval=FALSE--------------------------------
-#  ## the enrichment map for top 5 significant gene sets in 'PW_KEGG' and 'GO_MF'
-#  viewEnrichMap(gsca3, gscs=c("PW_KEGG", "GO_MF"),
-#                allSig = FALSE, gsNameType = "term", ntop = 5)
+## ---- fig.height=4, fig.width=6--------------------------------------------
+## the enrichment map for top 5 significant gene sets in 'PW_KEGG' and 'GO_MF'
+viewEnrichMap(gsca3, gscs=c("PW_KEGG", "GO_MF"),
+              allSig = FALSE, gsNameType = "term", ntop = 5)
 
-## ---- warning=FALSE, fig.height=3.5, fig.width=6, eval=FALSE---------------
-#  ## specificGeneset needs to be a subset of all analyzed gene sets
-#  ## which can be roughly gotten by:
-#  tmp <- getTopGeneSets(gsca3, resultName = "GSEA.results", gscs=c("PW_KEGG"),
-#                        ntop = 20000, allSig = FALSE)
-#  ## In that case, we can define specificGeneset as below:
-#  PW_KEGG_geneset <- tmp$PW_KEGG[c(2, 3, 9, 11, 12, 13)]
-#  ## the name of specificGenesets also needs to match with the names of tmp
-#  specificGeneset <- list("PW_KEGG"=PW_KEGG_geneset)
-#  viewEnrichMap(gsca3, resultName = "GSEA.results", gscs=c("PW_KEGG"),
-#                allSig = FALSE, gsNameType = "term",
-#                ntop = NULL, specificGeneset = specificGeneset)
+## ---- warning=FALSE, fig.height=3.5, fig.width=6---------------------------
+## specificGeneset needs to be a subset of all analyzed gene sets
+## which can be roughly gotten by:
+tmp <- getTopGeneSets(gsca3, resultName = "GSEA.results", gscs=c("PW_KEGG"),
+                      ntop = 20000, allSig = FALSE)
+## In that case, we can define specificGeneset as below:
+PW_KEGG_geneset <- tmp$PW_KEGG[c(2, 3, 9, 11, 12, 13)]
+## the name of specificGenesets also needs to match with the names of tmp
+specificGeneset <- list("PW_KEGG"=PW_KEGG_geneset)
+viewEnrichMap(gsca3, resultName = "GSEA.results", gscs=c("PW_KEGG"), 
+              allSig = FALSE, gsNameType = "term",
+              ntop = NULL, specificGeneset = specificGeneset)
 
 ## --------------------------------------------------------------------------
 pvalues <- GSE33113.limma$adj.P.Val
@@ -108,8 +108,8 @@ nwa2@interactome
 ## ---- results='hide', message=FALSE, warning=FALSE-------------------------
 nwa3 <- analyze(nwa2, fdr=1e-06, species="Hs")
 
-## ---- eval=FALSE-----------------------------------------------------------
-#  viewSubNet(nwa3)
+## --------------------------------------------------------------------------
+viewSubNet(nwa3)
 
 ## --------------------------------------------------------------------------
 HTSanalyzeR2::summarize(nwa3)

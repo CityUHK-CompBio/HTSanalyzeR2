@@ -188,7 +188,7 @@ To get a comprehensive view of the hypergeometric test result or GSEA result ins
 However, you are always highly recommended to use *report* to visualize and modify the enrichment map with personal preference, such as different layout, color and size of nodes, types of labels and etc. More details please go to Part4: Shiny report of results.
 
 
-```{r, fig.height=4, fig.width=6, eval=FALSE}
+```{r, fig.height=4, fig.width=6}
 ## the enrichment map for top 5 significant gene sets in 'PW_KEGG' and 'GO_MF'
 viewEnrichMap(gsca3, gscs=c("PW_KEGG", "GO_MF"),
               allSig = FALSE, gsNameType = "term", ntop = 5)
@@ -199,7 +199,7 @@ viewEnrichMap(gsca3, gscs=c("PW_KEGG", "GO_MF"),
 
 It is often the case that the enrichment map would be of large size due to the huge number of enriched pathways. However, you may only be interested in a small part of them. A big size of enrichment map would also be in a mess and lose the information it can offer. In that way, **HTSanalyzeR2** provides an interface allowing users to draw the enrichment map on their interested pathways. More details please see *help(viewEnrichMap)*.
 
-```{r, warning=FALSE, fig.height=3.5, fig.width=6, eval=FALSE}
+```{r, warning=FALSE, fig.height=3.5, fig.width=6}
 ## specificGeneset needs to be a subset of all analyzed gene sets
 ## which can be roughly gotten by:
 tmp <- getTopGeneSets(gsca3, resultName = "GSEA.results", gscs=c("PW_KEGG"),
@@ -261,7 +261,7 @@ nwa3 <- analyze(nwa2, fdr=1e-06, species="Hs")
 
 Similar to 'GSCA', you can also view the subnetwork by *viewSubNet*. Again, for better visualization, modification and downloading, you are highly recommended to view the result in the shiny report by *report*.
 
-```{r, eval=FALSE}
+```{r}
 viewSubNet(nwa3)
 ```
 

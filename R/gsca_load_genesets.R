@@ -5,10 +5,7 @@
 #' the elements of the gene sets represented by Entrez Gene IDs.
 #'
 #' @param collection A single character value specifying a choice of collection.
-#' It should be one of the following character strings: 'h'(hallmark gene sets),
-#' 'c1'(positional gene sets), 'c2'(curated gene sets), 'c3'(motif gene sets),
-#' 'c4'(computational gene sets), 'c5'(GO gene sets), 'c6'(oncogenic signatures),
-#' 'c7'(immunologic signatures). More details please refer to
+#' It should be either 'c2'(curated gene sets) or 'c5'(GO gene sets). More details please refer to
 #' \href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB}.
 #'
 #' @return Return a list of gene sets of specific collection in
@@ -17,10 +14,10 @@
 #' @seealso \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{KeggGeneSets}}
 #'
 #' @examples
-#' H_MSig <- MSigDBGeneSets(collection = "h")
+#' C2_MSig <- MSigDBGeneSets(collection = "c2")
 #'
 #' @export
-MSigDBGeneSets <- function(collection = "h") {
+MSigDBGeneSets <- function(collection = "c2") {
   paraCheck("LoadGeneSets", "collection", collection)
 
   gene.sets <- MSigDB[[paste(collection, ".db", sep = "")]]
