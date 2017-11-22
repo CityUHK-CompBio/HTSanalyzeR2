@@ -45,19 +45,19 @@ and 'ALL' (all slots).
 # =================================================================
 # GSCA class
 ## load a GSCA object(see the examples of analyze GSCA for details)
-data(gsca)
+data(d7_gsca)
 
-## summarize gsca
-summarize(gsca, what = "ALL")
-summarize(gsca, what = "Result")
+## summarize d7_gsca
+summarize(d7_gsca, what = "ALL")
+summarize(d7_gsca, what = "Result")
 \dontrun{
 # =================================================================
 # NWA class
 ## load a NWA object(see the examples of analyze NWA for details)
-data(nwa)
+data(d7_nwa)
 
-## summarize nwa
-summarize(nwa, what = "ALL")
-summarize(nwa, what = "Result")
+## summarize d7_nwa
+summarize(d7_nwa, what = "ALL")
+summarize(d7_nwa, what = "Result")
 }
 }

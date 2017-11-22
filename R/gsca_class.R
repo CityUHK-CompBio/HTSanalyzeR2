@@ -3,8 +3,9 @@
 #' This S4 class includes a series of methods to do gene set enrichment analysis
 #' and hypergeometric test for high-throughput data.
 #' @section Objects from the Class:
-#' Objects of class \code{GSCA} can be created
-#' from \code{new("GSCA", listOfGeneSetCollections, geneList, hits = character())}
+#' Objects of class \code{GSCA} can be created by:
+#'
+#' \code{new("GSCA", listOfGeneSetCollections, geneList, hits = character())}
 #' (see the examples below)
 #' @include class_union.R utils.R
 #' @aliases GSCA

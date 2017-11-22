@@ -27,7 +27,6 @@
 #'    \code{\link[HTSanalyzeR2]{interactome}},
 #'     \code{\link[HTSanalyzeR2]{report}}
 #' @examples
-#' \dontrun{
 #' library(org.Hs.eg.db)
 #' library(GO.db)
 #' ## load data for network analyses
@@ -44,7 +43,6 @@
 #'
 #' ## Example2: create an object of class 'NWA' without phenotypes
 #' nwa <- new("NWA", pvalues=pvalues)
-#' }
 #' @export
 setClass(
   Class = "NWA",

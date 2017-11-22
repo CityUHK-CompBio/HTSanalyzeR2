@@ -30,10 +30,10 @@ AnnotationDbi, GO.db and the species db, such as org.Dm.eg.db.
 }
 \examples{
 library(GO.db)
-library(org.Dm.eg.db)
-DM_GO_CC <- GOGeneSets(species="Dm",ontologies=c("CC"))
+library(org.Hs.eg.db)
+HS_GO_CC <- GOGeneSets(species="Hs",ontologies=c("CC"))
 
-DM_GO <- GOGeneSets(species="Dm",ontologies=c("CC", "MF", "BP"))
+HS_GO <- GOGeneSets(species="Hs",ontologies=c("CC", "MF", "BP"))
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{KeggGeneSets}}, \code{\link[HTSanalyzeR2]{MSigDBGeneSets}}

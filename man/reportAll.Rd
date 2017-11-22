@@ -28,24 +28,25 @@ in the end, this function would generate a shiny report.
 This function can create shiny reports for both gene sets enrichment analysis and network analysis.
 }
 \examples{
+\donttest{
 ## load data
-data(gsca, nwa, gscaTS, nwaTS)
+data(d7_gsca, d7_nwa, gscaTS, nwaTS)
 
 ## Example1: report both gsca and nwa
-reportAll(gsca=gsca, nwa=nwa)
+reportAll(gsca=d7_gsca, nwa=d7_nwa)
 
 ## Example2: report gscaTS
-reportAll(gscaTS)
+reportAll(gsca=gscaTS)
 
 ## Example3: report nwaTS
-reportAll(nwa = nwaTS)
+reportAll(nwa=nwaTS)
 
 ## Example4: report both gscaTS and nwaTS
-reportAll(gscaTS, nwaTS)
+reportAll(gsca=gscaTS, nwa=nwaTS)
 
 ## Example5: change order for time series data
-reportAll(gscaTS, TSOrder = names(gscaTS)[c(3, 1, 2)])
-reportAll(nwa = nwaTS, TSOrder = names(nwaTS)[c(3, 2, 1)])
+reportAll(gsca=gscaTS, TSOrder=names(gscaTS)[c(3, 1, 2)])
+reportAll(nwa=nwaTS, TSOrder=names(nwaTS)[c(3, 2, 1)])
 
 ## Example6: view specificGeneset enrichment map for gscaTS using reportAll
 library(igraph)
@@ -57,5 +58,6 @@ tmp <- getTopGeneSets(gscaTS[[1]], resultName = "GSEA.results",
 GO_BP_geneset <- tmp$GO_BP[c(4,2,6,9,12)]
 ## the name of specificGenesets also needs to match with the names of tmp
 specificGeneset <- list("GO_BP"=GO_BP_geneset)
-reportAll(gscaTS, specificGeneset=specificGeneset)
+reportAll(gsca=gscaTS, specificGeneset=specificGeneset)
+}
 }

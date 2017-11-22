@@ -10,7 +10,6 @@ if (!isGeneric("interactome")) {
 
 #' @rdname preprocess
 #' @examples
-#' \dontrun{
 #' # ===========================================================
 #' # NWA class
 #' library(org.Hs.eg.db)
@@ -30,7 +29,6 @@ if (!isGeneric("interactome")) {
 #' ## do preprocessing
 #' nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
 #'                    duplicateRemoverMethod="max")
-#' }
 #' @export
 #' @include nwa_class.R
 setMethod("preprocess", signature = "NWA",

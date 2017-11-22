@@ -38,11 +38,11 @@ list and the location of the enrichment score for top significant gene sets.
 }
 \examples{
 ## load a GSCA object(see the examples of analyze GSCA for details)
-data(gsca)
+data(d7_gsca)
 
-## summarize gsca
-summarize(gsca)
+## summarize d7_gsca
+summarize(d7_gsca)
 
-## plot  significant gene sets in GO_BP and PW_KEGG
-plotGSEA(gsca, gscs=c("GO_BP","PW_KEGG"), ntop=3, filepath=".")
+## plot  significant gene sets in GO_MF and PW_KEGG
+plotGSEA(d7_gsca, gscs=c("GO_MF","PW_KEGG"), ntop=3, filepath=".")
 }

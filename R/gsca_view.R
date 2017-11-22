@@ -23,16 +23,16 @@ if(!isGeneric("plotGSEA"))
 #' @return In the end, this function would draw a GSEA figure for specified gene set.
 #' @examples
 #' ## load a GSCA object(see the examples of analyze GSCA for details)
-#' data(gsca)
+#' data(d7_gsca)
 #'
 #' ## summarize gsca
-#' summarize(gsca)
+#' summarize(d7_gsca)
 #'
-#' ## print top significant gene sets in GO_BP
-#' topGS_GO_BP <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_BP", allSig=TRUE)
+#' ## print top significant gene sets in GO_MF
+#' topGS_GO_MF <- getTopGeneSets(d7_gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
 #'
 #' ## view GSEA results for one gene set
-#' viewGSEA(gsca, "GO_BP", topGS_GO_BP[["GO_BP"]][1])
+#' viewGSEA(d7_gsca, "GO_MF", topGS_GO_MF[["GO_MF"]][1])
 #' @include gsca_class.R
 #' @export
 setMethod(
@@ -85,13 +85,13 @@ setMethod(
 #' @aliases plotGSEA
 #' @examples
 #' ## load a GSCA object(see the examples of analyze GSCA for details)
-#' data(gsca)
+#' data(d7_gsca)
 #'
-#' ## summarize gsca
-#' summarize(gsca)
+#' ## summarize d7_gsca
+#' summarize(d7_gsca)
 #'
-#' ## plot  significant gene sets in GO_BP and PW_KEGG
-#' plotGSEA(gsca, gscs=c("GO_BP","PW_KEGG"), ntop=3, filepath=".")
+#' ## plot  significant gene sets in GO_MF and PW_KEGG
+#' plotGSEA(d7_gsca, gscs=c("GO_MF","PW_KEGG"), ntop=3, filepath=".")
 #' @export
 ##plot GSEA for GSCA
 setMethod(

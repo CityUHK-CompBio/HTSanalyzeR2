@@ -1,6 +1,7 @@
 #' Create a list of gene sets based on MSigDB collection terms
 #'
-#' This function creates gene set collections based on MSigDB.
+#' This function creates gene set collections based on MSigDB. Currently only
+#' commonly used 'c2' and 'c5' gene sets could be gotten by this function.
 #' It is collection-specific, and returns a list of gene sets collection with
 #' the elements of the gene sets represented by Entrez Gene IDs.
 #'
@@ -46,8 +47,8 @@ MSigDBGeneSets <- function(collection = "c2") {
 #'
 #' @examples
 #' library(KEGGREST)
-#' library(org.Dm.eg.db)
-#' DM_KEGG <- KeggGeneSets(species = "Dm")
+#' library(org.Hs.eg.db)
+#' HS_KEGG <- KeggGeneSets(species = "Hs")
 #' @export
 #' @importFrom KEGGREST keggLink keggConv
 #' @importFrom stringr str_replace
@@ -131,10 +132,10 @@ KeggGeneSets <- function(species = "Hs") {
 #'
 #' @examples
 #' library(GO.db)
-#' library(org.Dm.eg.db)
-#' DM_GO_CC <- GOGeneSets(species="Dm",ontologies=c("CC"))
+#' library(org.Hs.eg.db)
+#' HS_GO_CC <- GOGeneSets(species="Hs",ontologies=c("CC"))
 #'
-#' DM_GO <- GOGeneSets(species="Dm",ontologies=c("CC", "MF", "BP"))
+#' HS_GO <- GOGeneSets(species="Hs",ontologies=c("CC", "MF", "BP"))
 #' @export
 #' @importFrom AnnotationDbi GOID Ontology as.list
 

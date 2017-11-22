@@ -26,8 +26,8 @@ Plot the identified subnetwork of an NWA object.
 }
 \examples{
 ## load a NWA object(see the examples of analyze NWA for details)
-data(nwa)
+data(d7_nwa)
 
 ## plot the subnetwork
-viewSubNet(nwa)
+viewSubNet(d7_nwa)
 }

@@ -40,7 +40,6 @@ from \code{new("NWA", pvalues, phenotypes = numeric(), interactome = NA)}
 }
 
 \examples{
-\dontrun{
 library(org.Hs.eg.db)
 library(GO.db)
 ## load data for network analyses
@@ -57,7 +56,6 @@ nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
 
 ## Example2: create an object of class 'NWA' without phenotypes
 nwa <- new("NWA", pvalues=pvalues)
-}
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{preprocess}},

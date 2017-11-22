@@ -51,7 +51,7 @@ if (!isGeneric("analyze")) {
 #' library(org.Hs.eg.db)
 #' library(GO.db)
 #' library(KEGGREST)
-#' ## load data for enrichment analyses
+#' ## load data for enrichment analyse
 #' data(d7)
 #' phenotype <- as.vector(d7$neg.lfc)
 #' names(phenotype) <- d7$id
@@ -60,32 +60,30 @@ if (!isGeneric("analyze")) {
 #' hits <-  names(phenotype[which(abs(phenotype) > 2)])
 #'
 #' ## set up a list of gene set collections
-#' GO_BP <- GOGeneSets(species="Hs", ontologies=c("BP"))
+#' GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
 #' PW_KEGG <- KeggGeneSets(species="Hs")
-#' ListGSC <- list(GO_BP=GO_BP, PW_KEGG=PW_KEGG)
+#' ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
 #'
 #' ## create an object of class 'GSCA'
 #' gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
 #'
 #' ## do preprocessing
 #' gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
-#'                    duplicateRemoverMethod="max", orderAbsValue=FALSE)
+#'                     duplicateRemoverMethod="max", orderAbsValue=FALSE)
 #'
 #' ## support parallel calculation using doParallel package
 #' doParallel::registerDoParallel(cores=2)
 #'
 #' ## do hypergeometric tests and GSEA
-#' gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.05, pAdjustMethod ="BH",
-#'                                 nPermutations=100, minGeneSetSize=200, exponent=1),
-#'                                 doGSOA = TRUE, doGSEA = TRUE)
+#' gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.01, pAdjustMethod ="BH",
+#'                                   nPermutations=100, minGeneSetSize=10, exponent=1),
+#'                                   doGSOA = TRUE, doGSEA = TRUE)
 #'
-#' ## summarize gsca2
+#' ## summarize gsca2 and get results
 #' summarize(gsca2)
-#' head(gsca2@@result$GSEA.results$GO_BP)
+#' head(gsca2@@result$GSEA.results$GO_MF)
 #' head(gsca2@@result$HyperGeo.results$PW_KEGG)
-
-
-
+#'
 
 setMethod("analyze", signature = "GSCA",
           function(object,

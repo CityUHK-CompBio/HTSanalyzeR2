@@ -66,6 +66,7 @@ if (!isGeneric("preprocess")) {
 #'
 #' ## print gsca1
 #' gsca1
+#'
 #' @details
 #' This function will do the following preprocessing steps:
 #'

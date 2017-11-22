@@ -40,12 +40,12 @@ be selected and their names will be returned.
 }
 \examples{
 ## load a GSCA object(see the examples of analyze GSCA for details)
-data(gsca)
+data(d7_gsca)
 
-summarize(gsca)
-## print top significant gene sets in GO_BP
-topGS_GO_BP <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_BP", allSig=TRUE)
+summarize(d7_gsca)
+## print top significant gene sets in GO_MF
+topGS_GO_MF <- getTopGeneSets(d7_gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
 
-## print top significant gene sets in GO_BP and PW_KEGG
-topGS <- getTopGeneSets(gsca, "GSEA.results", gscs = c("GO_BP", "PW_KEGG"), allSig=TRUE)
+## print top significant gene sets in GO_MF and PW_KEGG
+topGS <- getTopGeneSets(d7_gsca, "GSEA.results", gscs = c("GO_MF", "PW_KEGG"), allSig=TRUE)
 }

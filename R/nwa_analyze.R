@@ -23,10 +23,11 @@ if (!isGeneric("analyze")) {
 #' 2008 24(13):i223-i231.
 #' @examples
 #' # ===========================================================
+#' \dontrun{
 #' # Network Analysis
 #' library(org.Hs.eg.db)
 #' library(GO.db)
-#' ## load data for network analyses
+#' ## load data for network analyse
 #' data(d7)
 #' pvalues <- d7$neg.p.value
 #' names(pvalues) <- d7$id
@@ -40,13 +41,16 @@ if (!isGeneric("analyze")) {
 #'
 #' ## do preprocessing
 #' nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
-#'                   duplicateRemoverMethod="max")
+#'                    duplicateRemoverMethod="max")
 #'
-#' ## create an interactome for nwa by downloading for BioGRID database
+#' ## create an interactome for nwa1 by downloading from BioGRID database
 #' nwa2 <- interactome(nwa1, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
 #'
 #' ## analyze
 #' nwa3 <- analyze(nwa2, fdr=0.0001, species="Hs")
+#' ## summarize nwa3
+#' summarize(nwa3)
+#' }
 #' @export
 #' @include nwa_class.R gsca_preprocess.R
 #' @importFrom igraph vertex_attr vcount ecount
@@ -135,6 +139,7 @@ setMethod("analyze",
 #' @return A subnetwork module of class igraph.
 #' @export
 #' @examples
+#' \dontrun{
 #' library(org.Hs.eg.db)
 #' library(GO.db)
 #' ## load data for subnetwork analyses
@@ -151,6 +156,7 @@ setMethod("analyze",
 #' ##identify subnetworks
 #' enrichedSubNet <- networkAnalysis(pvalues=pvalues, graph=Biogrid_HS_Interactome,
 #'                                   fdr = 0.001, verbose = TRUE)
+#' }
 #' @importFrom BioNet fitBumModel scoreNodes runFastHeinz
 #' @importFrom igraph vertex_attr vcount
 #'

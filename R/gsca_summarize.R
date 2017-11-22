@@ -29,11 +29,11 @@ setGeneric("getTopGeneSets", function(object,
 #' # =================================================================
 #' # GSCA class
 #' ## load a GSCA object(see the examples of analyze GSCA for details)
-#' data(gsca)
+#' data(d7_gsca)
 #'
-#' ## summarize gsca
-#' summarize(gsca, what = "ALL")
-#' summarize(gsca, what = "Result")
+#' ## summarize d7_gsca
+#' summarize(d7_gsca, what = "ALL")
+#' summarize(d7_gsca, what = "Result")
 #' @include gsca_class.R
 #' @export
 setMethod("summarize", signature = "GSCA",
@@ -103,14 +103,14 @@ setMethod("summarize", signature = "GSCA",
 #'
 #' @examples
 #' ## load a GSCA object(see the examples of analyze GSCA for details)
-#' data(gsca)
+#' data(d7_gsca)
 #'
-#' summarize(gsca)
-#' ## print top significant gene sets in GO_BP
-#' topGS_GO_BP <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_BP", allSig=TRUE)
+#' summarize(d7_gsca)
+#' ## print top significant gene sets in GO_MF
+#' topGS_GO_MF <- getTopGeneSets(d7_gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
 #'
-#' ## print top significant gene sets in GO_BP and PW_KEGG
-#' topGS <- getTopGeneSets(gsca, "GSEA.results", gscs = c("GO_BP", "PW_KEGG"), allSig=TRUE)
+#' ## print top significant gene sets in GO_MF and PW_KEGG
+#' topGS <- getTopGeneSets(d7_gsca, "GSEA.results", gscs = c("GO_MF", "PW_KEGG"), allSig=TRUE)
 #' @return A named list of character vectors, each element contains the names of top
 #' significant gene sets for each gene set collection.
 #' @include gsca_class.R

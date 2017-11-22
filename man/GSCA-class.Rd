@@ -37,8 +37,9 @@ input data has been preprocessed.}
 
 \section{Objects from the Class}{
 
-Objects of class \code{GSCA} can be created
-from \code{new("GSCA", listOfGeneSetCollections, geneList, hits = character())}
+Objects of class \code{GSCA} can be created by:
+
+\code{new("GSCA", listOfGeneSetCollections, geneList, hits = character())}
 (see the examples below)
 }
 

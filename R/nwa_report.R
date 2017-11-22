@@ -10,10 +10,10 @@ if (!isGeneric("report")) {
 #' # =================================================================
 #' # NWA class
 #' ## load a NWA object(see the examples of analyze NWA for details)
-#' data(nwa)
+#' data(d7_nwa)
 #'
-#' ## report nwa
-#' report(nwa)
+#' ## report d7_nwa
+#' report(d7_nwa)
 #' }
 #' @export
 #' @return in the end, this function would generate a shiny report.

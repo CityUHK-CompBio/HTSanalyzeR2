@@ -16,7 +16,8 @@ Return a list of gene sets of specific collection in
 \href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB}.
 }
 \description{
-This function creates gene set collections based on MSigDB.
+This function creates gene set collections based on MSigDB. Currently only
+commonly used 'c2' and 'c5' gene sets could be gotten by this function.
 It is collection-specific, and returns a list of gene sets collection with
 the elements of the gene sets represented by Entrez Gene IDs.
 }

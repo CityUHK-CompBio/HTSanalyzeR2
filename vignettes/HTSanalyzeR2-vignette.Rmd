@@ -64,9 +64,9 @@ To perform gene set enrichment analysis for single dataset, you must preprare th
 First you need to prepare a named phenotype.
 
 ```{r}
-data(GSE33113.limma)
-phenotype <- as.vector(GSE33113.limma$logFC)
-names(phenotype) <- rownames(GSE33113.limma)
+data(GSE33113_limma)
+phenotype <- as.vector(GSE33113_limma$logFC)
+names(phenotype) <- rownames(GSE33113_limma)
 ```
 
 Then, if you also want to do hypergeometric test on a list of interested genes, you need to define the hits as your interested genes. For example, here we define the hits as genes with absolute log2 fold change greater than 1. In this case, the names of phenotpe, namely all the input genes, would be taken as the background gene list to perform hypergeometric test.
@@ -151,7 +151,8 @@ In addition, to make the results more understandable, you are highly recommended
 
 ```{r, message=FALSE}
 gsca3 <- appendGSTerms(gsca2, goGSCs=c("GO_MF"),
-                       keggGSCs=c("PW_KEGG"), msigdbGSCs = c("MSig_C2"))
+                       keggGSCs=c("PW_KEGG"), 
+                       msigdbGSCs = c("MSig_C2"))
 head(gsca3@result$GSEA.results$PW_KEGG, 3)
 ```
 
@@ -205,7 +206,7 @@ It is often the case that the enrichment map would be of large size due to the h
 tmp <- getTopGeneSets(gsca3, resultName = "GSEA.results", gscs=c("PW_KEGG"),
                       ntop = 20000, allSig = FALSE)
 ## In that case, we can define specificGeneset as below:
-PW_KEGG_geneset <- tmp$PW_KEGG[c(2, 3, 9, 11, 12, 13)]
+PW_KEGG_geneset <- tmp$PW_KEGG[c(2, 3, 6, 7, 10, 11)]
 ## the name of specificGenesets also needs to match with the names of tmp
 specificGeneset <- list("PW_KEGG"=PW_KEGG_geneset)
 viewEnrichMap(gsca3, resultName = "GSEA.results", gscs=c("PW_KEGG"), 
@@ -225,8 +226,8 @@ An S4 class named 'NWA' is developed to perform subnetwork analysis. To initiate
 When creating a new object of class 'NWA', the user also has the possibility to specify the parameter 'interactome' which should be an object of class 'igraph'. If it is not available, the interactome can also be set up later.
 
 ```{r}
-pvalues <- GSE33113.limma$adj.P.Val
-names(pvalues) <- rownames(GSE33113.limma)
+pvalues <- GSE33113_limma$adj.P.Val
+names(pvalues) <- rownames(GSE33113_limma)
 nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotype)
 ```
 
@@ -253,10 +254,10 @@ nwa2@interactome
 
 Having preprocessed the input data and created the interactome, the subnetwork analysis could be performed by using the *analyze* method. This function will plot a figure showing the fitting of the BioNet model to your distribution of pvalues(@Beisser2010), which is a good plot to check the choice of statistics used in this function. The argument *fdr* of the method *analyze* is the false discovery rate for BioNet to fit the BUM model. The parameters of the fitted model will then be used for the scoring function, which subsequently enables the BioNet package to search the optimal scoring subnetwork. See BioNet for more details(@Beisser2010).
 
-Here, to simplify this vignette, we set a very strict 'fdr' as 1e-06. In practice, you may want to set a less strict one(e.g. 0.01)
+Here, to simplify this vignette, we set a very strict 'fdr' as 1e-07. In practice, you may want to set a less strict one(e.g. 0.01)
 
 ```{r, results='hide', message=FALSE, warning=FALSE}
-nwa3 <- analyze(nwa2, fdr=1e-06, species="Hs")
+nwa3 <- analyze(nwa2, fdr=1e-07, species="Hs")
 ```
 
 Similar to 'GSCA', you can also view the subnetwork by *viewSubNet*. Again, for better visualization, modification and downloading, you are highly recommended to view the result in the shiny report by *report*.
@@ -334,14 +335,14 @@ gscaTS1 <- preprocessGscaTS(gscaTS, species="Hs", initialIDs="SYMBOL",
 
 ### Perform analysis
 
-After get a list of preprocessed 'GSCA' object, you can use *analyzeGscaTS* to perform hypergeometric test as well as GSEA on it. The parameters here is the same as single data set. Similarly, to speed up you can use multiple cores via *doParallel* package. This step would return a list of analyzed 'GSCA' object.
+After get a list of preprocessed 'GSCA' object, you can use *analyzeGscaTS* to perform hypergeometric test as well as GSEA on it. The parameters function here is the same as in single data set. Similarly, to speed up you can use multiple cores via *doParallel* package. This step would return a list of analyzed 'GSCA' object. 
 
 ```{r, results='hide', message=FALSE}
 doParallel::registerDoParallel(cores=2)
 gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05, 
                                             pAdjustMethod="BH",
                                             nPermutations=100, 
-                                            minGeneSetSize=180,
+                                            minGeneSetSize=100,
                                             exponent=1), 
                          doGSOA = TRUE, doGSEA = TRUE)
 head(gscaTS2[[1]]@result$GSEA.results$GO_BP, 3)
@@ -401,18 +402,18 @@ You can then use *reportAll* to generate a shiny report to visualize a union sub
 To better visualize all the results, our package could generate a dynamic shiny report containing all the results in. For single data set result such as 'gsca3' and 'nwa3' generated by the above analysis, you can either use *report* or *reportAll* as below:
 
 ```{r, eval = FALSE}
-report(gsca3)
-report(nwa3)
-reportAll(gsca3)
-reportAll(gsca3, nwa3)
+report(gsca=gsca3)
+report(nwa=nwa3)
+reportAll(gsca=gsca3)
+reportAll(gsca=gsca3, nwa=nwa3)
 ```
 
 For time series data, you should use *reportAll* to generate the report. In addition, you can reset the order of time seires data for visualization by setting the argument 'TSOrder'.
 
 ```{r, eval = FALSE}
-reportAll(gscaTS3)
-reportAll(nwa = nwaTS3)
-reportAll(gscaTS3, TSOrder = names(gscaTS3)[c(3, 1, 2)])
+reportAll(gsca=gscaTS3)
+reportAll(nwa=nwaTS3)
+reportAll(gsca=gscaTS3, TSOrder=names(gscaTS3)[c(3, 1, 2)])
 ```
 
 In the shiny report, for hypergeometric test and GSEA results of single data set, you can download the table of different gene set collection in different format such as 'csv' or 'pdf'. On the right of this interface, there is the summary information about this analysis. For the dynamic enrichment map, you can change the layout, set node size and color, label types, edge thickness and download it as 'svg' format. For subnetwork analysis result, you can also change the above mentioned items to fit your requirements.
@@ -430,7 +431,7 @@ tmp <- getTopGeneSets(gscaTS3[[1]], resultName = "GSEA.results",
 GO_BP_geneset <- tmp$GO_BP[c(4,2,6,9,12)]
 ## the name of specificGenesets also needs to match with the names of tmp
 specificGeneset <- list("GO_BP"=GO_BP_geneset)
-reportAll(gscaTS3, specificGeneset=specificGeneset)
+reportAll(gsca=gscaTS3, specificGeneset=specificGeneset)
 
 ```
 

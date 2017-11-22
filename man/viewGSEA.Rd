@@ -30,14 +30,14 @@ function \code{\link[HTSanalyzeR2]{getTopGeneSets}} before plotting the GSEA res
 }
 \examples{
 ## load a GSCA object(see the examples of analyze GSCA for details)
-data(gsca)
+data(d7_gsca)
 
 ## summarize gsca
-summarize(gsca)
+summarize(d7_gsca)
 
-## print top significant gene sets in GO_BP
-topGS_GO_BP <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_BP", allSig=TRUE)
+## print top significant gene sets in GO_MF
+topGS_GO_MF <- getTopGeneSets(d7_gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
 
 ## view GSEA results for one gene set
-viewGSEA(gsca, "GO_BP", topGS_GO_BP[["GO_BP"]][1])
+viewGSEA(d7_gsca, "GO_MF", topGS_GO_MF[["GO_MF"]][1])
 }

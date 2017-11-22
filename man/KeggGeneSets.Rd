@@ -26,8 +26,8 @@ following packages: KEGGREST.
 }
 \examples{
 library(KEGGREST)
-library(org.Dm.eg.db)
-DM_KEGG <- KeggGeneSets(species = "Dm")
+library(org.Hs.eg.db)
+HS_KEGG <- KeggGeneSets(species = "Hs")
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{MSigDBGeneSets}}

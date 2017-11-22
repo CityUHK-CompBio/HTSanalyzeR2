@@ -75,7 +75,7 @@ slot summary of class NWA.
 library(org.Hs.eg.db)
 library(GO.db)
 library(KEGGREST)
-## load data for enrichment analyses
+## load data for enrichment analyse
 data(d7)
 phenotype <- as.vector(d7$neg.lfc)
 names(phenotype) <- d7$id
@@ -84,34 +84,36 @@ names(phenotype) <- d7$id
 hits <-  names(phenotype[which(abs(phenotype) > 2)])
 
 ## set up a list of gene set collections
-GO_BP <- GOGeneSets(species="Hs", ontologies=c("BP"))
+GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
 PW_KEGG <- KeggGeneSets(species="Hs")
-ListGSC <- list(GO_BP=GO_BP, PW_KEGG=PW_KEGG)
+ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
 
 ## create an object of class 'GSCA'
 gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
 
 ## do preprocessing
 gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
-                   duplicateRemoverMethod="max", orderAbsValue=FALSE)
+                    duplicateRemoverMethod="max", orderAbsValue=FALSE)
 
 ## support parallel calculation using doParallel package
 doParallel::registerDoParallel(cores=2)
 
 ## do hypergeometric tests and GSEA
-gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.05, pAdjustMethod ="BH",
-                                nPermutations=100, minGeneSetSize=200, exponent=1),
-                                doGSOA = TRUE, doGSEA = TRUE)
+gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.01, pAdjustMethod ="BH",
+                                  nPermutations=100, minGeneSetSize=10, exponent=1),
+                                  doGSOA = TRUE, doGSEA = TRUE)
 
-## summarize gsca2
+## summarize gsca2 and get results
 summarize(gsca2)
-head(gsca2@result$GSEA.results$GO_BP)
+head(gsca2@result$GSEA.results$GO_MF)
 head(gsca2@result$HyperGeo.results$PW_KEGG)
+
 # ===========================================================
+\dontrun{
 # Network Analysis
 library(org.Hs.eg.db)
 library(GO.db)
-## load data for network analyses
+## load data for network analyse
 data(d7)
 pvalues <- d7$neg.p.value
 names(pvalues) <- d7$id
@@ -125,13 +127,16 @@ nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
 
 ## do preprocessing
 nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
-                  duplicateRemoverMethod="max")
+                   duplicateRemoverMethod="max")
 
-## create an interactome for nwa by downloading for BioGRID database
+## create an interactome for nwa1 by downloading from BioGRID database
 nwa2 <- interactome(nwa1, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
 
 ## analyze
 nwa3 <- analyze(nwa2, fdr=0.0001, species="Hs")
+## summarize nwa3
+summarize(nwa3)
+}
 }
 \references{
 Aravind Subramanian, Pablo Tamayo, Vamsi K. Mootha, Sayan Mukherjee, Benjamin L. Ebert,

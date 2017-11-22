@@ -20,11 +20,11 @@ if (!isGeneric("viewSubNet")) {
 #' @return This function would return a subnetwork as an 'igraph' object.
 #' @examples
 #' ## load a NWA object(see the examples of analyze NWA for details)
-#' data(nwa)
+#' data(d7_nwa)
 #'
 #' ## extract the subnetwork as an igraph object
 #' library(igraph)
-#' subnetwork <- extractSubNet(nwa)
+#' subnetwork <- extractSubNet(d7_nwa)
 #'
 setMethod("extractSubNet", signature = "NWA",
           function(object) {
@@ -58,10 +58,10 @@ setMethod("extractSubNet", signature = "NWA",
 #' @return In the end, this function would plot the identified subnetwork.
 #' @examples
 #' ## load a NWA object(see the examples of analyze NWA for details)
-#' data(nwa)
+#' data(d7_nwa)
 #'
 #' ## plot the subnetwork
-#' viewSubNet(nwa)
+#' viewSubNet(d7_nwa)
 #' @importFrom igraph as_data_frame
 #' @importFrom utils modifyList
 setMethod("viewSubNet", signature = "NWA",

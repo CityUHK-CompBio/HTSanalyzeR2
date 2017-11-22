@@ -20,10 +20,10 @@ for further external using. Users can also use it to modify the subnetwork.
 }
 \examples{
 ## load a NWA object(see the examples of analyze NWA for details)
-data(nwa)
+data(d7_nwa)
 
 ## extract the subnetwork as an igraph object
 library(igraph)
-subnetwork <- extractSubNet(nwa)
+subnetwork <- extractSubNet(d7_nwa)
 
 }

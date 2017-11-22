@@ -30,21 +30,23 @@ if (!isGeneric("report")) {
 #' @return in the end, this function would generate a shiny report.
 #' @examples
 #' # =======================================================
+#' \dontrun{
 #' # GSCA class
 #' ## load a GSCA object(see the examples of analyze GSCA for details)
-#' data(gsca)
+#' data(d7_gsca)
 #'
-#' ## Example1: report gsca
-#' report(gsca)
+#' ## Example1: report d7_gsca
+#' report(d7_gsca)
 #'
-#' ## Example2: report gsca containing enrichment map with specificGeneset
-#' tmp <- getTopGeneSets(gsca, resultName = "GSEA.results", gscs=c("GO_BP"),
+#' ## Example2: report d7_gsca containing enrichment map with specificGeneset
+#' tmp <- getTopGeneSets(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
 #'                       ntop = 20000, allSig = FALSE)
 #' ## In that case, we can define specificGeneset as below:
-#' GO_BP_geneset <- tmp$GO_BP[c(4,2,6,9,12)]
+#' GO_MF_geneset <- tmp$GO_MF[c(4,2,6,9,12)]
 #' ## the name of specificGenesets also needs to match with the names of tmp
-#' specificGeneset <- list("GO_BP"=GO_BP_geneset)
-#' report(gsca, specificGeneset=specificGeneset)
+#' specificGeneset <- list("GO_MF"=GO_MF_geneset)
+#' report(d7_gsca, specificGeneset=specificGeneset)
+#' }
 #' @rdname report
 #'
 #' @export
@@ -72,24 +74,25 @@ setMethod("report", signature = "GSCA",
 #' @export
 #' @return in the end, this function would generate a shiny report.
 #' @examples
+#' \donttest{
 #' ## load data
-#' data(gsca, nwa, gscaTS, nwaTS)
+#' data(d7_gsca, d7_nwa, gscaTS, nwaTS)
 #'
 #' ## Example1: report both gsca and nwa
-#' reportAll(gsca=gsca, nwa=nwa)
+#' reportAll(gsca=d7_gsca, nwa=d7_nwa)
 #'
 #' ## Example2: report gscaTS
-#' reportAll(gscaTS)
+#' reportAll(gsca=gscaTS)
 #'
 #' ## Example3: report nwaTS
-#' reportAll(nwa = nwaTS)
+#' reportAll(nwa=nwaTS)
 #'
 #' ## Example4: report both gscaTS and nwaTS
-#' reportAll(gscaTS, nwaTS)
+#' reportAll(gsca=gscaTS, nwa=nwaTS)
 #'
 #' ## Example5: change order for time series data
-#' reportAll(gscaTS, TSOrder = names(gscaTS)[c(3, 1, 2)])
-#' reportAll(nwa = nwaTS, TSOrder = names(nwaTS)[c(3, 2, 1)])
+#' reportAll(gsca=gscaTS, TSOrder=names(gscaTS)[c(3, 1, 2)])
+#' reportAll(nwa=nwaTS, TSOrder=names(nwaTS)[c(3, 2, 1)])
 #'
 #' ## Example6: view specificGeneset enrichment map for gscaTS using reportAll
 #' library(igraph)
@@ -101,7 +104,8 @@ setMethod("report", signature = "GSCA",
 #' GO_BP_geneset <- tmp$GO_BP[c(4,2,6,9,12)]
 #' ## the name of specificGenesets also needs to match with the names of tmp
 #' specificGeneset <- list("GO_BP"=GO_BP_geneset)
-#' reportAll(gscaTS, specificGeneset=specificGeneset)
+#' reportAll(gsca=gscaTS, specificGeneset=specificGeneset)
+#' }
 reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL, specificGeneset = NULL, reportDir = "AnalysisReport") {
   if(!is.null(gsca) && class(gsca) != "GSCA") {
     if(class(gsca) != "list" || any(sapply(gsca, class) != "GSCA")) {
