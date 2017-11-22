@@ -68,7 +68,7 @@ gscaTS1 <- preprocessGscaTS(gscaTS, species="Hs", initialIDs="SYMBOL",
                            orderAbsValue=FALSE)
 
 ## support parallel calculation using doParallel package
-doParallel::registerDoParallel(cores=4)
+doParallel::registerDoParallel(cores=2)
 
 ## do hypergeometric tests and GSEA
 gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05, pAdjustMethod="BH",

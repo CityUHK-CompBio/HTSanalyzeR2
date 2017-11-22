@@ -72,7 +72,7 @@ if (!isGeneric("analyze")) {
 #'                    duplicateRemoverMethod="max", orderAbsValue=FALSE)
 #'
 #' ## support parallel calculation using doParallel package
-#' doParallel::registerDoParallel(cores=4)
+#' doParallel::registerDoParallel(cores=2)
 #'
 #' ## do hypergeometric tests and GSEA
 #' gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.05, pAdjustMethod ="BH",
