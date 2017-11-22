@@ -375,7 +375,6 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #'
 #' @return An object of igraph with all attributes about the enrichement map.
 #' @examples
-#' \donttest{
 #' ## load a GSCA object(see the examples of 'analyze' GSCA for details)
 #' library(igraph)
 #' data(d7_gsca)
@@ -413,7 +412,6 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #' viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
 #'               allSig = FALSE, gsNameType = "term",
 #'               ntop = NULL, specificGeneset = specificGeneset)
-#' }
 #' @export
 #' @references
 #' Merico D, Isserlin R, Stueker O, Emili A, Bader GD (2010) Enrichment Map:

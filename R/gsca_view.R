@@ -22,7 +22,6 @@ if(!isGeneric("plotGSEA"))
 #' @aliases viewGSEA
 #' @return In the end, this function would draw a GSEA figure for specified gene set.
 #' @examples
-#' \donttest{
 #' ## load a GSCA object(see the examples of analyze GSCA for details)
 #' data(d7_gsca)
 #'
@@ -34,7 +33,6 @@ if(!isGeneric("plotGSEA"))
 #'
 #' ## view GSEA results for one gene set
 #' viewGSEA(d7_gsca, "GO_MF", topGS_GO_MF[["GO_MF"]][1])
-#' }
 #' @include gsca_class.R
 #' @export
 setMethod(
