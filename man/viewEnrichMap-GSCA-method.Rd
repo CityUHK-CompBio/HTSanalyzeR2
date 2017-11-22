@@ -69,20 +69,18 @@ map a mess as well as of no information. To this end, user can set the parameter
 \examples{
 ## load a GSCA object(see the examples of 'analyze' GSCA for details)
 data(gsca)
+library(igraph)
 
 ## Example1: view an enrichment map for top 7 significant 'GO_BP' gene sets of GSEA results
-library(igraph)
 viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_BP"),
               allSig = FALSE, ntop = 7, gsNameType = "term")
 
 ## Example2: view an enrichment map for top 7 significant 'GO_BP'
 ## and 'PW_KEGG' gene sets of GSEA results
-library(igraph)
 viewEnrichMap(gsca, resultName = "GSEA.results", gscs=c("GO_BP", "PW_KEGG"),
               allSig = FALSE, ntop = 7, gsNameType = "term")
 
 ## Example3: view an enrichment map with specificGenesets in 'GO_BP' gene sets of GSEA results
-library(igraph)
 ## As told previously, specificGeneset needs to be a subset of all analyzed gene sets
 ## which can be roughly gotten by:
 tmp <- getTopGeneSets(gsca, resultName = "GSEA.results", gscs=c("GO_BP"),
