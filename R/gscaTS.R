@@ -133,7 +133,11 @@ preprocessGscaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #'                            orderAbsValue=FALSE)
 #'
 #' ## support parallel calculation using doParallel package
+#' if (requireNamespace("doParallel", quietly=TRUE)) {
 #' doParallel::registerDoParallel(cores=2)
+#' } else {
+#'   ## code when "doParallel" is not available
+#' }
 #'
 #' ## do hypergeometric tests and GSEA
 #' gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
@@ -203,7 +207,11 @@ analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="
 #'                            orderAbsValue=FALSE)
 #'
 #' ## support parallel calculation using doParallel package
-#' doParallel::registerDoParallel(cores=4)
+#' if (requireNamespace("doParallel", quietly=TRUE)) {
+#' doParallel::registerDoParallel(cores=2)
+#' } else {
+#'   ## code when "doParallel" is not available
+#' }
 #'
 #' ## do hypergeometric tests and GSEA
 #' gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
@@ -212,8 +220,10 @@ analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="
 #' head(gscaTS2[[1]]@@result$GSEA.results$GO_BP, 3)
 #'
 #' ## append gene set terms to results
+#' \dontrun{
 #' gscaTS3 <- appendGSTermsTS(gscaTS2, goGSCs=c("GO_BP"))
 #' head(gscaTS3[[1]]@@result$GSEA.results$GO_BP, 3)
+#' }
 appendGSTermsTS <- function(gscaList, keggGSCs=NULL, goGSCs=NULL, msigdbGSCs=NULL){
              paraCheck("gscaTS", "gscaList", gscaList)
              tmpName <- names(gscaList)

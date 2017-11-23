@@ -12,4 +12,7 @@ Biogrid_HS_Interactome
 An object of class 'igraph' built from the interactome data set for
 \emph{Homo Sapiens} downloaded from the \emph{BioGRID} database.
 }
+\examples{
+data(Biogrid_HS_Interactome)
+}
 \keyword{datasets}

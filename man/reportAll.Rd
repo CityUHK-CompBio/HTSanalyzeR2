@@ -28,7 +28,7 @@ in the end, this function would generate a shiny report.
 This function can create shiny reports for both gene sets enrichment analysis and network analysis.
 }
 \examples{
-\donttest{
+\dontrun{
 ## load data
 data(d7_gsca, d7_nwa, gscaTS, nwaTS)
 

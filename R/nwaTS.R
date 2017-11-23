@@ -127,6 +127,7 @@ preprocessNwaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #' data(Biogrid_HS_Mat)
 #' nwaTS2 <- interactomeNwaTS(nwaTS1, interactionMatrix = Biogrid_HS_Mat, genetic=FALSE)
 #'
+#' \dontrun{
 #' ## Example3: create an object of class 'NWABatch' without interactome
 #' nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
 #' ## preprocess nwaTS
@@ -134,6 +135,7 @@ preprocessNwaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #'                          keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
 #' ## create an interactome for nwa by downloading for BioGRID database
 #' nwaTS2 <- interactomeNwaTS(nwaTS1, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
+#' }
 #' @export
 interactomeNwaTS <- function(nwaList, interactionMatrix = NULL, species,
                              link = "http://thebiogrid.org/downloads/archives/Release%20Archive/BIOGRID-3.4.138/BIOGRID-ORGANISM-3.4.138.tab2.zip",
@@ -197,12 +199,13 @@ interactomeNwaTS <- function(nwaList, interactionMatrix = NULL, species,
 #' ## preprocess NWABatch
 #' nwaTS1 <- preprocessNwaTS(nwaTS, species="Hs", initialIDs="SYMBOL",
 #'                          keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
-#'
+#' \dontrun{
 #' ## create an interactome for nwa by downloading for BioGRID database
 #' nwaTS2 <- interactomeNwaTS(nwaTS1, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
 #'
 #' ## analyze
 #' nwaTS3 <- analyzeNwaTS(nwaTS2, fdr=0.0001, species="Hs")
+#' }
 analyzeNwaTS <- function(nwaList,  fdr = 0.001,
                          species,
                          verbose = TRUE){

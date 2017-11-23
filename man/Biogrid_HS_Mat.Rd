@@ -11,4 +11,7 @@ Biogrid_HS_Mat
 \description{
 An interactome matrix for \emph{Homo Sapiens}.
 }
+\examples{
+data(Biogrid_HS_Mat)
+}
 \keyword{datasets}

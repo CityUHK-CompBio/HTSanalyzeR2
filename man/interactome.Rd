@@ -82,6 +82,8 @@ nwa1 <- interactome(nwa, interactionMatrix = Biogrid_HS_Mat, genetic=FALSE)
 
 ## Example3: create an object of class 'NWA' without interactome
 nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
+\dontrun{
 ## create an interactome for nwa by downloading for BioGRID database
 nwa1 <- interactome(nwa, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
+}
 }

@@ -57,7 +57,7 @@ setMethod("extractSubNet", signature = "NWA",
 #' @export
 #' @return In the end, this function would plot the identified subnetwork.
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' ## load a NWA object(see the examples of analyze NWA for details)
 #' data(d7_nwa)
 #'

@@ -36,7 +36,6 @@ Objects of class \code{GSCABatch} can be created from
 }
 
 \examples{
-\dontrun{
 data(d7, d13, d25)
 
 ## generate expInfor to describe the information of time series data
@@ -70,5 +69,4 @@ gscaTS
 gscaTS <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
                  listOfGeneSetCollections = ListGSC)
 gscaTS
-}
 }

@@ -380,14 +380,16 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #' data(d7_gsca)
 #'
 #' ## Example1: view an enrichment map for top 7 significant 'GO_MF' gene sets of GSEA results
+#' \dontrun{
 #' viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
 #'               allSig = FALSE, ntop = 7, gsNameType = "term")
-#'
+#' }
 #' ## Example2: view an enrichment map for top 7 significant 'GO_MF'
 #' ## and 'PW_KEGG' gene sets of GSEA results
+#' \dontrun{
 #' viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
 #'               allSig = FALSE, ntop = 7, gsNameType = "term")
-#'
+#' }
 #' ## Example3: view an enrichment map with specificGenesets in 'GO_MF' gene sets of GSEA results
 #' ## As told previously, specificGeneset needs to be a subset of all analyzed gene sets
 #' ## which can be roughly gotten by:
@@ -397,10 +399,11 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #' GO_MF_geneset <- tmp$GO_MF[c(4,2,6,9,12)]
 #' ## the name of specificGenesets also needs to match with the names of tmp
 #' specificGeneset <- list("GO_MF"=GO_MF_geneset)
+#' \dontrun{
 #' viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
 #'               allSig = FALSE, gsNameType = "term",
 #'               ntop = NULL, specificGeneset = specificGeneset)
-#'
+#' }
 #'
 #' ## Example4: view an enrichment map with specificGenesets in 'GO_MF'
 #' ## and 'PW_KEGG' gene sets of GSEA results
@@ -409,9 +412,11 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #' GO_MF_geneset <- tmp$GO_MF[c(6,3,5,9,12)]
 #' PW_KEGG_geneset <- tmp$PW_KEGG[c(7,2,5,1,9)]
 #' specificGeneset <- list("GO_MF"=GO_MF_geneset, "PW_KEGG"=PW_KEGG_geneset)
+#' \dontrun{
 #' viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
 #'               allSig = FALSE, gsNameType = "term",
 #'               ntop = NULL, specificGeneset = specificGeneset)
+#' }
 #' @export
 #' @references
 #' Merico D, Isserlin R, Stueker O, Emili A, Bader GD (2010) Enrichment Map:

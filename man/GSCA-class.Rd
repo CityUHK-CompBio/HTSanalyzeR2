@@ -44,7 +44,6 @@ Objects of class \code{GSCA} can be created by:
 }
 
 \examples{
-\dontrun{
 library(org.Hs.eg.db)
 library(GO.db)
 ## load data for enrichment analyses
@@ -68,7 +67,6 @@ gsca@summary
 gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype)
 gsca
 gsca@summary
-}
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{preprocess}},

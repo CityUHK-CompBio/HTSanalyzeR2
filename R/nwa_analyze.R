@@ -83,7 +83,7 @@ setMethod("analyze",
               stop("pvalues vector has length 0, or has no overlap ",
                    "with interactome!\n")
             ## perform network analysis
-            module <- networkAnalysis(
+            module <- HTSanalyzeR2:::networkAnalysis(
               pvalues = object@pvalues,
               graph = object@interactome,
               fdr = object@fdr,
@@ -111,52 +111,7 @@ setMethod("analyze",
             })
 
 
-#' Identify enriched subnetworks
-#'
-#' This function finds subnetworks enriched for genes with significant
-#' phenotypes based on the package 'BioNet'.
-#'
-#' @param pvalues A numeric vector of p-values.
-#' @param graph An object of class igraph, used as the interactome in
-#' the network analysis.
-#' @param fdr A single numeric value specifying the false discovery for
-#' the scoring of nodes (see BioNet::scoreNodes and Dittrich et al., 2008
-#' for details).
-#' @param verbose A single logical value indicating to display detailed
-#' messages (when verbose=TRUE) or not (when verbose=FALSE).
-#'
-#' @details This function takes in a vector of p-values and a graph standing
-#' for the interactome to identify the maximum scoring subnetwork based on
-#' the BioNet package.
-#' @references
-#' Beisser D, Klau GW, Dandekar T, Muller T, Dittrich MT. BioNet: an R-Package
-#' for the functional analysis of biological networks. Bioinformatics.
-#' 2010 Apr 15;26(8):1129-30.
-#'
-#' Dittrich MT, Klau GW, Rosenwald A., Dandekar T and Muller T. Identifying functional modules
-#' in protein-protein interaction networks: an integrated exact approach. Bioinformatics
-#' 2008 24(13):i223-i231.
-#' @return A subnetwork module of class igraph.
-#' @export
-#' @examples
-#' \dontrun{
-#' library(org.Hs.eg.db)
-#' library(GO.db)
-#' ## load data for subnetwork analyses
-#' data(d7)
-#' pvalues <- d7$neg.p.value
-#' names(pvalues) <- d7$id
-#'
-#' ## create an object of class NWA
-#' nwa <- new("NWA", pvalues=pvalues)
-#'
-#' ## interactome
-#' data(Biogrid_HS_Interactome)
-#'
-#' ##identify subnetworks
-#' enrichedSubNet <- networkAnalysis(pvalues=pvalues, graph=Biogrid_HS_Interactome,
-#'                                   fdr = 0.001, verbose = TRUE)
-#' }
+
 #' @importFrom BioNet fitBumModel scoreNodes runFastHeinz
 #' @importFrom igraph vertex_attr vcount
 #'

@@ -20,7 +20,6 @@
 #' @slot listOfGSCA A list of initialized GSCA object for futher GSCA.
 #' @export
 #' @examples
-#' \dontrun{
 #' data(d7, d13, d25)
 #'
 #' ## generate expInfor to describe the information of time series data
@@ -54,7 +53,6 @@
 #' gscaTS <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
 #'                  listOfGeneSetCollections = ListGSC)
 #' gscaTS
-#' }
 
 
 # GSCABatch ----------------------------------------------------------------
@@ -156,7 +154,6 @@ setMethod("show", signature = "GSCABatch", function(object) {
 #' @slot interactome An object of class igraph.
 #' @slot listOfNWA A list of 'NWA' object.
 #' @examples
-#' \dontrun{
 #' data(d7, d13, d25)
 #'
 #' ## generate expInfor to describe the information of time series data
@@ -181,7 +178,6 @@ setMethod("show", signature = "GSCABatch", function(object) {
 #'
 #' ## Example2: create an object of class 'NWABatch' without phenotypes
 #' nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS)
-#' }
 #' @export
 #' @aliases NWABatch
 setClass(

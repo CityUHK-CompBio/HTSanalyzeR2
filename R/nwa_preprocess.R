@@ -186,8 +186,10 @@ setMethod("preprocess", signature = "NWA",
 #'
 #' ## Example3: create an object of class 'NWA' without interactome
 #' nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
+#' \dontrun{
 #' ## create an interactome for nwa by downloading for BioGRID database
 #' nwa1 <- interactome(nwa, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
+#' }
 #' @export
 #' @return In the end, this function will return an updated object with slot 'interactome'
 #' as an object of class 'igraph'.

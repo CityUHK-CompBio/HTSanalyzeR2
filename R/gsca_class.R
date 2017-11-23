@@ -33,7 +33,6 @@
 #'
 #' @export
 #' @examples
-#' \dontrun{
 #' library(org.Hs.eg.db)
 #' library(GO.db)
 #' ## load data for enrichment analyses
@@ -57,7 +56,6 @@
 #' gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype)
 #' gsca
 #' gsca@@summary
-#' }
 
 setClass(
   Class = "GSCA",

@@ -12,4 +12,8 @@ GSE33113_limma
 The differential expressed analysis result between CMS4 colon cancer subtype and
 non-CMS4 of a gene expression dataset with GEO number-"GSE33113" using R package \emph{limma}.
 }
+\examples{
+data(GSE33113_limma)
+
+}
 \keyword{datasets}

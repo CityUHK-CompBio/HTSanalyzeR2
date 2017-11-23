@@ -96,7 +96,11 @@ gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMapping
                     duplicateRemoverMethod="max", orderAbsValue=FALSE)
 
 ## support parallel calculation using doParallel package
+if (requireNamespace("doParallel", quietly=TRUE)) {
 doParallel::registerDoParallel(cores=2)
+} else {
+  ## code when "doParallel" is not available
+}
 
 ## do hypergeometric tests and GSEA
 gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.01, pAdjustMethod ="BH",

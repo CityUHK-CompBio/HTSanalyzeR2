@@ -36,7 +36,6 @@ from \code{new("NWABatch", expInfor, pvalueTS, phenotypeTS = list(), interactome
 }
 
 \examples{
-\dontrun{
 data(d7, d13, d25)
 
 ## generate expInfor to describe the information of time series data
@@ -61,5 +60,4 @@ nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS =
 
 ## Example2: create an object of class 'NWABatch' without phenotypes
 nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS)
-}
 }
