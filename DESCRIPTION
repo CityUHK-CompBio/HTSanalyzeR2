@@ -2,7 +2,7 @@ Package: HTSanalyzeR2
 Type: Package
 Title: Gene set over-representation, enrichment and network analyses for high-
        throughput data and corresponding time-series data
-Version: 0.99.4
+Version: 0.99.5
 Author: Lina ZHU <zhulina0609@gmail.com>, Feng GAO <gaofeng21cn@gmail.com>, 
         Xiupei MEI <meixiupei@gmail.com>, Yuchen ZHANG <yuczhang9@gmail.com>,
         Xin Wang <xinwang2hms@gmail.com>
@@ -81,6 +81,6 @@ Suggests:
     doParallel,
     Biobase
 VignetteBuilder: knitr
-Depends: R(>= 3.4)
+Depends: R(>= 3.5)
 biocViews: GeneSetEnrichment, NetworkEnrichment, TimeCourse, 
            GeneExpression, GO, KEGG, CRISPR
