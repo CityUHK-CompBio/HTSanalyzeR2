@@ -99,6 +99,10 @@ gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMapping
 if (requireNamespace("doParallel", quietly=TRUE)) {
 doParallel::registerDoParallel(cores=2)
 } else {
+<<<<<<< HEAD
+=======
+  ## code when "doParallel" is not available
+>>>>>>> 358f9b12454a4b95717ec52511a652d70f7754e3
 }
 
 ## do hypergeometric tests and GSEA

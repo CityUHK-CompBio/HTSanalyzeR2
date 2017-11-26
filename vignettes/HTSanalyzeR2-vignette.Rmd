@@ -132,6 +132,10 @@ During the enrichment analysis of gene sets, the function evaluates the statisti
 if (requireNamespace("doParallel", quietly=TRUE)) {
     doParallel::registerDoParallel(cores=2)
 } else {
+<<<<<<< HEAD
+=======
+## code when "doParallel" is not available
+>>>>>>> 358f9b12454a4b95717ec52511a652d70f7754e3
 }
 
 gsca2 <- analyze(gsca1, 
@@ -345,6 +349,10 @@ After get a list of preprocessed 'GSCA' object, you can use *analyzeGscaTS* to p
 if (requireNamespace("doParallel", quietly=TRUE)) {
     doParallel::registerDoParallel(cores=2)
 } else {
+<<<<<<< HEAD
+=======
+## code when "doParallel" is not available
+>>>>>>> 358f9b12454a4b95717ec52511a652d70f7754e3
 }
 
 gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05, 

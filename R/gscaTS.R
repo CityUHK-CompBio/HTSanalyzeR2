@@ -136,6 +136,10 @@ preprocessGscaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #' if (requireNamespace("doParallel", quietly=TRUE)) {
 #' doParallel::registerDoParallel(cores=2)
 #' } else {
+<<<<<<< HEAD
+=======
+#'   ## code when "doParallel" is not available
+>>>>>>> 358f9b12454a4b95717ec52511a652d70f7754e3
 #' }
 #'
 #' ## do hypergeometric tests and GSEA
@@ -209,6 +213,10 @@ analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="
 #' if (requireNamespace("doParallel", quietly=TRUE)) {
 #' doParallel::registerDoParallel(cores=2)
 #' } else {
+<<<<<<< HEAD
+=======
+#'   ## code when "doParallel" is not available
+>>>>>>> 358f9b12454a4b95717ec52511a652d70f7754e3
 #' }
 #'
 #' ## do hypergeometric tests and GSEA
