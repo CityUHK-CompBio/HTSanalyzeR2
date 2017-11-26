@@ -3,8 +3,8 @@
                         , appendLF = FALSE)
 }
 
-# .onLoad <- function(libname, pkgname) {
-#   if(getRversion() >= "3.4") {
-#     utils::globalVariables(names = c("idx", "tags"), add=FALSE, package = "HTSanalyzeR2")
-#     }
-# }
+.onLoad <- function(libname, pkgname) {
+  if(getRversion() >= "3.5") {
+    utils::globalVariables(names = c("idx", "tags"), add=FALSE, package = "HTSanalyzeR2")
+    }
+}
