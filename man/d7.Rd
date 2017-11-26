@@ -15,4 +15,15 @@ gRNA sequencing data after transducting the CRISPR system into a human cancer
 cellline as time goes by. They are further pre-processed by MAGeCK. Details please
 refer to \href{https://sourceforge.net/p/mageck/wiki/Home/}{MAGeCK}.
 }
+\examples{
+data(d7)
+data(d13)
+data(d25)
+
+}
+\references{
+Tzelepis K, Koike-Yusa H, De Braekeleer E, et al. A CRISPR Dropout Screen Identifies
+Genetic Vulnerabilities and Therapeutic Targets in Acute Myeloid Leukemia. Cell Reports.
+ 2016;17(4):1193-1205. doi:10.1016/j.celrep.2016.09.079.
+}
 \keyword{datasets}

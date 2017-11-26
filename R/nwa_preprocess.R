@@ -186,8 +186,10 @@ setMethod("preprocess", signature = "NWA",
 #'
 #' ## Example3: create an object of class 'NWA' without interactome
 #' nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
+#' \dontrun{
 #' ## create an interactome for nwa by downloading for BioGRID database
 #' nwa1 <- interactome(nwa, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
+#' }
 #' @export
 #' @return In the end, this function will return an updated object with slot 'interactome'
 #' as an object of class 'igraph'.
@@ -291,9 +293,23 @@ biogridDataDownload <- function(link, species = "Hs", dataDirectory = ".",
 
     if(!file.exists(dataDirectory)) dir.create(dataDirectory)
 
-    download.file(url = link,
-                  destfile = file.path(dataDirectory,
-                                       "Biogrid-all-org"), quiet=TRUE)
+    retry <- 0
+    MD5 <- "83f6abdad6e3f49991d2fb3c9587847b"
+    repeat{
+      retry <- retry + 1
+      download.file(url = link, destfile = file.path(dataDirectory,
+                                         "Biogrid-all-org"), quiet=TRUE)
+      download.md5 <- tools::md5sum(file.path(dataDirectory, "Biogrid-all-org"))
+      names(download.md5) <- NULL
+      if(identical(MD5, download.md5) || retry > 3){
+        break
+      }
+    }
+
+    if (!identical(MD5, download.md5)) {
+      stop("Downloaded BioGRID interactome file is corrupted!\n")
+    }
+
     unzip(zipfile = file.path(dataDirectory, "Biogrid-all-org"),
           exdir = dataDirectory)
   } else {

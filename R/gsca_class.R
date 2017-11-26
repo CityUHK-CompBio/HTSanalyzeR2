@@ -33,7 +33,6 @@
 #'
 #' @export
 #' @examples
-#' \dontrun{
 #' library(org.Hs.eg.db)
 #' library(GO.db)
 #' ## load data for enrichment analyses
@@ -42,7 +41,7 @@
 #' names(phenotype) <- d7$id
 #'
 #' ## select hits if you also want to do GSOA, otherwise ignore it
-#' hits <-  names(phenotype[which(abs(phenotype) > 2)])
+#' hits <- names(phenotype[which(abs(phenotype) > 2)])
 #'
 #' ## set up a list of gene set collections
 #' GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
@@ -50,14 +49,11 @@
 #'
 #' ## Example1: create an object of class 'GSCA' with hits
 #' gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
-#' gsca
 #' gsca@@summary
 #'
 #' ## Example2: create an object of class 'GSCA' without hits
 #' gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype)
-#' gsca
 #' gsca@@summary
-#' }
 
 setClass(
   Class = "GSCA",

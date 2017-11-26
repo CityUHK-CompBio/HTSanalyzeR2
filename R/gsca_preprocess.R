@@ -304,17 +304,17 @@ duplicateRemover <- function(geneList, method = "max") {
 #' @return The same data vector/matrix but with names/row names converted.
 #'
 #' @examples
-#' library(org.Dm.eg.db)
+#' library(org.Hs.eg.db)
 #' ## Example1: convert a named vector
 #' x <- runif(10)
-#' names(x) <- names(as.list(org.Dm.egSYMBOL2EG))[1:10]
-#' xEntrez <- annotationConvertor(geneList=x, species="Dm", initialIDs="SYMBOL",
+#' names(x) <- names(as.list(org.Hs.egSYMBOL2EG))[1:10]
+#' xEntrez <- annotationConvertor(geneList=x, species="Hs", initialIDs="SYMBOL",
 #'                                finalIDs="ENTREZID")
 #'
 #' ## Example2: convert a data matrix with row names as gene ids
 #' x <- cbind(runif(10),runif(10))
-#' rownames(x) <- names(as.list(org.Dm.egSYMBOL2EG))[1:10]
-#' xEntrez <- annotationConvertor(geneList=x, species="Dm", initialIDs="SYMBOL",
+#' rownames(x) <- names(as.list(org.Hs.egSYMBOL2EG))[1:10]
+#' xEntrez <- annotationConvertor(geneList=x, species="Hs", initialIDs="SYMBOL",
 #'                                finalIDs="ENTREZID")
 #' @export
 #' @importFrom AnnotationDbi mapIds columns

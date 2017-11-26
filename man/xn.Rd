@@ -11,4 +11,7 @@ xn
 \description{
 An object of class 'cellHTS2' which has been normalized, configured and annotated.
 }
+\examples{
+data(xn)
+}
 \keyword{datasets}

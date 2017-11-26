@@ -59,6 +59,7 @@
 #' the results in. All the results would be stored as RData named 'results.RData' under
 #' a new automatic generated directory. It can be loaded into R by 'readRDS(results.RData)'.
 #' @examples
+#' \dontrun{
 #' data(d7)
 #'
 #' library(GO.db)
@@ -84,6 +85,7 @@
 #'                    keggGSCs=c("PW_KEGG"),
 #'                    goGSCs = c("GO_MF"),
 #'                    nwAnalysisFdr = 0.0001)
+#' }
 #' @export
 #' @importFrom methods new
 HTSanalyzeR4MAGeCK <- function(MAGeCKdata,

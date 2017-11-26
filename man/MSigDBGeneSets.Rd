@@ -2,7 +2,7 @@
 % Please edit documentation in R/gsca_load_genesets.R
 \name{MSigDBGeneSets}
 \alias{MSigDBGeneSets}
-\title{Create a list of gene sets based on MSigDB collection terms}
+\title{Create a list of gene sets for Homo Sapiens based on MSigDB collection terms}
 \usage{
 MSigDBGeneSets(collection = "c2")
 }
@@ -12,11 +12,11 @@ It should be either 'c2'(curated gene sets) or 'c5'(GO gene sets). More details 
 \href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB}.}
 }
 \value{
-Return a list of gene sets of specific collection in
-\href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB}.
+Return a list of gene sets of specific collection for Homo Sapiens in
+\href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB} of version 6.1.
 }
 \description{
-This function creates gene set collections based on MSigDB. Currently only
+This function creates gene set collections for Homo Sapiens based on MSigDB of version 6.1. Currently only
 commonly used 'c2' and 'c5' gene sets could be gotten by this function.
 It is collection-specific, and returns a list of gene sets collection with
 the elements of the gene sets represented by Entrez Gene IDs.

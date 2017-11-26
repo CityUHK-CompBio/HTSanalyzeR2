@@ -64,7 +64,10 @@ if (!isGeneric("viewEnrichMap"))
 #'                    duplicateRemoverMethod="max", orderAbsValue=FALSE)
 #'
 #' ## support parallel calculation using doParallel package
+#' if (requireNamespace("doParallel", quietly=TRUE)) {
 #' doParallel::registerDoParallel(cores=2)
+#' } else {
+#' }
 #'
 #' ## do hypergeometric tests and GSEA
 #' gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.01, pAdjustMethod ="BH",
@@ -204,7 +207,11 @@ setMethod("extractEnrichMap", signature = "GSCA",
               for(i in 1:length(specificGeneset)){
                 topGSTMP1 <- topGSTMP[[names(specificGeneset)[i]]]
                 if(!all(specificGeneset[[i]] %in% topGSTMP1)){
-                  stop("'specificGeneset' should be a subset of all genesets in result!\n")
+                  stop("The ",i, "th element of 'specificGeneset' should be a subset of all '",
+                       gscs[i], "' genesets in result!\n")
+                }
+                if(!is.character(specificGeneset[[i]])){
+                  stop("Each element in the list of 'specificGeneset' should be a character vector!\n")
                 }
               }
               topGS <- specificGeneset
@@ -335,7 +342,7 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #' of class GSCA, this function will plot an enrichment map for GSEA or
 #' Hypergeometric test results.
 #'
-#' @param object 	A GSCA object.
+#' @param object A GSCA object.
 #' @param resultName A single character value specifying draw an enrichment map based on
 #' which result. Could only be 'HyperGeo.results' or 'GSEA.results'.
 #' @param gscs A character vector specifying the names of gene set collections
@@ -350,7 +357,7 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #' set names should be one of the following: "id", "term" or "none".
 #' @param specificGeneset A named list of specific gene sets. Specifically, this term needs to be
 #' a subset of all analyzed gene sets which can be roughly gotten by
-#' \strong{getTopGeneSets(object, resultName, gscs, ntop = 20000, allSig = FALSE)} with warning.
+#' \strong{getTopGeneSets(object, resultName, gscs, ntop = 20000, allSig = FALSE)}.
 #' The order of the list must match the order of results gotten by aboved function \strong{getTopGeneSets}.
 #' @param options A list of options to modify the enrichmentmap. Details are not showed here due to too
 #' many options. Users are highly recommended to modify the enrichment map in a shiny report by
@@ -380,14 +387,16 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #' data(d7_gsca)
 #'
 #' ## Example1: view an enrichment map for top 7 significant 'GO_MF' gene sets of GSEA results
+#' \dontrun{
 #' viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
 #'               allSig = FALSE, ntop = 7, gsNameType = "term")
-#'
+#' }
 #' ## Example2: view an enrichment map for top 7 significant 'GO_MF'
 #' ## and 'PW_KEGG' gene sets of GSEA results
+#' \dontrun{
 #' viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
 #'               allSig = FALSE, ntop = 7, gsNameType = "term")
-#'
+#' }
 #' ## Example3: view an enrichment map with specificGenesets in 'GO_MF' gene sets of GSEA results
 #' ## As told previously, specificGeneset needs to be a subset of all analyzed gene sets
 #' ## which can be roughly gotten by:
@@ -397,10 +406,11 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #' GO_MF_geneset <- tmp$GO_MF[c(4,2,6,9,12)]
 #' ## the name of specificGenesets also needs to match with the names of tmp
 #' specificGeneset <- list("GO_MF"=GO_MF_geneset)
+#' \dontrun{
 #' viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
 #'               allSig = FALSE, gsNameType = "term",
 #'               ntop = NULL, specificGeneset = specificGeneset)
-#'
+#' }
 #'
 #' ## Example4: view an enrichment map with specificGenesets in 'GO_MF'
 #' ## and 'PW_KEGG' gene sets of GSEA results
@@ -409,9 +419,11 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #' GO_MF_geneset <- tmp$GO_MF[c(6,3,5,9,12)]
 #' PW_KEGG_geneset <- tmp$PW_KEGG[c(7,2,5,1,9)]
 #' specificGeneset <- list("GO_MF"=GO_MF_geneset, "PW_KEGG"=PW_KEGG_geneset)
+#' \dontrun{
 #' viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
 #'               allSig = FALSE, gsNameType = "term",
 #'               ntop = NULL, specificGeneset = specificGeneset)
+#' }
 #' @export
 #' @references
 #' Merico D, Isserlin R, Stueker O, Emili A, Bader GD (2010) Enrichment Map:

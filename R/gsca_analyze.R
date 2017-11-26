@@ -72,7 +72,10 @@ if (!isGeneric("analyze")) {
 #'                     duplicateRemoverMethod="max", orderAbsValue=FALSE)
 #'
 #' ## support parallel calculation using doParallel package
+#' if (requireNamespace("doParallel", quietly=TRUE)) {
 #' doParallel::registerDoParallel(cores=2)
+#' } else {
+#' }
 #'
 #' ## do hypergeometric tests and GSEA
 #' gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.01, pAdjustMethod ="BH",
@@ -457,7 +460,6 @@ calcHGTScore <- function(geneSet, universe, hits) {
 
 #' @import foreach
 #' @importFrom  stats p.adjust
-#' @import doParallel
 calcGSEA <-
   function(listOfGeneSetCollections,
            geneList,

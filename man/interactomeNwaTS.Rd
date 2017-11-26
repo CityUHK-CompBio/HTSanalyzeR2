@@ -79,6 +79,7 @@ nwaTS1 <- preprocessNwaTS(nwaTS, species="Hs", initialIDs="SYMBOL",
 data(Biogrid_HS_Mat)
 nwaTS2 <- interactomeNwaTS(nwaTS1, interactionMatrix = Biogrid_HS_Mat, genetic=FALSE)
 
+\dontrun{
 ## Example3: create an object of class 'NWABatch' without interactome
 nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
 ## preprocess nwaTS
@@ -86,6 +87,7 @@ nwaTS1 <- preprocessNwaTS(nwaTS, species="Hs", initialIDs="SYMBOL",
                          keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
 ## create an interactome for nwa by downloading for BioGRID database
 nwaTS2 <- interactomeNwaTS(nwaTS1, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
+}
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{interactome}}

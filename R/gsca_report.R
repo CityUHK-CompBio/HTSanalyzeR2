@@ -30,13 +30,14 @@ if (!isGeneric("report")) {
 #' @return in the end, this function would generate a shiny report.
 #' @examples
 #' # =======================================================
-#' \dontrun{
 #' # GSCA class
 #' ## load a GSCA object(see the examples of analyze GSCA for details)
 #' data(d7_gsca)
 #'
 #' ## Example1: report d7_gsca
+#' \dontrun{
 #' report(d7_gsca)
+#' }
 #'
 #' ## Example2: report d7_gsca containing enrichment map with specificGeneset
 #' tmp <- getTopGeneSets(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
@@ -45,6 +46,7 @@ if (!isGeneric("report")) {
 #' GO_MF_geneset <- tmp$GO_MF[c(4,2,6,9,12)]
 #' ## the name of specificGenesets also needs to match with the names of tmp
 #' specificGeneset <- list("GO_MF"=GO_MF_geneset)
+#' \dontrun{
 #' report(d7_gsca, specificGeneset=specificGeneset)
 #' }
 #' @rdname report
@@ -74,7 +76,7 @@ setMethod("report", signature = "GSCA",
 #' @export
 #' @return in the end, this function would generate a shiny report.
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' ## load data
 #' data(d7_gsca, d7_nwa, gscaTS, nwaTS)
 #'

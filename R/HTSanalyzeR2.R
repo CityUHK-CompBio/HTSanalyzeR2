@@ -28,7 +28,7 @@
 #' help pages.
 #'
 #' Introductory information on the use of classes and pipeline are available in
-#' the vignette, type openVignette().
+#' the vignette.
 #'
 #' A full listing of documented topics is available in HTML view by typing
 #' help.start() and selecting the HTSanalyzeR package from the Packages menu

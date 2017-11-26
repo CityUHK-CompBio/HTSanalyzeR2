@@ -39,5 +39,7 @@ summarize(d7_gsca)
 topGS_GO_MF <- getTopGeneSets(d7_gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
 
 ## view GSEA results for one gene set
+\dontrun{
 viewGSEA(d7_gsca, "GO_MF", topGS_GO_MF[["GO_MF"]][1])
+}
 }

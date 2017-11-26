@@ -32,7 +32,7 @@ set names should be one of the following: "id", "term" or "none".}
 
 \item{specificGeneset}{A named list of specific gene sets. Specifically, this term needs to be
 a subset of all analyzed gene sets which can be roughly gotten by
-\strong{getTopGeneSets(object, resultName, gscs, ntop = 20000, allSig = FALSE)} with warning.
+\strong{getTopGeneSets(object, resultName, gscs, ntop = 20000, allSig = FALSE)}.
 The order of the list must match the order of results gotten by aboved function \strong{getTopGeneSets}.}
 
 \item{options}{A list of options to modify the enrichmentmap. Details are not showed here due to too
@@ -72,14 +72,16 @@ library(igraph)
 data(d7_gsca)
 
 ## Example1: view an enrichment map for top 7 significant 'GO_MF' gene sets of GSEA results
+\dontrun{
 viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
               allSig = FALSE, ntop = 7, gsNameType = "term")
-
+}
 ## Example2: view an enrichment map for top 7 significant 'GO_MF'
 ## and 'PW_KEGG' gene sets of GSEA results
+\dontrun{
 viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
               allSig = FALSE, ntop = 7, gsNameType = "term")
-
+}
 ## Example3: view an enrichment map with specificGenesets in 'GO_MF' gene sets of GSEA results
 ## As told previously, specificGeneset needs to be a subset of all analyzed gene sets
 ## which can be roughly gotten by:
@@ -89,10 +91,11 @@ tmp <- getTopGeneSets(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
 GO_MF_geneset <- tmp$GO_MF[c(4,2,6,9,12)]
 ## the name of specificGenesets also needs to match with the names of tmp
 specificGeneset <- list("GO_MF"=GO_MF_geneset)
+\dontrun{
 viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
               allSig = FALSE, gsNameType = "term",
               ntop = NULL, specificGeneset = specificGeneset)
-
+}
 
 ## Example4: view an enrichment map with specificGenesets in 'GO_MF'
 ## and 'PW_KEGG' gene sets of GSEA results
@@ -101,9 +104,11 @@ tmp <- getTopGeneSets(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_
 GO_MF_geneset <- tmp$GO_MF[c(6,3,5,9,12)]
 PW_KEGG_geneset <- tmp$PW_KEGG[c(7,2,5,1,9)]
 specificGeneset <- list("GO_MF"=GO_MF_geneset, "PW_KEGG"=PW_KEGG_geneset)
+\dontrun{
 viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
               allSig = FALSE, gsNameType = "term",
               ntop = NULL, specificGeneset = specificGeneset)
+}
 }
 \references{
 Merico D, Isserlin R, Stueker O, Emili A, Bader GD (2010) Enrichment Map:

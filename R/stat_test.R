@@ -48,6 +48,7 @@
 #' @export
 #' @importFrom cellHTS2 Data
 #' @importFrom stats median t.test wilcox.test
+#' @importFrom RankProd RP
 #' @examples
 #' data(xn)
 #' test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn, annotationColumn="GeneID",
@@ -89,7 +90,7 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
   dataNw <- dataNw[which(Biobase::fData(cellHTSobject)[, "controlStatus"] ==
                            "sample"), ]
   dataNw <- dataNw[which(!is.na(rownames(dataNw))), ]
-  ##make a vector of data for the control 	population
+  ##make a vector of data for the control population
   controlData <- Data(cellHTSobject)[
     which(Biobase::fData(cellHTSobject)[, "controlStatus"] == controls),
     1:ncol(Data(cellHTSobject)), 1]

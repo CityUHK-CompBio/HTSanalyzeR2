@@ -44,7 +44,6 @@ Objects of class \code{GSCA} can be created by:
 }
 
 \examples{
-\dontrun{
 library(org.Hs.eg.db)
 library(GO.db)
 ## load data for enrichment analyses
@@ -53,7 +52,7 @@ phenotype <- as.vector(d7$neg.lfc)
 names(phenotype) <- d7$id
 
 ## select hits if you also want to do GSOA, otherwise ignore it
-hits <-  names(phenotype[which(abs(phenotype) > 2)])
+hits <- names(phenotype[which(abs(phenotype) > 2)])
 
 ## set up a list of gene set collections
 GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
@@ -61,14 +60,11 @@ ListGSC <- list(GO_MF=GO_MF)
 
 ## Example1: create an object of class 'GSCA' with hits
 gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
-gsca
 gsca@summary
 
 ## Example2: create an object of class 'GSCA' without hits
 gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype)
-gsca
 gsca@summary
-}
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{preprocess}},

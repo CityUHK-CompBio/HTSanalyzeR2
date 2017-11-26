@@ -32,7 +32,9 @@ if(!isGeneric("plotGSEA"))
 #' topGS_GO_MF <- getTopGeneSets(d7_gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
 #'
 #' ## view GSEA results for one gene set
+#' \dontrun{
 #' viewGSEA(d7_gsca, "GO_MF", topGS_GO_MF[["GO_MF"]][1])
+#' }
 #' @include gsca_class.R
 #' @export
 setMethod(
@@ -91,7 +93,9 @@ setMethod(
 #' summarize(d7_gsca)
 #'
 #' ## plot  significant gene sets in GO_MF and PW_KEGG
+#' \dontrun{
 #' plotGSEA(d7_gsca, gscs=c("GO_MF","PW_KEGG"), ntop=3, filepath=".")
+#' }
 #' @export
 ##plot GSEA for GSCA
 setMethod(

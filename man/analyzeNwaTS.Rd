@@ -53,12 +53,13 @@ nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS =
 ## preprocess NWABatch
 nwaTS1 <- preprocessNwaTS(nwaTS, species="Hs", initialIDs="SYMBOL",
                          keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
-
+\dontrun{
 ## create an interactome for nwa by downloading for BioGRID database
 nwaTS2 <- interactomeNwaTS(nwaTS1, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
 
 ## analyze
 nwaTS3 <- analyzeNwaTS(nwaTS2, fdr=0.0001, species="Hs")
+}
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{analyze}}

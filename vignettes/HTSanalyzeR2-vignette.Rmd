@@ -39,13 +39,12 @@ While high-throughput experiments are no longer bottlenecks for biologists to di
 + **HTSanalyzeR2** could generate a dynamic shiny report for users downloading, modifying the visualizations as well as sharing with others.
 
 Before starting the demonstration, you need to load the following packages:
-```{r, results='hide', message=FALSE}
+```{r, results='hide', message=FALSE, warning=FALSE}
 library(HTSanalyzeR2)
 library(org.Hs.eg.db)
 library(KEGGREST)
 library(GO.db)
 library(igraph)
-library(Homo.sapiens)
 ```
 
 # Case study1: Single dataset analysis for gene expression data
@@ -78,7 +77,7 @@ Then, if you also want to do hypergeometric test on a list of interested genes, 
 hits <-  names(phenotype[which(abs(phenotype) > 1)])
 ```
 
-Then we must define the gene set collections. A gene set collection is a list of gene sets, each of  which consists of a group of genes with a similar known function. **HTSanalyzeR2** provides facilities which greatly simplify the creation of up-to-date gene set collections including three Gene Ontology terms: Molecular Function(MF), Biological Process(BP), Cellular Component(CC), KEGG pathways as well as all the gene sets in a comprehensive molecular signatures database, [MSigDB](http://software.broadinstitute.org/gsea/msigdb)(@Arthur2011). Here to simplify the demonstration, we will only use one GO, KEGG and one MSigDB gene set collection. To work properly, you need to choose the right species for your input genes. Besides, these gene set collections must be provided as a named list as below:
+Then we must define the gene set collections. A gene set collection is a list of gene sets, each of  which consists of a group of genes with a similar known function. **HTSanalyzeR2** provides facilities which greatly simplify the creation of up-to-date gene set collections including three Gene Ontology terms: Molecular Function(MF), Biological Process(BP), Cellular Component(CC), KEGG pathways. Gene sets in a comprehensive molecular signatures database, [MSigDB](http://software.broadinstitute.org/gsea/msigdb)(@Arthur2011), for Homo Sapiens is also provided, containing the most commonly used two collections:'c2'(curated gene sets) and 'c5'(GO gene sets). Here to simplify the demonstration, we will only use one GO, KEGG and one MSigDB gene set collection. To work properly, you need to choose the right species for your input genes. Besides, these gene set collections must be provided as a named list as below:
 
 ```{r}
 GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
@@ -130,7 +129,11 @@ During the enrichment analysis of gene sets, the function evaluates the statisti
 
 ```{r, results='hide', message=FALSE}
 ## analyze using multiple cores
-doParallel::registerDoParallel(cores=2)
+if (requireNamespace("doParallel", quietly=TRUE)) {
+    doParallel::registerDoParallel(cores=2)
+} else {
+}
+
 gsca2 <- analyze(gsca1, 
                  para=list(pValueCutoff=0.05, pAdjustMethod="BH",
                            nPermutations=100, minGeneSetSize=180,
@@ -338,7 +341,12 @@ gscaTS1 <- preprocessGscaTS(gscaTS, species="Hs", initialIDs="SYMBOL",
 After get a list of preprocessed 'GSCA' object, you can use *analyzeGscaTS* to perform hypergeometric test as well as GSEA on it. The parameters function here is the same as in single data set. Similarly, to speed up you can use multiple cores via *doParallel* package. This step would return a list of analyzed 'GSCA' object. 
 
 ```{r, results='hide', message=FALSE}
-doParallel::registerDoParallel(cores=2)
+## analyze using multiple cores
+if (requireNamespace("doParallel", quietly=TRUE)) {
+    doParallel::registerDoParallel(cores=2)
+} else {
+}
+
 gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05, 
                                             pAdjustMethod="BH",
                                             nPermutations=100, 
@@ -437,7 +445,7 @@ reportAll(gsca=gscaTS3, specificGeneset=specificGeneset)
 
 After calling *report* or *reportAll*, it would automaticlly generate a directory named starting with "GSCAReport", "NWAReport" or "AnalysisReport" which includes the result named as "results.RData" and a R script named as "app.R". Open "app.R" in RStudio, users can publish and share the report with others via [Shinyapps.io](http://www.shinyapps.io/), details please go to [Shinyapps.io](http://www.shinyapps.io/).
 
-# Special using of HTSanalyzeR2
+# Special usage of HTSanalyzeR2
 
 ## Hypergeometric test with no phenotype
 
@@ -447,7 +455,7 @@ In case if you only have a list of genes and want to do hypergeometric test with
 data(d7)
 hits <- d7$id[1:200]
 ## set all the genes of Homo sapiens as phenotype
-allgenes <- keys(Homo.sapiens, keytype = "SYMBOL")
+allgenes <- keys(org.Hs.eg.db, keytype = "SYMBOL")
 ## give phenotype a pseudo value to fit HTSanalyzeR2
 phenotype <- rep(1, length(allgenes))
 names(phenotype) <- allgenes
@@ -466,7 +474,7 @@ When you have your own gene sets with specific functions, but they do not belong
 
 ```{r, eval=FALSE}
 ## Suppose your own gene sets is geneset1 and geneset2
-allgenes <- keys(Homo.sapiens, "ENTREZID")
+allgenes <- keys(org.Hs.eg.db, "ENTREZID")
 geneset1 <- allgenes[sample(length(allgenes), 100)]
 geneset2 <- allgenes[sample(length(allgenes), 60)]
 ## Set your custom gene set collection and make the format to fit HTSanalyzeR2

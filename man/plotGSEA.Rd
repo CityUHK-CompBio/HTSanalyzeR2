@@ -44,5 +44,7 @@ data(d7_gsca)
 summarize(d7_gsca)
 
 ## plot  significant gene sets in GO_MF and PW_KEGG
+\dontrun{
 plotGSEA(d7_gsca, gscs=c("GO_MF","PW_KEGG"), ntop=3, filepath=".")
+}
 }
