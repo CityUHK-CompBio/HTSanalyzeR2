@@ -108,13 +108,18 @@ var initReportFramework = function() {
   var tabId = $('section.sidebar ul.sidebar-menu li a:first-child').attr("href");
   tabId = tabId.substring(tabId.lastIndexOf('#'));
   $(".tab-content .tab-pane" + tabId).addClass("active");
-  $('li.messages-menu').css("display", tabId == "#shiny-tab-table_tab" ? "none" : "block");
+  $('li.messages-menu i').attr("class", tabId == "#shiny-tab-table_tab" ? "fa fa-tags" : "fa fa-cogs");
 
   // Add Listeners
   $('li.messages-menu a').removeAttr("href");
   $('li.messages-menu').click(function (ev) {
     ev.stopPropagation();
-    $('#settingBar').toggleClass('active');
+  var currentTabId = $(".tab-content > div.active").attr("id")
+    if(currentTabId == "shiny-tab-table_tab") {
+      $('#analysis_info').toggleClass('active');
+    } else {
+      $('#settingBar').toggleClass('active');
+    }
   });
 
   $('section.sidebar ul.sidebar-menu li').click(function(ev) {
@@ -123,7 +128,7 @@ var initReportFramework = function() {
     tabId = tabId.substring(tabId.lastIndexOf('#'));
     $(".tab-content .tab-pane" + tabId).addClass("active");
 
-    $('li.messages-menu').css("display", tabId == "#shiny-tab-table_tab" ? "none" : "block");
+    $('li.messages-menu i').attr("class", tabId == "#shiny-tab-table_tab" ? "fa fa-tags" : "fa fa-cogs")
     $('#settingBar').removeClass('active');
 
     tabSwitched(tabId);
