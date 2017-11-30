@@ -136,16 +136,16 @@ body <- dashboardBody(
     tabItem(
       tabName = "table_tab",
       fluidRow(
-        column(width = 9,
+        column(width = 12,
                box(width = NULL, status = "success", solidHeader = FALSE, dataTableOutput("gsca_output"))),
-        column(width = 3,
-               valueBoxOutput("numGenesets", width = NULL),
-               valueBoxOutput("numAboveMinimum", width = NULL),
-               infoBoxOutput("para1", width = NULL),
-               infoBoxOutput("para2", width = NULL),
-               infoBoxOutput("para3", width = NULL),
-               infoBoxOutput("para4", width = NULL),
-               infoBoxOutput("para5", width = NULL))
+        div(id = "analysis_info",
+            valueBoxOutput("numGenesets", width = NULL),
+            valueBoxOutput("numAboveMinimum", width = NULL),
+            infoBoxOutput("para1", width = NULL),
+            infoBoxOutput("para2", width = NULL),
+            infoBoxOutput("para3", width = NULL),
+            infoBoxOutput("para4", width = NULL),
+            infoBoxOutput("para5", width = NULL))
       )
     ),
 
