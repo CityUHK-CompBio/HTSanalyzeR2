@@ -21,13 +21,16 @@ if (!isGeneric("report")) {
 #'
 #' @details
 #' This will generate a shiny report including all the GSCA or NWA results.
+#'
 #' For GSCA object, users can download the table of GSOA and/or GSEA result in different format
-#' such as 'csv' and 'pdf'. The enrichment map could be modified according to the user's preferences
+#' such as 'csv' and 'pdf'. In GSEA result of this report, 'Pvalue' or 'Adjusted.Pvalue'
+#' equalling to 0 would be replaced by less than 1 divided by permutation times.
+#' The enrichment map could be modified according to the user's preferences
 #' such as layout, node, label, and etc. Details please see the vignette of our package.
 #'
 #' For NWA object, the identified subnetwork could be modified according to the user's preferences
 #' in many ways such as layout, color, and etc. Details please see the vignette of our package.
-#' @return in the end, this function would generate a shiny report.
+#' @return In the end, this function would generate a html report.
 #' @examples
 #' # =======================================================
 #' # GSCA class
@@ -74,7 +77,7 @@ setMethod("report", signature = "GSCA",
 #'
 #'
 #' @export
-#' @return in the end, this function would generate a shiny report.
+#' @return In the end, this function would generate a html report.
 #' @examples
 #' \dontrun{
 #' ## load data

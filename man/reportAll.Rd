@@ -22,7 +22,7 @@ for details.}
 enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport".}
 }
 \value{
-in the end, this function would generate a shiny report.
+In the end, this function would generate a html report.
 }
 \description{
 This function can create shiny reports for both gene sets enrichment analysis and network analysis.

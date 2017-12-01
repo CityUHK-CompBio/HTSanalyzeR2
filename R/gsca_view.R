@@ -190,6 +190,8 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust
   ticks = 1000
   ran <- range(geneList, na.rm = TRUE)
   offset <- ceiling(ticks * ran[1] / (ran[1] - ran[2]))
+  offset <- ifelse(offset <= 0, 1, offset)
+  offset <- ifelse(offset >= ticks, ticks-1, offset)
   palette <- c(colorRampPalette(c("blue", "white"))(offset),
                colorRampPalette(c("white", "red"))(ticks - offset))
   rank.colors <- palette[ceiling((geneList - ran[1]) / (ran[2] - ran[1]) * ticks)]
