@@ -145,7 +145,7 @@ var initReportFramework = function() {
     }
   });
   $('.cust-btn-save').click(function(ev) {
-    forceGraphFuncs("saveSVG");
+    forceGraphFuncs("saveImg");
   });
 
 }

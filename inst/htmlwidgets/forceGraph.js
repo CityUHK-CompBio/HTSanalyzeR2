@@ -504,7 +504,7 @@ HTMLWidgets.widget(fg = {
         }
 
         // download function from sigma sigma.exporters.svg
-        function download(string, filename) {
+        function downloadSVG(rawSVG, filename) {
             if (typeof safari !== 'undefined') {
                 var msg = "File download does not work in Safari. Please use a modern web browser such as Firefox, Chrome, or Internet Explorer 11.";
                 alert(msg);
@@ -512,7 +512,7 @@ HTMLWidgets.widget(fg = {
             }
 
             // Blob
-            var blob = new Blob( [string], {type: 'image/svg+xml;charset=utf-8'} );
+            var blob = new Blob( [rawSVG], {type: 'image/svg+xml;charset=utf-8'} );
             objectUrl = window.URL.createObjectURL(blob);
 
             if (navigator.msSaveBlob) { // IE11+ : (has Blob, but not a[download])
@@ -536,12 +536,63 @@ HTMLWidgets.widget(fg = {
             }, 0);
         }
 
+        function downloadPNG(rawSVG, filename) {
+            if (typeof safari !== 'undefined') {
+                var msg = "File download does not work in Safari. Please use a modern web browser such as Firefox, Chrome, or Internet Explorer 11.";
+                alert(msg);
+                throw new Error(msg);
+            }
+
+            var blob = new Blob([rawSVG], {type:"image/svg+xml;charset=utf-8"});
+            var objectUrl = window.URL.createObjectURL(blob);
+
+            var cur = fg.currentSituation();
+            var elem = $(cur.state.container);
+            var canvas = document.createElement("canvas");
+            canvas.setAttribute("width", elem.width());
+            canvas.setAttribute("height", elem.height());
+
+            var img = new Image;
+            img.src = objectUrl;
+            img.onload = function () {
+                canvas.getContext("2d").drawImage(this, 0, 0);
+                window.URL.revokeObjectURL(objectUrl);
+
+                var anchor = document.createElement('a');
+                anchor.setAttribute('href', canvas.toDataURL());
+                anchor.setAttribute('download', filename);
+
+                // Firefox requires the link to be added to the DOM before it can be clicked.
+                document.body.appendChild(anchor);
+                anchor.click();
+                document.body.removeChild(anchor);
+            };
+
+            setTimeout(function() { // Firefox needs a timeout
+                window.URL.revokeObjectURL(objectUrl);
+            }, 0);
+        }
+
+        function fixStrokeBug(svgString) {
+            var re = /\.sigma-node{[^}]*}/;
+            var found = svgString.match(re);
+            if(found.length > 0) {
+                var sheet = found[0];
+                var cur = fg.currentSituation();
+                var ruleColor = "stroke:" + cur.config.node.borderColor + ";";
+                var ruleWidth = "stroke-width:" + cur.config.node.borderWidth + ";";
+                var appendedSheet = sheet.replace("}", ";" + ruleColor + ruleWidth + "}");
+                return svgString.replace(sheet, appendedSheet);
+            }
+            return svgString;
+        }
+
         function appendLegend(svgString, situation) {
             var g = fg.drawLegend(situation.state, situation.config);
             return svgString.replace("</svg>", g.outerHTML + "</svg>");
         }
 
-        handlers.saveSVG = function() {
+        handlers.saveImg = function() {
             // console.log("saveSVG");
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
@@ -549,7 +600,9 @@ HTMLWidgets.widget(fg = {
 
             // sv.sigInst.toSVG({download: true, labels:true, filename: 'network.svg', width: elem.width(), height: elem.height()})
             var svgStr = sv.sigInst.toSVG({labels:true, width: elem.width(), height: elem.height()});
-            download(appendLegend(svgStr, cur), "network.svg");
+            var rawSVG = appendLegend(fixStrokeBug(svgStr), cur);
+            // downloadSVG(rawSVG, "network.svg");
+            downloadPNG(rawSVG, "network.png");
         }
     },
 
