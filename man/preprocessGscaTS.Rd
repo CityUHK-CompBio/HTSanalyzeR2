@@ -68,7 +68,7 @@ tmp <- x[x$neg.p.value < 0.01, "id"]
 tmp})
 
 ## create an object of class GSCABatch with hitsTS
-gscaTS <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
+gscaTS <- GSCABatch(expInfor = expInfor, phenotypeTS = phenotypeTS,
                  listOfGeneSetCollections = ListGSC, hitsTS = hitsTS)
 
 ## preprocess GSCABatch

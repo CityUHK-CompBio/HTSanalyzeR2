@@ -55,7 +55,7 @@
 #' tmp})
 #'
 #' ## create an object of class GSCABatch with hitsTS
-#' gscaTS <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
+#' gscaTS <- GSCABatch(expInfor = expInfor, phenotypeTS = phenotypeTS,
 #'                  listOfGeneSetCollections = ListGSC, hitsTS = hitsTS)
 #'
 #' ## preprocess GSCABatch
@@ -124,7 +124,7 @@ preprocessGscaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #' tmp})
 #'
 #' ## create an object of class GSCABatch with hitsTS
-#' gscaTS <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
+#' gscaTS <- GSCABatch(expInfor = expInfor, phenotypeTS = phenotypeTS,
 #'                  listOfGeneSetCollections = ListGSC, hitsTS = hitsTS)
 #'
 #' ## preprocess GSCABatch
@@ -138,12 +138,13 @@ preprocessGscaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #' } else {
 #' }
 #'
+#' \dontrun{
 #' ## do hypergeometric tests and GSEA
 #' gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
 #'                         nPermutations=100, minGeneSetSize=100,
 #'                         exponent=1), doGSOA = TRUE, doGSEA = TRUE)
 #' head(gscaTS2[[1]]@@result$GSEA.results$GO_BP, 3)
-#'
+#' }
 analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
                                       nPermutations=1000, minGeneSetSize=15,
                                       exponent=1), verbose = TRUE, doGSOA = FALSE,
@@ -197,7 +198,7 @@ analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="
 #' tmp})
 #'
 #' ## create an object of class GSCABatch with hitsTS
-#' gscaTS <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
+#' gscaTS <- GSCABatch(expInfor = expInfor, phenotypeTS = phenotypeTS,
 #'                  listOfGeneSetCollections = ListGSC, hitsTS = hitsTS)
 #'
 #' ## preprocess GSCABatch
@@ -211,6 +212,7 @@ analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="
 #' } else {
 #' }
 #'
+#' \dontrun{
 #' ## do hypergeometric tests and GSEA
 #' gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
 #'                         nPermutations=100, minGeneSetSize=100,
@@ -218,7 +220,7 @@ analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="
 #' head(gscaTS2[[1]]@@result$GSEA.results$GO_BP, 3)
 #'
 #' ## append gene set terms to results
-#' \dontrun{
+#'
 #' gscaTS3 <- appendGSTermsTS(gscaTS2, goGSCs=c("GO_BP"))
 #' head(gscaTS3[[1]]@@result$GSEA.results$GO_BP, 3)
 #' }

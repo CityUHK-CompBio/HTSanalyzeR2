@@ -59,7 +59,7 @@ tmp <- x[x$neg.p.value < 0.01, "id"]
 tmp})
 
 ## create an object of class GSCABatch with hitsTS
-gscaTS <- new("GSCABatch", expInfor = expInfor, phenotypeTS = phenotypeTS,
+gscaTS <- GSCABatch(expInfor = expInfor, phenotypeTS = phenotypeTS,
                  listOfGeneSetCollections = ListGSC, hitsTS = hitsTS)
 
 ## preprocess GSCABatch
@@ -73,12 +73,13 @@ doParallel::registerDoParallel(cores=2)
 } else {
 }
 
+\dontrun{
 ## do hypergeometric tests and GSEA
 gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
                         nPermutations=100, minGeneSetSize=100,
                         exponent=1), doGSOA = TRUE, doGSEA = TRUE)
 head(gscaTS2[[1]]@result$GSEA.results$GO_BP, 3)
-
+}
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{analyze}}

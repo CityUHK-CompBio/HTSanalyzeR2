@@ -93,7 +93,7 @@ An S4 class named 'GSCA' is developed to perform hypergeometric test in order to
 To initialize a new 'GSCA' object, the previous prepared phenotype and a named list of gene sets collections are needed. In addition, as said before, if you also want to do hypergeometric test, hits is needed.
 
 ```{r}
-gsca <- new("GSCA", listOfGeneSetCollections=ListGSC, 
+gsca <- GSCA(listOfGeneSetCollections=ListGSC, 
             geneList=phenotype, hits=hits)
 ```
 
@@ -231,7 +231,7 @@ When creating a new object of class 'NWA', the user also has the possibility to 
 ```{r}
 pvalues <- GSE33113_limma$adj.P.Val
 names(pvalues) <- rownames(GSE33113_limma)
-nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotype)
+nwa <- NWA(pvalues=pvalues, phenotypes=phenotype)
 ```
 
 The next step is to preprocess the inputs. Similar to 'GSCA' class, the function *preprocess* can conduct invalid input data removing, duplication removing by different methods and initial gene identifiers converting to Entrez ID.
@@ -322,7 +322,7 @@ hitsTS <- lapply(datalist, function(x){
 To perform gene set enrichment analysis and hypermetric test for time-series data, an S4 class 'GSCABatch' which can pack the time series data to do further analysis is developed. First, you need to create a new 'GSCABatch' object using the prepared inputs.
 
 ```{r}
-gscaTS <- new("GSCABatch", expInfor = expInfor,
+gscaTS <- GSCABatch(expInfor = expInfor,
               phenotypeTS = phenotypeTS, listOfGeneSetCollections = ListGSC,
               hitsTS = hitsTS)
 ```
@@ -376,7 +376,7 @@ pvalueTS <- lapply(datalist, function(x){
   names(tmp) <- x$id
   tmp
 })
-nwaTS <- new("NWABatch", expInfor = expInfor,
+nwaTS <- NWABatch(expInfor = expInfor,
              pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
 ```
 
@@ -463,7 +463,7 @@ names(phenotype) <- allgenes
 
 Then, you can use the artificial phenotype and your hits to perform hypergeometric test.
 ```{r, eval=FALSE}
-gsca <- new("GSCA", listOfGeneSetCollections=ListGSC, 
+gsca <- GSCA(listOfGeneSetCollections=ListGSC, 
             geneList=phenotype, hits=hits)
 ## the following analysis is the same as before
 ```

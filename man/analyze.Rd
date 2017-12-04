@@ -89,7 +89,7 @@ PW_KEGG <- KeggGeneSets(species="Hs")
 ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
 
 ## create an object of class 'GSCA'
-gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
+gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
 
 ## do preprocessing
 gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
@@ -126,7 +126,7 @@ phenotypes <- as.vector(d7$neg.lfc)
 names(phenotypes) <- d7$id
 
 ## create an object of class 'NWA' with phenotypes
-nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
+nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes)
 
 ## do preprocessing
 nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,

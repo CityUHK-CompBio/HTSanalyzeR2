@@ -24,7 +24,7 @@ if (!isGeneric("interactome")) {
 #' names(phenotypes) <- d7$id
 #'
 #' ## create an object of class 'NWA' with phenotypes
-#' nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
+#' nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes)
 #'
 #' ## do preprocessing
 #' nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
@@ -160,7 +160,7 @@ setMethod("preprocess", signature = "NWA",
 #' data set from BioGRID and extract corresponding interactions to build the interactome.
 #'
 #' Another way to set up the interactome is to input an igraph object when the NWA object
-#' is created (i.e. nwa=new("NWA", pvalues, phenotypes, interactome)).
+#' is created (i.e. nwa=NWA(pvalues, phenotypes, interactome)).
 #' @examples
 #' library(org.Hs.eg.db)
 #' library(GO.db)
@@ -175,17 +175,17 @@ setMethod("preprocess", signature = "NWA",
 #'
 #' ## Example1: create an object of class 'NWA' by inputting an igraph object as the interactome
 #' data(Biogrid_HS_Interactome)
-#' nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes, interactome=Biogrid_HS_Interactome)
+#' nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes, interactome=Biogrid_HS_Interactome)
 #'
 #'
 #' ## Example2: create an object of class 'NWA' without interactome
-#' nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
+#' nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes)
 #' ## create an interactome for nwa by inputting an interaction matrix
 #' data(Biogrid_HS_Mat)
 #' nwa1 <- interactome(nwa, interactionMatrix = Biogrid_HS_Mat, genetic=FALSE)
 #'
 #' ## Example3: create an object of class 'NWA' without interactome
-#' nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
+#' nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes)
 #' \dontrun{
 #' ## create an interactome for nwa by downloading for BioGRID database
 #' nwa1 <- interactome(nwa, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)

@@ -65,7 +65,7 @@ if (!isGeneric("analyze")) {
 #' ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
 #'
 #' ## create an object of class 'GSCA'
-#' gsca <- new("GSCA", listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
+#' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
 #'
 #' ## do preprocessing
 #' gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,

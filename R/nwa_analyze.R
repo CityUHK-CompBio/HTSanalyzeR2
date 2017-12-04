@@ -37,7 +37,7 @@ if (!isGeneric("analyze")) {
 #' names(phenotypes) <- d7$id
 #'
 #' ## create an object of class 'NWA' with phenotypes
-#' nwa <- new("NWA", pvalues=pvalues, phenotypes=phenotypes)
+#' nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes)
 #'
 #' ## do preprocessing
 #' nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,

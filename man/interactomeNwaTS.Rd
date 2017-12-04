@@ -67,11 +67,11 @@ phenotypeTS <- lapply(datalist, function(x) {
 
 ## Example1: create an object of class 'NWABatch' by inputting an igraph object as the interactome
 data(Biogrid_HS_Interactome)
-nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS,
+nwaTS <- NWABatch(expInfor = expInfor, pvalueTS = pvalueTS,
                  phenotypeTS = phenotypeTS, interactome = Biogrid_HS_Interactome)
 
 ## Example2: create an object of class 'NWABatch' without interactome
-nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
+nwaTS <- NWABatch(expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
 ## preprocess nwaTS
 nwaTS1 <- preprocessNwaTS(nwaTS, species="Hs", initialIDs="SYMBOL",
                          keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
@@ -81,7 +81,7 @@ nwaTS2 <- interactomeNwaTS(nwaTS1, interactionMatrix = Biogrid_HS_Mat, genetic=F
 
 \dontrun{
 ## Example3: create an object of class 'NWABatch' without interactome
-nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
+nwaTS <- NWABatch(expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
 ## preprocess nwaTS
 nwaTS1 <- preprocessNwaTS(nwaTS, species="Hs", initialIDs="SYMBOL",
                          keepMultipleMappings=TRUE, duplicateRemoverMethod="max")

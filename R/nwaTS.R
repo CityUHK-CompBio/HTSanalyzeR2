@@ -43,7 +43,7 @@
 #'                       tmp})
 #'
 #' ## create an object of class 'NWABatch' with phenotypes
-#' nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
+#' nwaTS <- NWABatch(expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
 #'
 #' ## preprocess nwaTS
 #' nwaTS1 <- preprocessNwaTS(nwaTS, species="Hs", initialIDs="SYMBOL",
@@ -115,11 +115,11 @@ preprocessNwaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #'
 #' ## Example1: create an object of class 'NWABatch' by inputting an igraph object as the interactome
 #' data(Biogrid_HS_Interactome)
-#' nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS,
+#' nwaTS <- NWABatch(expInfor = expInfor, pvalueTS = pvalueTS,
 #'                  phenotypeTS = phenotypeTS, interactome = Biogrid_HS_Interactome)
 #'
 #' ## Example2: create an object of class 'NWABatch' without interactome
-#' nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
+#' nwaTS <- NWABatch(expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
 #' ## preprocess nwaTS
 #' nwaTS1 <- preprocessNwaTS(nwaTS, species="Hs", initialIDs="SYMBOL",
 #'                          keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
@@ -129,7 +129,7 @@ preprocessNwaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #'
 #' \dontrun{
 #' ## Example3: create an object of class 'NWABatch' without interactome
-#' nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
+#' nwaTS <- NWABatch(expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
 #' ## preprocess nwaTS
 #' nwaTS1 <- preprocessNwaTS(nwaTS, species="Hs", initialIDs="SYMBOL",
 #'                          keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
@@ -194,7 +194,7 @@ interactomeNwaTS <- function(nwaList, interactionMatrix = NULL, species,
 #'                       tmp})
 #'
 #' ## create an object of class 'NWABatch' with phenotypes
-#' nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
+#' nwaTS <- NWABatch(expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
 #'
 #' ## preprocess NWABatch
 #' nwaTS1 <- preprocessNwaTS(nwaTS, species="Hs", initialIDs="SYMBOL",

@@ -87,7 +87,6 @@
 #'                    nwAnalysisFdr = 0.0001)
 #' }
 #' @export
-#' @importFrom methods new
 HTSanalyzeR4MAGeCK <- function(MAGeCKdata,
                                selectDirection = "negative",
                                doGSOA = FALSE,
@@ -181,7 +180,7 @@ HTSanalyzeR4MAGeCK <- function(MAGeCKdata,
   #---------------------------------------------------------------------
   ## Gene set enrichment analysis and hypergeometric analysis
   ##create a GSCA object
-  gsca <- new("GSCA", listOfGeneSetCollections = listOfGeneSetCollections, geneList = data4enrich, hits = hits)
+  gsca <- GSCA(listOfGeneSetCollections = listOfGeneSetCollections, geneList = data4enrich, hits = hits)
   ##preprocessing of input gene list and hit list * remove NA;
   ##duplicate operations; annotation conversions; order phenotypes
   gsca <- preprocess(gsca, species = species, initialIDs = initialIDs,
@@ -195,7 +194,7 @@ HTSanalyzeR4MAGeCK <- function(MAGeCKdata,
   #----------------------------------------------------------------------
   ## Network analysis
   ##create a NWA (NetWork Analysis) object
-  nwa <- new("NWA", pvalues=pvalues, phenotypes=data4enrich)
+  nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
   ##preprocessing
   nwa <- preprocess(nwa, species=species, initialIDs=initialIDs, keepMultipleMappings=keepMultipleMappings,
                     duplicateRemoverMethod=duplicateRemoverMethod)

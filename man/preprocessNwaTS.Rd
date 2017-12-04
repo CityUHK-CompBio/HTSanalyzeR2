@@ -55,7 +55,7 @@ phenotypeTS <- lapply(datalist, function(x) {
                       tmp})
 
 ## create an object of class 'NWABatch' with phenotypes
-nwaTS <- new("NWABatch", expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
+nwaTS <- NWABatch(expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenotypeTS)
 
 ## preprocess nwaTS
 nwaTS1 <- preprocessNwaTS(nwaTS, species="Hs", initialIDs="SYMBOL",
