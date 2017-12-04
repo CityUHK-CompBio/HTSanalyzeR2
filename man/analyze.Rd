@@ -108,8 +108,8 @@ gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.01, pAdjustMethod ="BH",
 
 ## summarize gsca2 and get results
 summarize(gsca2)
-head(gsca2@result$GSEA.results$GO_MF)
-head(gsca2@result$HyperGeo.results$PW_KEGG)
+head(getResult(gsca2)$GSEA.results$GO_MF)
+head(getResult(gsca2)$HyperGeo.results$PW_KEGG)
 
 # ===========================================================
 \dontrun{

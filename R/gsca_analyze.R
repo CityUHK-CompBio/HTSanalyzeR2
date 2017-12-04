@@ -84,8 +84,8 @@ if (!isGeneric("analyze")) {
 #'
 #' ## summarize gsca2 and get results
 #' summarize(gsca2)
-#' head(gsca2@@result$GSEA.results$GO_MF)
-#' head(gsca2@@result$HyperGeo.results$PW_KEGG)
+#' head(getResult(gsca2)$GSEA.results$GO_MF)
+#' head(getResult(gsca2)$HyperGeo.results$PW_KEGG)
 #'
 
 setMethod("analyze", signature = "GSCA",

@@ -69,12 +69,12 @@ doParallel::registerDoParallel(cores=2)
 gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
                         nPermutations=100, minGeneSetSize=100,
                         exponent=1), doGSOA = TRUE, doGSEA = TRUE)
-head(gscaTS2[[1]]@result$GSEA.results$GO_BP, 3)
+head(getResult(gscaTS2[[1]])$GSEA.results$GO_BP, 3)
 
 ## append gene set terms to results
 
 gscaTS3 <- appendGSTermsTS(gscaTS2, goGSCs=c("GO_BP"))
-head(gscaTS3[[1]]@result$GSEA.results$GO_BP, 3)
+head(getResult(gscaTS3[[1]])$GSEA.results$GO_BP, 3)
 }
 }
 \seealso{

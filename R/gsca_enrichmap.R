@@ -76,11 +76,11 @@ if (!isGeneric("viewEnrichMap"))
 #'
 #' ## summarize gsca2
 #' summarize(gsca2)
-#' head(gsca2@@result$GSEA.results$GO_MF)
+#' head(getResult(gsca2)$GSEA.results$GO_MF)
 #'
 #' ## append gene set terms to results
 #' gsca3 <- appendGSTerms(gsca2, goGSCs=c("GO_MF"), keggGSCs=c("PW_KEGG"), msigdbGSCs=NULL)
-#' head(gsca3@@result$GSEA.results$GO_MF)
+#' head(getResult(gsca3)$GSEA.results$GO_MF)
 #' @export
 #'
 setMethod(

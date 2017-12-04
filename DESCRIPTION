@@ -2,7 +2,7 @@ Package: HTSanalyzeR2
 Type: Package
 Title: Gene set over-representation, enrichment and network analyses for high-
        throughput data and corresponding time-series data
-Version: 0.99.9
+Version: 0.99.10
 Author: Lina ZHU <zhulina0609@gmail.com>, Feng GAO <gaofeng21cn@gmail.com>, 
         Xiupei MEI <meixiupei@gmail.com>, Xin Wang <xinwang2hms@gmail.com>
 Maintainer: Lina ZHU <zhulina0609@gmail.com>
@@ -50,10 +50,12 @@ Collate:
     'HTSanalyzeR2.R'
     'HTSanalyzeR4MAGeCK.R'
     'RcppExports.R'
+    'nwa_class.R'
+    'gsca_class.R'
+    'accessor.R'
     'd3plot.R'
     'data.R'
     'gscaTS.R'
-    'gsca_class.R'
     'gsca_analyze.R'
     'gsca_enrichmap.R'
     'gsca_load_genesets.R'
@@ -62,7 +64,6 @@ Collate:
     'gsca_summarize.R'
     'gsca_view.R'
     'nwaTS.R'
-    'nwa_class.R'
     'nwa_analyze.R'
     'nwa_preprocess.R'
     'nwa_report.R'
