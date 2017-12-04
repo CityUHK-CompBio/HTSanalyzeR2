@@ -58,11 +58,11 @@ ListGSC <- list(GO_MF=GO_MF)
 
 ## Example1: create an object of class 'GSCA' with hits
 gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
-gsca@summary
+getSummary(gsca)
 
 ## Example2: create an object of class 'GSCA' without hits
 gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = phenotype)
-gsca@summary
+getSummary(gsca)
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{preprocess}},

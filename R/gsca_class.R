@@ -129,11 +129,11 @@ setMethod("initialize",
 #'
 #' ## Example1: create an object of class 'GSCA' with hits
 #' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
-#' gsca@@summary
+#' getSummary(gsca)
 #'
 #' ## Example2: create an object of class 'GSCA' without hits
 #' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = phenotype)
-#' gsca@@summary
+#' getSummary(gsca)
 
 GSCA <- function(listOfGeneSetCollections, geneList, hits = character()) {
   paraCheck("GSCAClass", "gscs", listOfGeneSetCollections)
@@ -147,3 +147,5 @@ GSCA <- function(listOfGeneSetCollections, geneList, hits = character()) {
     hits = hits
   )
 }
+
+
