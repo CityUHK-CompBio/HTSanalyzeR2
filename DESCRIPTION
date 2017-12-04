@@ -80,6 +80,6 @@ Suggests:
     doParallel,
     Biobase
 VignetteBuilder: knitr
-Depends: R(>= 3.5)
+Depends: R(>= 3.4)
 biocViews: GeneSetEnrichment, NetworkEnrichment, TimeCourse, 
            GeneExpression, GO, KEGG, CRISPR
