@@ -574,17 +574,33 @@ HTMLWidgets.widget(fg = {
         }
 
         function fixStrokeBug(svgString) {
-            var re = /\.sigma-node{[^}]*}/;
-            var found = svgString.match(re);
+            // Extract style sheet
+            var reStyle = /<style>[\S\s^<]*<\/style>/;
+            var found = svgString.match(reStyle);
+            if(found.length == 0) {
+                return svgString;
+            }
+            var strStyle = found[0];
+            var strStyleModified = strStyle;
+            // Append stroke
+            var reNodeStyle = /\.sigma-node{[^}]*}/g;
+            found = strStyleModified.match(reNodeStyle);
             if(found.length > 0) {
                 var sheet = found[0];
                 var cur = fg.currentSituation();
-                var ruleColor = "stroke:" + cur.config.node.borderColor + ";";
-                var ruleWidth = "stroke-width:" + cur.config.node.borderWidth + ";";
+                var ruleColor = "stroke: " + hex2rgba(cur.config.node.borderColor) + ";";
+                var ruleWidth = "stroke-width: " + cur.config.node.borderWidth + ";";
                 var appendedSheet = sheet.replace("}", ";" + ruleColor + ruleWidth + "}");
-                return svgString.replace(sheet, appendedSheet);
+                strStyleModified = strStyleModified.replace(sheet, appendedSheet);
             }
-            return svgString;
+            // Remove rgba
+            var reRgbaFill = /fill:\srgba\(([\d]{1,3}),([\d]{1,3}),([\d]{1,3}),([01]?\.?[\d]*)\)/g;
+            strStyleModified = strStyleModified.replace(reRgbaFill, "fill: rgb($1,$2,$3);fill-opacity: $4;");
+            var reRgbaStroke = /stroke:\srgba\(([\d]{1,3}),([\d]{1,3}),([\d]{1,3}),([01]?\.?[\d]*)\)/g;
+            strStyleModified = strStyleModified.replace(reRgbaStroke, "stroke: rgb($1,$2,$3);stroke-opacity: $4;");
+            strStyleModified = strStyleModified.replace(/;;/g, ";");
+
+            return svgString.replace(strStyle, strStyleModified);
         }
 
         function appendLegend(svgString, situation) {
@@ -601,8 +617,8 @@ HTMLWidgets.widget(fg = {
             // sv.sigInst.toSVG({download: true, labels:true, filename: 'network.svg', width: elem.width(), height: elem.height()})
             var svgStr = sv.sigInst.toSVG({labels:true, width: elem.width(), height: elem.height()});
             var rawSVG = appendLegend(fixStrokeBug(svgStr), cur);
-            // downloadSVG(rawSVG, "network.svg");
-            downloadPNG(rawSVG, "network.png");
+            downloadSVG(rawSVG, "network.svg");
+            // downloadPNG(rawSVG, "network.png");
         }
     },
 
