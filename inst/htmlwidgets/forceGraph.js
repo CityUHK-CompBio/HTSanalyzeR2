@@ -371,25 +371,30 @@ HTMLWidgets.widget(fg = {
                     }
                 }
             }
-            sv.sigInst.settings("drawLabels", val != 'none')
+            meta.sigmaSettings.drawLabels = val != 'none';
+            sv.sigInst.settings("drawLabels", meta.sigmaSettings.drawLabels);
             sv.sigInst.refresh();
         }
         handlers.labelScale = function(val) {
             // console.log("labelScale" + ": " + val);
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
+            var meta = cur.config.metadata;
 
             cur.config.label.scale = val;
-            sv.sigInst.settings("defaultLabelSize", 14 * val);
+            meta.sigmaSettings.defaultLabelSize = 14 * val;
+            sv.sigInst.settings("defaultLabelSize", meta.sigmaSettings.defaultLabelSize);
             sv.sigInst.refresh();
         }
         handlers.labelColor = function(val) {
             // console.log("labelColor" + ": " + val);
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
+            var meta = cur.config.metadata;
 
             cur.config.label.color = val;
-            sv.sigInst.settings("defaultLabelColor", hex2rgba(val));
+            meta.sigmaSettings.defaultLabelColor = hex2rgba(val);
+            sv.sigInst.settings("defaultLabelColor", meta.sigmaSettings.defaultLabelColor);
             sv.sigInst.refresh();
         }
 
@@ -404,7 +409,8 @@ HTMLWidgets.widget(fg = {
             for(var i = 0; i < meta.graph.nodes.length; i++) {
                 meta.graph.nodes[i].size = meta.data.nodes.size[i] * val;
             }
-            sv.sigInst.settings("maxNodeSize", cur.config.settings.maxNodeSize * val);
+            meta.sigmaSettings.maxNodeSize = cur.config.settings.maxNodeSize * val;
+            sv.sigInst.settings("maxNodeSize", meta.sigmaSettings.maxNodeSize);
             sv.sigInst.refresh();
         }
         handlers.nodeOpacity = function(val) {
@@ -426,18 +432,22 @@ HTMLWidgets.widget(fg = {
             // console.log("nodeBorderWidth" + ": " + val);
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
+            var meta = cur.config.metadata;
 
             cur.config.node.borderWidth = parseFloat(val);
-            sv.sigInst.settings("nodeBorderSize", parseFloat(val));
+            meta.sigmaSettings.nodeBorderSize = parseFloat(val);
+            sv.sigInst.settings("nodeBorderSize", meta.sigmaSettings.nodeBorderSize);
             sv.sigInst.refresh();
         }
         handlers.nodeBorderColor = function(val) {
             // console.log("nodeBorderColor" + ": " + val);
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
-
+            var meta = cur.config.metadata;
+            
             cur.config.node.borderColor = val;
-            sv.sigInst.settings("defaultNodeBorderColor", hex2rgba(val));
+            meta.sigmaSettings.defaultNodeBorderColor = hex2rgba(val);
+            sv.sigInst.settings("defaultNodeBorderColor", meta.sigmaSettings.defaultNodeBorderColor);
             sv.sigInst.refresh();
         }
 
@@ -451,17 +461,20 @@ HTMLWidgets.widget(fg = {
             cur.config.edge.scale = val;
             for(var i = 0; i < meta.graph.edges.length; i++) {
                 meta.graph.edges[i].size = meta.data.links.weight[i] * val;
-             }
-            sv.sigInst.settings("maxEdgeSize", 8 * val);
+            }
+            meta.sigmaSettings.maxEdgeSize = config.settings.maxEdgeSize * val;
+            sv.sigInst.settings("maxEdgeSize", meta.sigmaSettings.maxEdgeSize);
             sv.sigInst.refresh();
         }
         handlers.edgeColor = function(val) {
             // console.log("edgeColor" + ": " + val);
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
+            var meta = cur.config.metadata;
 
             cur.config.edge.color = val;
-            sv.sigInst.settings("defaultEdgeColor", hex2rgba(val));
+            meta.sigmaSettings.defaultEdgeColor = hex2rgba(val);
+            sv.sigInst.settings("defaultEdgeColor", meta.sigmaSettings.defaultEdgeColor);
             sv.sigInst.refresh();
         }
 
