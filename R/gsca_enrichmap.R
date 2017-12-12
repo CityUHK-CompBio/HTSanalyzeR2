@@ -485,7 +485,9 @@ setMethod("viewEnrichMap", signature = "GSCA",
 
             options$nodeScheme = "dual"
             options$label = list(text = gsNameType)
-            defaultOptions = list(title = title, label = gsNameType, legendTitle = "Adjusted p-values", type = stringr::str_replace(resultName, ".results", ""))
+            options$colorScaler = "log10"
+            options$nPermutations = object@para$nPermutations
+            defaultOptions = list(title = title, legendTitle = "-Log10(Adjusted p-values)", type = stringr::str_replace(resultName, ".results", ""))
             graphOptions <- modifyList(defaultOptions, options)
 
             forceGraph(em_nodes, em_links, nMappings, lMappings, graphOptions, seriesData = series)

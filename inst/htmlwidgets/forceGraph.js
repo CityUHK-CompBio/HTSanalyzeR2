@@ -83,8 +83,12 @@ HTMLWidgets.widget(fg = {
     },
 
     mergeConfig: function(config, x) {
-        config.info.graphType = x.options.type; //HyperGeo GSEA NWA
-        config.info.legendTitle = "legendTitle" in x.options ? x.options.legendTitle : "";
+        var options = x.options;
+
+        config.info.graphType = options.type; //HyperGeo GSEA NWA
+        config.info.legendTitle = "legendTitle" in options ? options.legendTitle : "";
+        config.info.colorScaler = options.colorScaler;
+        config.info.upperBound = "nPermutations" in options ? Math.log10(options.nPermutations) : 1024;
         if(config.info.graphType == "GSEA" || config.graphType == "HyperGeo") {
             config.settings.maxNodeSize = 20;
             config.settings.minNodeSize = 3;
@@ -94,11 +98,10 @@ HTMLWidgets.widget(fg = {
             config.settings.maxEdgeSize = 2;
         }
 
-        var options = x.options;
         var configurableKeys = ["settings", "layout", "label", "node", "edge"]; // "scheme"
         for(var ki in configurableKeys) {
             var key = configurableKeys[ki];
-            if(key in options) {
+            if(key in options) { 
                 for (var sk in options[key]) {
                     if(options[key][sk] != null) {
                         config[key][sk] = options[key][sk];
@@ -107,26 +110,23 @@ HTMLWidgets.widget(fg = {
             }
         }
 
-        // TODO: Use uneven scalers
-        if ("pos" in x.options.colorDomain) {
+        if ("pos" in options.colorDomain) {
             config.scheme.dual.pos.enabled = true;
-            config.scheme.dual.pos.domain = $.extend(true, {}, x.options.colorDomain.pos);
+            config.scheme.dual.pos.domain = $.extend(true, {}, options.colorDomain.pos);
         }
-        if ("neg" in x.options.colorDomain) {
+        if ("neg" in options.colorDomain) {
             config.scheme.dual.neg.enabled = true;
-            config.scheme.dual.neg.domain = $.extend(true, {}, x.options.colorDomain.neg);
+            config.scheme.dual.neg.domain = $.extend(true, {}, options.colorDomain.neg);
         }
-        if (config.info.graphType == "NWA" && "pos" in x.options.colorDomain) {
-            config.scheme.dual.pos.domain[0] = x.options.colorDomain.pos[1];
-            config.scheme.dual.pos.domain[1] = x.options.colorDomain.pos[0];
-        }
-        if (config.info.graphType == "GSEA") {
-            if (!("pos" in x.options.colorDomain)) {
-                config.scheme.dual.pos.domain[1] = 1e-8
-            }
-            if (!("neg" in x.options.colorDomain)) {
-                config.scheme.dual.neg.domain[1] = 1e-8
-            }
+
+        if (config.info.graphType == "HyperGeo") {
+            config.scheme.dual.pos.domain = [1e-6, 1];
+        } else if (config.info.graphType == "GSEA") {
+            config.scheme.dual.pos.domain[0] = parseFloat("1e-" + config.info.upperBound);
+            config.scheme.dual.neg.domain[0] = parseFloat("1e-" + config.info.upperBound);
+        } else if (config.info.graphType == "NWA" && "pos" in options.colorDomain) {
+            config.scheme.dual.pos.domain[0] = options.colorDomain.pos[1];
+            config.scheme.dual.pos.domain[1] = options.colorDomain.pos[0];
         }
     },
 
@@ -187,7 +187,7 @@ HTMLWidgets.widget(fg = {
 
             if(g.nodes[i].theme != null) {
                 var palette = config.scheme.dual[g.nodes[i].theme];
-                g.nodes[i].color = _iterpolatePalette(palette, x.nodes["color." + tick][i], config.node.opacity);
+                g.nodes[i].color = meta.interpolator(palette, x.nodes["color." + tick][i], config.node.opacity);
             } else {
                 g.nodes[i].color = hex2rgba(config.node.NANodeColor);
             }
@@ -229,7 +229,7 @@ HTMLWidgets.widget(fg = {
     initMetadata: function(config, x) {
         if(!config.hasOwnProperty("metadata")) {
             fg.mergeConfig(config, x);
-
+            var interpolator = config.info.colorScaler == "log10" ? log10Interpolator : linearInterpolator;
             var g = { nodes: [], edges: [] };
             N = x.nodes.id.length;
             E = x.links.source.length;
@@ -248,7 +248,7 @@ HTMLWidgets.widget(fg = {
                 // color
                 if(x.nodes.scheme[i] != null) {
                     var palette = config.scheme.dual[x.nodes.scheme[i]];
-                    g.nodes[i].color = _iterpolatePalette(palette, x.nodes.color[i], config.node.opacity);
+                    g.nodes[i].color = interpolator(palette, x.nodes.color[i], config.node.opacity);
                 } else {
                     g.nodes[i].color = hex2rgba(config.node.NANodeColor);
                 }
@@ -274,7 +274,6 @@ HTMLWidgets.widget(fg = {
                 minEdgeSize: config.settings.minEdgeSize,
                 maxNodeSize: config.settings.maxNodeSize * config.node.scale,
                 maxEdgeSize: config.settings.maxEdgeSize * config.edge.scale,
-
 
                 edgeColor: 'default',
                 defaultEdgeColor: hex2rgba(config.edge.color),
@@ -318,6 +317,7 @@ HTMLWidgets.widget(fg = {
             var meta = {
                 data: x,
                 graph: g,
+                interpolator: interpolator,
                 sigmaSettings: sigmaSettings,
                 forceConfig: forceConfig
             };
@@ -423,7 +423,7 @@ HTMLWidgets.widget(fg = {
             for(var i = 0; i < meta.graph.nodes.length; i++) {
                 if(meta.graph.nodes[i].scheme != null) {
                     var palette = cur.config.scheme.dual[meta.graph.nodes[i].scheme];
-                    meta.graph.nodes[i].color = _iterpolatePalette(palette, meta.data.nodes.color[i], cur.config.node.opacity);
+                    meta.graph.nodes[i].color = meta.interpolator(palette, meta.data.nodes.color[i], cur.config.node.opacity);
                 }
             }
             sv.sigInst.refresh();
@@ -462,7 +462,7 @@ HTMLWidgets.widget(fg = {
             for(var i = 0; i < meta.graph.edges.length; i++) {
                 meta.graph.edges[i].size = meta.data.links.weight[i] * val;
             }
-            meta.sigmaSettings.maxEdgeSize = config.settings.maxEdgeSize * val;
+            meta.sigmaSettings.maxEdgeSize = cur.config.settings.maxEdgeSize * val;
             sv.sigInst.settings("maxEdgeSize", meta.sigmaSettings.maxEdgeSize);
             sv.sigInst.refresh();
         }
@@ -491,7 +491,7 @@ HTMLWidgets.widget(fg = {
                 for(var i = 0; i < meta.graph.nodes.length; i++) {
                     var palette = cur.config.scheme.dual[subScheme];
                     if(meta.graph.nodes[i].scheme == subScheme) {
-                        meta.graph.nodes[i].color = _iterpolatePalette(palette, meta.data.nodes.color[i], cur.config.node.opacity);
+                        meta.graph.nodes[i].color = meta.interpolator(palette, meta.data.nodes.color[i], cur.config.node.opacity);
                     }
                 }
                 sv.sigInst.refresh();
@@ -725,23 +725,64 @@ HTMLWidgets.widget(fg = {
     },
 
     drawLegend: function(state, config) {
-        function nice(value) {
-            var sciNot = value.toExponential(1).split('e');
-            var a = Math.round(sciNot[0] * 2 + Math.sign(sciNot[0]) * 0.45) * 0.5;
-            var n = sciNot[1];
-            return (a + 'e' + n) * 1;
-            return value;
+        var ticks = config.info.graphType == 'HyperGeo' ? 7 : 11;
+        var dimension = [$(state.container).width(), $(state.container).height()];
+        var colors = Array(ticks).fill("#FDFDFD");
+        var labels = Array(ticks).fill("");
+
+        var schemes = []
+        if (config.scheme.dual.pos.enabled) schemes.push("pos");
+        if (config.scheme.dual.neg.enabled) schemes.push("neg");
+
+        if (schemes.length == 1) {
+            var pal = config.scheme.dual[schemes[0]];
+            for(var i = 0; i < ticks; i++) {
+                colors[i] = _interpolateColor(pal.range, i / (ticks - 1), "hex");
+            }
+        } else {
+            for (var i = 0; i < 5; i++) {
+                colors[i] = _interpolateColor(config.scheme.dual.pos.range, i / 4, "hex");
+            }
+            for (i++; i < ticks; i++) {
+                colors[i] = _interpolateColor(config.scheme.dual.neg.range, (ticks - i - 1) / 4, "hex");
+            }
         }
-        function appendChildren(el, children) {
-            for (var i in children)
-                el.appendChild(children[i]);
-            return el;
+
+        if (config.info.graphType == 'HyperGeo') {
+            for (var i = 0; i < ticks; i++) {
+                labels[i] = ticks - 1 - i;
+            }
+        } else if (config.info.graphType == 'GSEA') {
+            labels[0] = labels[10] = config.info.upperBound;
+            labels[5] = 0;
+        } else if (config.info.graphType == 'NWA') {
+            if (schemes.length == 1) {
+                labels[0] = pal.domain[0];
+                labels[10] = pal.domain[1];
+            } else {
+                labels[0] = config.scheme.dual.pos.domain[1];
+                labels[4] = config.scheme.dual.pos.domain[0];
+                labels[5] = 0;
+                labels[6] = config.scheme.dual.neg.domain[1];
+                labels[10] = config.scheme.dual.neg.domain[0];
+            }
         }
+
+        var legend = fg.legendFactory(colors, labels, config.info.legendTitle, dimension);
+        return legend;
+    },
+
+    legendFactory: function(colors, labels, title, dimension) {
         function makeSVG(tag, attrs, children) {
             var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
             for (var k in attrs)
                 el.setAttribute(k, attrs[k]);
             appendChildren(el, children);
+            return el;
+        }
+        function appendChildren(el, children) {
+            for (var i in children)
+                el.appendChild(children[i]);
             return el;
         }
         function translate(x, y) {
@@ -753,80 +794,25 @@ HTMLWidgets.widget(fg = {
             return txt;
         }
 
-        var pals = $.extend(true, {}, config.scheme.dual);
-        var schs = [];
-
-        // config.info.graphType: HyperGeo GSEA NWA
-        if (config.info.graphType == 'GSEA') {
-            schs = ["pos", "neg"];
-        } else {
-            if (pals.pos.enabled) schs.push("pos");
-            if (pals.neg.enabled) schs.push("neg");
-        }
-
-        // nice domain
-        for(var idx in schs) {
-            pals[schs[idx]].domain[0] = nice(pals[schs[idx]].domain[0]);
-            pals[schs[idx]].domain[1] = nice(pals[schs[idx]].domain[1]);
-        }
-        if (config.info.graphType == 'GSEA') {
-            var maxDom = Math.max(pals.pos.domain[1], pals.neg.domain[1]);
-            pals.pos.domain[1] = maxDom;
-            pals.neg.domain[1] = maxDom;
-        }
-
-        // draw legend
-        var dim = [$(state.container).width(), $(state.container).height()];
-        var edgeLen = 18;
-        var ticks = 11;
+        var edgeWidth = 18;
+        var ticks = colors.length;
         var legWidth = 60;
-        var legHeight = edgeLen * ticks;
+        var legHeight = edgeWidth * ticks;
 
-        var g = makeSVG('g', {transform: translate(40, dim[1] - legHeight - 40)});
+        var g = makeSVG('g', {transform: translate(60, dimension[1] - legHeight - 40)});
 
-        if (schs.length == 1) {
-            var pal = pals[schs[0]];
-            for(var i = 0; i < ticks; i++) {
-                var color = _iterpolateColor(pal.range, i / (ticks - 1), "hex");
-                var rect = makeSVG('rect', {transform:translate(10, edgeLen * i), width:edgeLen, height:edgeLen, style:"fill:"+color});
-                appendChildren(g, [rect]);
-            }
-
-            var txt0 = makeText(pal.domain[0], edgeLen + 15, 5);
-            var txt1 = makeText(pal.domain[1], edgeLen + 15, (ticks - 1) * edgeLen + 5);
-            appendChildren(g, [txt0, txt1]);
-        } else {
-            var i, sepTicks = 5;
-            for(i = 0; i < sepTicks; i++) {
-                var color = _iterpolateColor(pals.pos.range, i / (sepTicks - 1), "hex");
-                g.appendChild(makeSVG('rect', {transform:translate(10, edgeLen * i), width:edgeLen, height:edgeLen, style:"fill:"+color}));
-            }
-            g.appendChild(makeSVG('rect', {transform:translate(10, edgeLen * i++), width:edgeLen, height:edgeLen, style:"fill:#FDFDFD"}));
-            for(; i <= 2 * sepTicks; i++) {
-                var color = _iterpolateColor(pals.neg.range, ( 2*sepTicks - i) / (sepTicks - 1), "hex");
-                g.appendChild(makeSVG('rect', {transform:translate(10, edgeLen * i), width:edgeLen, height:edgeLen, style:"fill:"+color}));
-            }
-
-            var txts = [pals.pos.domain[0], pals.pos.domain[1], 1, pals.neg.domain[1], pals.neg.domain[0]];
-            var transY = [5, 4*edgeLen + 5, 5*edgeLen + 5, 6*edgeLen + 5, 10 * edgeLen + 5];
-            txts[2] = (config.info.graphType == 'NWA') ? 0 : 1;
-
-            for(var i = 0; i < txts.length; i++) {
-                g.appendChild(makeText(txts[i], edgeLen + 15, transY[i]));
-            }
+        for(var i = 0; i < ticks; i++) {
+            var rect = makeSVG('rect', {transform:translate(10, edgeWidth * i), width:edgeWidth, height:edgeWidth, style:"fill:"+colors[i]});
+            var text = makeText(labels[i], edgeWidth + 15, edgeWidth * i + 4);
+            appendChildren(g, [rect, text]);
         }
 
         // Legend title
-        var title = makeSVG('text', {transform:translate(edgeLen / 2 + 10, edgeLen * ticks + 5), 'font-size':'13','font-family':'arial','fill':'rgba(0,0,0,0.8)','alignment-baseline':'hanging', 'text-anchor':'middle'});
-        title.append(config.info.legendTitle);
-        // var txt1 = makeSVG('tspan', {x:0, dy:"1.2em"}); txt1.append("Adjusted");
-        // var txt2 = makeSVG('tspan', {x:0, dy:"1.2em"}); txt2.append("p-values");
-        // appendChildren(title, [txt1, txt2])
-        appendChildren(g, [title]);
-
+        var gTitle = makeSVG('text', {transform:translate(edgeWidth / 2 + 10, edgeWidth * ticks + 5), 'font-size':'13','font-family':'arial','fill':'rgba(0,0,0,0.8)','alignment-baseline':'hanging', 'text-anchor':'middle'});
+        gTitle.append(title);
+        appendChildren(g, [gTitle]);
         return g;
     }
 
 });
-
 

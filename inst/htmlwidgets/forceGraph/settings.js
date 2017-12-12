@@ -9,7 +9,7 @@ renderPalette = function(canvas, palette) {
     var image = context.createImageData(width, 1);
 
     for (var i = 0, j = -1, c; i < width; ++i) {
-        c = _iterpolateColor(palette.range, i / width);
+        c = _interpolateColor(palette.range, i / width);
         image.data[++j] = c[0];
         image.data[++j] = c[1];
         image.data[++j] = c[2];

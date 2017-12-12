@@ -28,7 +28,7 @@ var r2h = function(rgb) {
 
 // range: ["#9E1617", "#FFFFFF"] }, factor: 0-1
 // return: rgb array
-var _iterpolateColor = function(range, factor, ret) {
+var _interpolateColor = function(range, factor, ret) {
   var color1 = h2r(range[0]);
   var color2 = h2r(range[1]);
   var rgb = color1.slice();
@@ -46,17 +46,30 @@ var _iterpolateColor = function(range, factor, ret) {
 // https://github.com/ondras/rot.js
 // palette: { domain:[0, 1], range:["#9E1617", "#FFFFFF"] }, opacity: 0-1
 // return: rgba str;
-var _iterpolatePalette = function(palette, value, opacity) {
+var linearInterpolator = function(palette, value, opacity) {
   var factor = 0;
   if(palette.domain[0] != palette.domain[1]) {
     factor = (value - palette.domain[0]) / (palette.domain[1] - palette.domain[0]);
     factor = factor < 0 ? 0 : (factor > 1 ? 1 : factor);
   }
 
-  var rgba = _iterpolateColor(palette.range, factor);
+  var rgba = _interpolateColor(palette.range, factor);
   rgba.push(opacity);
   return "rgba(" + rgba.join(",") + ")";
 };
+
+// palette: { domain:[1e-5, 1], range:["#9E1617", "#FFFFFF"] }, opacity: 0-1
+// return: rgba str;
+var log10Interpolator = function(palette, value, opacity) {
+  var bound = -Math.log10(palette.domain[0]);
+  var logValue = -Math.log10(value);
+  var factor = logValue / bound;
+  factor = factor > 1 ? 1 : factor;
+  var rgba = _interpolateColor(palette.range, 1 - factor);
+  rgba.push(opacity);
+  return "rgba(" + rgba.join(",") + ")";
+};
+
 
 var hex2rgba = function(hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})?[a-f\d]*$/i.exec(hex + "ff");
@@ -66,7 +79,6 @@ var hex2rgba = function(hex) {
   }
   return "rgba(" + rgba.join(",") + ")";
 }
-
 
 
 /// Connect forceGraph.js and setting panel.
