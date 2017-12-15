@@ -1,9 +1,10 @@
-.onLoad <- function(libname, pkgname) {
+.onAttach <- function(libname, pkgname) {
   packageStartupMessage("Welcome message (HTSanalyzeR2)\n"
                         , appendLF = FALSE)
 }
 
-# # detach the rcpp library
-# .onUnload <- function (libpath) {
-#   library.dynam.unload("HTSanalyzeR2", libpath)
-# }
+.onLoad <- function(libname, pkgname) {
+  if(getRversion() >= "3.4") {
+    utils::globalVariables(names = c("idx", "tags"), add=FALSE, package = "HTSanalyzeR2")
+    }
+}

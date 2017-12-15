@@ -1,16 +1,15 @@
-
-#' @export
+# import package in Namesapce as in description for passing biocCheck
+#' @importFrom shinydashboard dashboardPage
+#' @import colourpicker
+#' @import DT
 forceGraph <- function(nodes, links, nMappings, lMappings, options,
                        width = NULL, height = NULL, seriesData = NULL) {
 
-  # nMappings: "id", "size", "color", "label", "desc", "seq", "scheme"
-  # lMappings: "source", "target", "label", "weight"
-
-  node.size <- list(min = 6, max = 20, default = 8)
+  # nMappings: "id", "size", "color", "scheme", "label", "label_id", "label_term"
+  # lMappings: "source", "target", "weight"
+  node.size <- list(min = 3, max = 20, default = 4)
   link.weight <- list(min = 1, max = 6, default = 2)
-  color.default <- 0.5
-  color.domain.default <- c(0, 1)
-  scheme.default <- ""
+  color.default <- 0
 
   nodesDF = nodes[unlist(nMappings)]
   linksDF = links[unlist(lMappings)]
@@ -23,35 +22,18 @@ forceGraph <- function(nodes, links, nMappings, lMappings, options,
     nodesDF$size <- norm(nodesDF$size, node.size$min, node.size$max, node.size$default)
   }
 
+  if(nrow(linksDF) > 0) {
+    if(is.null(linksDF$weight)){
+      linksDF$weight <- link.weight$default
+    }
+  }
+
   if(is.null(nodesDF$color)) {
-    nodesDF$color <- color.default;
+    nodesDF$color <- color.default
   }
-
-  if(is.null(nodesDF$scheme)) {
-    nodesDF$scheme <- scheme.default;
-  }
-
-  if(is.null(linksDF$weight)){
-    linksDF$weight <- link.weight$default
-  } else {
-    linksDF$weight <- norm(linksDF$weight, link.weight$min, link.weight$max, link.weight$default)
-  }
-
-  if(0 < min(nodesDF$color) && max(nodesDF$color) < 1) {
-    colorDomain <- color.domain.default
-  } else {
-    colorDomain <- range(nodesDF$color)
-  }
-  # maxAbs <- max(abs(nodesDF$color))
-  # if(maxAbs <= 1) {
-  #   colorDomain <- color.domain.default
-  # } else {
-  #   colorDomain <- c(-maxAbs, 0, maxAbs)
-  # }
-
+  colorDomain <- niceDomain(nodesDF, seriesData)
 
   # create options
-  # colorDomain must be three nums
   argOptions <- modifyList(options, list(colorDomain = colorDomain, seriesData = seriesData))
 
   # create widget
@@ -66,14 +48,12 @@ forceGraph <- function(nodes, links, nMappings, lMappings, options,
 }
 
 #' @importFrom htmlwidgets shinyWidgetOutput
-#' @export
 forceGraphOutput <- function(outputId, width = "100%", height = "750px") {
   shinyWidgetOutput(outputId, "forceGraph", width, height,
                     package = "HTSanalyzeR2")
 }
 
 #' @importFrom htmlwidgets shinyRenderWidget
-#' @export
 renderForceGraph <- function(expr, env = parent.frame(), quoted = FALSE) {
   if (!quoted) { expr <- substitute(expr) }
   shinyRenderWidget(expr, forceGraphOutput, env, quoted = TRUE)
@@ -81,7 +61,6 @@ renderForceGraph <- function(expr, env = parent.frame(), quoted = FALSE) {
 
 
 #' @importFrom htmlwidgets shinyRenderWidget createWidget
-#' @export
 updateForceGraph <- function(options) {
   x <- list(update = TRUE)
   x <- c(x, options)
@@ -89,13 +68,36 @@ updateForceGraph <- function(options) {
   renderForceGraph(expr, quoted = FALSE)
 }
 
-norm <- function(df, minValue, maxValue, defaultValue) {
-  # colnames(df) <- newName
-  if(min(df) == max(df)) {
-    df <- defaultValue
-    return(df)
+norm <- function(arr, minValue, maxValue, defaultValue) {
+  ran = range(arr, na.rm = TRUE)
+  if(ran[1] == ran[2]) {
+    arr[!is.na(arr)] <- defaultValue
+    return(arr)
   }
-  tmp <- (df - min(df)) / (max(df) - min(df))
+  tmp <- (arr - ran[1]) / (ran[2] - ran[1])
   tmp * (maxValue - minValue) + minValue
 }
 
+
+# Get the color domain by "color" and "scheme" cols of nodesDF
+niceDomain <- function(nodesDF, seriesData) {
+  color <- nodesDF$color
+  scheme <- nodesDF$scheme
+  if(!is.null(seriesData)) {
+    for(tick in seriesData) {
+      color <- c(color, nodesDF[, paste("color", tick, sep = ".")])
+      scheme <- c(scheme, nodesDF[, paste("scheme", tick, sep = ".")])
+    }
+  }
+
+  domains <- list()
+  for(sch in unique(scheme[!is.na(scheme)])) {
+    ran <- range(color[scheme == sch], na.rm = TRUE)
+    if(ran[1] == ran[2]) {
+       ran[2] = ran[2] + 0.05
+    }
+    domains[[sch]] <- round(ran, 3)
+  }
+
+  domains
+}

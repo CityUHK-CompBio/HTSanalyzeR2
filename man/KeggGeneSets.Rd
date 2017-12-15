@@ -2,9 +2,9 @@
 % Please edit documentation in R/gsca_load_genesets.R
 \name{KeggGeneSets}
 \alias{KeggGeneSets}
-\title{Create a list of gene sets based on KEGG pathways terms}
+\title{Create a list of KEGG gene sets}
 \usage{
-KeggGeneSets(species = "Dm")
+KeggGeneSets(species = "Hs")
 }
 \arguments{
 \item{species}{A single character value specifying a choice of species,
@@ -13,7 +13,7 @@ such as "Dm" ("Drosophila_melanogaster"), "Hs" ("Homo_sapiens"),
 }
 \value{
 A list of gene sets, with names as KEGG pathway IDs. Each gene
-set is a character vector of Entrez gene identifiers.
+set is a group of genes named by Entrez gene identifiers.
 }
 \description{
 This function creates a list of gene sets based on KEGG pathways terms.
@@ -22,12 +22,12 @@ is a character vector of Entrez gene identifiers.
 }
 \details{
 This function needs Internet connection and relies on the
-following packages: KEGGREST
+following packages: KEGGREST.
 }
 \examples{
 library(KEGGREST)
-DM_KEGG<-KeggGeneSets(species = "Dm")
-
+library(org.Hs.eg.db)
+HS_KEGG <- KeggGeneSets(species = "Hs")
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{MSigDBGeneSets}}

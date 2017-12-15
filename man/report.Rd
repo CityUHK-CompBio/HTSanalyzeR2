@@ -3,25 +3,30 @@
 \docType{methods}
 \name{report,GSCA-method}
 \alias{report,GSCA-method}
+\alias{report}
 \alias{report,NWA-method}
 \title{Write HTML reports for enrichment or network analyses}
 \usage{
-\S4method{report}{GSCA}(object, nodeOptions = list(),
+\S4method{report}{GSCA}(object, specificGeneset = NULL,
   reportDir = "GSCAReport")
 
-\S4method{report}{NWA}(object, nodeOptions = list(),
-  reportDir = "NWAReport")
+\S4method{report}{NWA}(object, reportDir = "NWAReport")
 }
 \arguments{
-\item{object}{an object. When this function is implemented as the S4
+\item{object}{An object. When this function is implemented as the S4
 method of class 'GSCA' or 'NWA', this argument is an object of class
 'GSCA' or 'NWA'.}
 
-\item{nodeOptions}{a list of interested gene set terms which can be edited in the shiny report such as
-changing the shape of this set, etc.}
+\item{specificGeneset}{A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap,GSCA-method}}
+for details.}
 
-\item{reportDir}{a single character value specifying the directory to store reports. For default
-the enrichment analysis reports will be stored in the directory called "GSCAReport"}
+\item{reportDir}{A single character value specifying the directory to store reports. For default
+the enrichment analysis reports will be stored in the directory called "GSCAReport".}
+}
+\value{
+In the end, this function would generate a html report.
+
+in the end, this function would generate a shiny report.
 }
 \description{
 This is a generic function.
@@ -29,54 +34,47 @@ This is a generic function.
 \details{
 When implemented as the method of class GSCA or NWA, this function produces reports for
 either the Gene Set Collection Analysis or the NetWork Analysis.
+
+
+This will generate a shiny report including all the GSCA or NWA results.
+
+For GSCA object, users can download the table of GSOA and/or GSEA result in different format
+such as 'csv' and 'pdf'. In GSEA result of this report, 'Pvalue' or 'Adjusted.Pvalue'
+equalling to 0 would be replaced by less than 1 divided by permutation times.
+The enrichment map could be modified according to the user's preferences
+such as layout, node, label, and etc. Details please see the vignette of our package.
+
+For NWA object, the identified subnetwork could be modified according to the user's preferences
+in many ways such as layout, color, and etc. Details please see the vignette of our package.
 }
 \examples{
 # =======================================================
 # GSCA class
-## Not run:
-library(org.Dm.eg.db)
-library(GO.db)
-## load data for enrichment analyses
-data(data4enrich)
-## select hits
-hits <- names(data4enrich)[abs(data4enrich) > 2]
-## set up a list of gene set collections
-GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
-ListGSC <- list(GO_MF=GO_MF)
-## create an object of class 'GSCA'
-gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
-## print gsca
-gsca
-## do preprocessing
-gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
-## do hypergeometric tests and GSEA
-gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
-summarize(gsca)
-## append gene set terms to results
-gsca <- appendGSTerms(gsca, goGSCs=c("GO_MF"), keggGSCs= NULL, msigdbGSCs=NULL)
-## view an enrichment map for GSEA results
-viewEnrichMap(gsca, gscs="GO_MF", allSig = F, ntop = 7)
-## report for a GSCA object
-report(gsca)
-# ======================================================
+## load a GSCA object(see the examples of analyze GSCA for details)
+data(d7_gsca)
+
+## Example1: report d7_gsca
+\dontrun{
+report(d7_gsca)
+}
+
+## Example2: report d7_gsca containing enrichment map with specificGeneset
+tmp <- getTopGeneSets(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
+                      ntop = 20000, allSig = FALSE)
+## In that case, we can define specificGeneset as below:
+GO_MF_geneset <- tmp$GO_MF[c(4,2,6,9,12)]
+## the name of specificGenesets also needs to match with the names of tmp
+specificGeneset <- list("GO_MF"=GO_MF_geneset)
+\dontrun{
+report(d7_gsca, specificGeneset=specificGeneset)
+}
+\dontrun{
+# =================================================================
 # NWA class
-# Conducting the preparation steps
-data(xn)
-data(data4enrich)
-# Conducting one sample t-test & compute the p-values
-test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn,annotationColumn="GeneID", alternative="two.sided",tests=c("T-test"))
-library(BioNet)
-pvalues <- BioNet::aggrPvals(test.stats, order=2, plot=FALSE)
-nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
-nwa <- preprocess(nwa, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
-nwa_inter <- interactome(nwa, species="Dm", reportDir="biogrid", genetic=FALSE)
-# Case1: Conducting the network analysis step
-nwa_result <- analyze(nwa_inter, fdr=0.0001, species="Dm")
-# Case2: Conducting the network analysis step(with the interactionMatrix)
-data(nwam)
-nwam_inter <- interactome(nwam, species="Dm", reportDir="biogrid", genetic=FALSE)
-nwam_result <- analyze(nwam_inter, fdr=0.0001, species="Dm")
-#report the results with shiny
-report(nwa_result)
-report(nwam_result)
+## load a NWA object(see the examples of analyze NWA for details)
+data(d7_nwa)
+
+## report d7_nwa
+report(d7_nwa)
+}
 }

@@ -26,7 +26,13 @@ setMethod("initialize",
           function(.Object,
                    listOfGeneSetCollections,
                    geneList,
-                   hits) {
+                   hits = character()) {
+
+            ## check parameters
+            paraCheck("GSCAClass", "gscs", listOfGeneSetCollections)
+            paraCheck("GSCAClass", "genelist", geneList)
+            if(length(hits) > 0)  paraCheck("GSCAClass", "hits", hits)
+
             .Object@listOfGeneSetCollections <- listOfGeneSetCollections
             .Object@geneList <- geneList
             .Object@hits <- hits
@@ -76,28 +82,28 @@ setMethod("initialize",
             .Object
           })
 
-
-#' An S4 class for Gene Set Collection Analyses on high-throughput screens
+#' An S4 class for Gene Set Collection Analyses on high-throughput data
 #'
 #' This S4 class includes a series of methods to do gene set enrichment analysis
-#' and hypergeometric tests for high-throughput screens.
-#'
-#' @slot listOfGeneSetCollections A list of gene set collections (a 'gene
+#' and hypergeometric test for high-throughput data.
+#' @aliases GSCA GSCA-class
+#' @param listOfGeneSetCollections A list of gene set collections (a 'gene
 #' set collection' is a list of gene sets).
-#' @slot geneList A numeric or integer vector of phenotypes named by gene
+#' @param geneList A numeric or integer vector of phenotypes named by gene
 #' identifiers.
-#' @slot hits A character vector of the gene identifiers (used as hits in
-#' the hypergeometric tests).
-#' @slot para a list of parameters for hypergeometric tests and GSEA. These
+#' @param hits A character vector of the gene identifiers (used as hits in
+#' the hypergeometric tests).It's needed if you want to do GSOA
+#' (gene set overrepresentation analysis).
+#' @slot para A list of parameters for hypergeometric test and GSEA. These
 #' parameters are pValueCutoff, pAdjustMethod, nPermutations, minGeneSetSize
 #' and exponent.
-#' @slot result a list of results.
+#' @slot result A list of results.
 #'
-#' @slot summary a list of summary information for listOfGeneSetCollections,
+#' @slot summary A list of summary information for listOfGeneSetCollections,
 #'  geneList, hits, para, and result.
-#' @slot preprocessed a single logical value specifying whether or not the
+#' @slot preprocessed A single logical value specifying whether or not the
 #' input data has been preprocessed.
-#'
+#' @usage GSCA(listOfGeneSetCollections, geneList, hits = character())
 #' @seealso \code{\link[HTSanalyzeR2]{preprocess}},
 #' \code{\link[HTSanalyzeR2]{analyze}},
 #' \code{\link[HTSanalyzeR2]{appendGSTerms}},
@@ -105,15 +111,41 @@ setMethod("initialize",
 #' \code{\link[HTSanalyzeR2]{report}}
 #'
 #' @export
-GSCA <- function(listOfGeneSetCollections, geneList, hits) {
+#' @return This function will create a new object of 'GSCA' class.
+#' @examples
+#' library(org.Hs.eg.db)
+#' library(GO.db)
+#' ## load data for enrichment analyses
+#' data(d7)
+#' phenotype <- as.vector(d7$neg.lfc)
+#' names(phenotype) <- d7$id
+#'
+#' ## select hits if you also want to do GSOA, otherwise ignore it
+#' hits <- names(phenotype[which(abs(phenotype) > 2)])
+#'
+#' ## set up a list of gene set collections
+#' GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+#' ListGSC <- list(GO_MF=GO_MF)
+#'
+#' ## Example1: create an object of class 'GSCA' with hits
+#' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
+#' getSummary(gsca)
+#'
+#' ## Example2: create an object of class 'GSCA' without hits
+#' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = phenotype)
+#' getSummary(gsca)
+
+GSCA <- function(listOfGeneSetCollections, geneList, hits = character()) {
   paraCheck("GSCAClass", "gscs", listOfGeneSetCollections)
   paraCheck("GSCAClass", "genelist", geneList)
-  paraCheck("GSCAClass", "hits", hits)
+  if(length(hits) > 0)  paraCheck("GSCAClass", "hits", hits)
 
-  object <- new(
+  object <- methods::new(
     Class = "GSCA",
     listOfGeneSetCollections = listOfGeneSetCollections,
     geneList = geneList,
     hits = hits
   )
 }
+
+

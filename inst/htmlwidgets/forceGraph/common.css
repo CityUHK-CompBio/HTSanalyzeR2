@@ -1,0 +1,81 @@
+#settingBar {
+    width: 300px;
+    position: fixed;
+    top: 0;
+    right: -300px;
+    height: 100vh;
+    z-index: 999;
+    background: #222d32;
+    color: #fff;
+    transition: all 0.3s;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
+}
+
+#settingBar.active {
+    right: 0;
+}
+
+#settingBar ul li a {
+    color: #b8c7ce;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    display: block;
+}
+
+#settingBar ul li a:hover {
+    color: #fff;
+    background: #1e282c;
+}
+
+#settingBar ul li.active > ul, a[aria-expanded="true"] {
+    color: #fff;
+    background: #1e282c;
+}
+
+#settingBar ul li ul {
+    background: #2c3b41;
+}
+
+#settingBar .shiny-input-container {
+    padding: 12px 15px 0px 15px;
+}
+
+#settingBar .irs-min, #settingBar .irs-max {
+    color: #cacaca;
+}
+
+#posColor1+.colourpicker-panel, #negColor1+.colourpicker-panel {
+    left: auto;
+    right: 0px;
+}
+
+
+.cust-setting-btn {
+    float: right;
+    font-size: 14px;
+    padding: 10px 10px 10px 10px;
+    margin: -10px 0px -10px 0px;
+}
+
+.cust-setting-btn:hover  {
+    background: rgba(0, 0, 0, 0.1);
+    color: white;
+}
+
+
+#analysis_info {
+    width: 360px;
+    position: fixed;
+    top: 0;
+    right: -360px;
+    height: 100vh;
+    z-index: 999;
+    background: #eee;
+    transition: all 0.2s;
+    padding: 65px 10px 10px 10px;
+}
+
+#analysis_info.active {
+    right: 0;
+}

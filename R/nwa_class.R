@@ -1,9 +1,9 @@
 #' @include class_union.R utils.R
 setClass(
   Class = "NWA",
-  representation(
-    pvalues = "numeric",
-    phenotypes = "numeric_or_matrix",
+  slots = c(
+    pvalues = "numeric_or_integer",
+    phenotypes = "numeric_or_integer",
     interactome = "igraph_or_logical",
     fdr = "numeric",
     result = "list",
@@ -12,7 +12,7 @@ setClass(
   ),
   prototype = list(
     pvalues = numeric(),
-    phenotypes = as.numeric(NA),
+    phenotypes = numeric(),
     interactome = NA,
     fdr = 0.001,
     result = list(),
@@ -26,15 +26,21 @@ setMethod("initialize",
           signature = "NWA",
           function(.Object,
                    pvalues,
-                   phenotypes = NA,
+                   phenotypes = as.numeric(),
                    interactome = NA) {
+
             ## check input arguments
             paraCheck("NWAClass", "pvalues", pvalues)
-            if (!all(is.na(phenotypes)))
+            if (length(phenotypes) > 0){
               paraCheck("NWAClass", "phenotypes", phenotypes)
-            if (!is.na(interactome))
-              paraCheck("NWAClass", "interactome", interactome)
+              # if(!identical(names(pvalues), names(phenotypes))){
+              #   stop("'pvalues' and 'phenotypes' should have the same length and be one-to-one match!\n")
+              # }
+            }
+            if (any(!is.na(interactome))){
+              paraCheck("NWAClass", "interactome", interactome)}
 
+            ##
             .Object@pvalues <- pvalues
             .Object@phenotypes <- phenotypes
             .Object@interactome <- interactome
@@ -68,11 +74,12 @@ setMethod("initialize",
             )
             ## initialization of summary
             .Object@summary$input["p-values", "input"] <- length(pvalues)
-            .Object@summary$input["phenotypes", "input"] <-
-              ifelse(is.matrix(phenotypes), nrow(phenotypes), length(phenotypes))
+
+            .Object@summary$input["phenotypes", "input"] <- length(phenotypes)
+
             .Object@summary$db[1, "name"] <- "Unknown"
 
-            if (!is.na(interactome)) {
+            if (any(!is.na(interactome))){
               .Object@summary$db[1, "node No"] <- igraph::vcount(interactome)
               .Object@summary$db[1, "edge No"] <- igraph::ecount(interactome)
             }
@@ -81,40 +88,63 @@ setMethod("initialize",
             .Object
           })
 
-#' An S4 class for NetWork Analysis on high-throughput screens
+#' An S4 class for NetWork Analysis on high-throughput data
 #'
 #' This class includes a series of methods to do network analysis for
-#' high-throughput screens.
-#'
-#' @slot pvalues a numeric vector of p-values.
-#' @slot phenotypes a numeric or integer vector of phenotypes.
-#' @slot interactome an object of class igraph.
-#' @slot fdr one parameter for BioNet to score nodes in the interactome.
-#' @slot result a list consisting of subnetwork module identified by BioNet
+#' high-throughput data.
+#' @aliases NWA NWA-class
+#' @param pvalues A numeric or integer vector of pvalues named by gene identifiers.
+#' @param phenotypes A numeric or integer vector of phenotypes named by gene identifiers.
+#' When it is available, nodes in identified subnetwork would be coloured by it
+#' (red:+, blue:- as default). Otherwise, all nodes in the subnetwork would have no difference.
+#' @param interactome An object of class igraph.
+#' @slot fdr One parameter for BioNet to score nodes in the interactome.
+#' @slot result A list consisting of subnetwork module identified by BioNet
 #' and a vector of labels for nodes of the subnetwork module.
-#' @slot summary a list of summary information for p-values, phenotypes,
+#' @slot summary A list of summary information for pvalues, phenotypes,
 #' interactome and result.
-#' @slot preprocessed a logical value specifying whether or not input data
+#' @slot preprocessed A logical value specifying whether or not input data
 #' has been preprocessed.
+#' @usage NWA(pvalues, phenotypes = as.numeric(), interactome = NA)
+#' @return This function will create a new object of class 'NWA'.
 #'
-#' @seealso \code{\link[HTSanalyzeR2]{preprocess}} \code{\link[HTSanalyzeR2]{analyze}} \code{\link[HTSanalyzeR2]{summarize}} \code{\link[HTSanalyzeR2]{interactome}} \code{\link[HTSanalyzeR2]{report}}
+#' @seealso \code{\link[HTSanalyzeR2]{preprocess}},
+#'  \code{\link[HTSanalyzeR2]{analyze}},
+#'   \code{\link[HTSanalyzeR2]{summarize}},
+#'    \code{\link[HTSanalyzeR2]{interactome}},
+#'     \code{\link[HTSanalyzeR2]{report}}
 #' @examples
-#' # loading the pre_selected sample data
-#' data(xn)
-#' data(data4enrich)
-#' # Conducting one sample t-test & compute the p-values
-#' test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn,annotationColumn="GeneID", alternative="two.sided",tests=c("T-test"))
-#' library(BioNet)
-# pvalues <- BioNet::aggrPvals(test.stats, order=2, plot=FALSE)
-# # Conducting the constrction of a S4 class data
-# nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
+#' library(org.Hs.eg.db)
+#' library(GO.db)
+#' ## load data for network analyses
+#' data(d7)
+#' pvalues <- d7$neg.p.value
+#' names(pvalues) <- d7$id
+#'
+#' ## define phenotypes if you want to color nodes by it, otherwise ignore it!
+#' phenotypes <- as.vector(d7$neg.lfc)
+#' names(phenotypes) <- d7$id
+#'
+#' ## Example1: create an object of class 'NWA' with phenotypes
+#' nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes)
+#'
+#' ## Example2: create an object of class 'NWA' without phenotypes
+#' nwa <- NWA(pvalues=pvalues)
 #' @export
-NWA <- function(pvalues, phenotypes = as.numeric(NA), interactome = NA) {
-  object <- new(
+NWA <- function(pvalues, phenotypes = as.numeric(), interactome = NA) {
+  ## check input arguments
+  paraCheck("NWAClass", "pvalues", pvalues)
+  if (length(phenotypes) > 0){
+    paraCheck("NWAClass", "phenotypes", phenotypes)
+  }
+  if (!is.na(interactome))
+    paraCheck("NWAClass", "interactome", interactome)
+
+  ##
+  object <- methods::new(
     Class = "NWA",
     pvalues = pvalues,
     phenotypes = phenotypes,
     interactome = interactome
   )
 }
-

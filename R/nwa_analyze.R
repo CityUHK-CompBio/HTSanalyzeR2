@@ -9,27 +9,48 @@ if (!isGeneric("analyze")) {
 #' slot summary of class NWA.
 #'
 #' @param species
-#' a single character value specifying the species for which the data should be read.
+#' A single character value specifying the species for which the data should be read.
 #' @param fdr
-#' a single numeric value specifying the false discovery for the scoring of nodes
+#' A single numeric value specifying the false discovery for the scoring of nodes
 #' (see BioNet::scoreNodes and Dittrich et al., 2008 for details)
+#' @references
+#' Beisser D, Klau GW, Dandekar T, Muller T, Dittrich MT. BioNet: an R-Package
+#' for the functional analysis of biological networks. Bioinformatics.
+#' 2010 Apr 15;26(8):1129-30.
+#'
+#' Dittrich MT, Klau GW, Rosenwald A., Dandekar T and Muller T. Identifying functional modules
+#' in protein-protein interaction networks: an integrated exact approach. Bioinformatics
+#' 2008 24(13):i223-i231.
 #' @examples
-#' # Conducting the preparation steps
-#' data(xn)
-#' data(data4enrich)
-#' # Conducting one sample t-test & compute the p-values
-#' test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn,annotationColumn="GeneID", alternative="two.sided",tests=c("T-test"))
-#' library(BioNet)
-#' pvalues <- BioNet::aggrPvals(test.stats, order=2, plot=FALSE)
-#' nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
-#' nwa <- preprocess(nwa, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
-#' nwa_inter <- interactome(nwa, species="Dm", reportDir="biogrid", genetic=FALSE)
-#' # Case1: Conducting the network analysis step
-#' nwa_result <- analyze(nwa_inter, fdr=0.0001, species="Dm")
-#' # Case2: Conducting the network analysis step(with the interactionMatrix)
-#' data(nwam)
-#' nwam_inter <- interactome(nwam, species="Dm", reportDir="biogrid", genetic=FALSE)
-#' nwam_result <- analyze(nwam_inter, fdr=0.0001, species="Dm")
+#' # ===========================================================
+#' \dontrun{
+#' # Network Analysis
+#' library(org.Hs.eg.db)
+#' library(GO.db)
+#' ## load data for network analyse
+#' data(d7)
+#' pvalues <- d7$neg.p.value
+#' names(pvalues) <- d7$id
+#'
+#' ## input phenotypes if you want to color nodes by it
+#' phenotypes <- as.vector(d7$neg.lfc)
+#' names(phenotypes) <- d7$id
+#'
+#' ## create an object of class 'NWA' with phenotypes
+#' nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes)
+#'
+#' ## do preprocessing
+#' nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+#'                    duplicateRemoverMethod="max")
+#'
+#' ## create an interactome for nwa1 by downloading from BioGRID database
+#' nwa2 <- interactome(nwa1, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
+#'
+#' ## analyze
+#' nwa3 <- analyze(nwa2, fdr=0.0001, species="Hs")
+#' ## summarize nwa3
+#' summarize(nwa3)
+#' }
 #' @export
 #' @include nwa_class.R gsca_preprocess.R
 #' @importFrom igraph vertex_attr vcount ecount
@@ -50,21 +71,19 @@ setMethod("analyze",
                                vertex_attr(object@interactome, "name")))
             object@summary$para[1, 1] <- fdr
 
-            if (!is.null(object@phenotypes)) {
-              if(is.matrix(object@phenotypes))
-                pnames <- rownames(object@phenotypes)
-              else
+            if (length(object@phenotypes) > 0) {
                 pnames <- names(object@phenotypes)
 
               object@summary$input[2, "in interactome"] <-
                 length(intersect(pnames, vertex_attr(object@interactome, "name")))
             }
+            #------------------------------------------------------------------------------
             if (length(object@pvalues) == 0 ||
                 object@summary$input[1, "in interactome"] == 0)
               stop("pvalues vector has length 0, or has no overlap ",
                    "with interactome!\n")
             ## perform network analysis
-            module <- networkAnalysis(
+            module <- HTSanalyzeR2:::networkAnalysis(
               pvalues = object@pvalues,
               graph = object@interactome,
               fdr = object@fdr,
@@ -92,28 +111,10 @@ setMethod("analyze",
             })
 
 
-#' Identify enriched subnetworks
-#'
-#' This function finds subnetworks enriched for genes with significant
-#' phenotypes based on the package 'BioNet'.
-#'
-#' @param pvalues a numeric vector of p-values
-#' @param graph an object of class igraph, used as the interactome in
-#' the network analysis
-#' @param fdr a single numeric value specifying the false discovery for
-#' the scoring of nodes (see BioNet::scoreNodes and Dittrich et al., 2008
-#' for details)
-#' @param verbose a single logical value indicating to display detailed
-#' messages (when verbose=TRUE) or not (when verbose=FALSE)
-#'
-#' @details This function takes in a vector of p-values and a graph standing
-#' for the interactome to identify the maximum scoring subnetwork based on
-#' the BioNet package.
-#'
-#' @return a subnetwork module of class igraph
-#' @export
+
 #' @importFrom BioNet fitBumModel scoreNodes runFastHeinz
 #' @importFrom igraph vertex_attr vcount
+#'
 networkAnalysis <-
   function(pvalues,
            graph,
@@ -169,6 +170,7 @@ networkAnalysis <-
       cat("--Computing the optimal subnetwork", "\n")
     module <- runFastHeinz(network = graph, scores = scoreswMean)
     cat("-Network analysis complete \n")
+    cat("==============================================\n\n")
     ## Return a igraph object consisting of the enriched sub-network
     module
   }

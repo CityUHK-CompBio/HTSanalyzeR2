@@ -6,65 +6,82 @@ if (!isGeneric("preprocess")) {
 #' A preprocessing method for objects of class GSCA or NWA
 #'
 #' This is a generic function. When implemented as the S4 method for objects of
-#' class GSCA or NWA, this function filters out invalid data, removes duplicated
+#' class \code{\link[HTSanalyzeR2]{GSCA-class}} or \code{\link[HTSanalyzeR2]{NWA-class}},
+#' this function filters out invalid data, removes duplicated
 #' genes, converts annotations to Entrez identifiers, etc.
-#' @rdname preprocess
 #'
-#' @param object A GSCA object.
-#' @param species A single character value specifying the species for which the
-#'   data should be read.
-#' @param initialIDs A single character value specifying the type of initial
-#'   identifiers for input geneList
+#' @include gsca_class.R
+#' @rdname preprocess
+#' @aliases preprocess
+#' @param object A \code{\link[HTSanalyzeR2]{GSCA-class}} or \code{\link[HTSanalyzeR2]{NWA-class}} object.
+#' @param species A single character value specifying the species of the input.
+#' It supports all the species of OrgDb objects in AnnotationDbi.
+#' The format should be an abbreviation of the organism as setted by AnnotationDbi.
+#' For example, the commonly used ones are "Dm" ("Drosophila_melanogaster"),
+#' "Hs" ("Homo_sapiens"), "Rn" ("Rattus_norvegicus"), "Mm" ("Mus_musculus"),
+#' "Ce" ("Caenorhabditis_elegans"), and etc.
+#'
+#' @param initialIDs A single character value specifying the type of
+#' initial identifiers for input 'geneList'. The valid terms need match with
+#' the keytypes of species db such as keytypes(org.Hs.eg.db).
 #' @param keepMultipleMappings A single logical value. If TRUE, the function
 #'   keeps the entries with multiple mappings (first mapping is kept). If FALSE,
 #'   the entries with multiple mappings will be discarded.
 #'
 #' @param duplicateRemoverMethod A single character value specifying the method
-#'   to remove the duplicates. See duplicateRemover for details.
+#'   to remove the duplicates. See help(duplicateRemover) for details.
 #' @param orderAbsValue A single logical value indicating whether the values
 #'   should be converted to absolute values and then ordered (if TRUE), or
-#'   ordered as they are (if FALSE).
+#'   ordered as they are (if FALSE). This argument is only for class \code{\link[HTSanalyzeR2]{GSCA-class}}.
 #' @param verbose A single logical value specifying to display detailed messages
-#'   (when verbose=TRUE) or not (when verbose=FALSE)
-#' @return In the end, this function will return an updated object of class GSCA or NWA.
+#'   (when verbose=TRUE) or not (when verbose=FALSE).
+#' @return In the end, this function will return an updated object of class
+#' \code{\link[HTSanalyzeR2]{GSCA-class}} or \code{\link[HTSanalyzeR2]{NWA-class}}.
 #' @seealso \code{\link[HTSanalyzeR2]{duplicateRemover}}, \code{\link[HTSanalyzeR2]{annotationConvertor}}
 #' @examples
 #' # ===========================================================
 #' # GSCA class
-#' ## Not run:
-#' library(org.Dm.eg.db)
+#' library(org.Hs.eg.db)
 #' library(GO.db)
+#' library(KEGGREST)
 #' ## load data for enrichment analyses
-#' data(data4enrich)
-#' ## select hits
-#' hits <- names(data4enrich)[abs(data4enrich) > 2]
+#' data(d7)
+#' phenotype <- as.vector(d7$neg.lfc)
+#' names(phenotype) <- d7$id
+#'
+#' ## select hits if you also want to do GSOA, otherwise ignore it
+#' hits <-  names(phenotype[which(abs(phenotype) > 2)])
+#'
 #' ## set up a list of gene set collections
-#' GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
-#' ListGSC <- list(GO_MF=GO_MF)
+#' GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+#' PW_KEGG <- KeggGeneSets(species="Hs")
+#' ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
+#'
 #' ## create an object of class 'GSCA'
-#' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
+#' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
+#'
 #' ## do preprocessing
-#' gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
-#' ## print gsca
-#' gsca
-#' # ===========================================================
-#' # NWA class
+#' gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+#'                    duplicateRemoverMethod="max", orderAbsValue=FALSE)
+#'
+#' ## print gsca1
+#' gsca1
 #'
 #' @details
 #' This function will do the following preprocessing steps:
 #'
-#' 1:filter out p-values (the slot **pvalues** of class NWA), phenotypes
-#'  (the slot phenotypes of class NWA) and data for enrichment (the slot
-#'  geneList of class GSCA) with NA values or without valid names, and invalid
-#'   gene names (the slot hits of class GSCA);
+#' 1:filter out p-values (the slot \emph{pvalues} of class NWA), phenotypes
+#'  (the slot \emph{phenotypes} of class NWA) and data for enrichment (the slot
+#'  \emph{geneList} of class GSCA) with NA values or without valid names, and invalid
+#'   gene names (the slot \emph{hits} of class GSCA);
 #'
-#' 2:invoke function duplicateRemover to remove duplicated genes in the slot pvalues,
-#'  phenotypes of class NWA, and the slot geneList and hits of class GSCA;
+#' 2:invoke function duplicateRemover to remove duplicated genes in the slot \emph{pvalues},
+#'  \emph{phenotypes} of class NWA, and the slot \emph{geneList} and \emph{hits} of class GSCA;
 #'
 #' 3:invoke function annotationConvertor to convert annotations from initialIDs
-#' to Entrez identifiers. Please note that the slot hits and the names of the slot
-#' geneList of class GSCA, the names of the slot pvalues and the names of the slot
-#' phenotypes of class NWA must have the same type of gene annotation specified by
+#' to Entrez identifiers. Please note that the slot \emph{hits} and the names of the slot
+#' \emph{geneList} of class GSCA, the names of the slot \emph{pvalues} and the names of the slot
+#' \emph{phenotypes} of class NWA must have the same type of gene annotation specified by
 #' initialIDs;
 #'
 #' 4:order the data for enrichment decreasingly for objects of class GSCA.
@@ -75,11 +92,11 @@ if (!isGeneric("preprocess")) {
 #' See the function annotationConvertor for more details about how to convert
 #' annotations.
 #' @export
-#' @include gsca_class.R
+
 setMethod("preprocess", signature = "GSCA",
           function(object,
-                   species = "Dm",
-                   initialIDs = "FLYBASECG",
+                   species = "Hs",
+                   initialIDs = "SYMBOL",
                    keepMultipleMappings = TRUE,
                    duplicateRemoverMethod = "max",
                    orderAbsValue = FALSE,
@@ -93,10 +110,12 @@ setMethod("preprocess", signature = "GSCA",
             paraCheck("Annotataion", "keepMultipleMappings", keepMultipleMappings)
 
 
-            ## preprocessing
+            ## preprocessing==============================================================
             cat("-Preprocessing for input gene list and hit list ...\n")
 
+            ## genelist preprocessing-----------------------------------------------------
             genelist <- object@geneList
+
             ## remove NA in geneList
             if (verbose)
               cat("--Removing genes without values in geneList ...\n")
@@ -117,20 +136,26 @@ setMethod("preprocess", signature = "GSCA",
               duplicateRemover(geneList = genelist, method = duplicateRemoverMethod)
 
             ## genes after removing duplicates
-            object@summary$gl[, "duplicate removed"] <-
-              length(genelist)
-            hits <- object@hits[object@hits != "" & !is.na(object@hits)]
-            if (length(hits) == 0)
-              stop("Input 'hits' contains no useful data!\n")
-            hits <- unique(hits)
-            hits.vec <- genelist[names(genelist) %in% hits]
-            if (length(hits.vec) == 0)
-              stop("Hits and geneList have no overlaps!\n")
+            object@summary$gl[, "duplicate removed"] <- length(genelist)
 
-            ## annotation convertor
+            ## hits preprocessing---------------------------------------------------------
+            if(length(object@hits) > 0){
+                  hits <- object@hits[object@hits != "" & !is.na(object@hits)]
+                  if (length(hits) == 0)
+                    stop("test Input 'hits' contains no useful data!\n")
+
+                  hits <- unique(hits)
+                  hits.vec <- genelist[names(genelist) %in% hits]
+                  if (length(hits.vec) == 0)
+                    stop("Hits and geneList have no overlaps!\n")
+            }  ## finish hits preprocessing
+
+
+            ## annotation convertor=======================================================
             if (initialIDs != "ENTREZID") {
               if (verbose)
                 cat("--Converting annotations ...\n")
+
               genelist <- annotationConvertor(
                 geneList = genelist,
                 species = species,
@@ -139,34 +164,37 @@ setMethod("preprocess", signature = "GSCA",
                 keepMultipleMappings = keepMultipleMappings,
                 verbose = verbose
               )
-              hits.vec <- annotationConvertor(
-                geneList = hits.vec,
-                species = species,
-                initialIDs = initialIDs,
-                finalIDs = "ENTREZID",
-                keepMultipleMappings = keepMultipleMappings,
-                verbose = verbose
-              )
+
+              if(length(object@hits) > 0){
+                hits.vec <- annotationConvertor(
+                  geneList = hits.vec,
+                  species = species,
+                  initialIDs = initialIDs,
+                  finalIDs = "ENTREZID",
+                  keepMultipleMappings = keepMultipleMappings,
+                  verbose = verbose
+                )}
             }
 
             ## genes after annotation conversion
             object@summary$gl[, "converted to entrez"] <-
               length(genelist)
 
+            ## update genelist and hits, and return objects================================
             if (verbose)
               cat("--Ordering Gene List decreasingly ...\n")
             if (!orderAbsValue)
               genelist <- genelist[order(genelist, decreasing = TRUE)]
             else
               genelist <- abs(genelist)[order(abs(genelist), decreasing = TRUE)]
-            hits <- names(hits.vec)
-
-            ## hits after preprocessed
-            object@summary$hits[, "preprocessed"] <- length(hits)
-
-            ## update genelist and hits, and return object
             object@geneList <- genelist
-            object@hits <- hits
+
+            if (length(object@hits) > 0) {
+              hits <- names(hits.vec)
+              object@summary$hits[, "preprocessed"] <- length(hits)
+              object@hits <- hits
+            }
+
             object@preprocessed <- TRUE
 
             cat("-Preprocessing complete!\n\n")
@@ -174,14 +202,14 @@ setMethod("preprocess", signature = "GSCA",
           })
 
 
-#' Remove duplicates in a named vector of phenotypes
+#' Remove duplicates in a named vector of phenotypes.
 #'
 #' This function gets rid of the duplicates in a vector of phenotypes
 #' with gene identifiers as names. It is used to prepare the named vector
-#' of phenotypes for the over-representation and enrichment analysis.
+#' of phenotypes for the over-representation and gene set enrichment analysis.
 #'
 #' @param geneList A single named numeric or integer vector with gene
-#' identifiers as names
+#' identifiers as names.
 #' @param method A single character value specifying the method to remove
 #' the duplicates (should the minimum, maximum or average observation for
 #' a same construct be kept). The current version provides "min" (minimum),
@@ -189,17 +217,16 @@ setMethod("preprocess", signature = "GSCA",
 #' The minimum and maximum should be understood in terms of absolute values
 #' (i.e. min/max effect, no matter the sign). The fold change average method
 #' converts the fold changes to ratios, averages them and converts the average
-#' back to a fold change
+#' back to a fold change.
 #'
-#' @return A named vector of phenotypes with duplicates removed
+#' @return A named vector of phenotypes with duplicates removed.
 #'
 #' @seealso \code{\link[HTSanalyzeR2]{preprocess}}
 #'
 #' @examples
-#' x<-c(5,1,3,-2,6)
-#' names(x)<-c("gene1", "gene3", "gene7", "gene3", "gene4")
-#' xprocessed<-duplicateRemover(geneList=x, method="max")
-#'
+#' x <- c(5,1,3,-2,6)
+#' names(x) <- c("gene1", "gene3", "gene7", "gene3", "gene4")
+#' xprocessed <- duplicateRemover(geneList=x, method="max")
 #' @export
 duplicateRemover <- function(geneList, method = "max") {
   paraCheck("GSCAClass", "genelist", geneList)
@@ -252,42 +279,50 @@ duplicateRemover <- function(geneList, method = "max") {
 #' for which no mapping were found will be removed. This function can
 #' also take a matrix, with gene identifiers as row names.
 #'
-#' @usage annotationConvertor(geneList, species="Dm", initialIDs="FLYBASE",
-#' finalIDs="Entrez.gene", keepMultipleMappings=TRUE, verbose=TRUE)
+#' @usage annotationConvertor(geneList, species="Hs", initialIDs="SYMBOL",
+#' finalIDs="ENTREZID", keepMultipleMappings=TRUE, verbose=TRUE)
 #' @param geneList A named integer or numeric vector, or a matrix with
-#' rows named by gene identifiers
-#' @param species A single character value specifying the species for
-#' which the data should be read.
+#' rows named by gene identifiers.
+#' @param species A single character value specifying the species of the input.
+#' It supports all the species of OrgDb objects in AnnotationDbi.
+#' The format should be an abbreviation of the organism as setted by AnnotationDbi.
+#' For example, the commonly used ones are "Dm" ("Drosophila_melanogaster"),
+#' "Hs" ("Homo_sapiens"), "Rn" ("Rattus_norvegicus"), "Mm" ("Mus_musculus"),
+#' "Ce" ("Caenorhabditis_elegans"), and etc.
+#'
 #' @param initialIDs A single character value specifying the type of
-#' initial identifiers for input geneList.
+#' initial identifiers for input geneList. The valid terms need match with
+#' the keytypes of species db such as keytypes(org.Hs.eg.db).
 #' @param finalIDs A single character value specifying the type of
 #' final identifiers for input geneList.
 #' @param keepMultipleMappings A single logical value. If TRUE, the
 #' function keeps the entries with multiple mappings (first mapping
 #' is kept). If FALSE, the entries with multiple mappings will be discarded.
-#' @param verbose A single logical value specifying to display detailed
-#' messages (when verbose=TRUE) or not (when verbose=FALSE)
+#' @param verbose A single logical value specifying whether to display detailed
+#' messages (when verbose=TRUE) or not (when verbose=FALSE).
 #'
 #' @return The same data vector/matrix but with names/row names converted.
 #'
 #' @examples
-#' library(org.Dm.eg.db)
-#' ##example 1: convert a named vector
-#' x<-runif(10)
-#' names(x)<-names(as.list(org.Dm.egSYMBOL2EG))[1:10]
-#' xEntrez<-annotationConvertor(geneList=x, species="Dm", initialIDs="SYMBOL",
-#' finalIDs="ENTREZID")
-#' ##example 2: convert a data matrix with row names as gene ids
-#' x<-cbind(runif(10),runif(10))
-#' rownames(x)<-names(as.list(org.Dm.egSYMBOL2EG))[1:10]
-#' xEntrez<-annotationConvertor(geneList=x, species="Dm", initialIDs="SYMBOL",
-#' finalIDs="ENTREZID")
+#' library(org.Hs.eg.db)
+#' ## Example1: convert a named vector
+#' x <- runif(10)
+#' names(x) <- names(as.list(org.Hs.egSYMBOL2EG))[1:10]
+#' xEntrez <- annotationConvertor(geneList=x, species="Hs", initialIDs="SYMBOL",
+#'                                finalIDs="ENTREZID")
 #'
+#' ## Example2: convert a data matrix with row names as gene ids
+#' x <- cbind(runif(10),runif(10))
+#' rownames(x) <- names(as.list(org.Hs.egSYMBOL2EG))[1:10]
+#' xEntrez <- annotationConvertor(geneList=x, species="Hs", initialIDs="SYMBOL",
+#'                                finalIDs="ENTREZID")
 #' @export
 #' @importFrom AnnotationDbi mapIds columns
+#' @importFrom utils installed.packages
+#' @importFrom utils getFromNamespace
 annotationConvertor <- function(geneList,
-                                species = "Dm",
-                                initialIDs = "ENTREZID",
+                                species = "Hs",
+                                initialIDs = "SYMBOL",
                                 finalIDs = "ENTREZID",
                                 keepMultipleMappings = TRUE,
                                 verbose = TRUE) {

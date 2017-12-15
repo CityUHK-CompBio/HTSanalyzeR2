@@ -6,80 +6,98 @@ if (!isGeneric("analyze")) {
 #' Gene Set Collection Analysis or NetWork Analysis
 #'
 #' This is a generic function.
-#'
-#' @describeIn analyze The function will store the results from function
-#' analyzeGeneSetCollections in slot result, and update information about
-#' these results to slot summary of class GSCA.
-#'
-#' @param object an object. When this function is implemented as the S4
+#' @describeIn analyze The function will perform gene set collection analysis
+#' on a GSCA object and update information about these results to slot
+#' \emph{summary} of class GSCA.
+#' @aliases analyze
+#' @param object An object. When this function is implemented as the S4
 #' method of class 'GSCA' or 'NWA', this argument is an object of class
 #' 'GSCA' or 'NWA'.
-#' @param para a list of parameters for GSEA and hypergeometric tests.
-#' @param para$pValueCutoff
-#' a single numeric value specifying the cutoff for p-values considered
-#' significant
-#' @param para$pAdjustMethod
-#' a single character value specifying the p-value adjustment method to be used
-#' (see 'p.adjust' for details)
-#' @param para$nPermutations
-#' a single integer or numeric value specifying the number of permutations for
-#' deriving p-values in GSEA
-#' @param para$minGeneSetSize
-#' a single integer or numeric value specifying the minimum number of elements
-#' in a gene set that must map to elements of the gene universe. Gene sets with
+#' @param para A list of parameters for GSEA and hypergeometric tests.
+#' This argument is only for class GSCA.
+#' @param pValueCutoff
+#' A single numeric value specifying the cutoff for adjusted p-values considered
+#' significant.
+#' @param pAdjustMethod
+#' A single character value specifying the p-value adjustment method to be used
+#' (see 'p.adjust' for details).
+#' @param nPermutations
+#' A single integer or numeric value specifying the number of permutations for
+#' deriving p-values in GSEA.
+#' @param minGeneSetSize
+#' A single integer or numeric value specifying the minimum number of elements
+#' shared by a gene set and the input total genes. Gene sets with
 #' fewer than this number are removed from both hypergeometric analysis and GSEA.
-#' @param para$exponent
-#' a single integer or numeric value used in weighting phenotypes in GSEA.
-#' @param verbose a single logical value specifying to display detailed messages
-#'  (when verbose=TRUE) or not (when verbose=FALSE)
-#' @param doGSOA a single logical value specifying to perform gene set
-#' overrepresentation analysis (when doGSOA=TRUE) or not (when doGSOA=FALSE)
-#' @param doGSEA a single logical value specifying to perform gene set
-#' enrichment analysis (when doGSEA=TRUE) or not (when doGSEA=FALSE)
+#' @param exponent A single integer or numeric value used in weighting phenotypes in GSEA.
+#' @param verbose A single logical value specifying to display detailed messages
+#'  (when verbose=TRUE) or not (when verbose=FALSE).
+#' @param doGSOA A single logical value specifying to perform gene set
+#' overrepresentation analysis(hypergeometric test) (when doGSOA=TRUE) or not (when doGSOA=FALSE).
+#' @param doGSEA A single logical value specifying to perform gene set
+#' enrichment analysis (when doGSEA=TRUE) or not (when doGSEA=FALSE).
 #'
 #' @return In the end, this function will return an updated object of
-#' class GSCA or NWA.
+#' class GSCA or NWA. All the analyzed results could be found in slot \emph{result}.
 #' @include gsca_class.R
 #' @export
+#' @references
+#' Aravind Subramanian, Pablo Tamayo, Vamsi K. Mootha, Sayan Mukherjee, Benjamin L. Ebert,
+#' Michael A. Gillette, Amanda Paulovich, Scott L. Pomeroy, Todd R. Golub, Eric S. Lander, and Jill P. Mesirov
+#' Gene set enrichment analysis: A knowledge-based approach for interpreting genome-wide expression profiles
+#' PNAS 2005 102 (43) 15545-15550; published ahead of print September 30, 2005, doi:10.1073/pnas.0506580102
 #' @examples
 #' # ====================================================
 #' # Gene Set Collection Analysis Part
-#' ## Not run:
-#' library(org.Dm.eg.db)
+#' library(org.Hs.eg.db)
 #' library(GO.db)
-#' ## load data for enrichment analyses
-#' data(data4enrich)
-#' ## select hits
-#' hits <- names(data4enrich)[abs(data4enrich) > 2]
+#' library(KEGGREST)
+#' ## load data for enrichment analyse
+#' data(d7)
+#' phenotype <- as.vector(d7$neg.lfc)
+#' names(phenotype) <- d7$id
+#'
+#' ## select hits if you also want to do GSOA, otherwise ignore it
+#' hits <-  names(phenotype[which(abs(phenotype) > 2)])
+#'
 #' ## set up a list of gene set collections
-#' GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
-#' ListGSC <- list(GO_MF=GO_MF)
+#' GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+#' PW_KEGG <- KeggGeneSets(species="Hs")
+#' ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
+#'
 #' ## create an object of class 'GSCA'
-#' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
-#' ## print gsca
-#' gsca
+#' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
+#'
 #' ## do preprocessing
-#' gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
+#' gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+#'                     duplicateRemoverMethod="max", orderAbsValue=FALSE)
+#'
+#' ## support parallel calculation using doParallel package
+#' if (requireNamespace("doParallel", quietly=TRUE)) {
+#' doParallel::registerDoParallel(cores=2)
+#' } else {
+#' }
+#'
 #' ## do hypergeometric tests and GSEA
-#' gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
-#' summarize(gsca)
-#'## End(not run)
-#' # ==================================================================
-#' # NetWork Analysis
+#' gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.01, pAdjustMethod ="BH",
+#'                                   nPermutations=100, minGeneSetSize=10, exponent=1),
+#'                                   doGSOA = TRUE, doGSEA = TRUE)
+#'
+#' ## summarize gsca2 and get results
+#' summarize(gsca2)
+#' head(getResult(gsca2)$GSEA.results$GO_MF)
+#' head(getResult(gsca2)$HyperGeo.results$PW_KEGG)
+#'
 
-
-setMethod("analyze",
-          "GSCA",
+setMethod("analyze", signature = "GSCA",
           function(object,
                    para = list(
                      pValueCutoff = 0.05,
                      pAdjustMethod = "BH",
                      nPermutations = 1000,
                      minGeneSetSize = 15,
-                     exponent = 1
-                   ),
+                     exponent = 1),
                    verbose = TRUE,
-                   doGSOA = TRUE,
+                   doGSOA = FALSE,
                    doGSEA = TRUE) {
 
             paraCheck("General", "verbose", verbose)
@@ -91,7 +109,7 @@ setMethod("analyze",
 
 
             object@para <- para
-
+            ## update summary information
             object@summary$para$hypergeo[1, ] <- c(
               object@para$minGeneSetSize,
               object@para$pValueCutoff,
@@ -121,7 +139,7 @@ setMethod("analyze",
                 doGSEA = doGSEA
               )
 
-            ## update summary information
+            ## update summary information(first analyze and then update summary)
             cols <- colnames(object@summary$results)
             object@summary$results[1:3, ] <- NA
             if (doGSOA) {
@@ -147,7 +165,7 @@ setMethod("analyze",
             object
           })
 
-
+#=====================================================================================
 ##This function takes a list of gene set collections, a named phenotype
 ##vector (with names(phenotype vector)=GeneUniverse), a vector of hits
 ##(names only) and returns the results of hypergeometric and gene set
@@ -180,7 +198,7 @@ analyzeGeneSetCollections <-
 
     numGeneSetCollections <- length(listOfGeneSetCollections)
 
-    ## filter 'istOfGeneSetCollections' by 'minGeneSetSize'
+    ## filter 'listOfGeneSetCollections' by 'minGeneSetSize'
     maxOverlap <- 0
     for (i in seq_along(listOfGeneSetCollections)) {
       gs.size <- vapply(listOfGeneSetCollections[[i]],
@@ -251,6 +269,7 @@ analyzeGeneSetCollections <-
           verbose
         )
       cat("-Gene set enrichment analysis complete \n")
+      cat("==============================================\n\n")
     } else {
       GSEA.results.list = NULL
     }
@@ -346,7 +365,8 @@ analyzeGeneSetCollections <-
     return(final.results)
   }
 
-
+#================================================================================
+#' @importFrom stats p.adjust
 calcHyperGeo <- function (listOfGeneSetCollections,
                           geneList,
                           hits,
@@ -362,7 +382,7 @@ calcHyperGeo <- function (listOfGeneSetCollections,
            recursive = FALSE,
            use.names = FALSE)
   names(combinedGeneSets) <-
-    unlist(lapply(listOfGeneSetCollections, names), use.names = F)
+    unlist(lapply(listOfGeneSetCollections, names), use.names = FALSE)
 
   universe = names(geneList)
   overlappedSize <-
@@ -422,7 +442,7 @@ calcHGTScore <- function(geneSet, universe, hits) {
   n <- length(hits)
   ex <- (n / N) * m
   HGTresult <-
-    ifelse(m == 0, NA, stats::phyper(k - 1, m, N - m, n, lower.tail = F))
+    ifelse(m == 0, NA, stats::phyper(k - 1, m, N - m, n, lower.tail = FALSE))
   hyp.vec <- c(N, m, n, ex, k, HGTresult, NA)
   names(hyp.vec) <-
     c(
@@ -439,6 +459,7 @@ calcHGTScore <- function(geneSet, universe, hits) {
 
 
 #' @import foreach
+#' @importFrom  stats p.adjust
 calcGSEA <-
   function(listOfGeneSetCollections,
            geneList,
@@ -447,6 +468,7 @@ calcGSEA <-
            minGeneSetSize = 15,
            pAdjustMethod = "BH",
            verbose = TRUE) {
+
     listNames <- names(geneList)
 
     combinedGeneSets <-
@@ -454,7 +476,7 @@ calcGSEA <-
              recursive = FALSE,
              use.names = FALSE)
     names(combinedGeneSets) <-
-      unlist(lapply(listOfGeneSetCollections, names), use.names = F)
+      unlist(lapply(listOfGeneSetCollections, names), use.names = FALSE)
     groupInfo <-
       rep(names(listOfGeneSetCollections),
           lapply(listOfGeneSetCollections, length))
@@ -473,6 +495,7 @@ calcGSEA <-
     #     sum(geneSet %in% listNames) >= minGeneSetSize)
     tagGeneSets <- sapply(combinedGeneSets, function(geneSet)
         sum(geneSet %in% listNames) >= minGeneSetSize)
+
     combinedGeneSets <- combinedGeneSets[tagGeneSets]
 
     overlaps <-

@@ -13,38 +13,28 @@ if(!isGeneric("plotGSEA"))
 #' We suggest to print the names of top significant gene sets using the
 #' function \code{\link[HTSanalyzeR2]{getTopGeneSets}} before plotting the GSEA results.
 #'
-#' @param object an object. When this function is implemented as the S4 method of class GSCA,
-#' this argument is an object of class GSCA
-#' @param gscName a single character value specifying the name of the gene set collection where
-#' the gene set is
-#' @param gsName a single character value specifying the name of the gene set to be plotted
+#' @param object A GSCA object.
+#' @param gscName A single character value specifying the name of the gene set collection where
+#' the gene set is.
+#' @param gsName A single character value specifying the name of the gene set to be plotted.
 #'
 #' @rdname viewGSEA
-#'
+#' @aliases viewGSEA
+#' @return In the end, this function would draw a GSEA figure for specified gene set.
 #' @examples
-#' ## Not run:
-#' library(org.Dm.eg.db)
-#' library(GO.db)
-#' ## load data for enrichment analyses
-#' data(data4enrich)
-#' ## select hits
-#' hits <- names(data4enrich)[abs(data4enrich) > 2]
-#' ## set up a list of gene set collections
-#' GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
-#' ListGSC <- list(GO_MF=GO_MF)
-#' ## create an object of class 'GSCA'
-#' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
-#' ## print gsca
-#' gsca
-#' ## do preprocessing
-#' gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
-#' ## do hypergeometric tests and GSEA
-#' gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
-#' summarize(gsca)
-#' ##print top significant gene sets in GO_MF
-#' topGS_GO_MF <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
+#' ## load a GSCA object(see the examples of analyze GSCA for details)
+#' data(d7_gsca)
+#'
+#' ## summarize gsca
+#' summarize(d7_gsca)
+#'
+#' ## print top significant gene sets in GO_MF
+#' topGS_GO_MF <- getTopGeneSets(d7_gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
+#'
 #' ## view GSEA results for one gene set
-#' viewGSEA(gsca, "GO_MF", topGS_GO_MF[["GO_MF"]][1])
+#' \dontrun{
+#' viewGSEA(d7_gsca, "GO_MF", topGS_GO_MF[["GO_MF"]][1])
+#' }
 #' @include gsca_class.R
 #' @export
 setMethod(
@@ -65,10 +55,12 @@ setMethod(
       stop("'gsc' is not a gene set collection in 'listOfGeneSetCollections'!\n")
 
     test <- gseaScores(geneList = object@geneList, geneSet = object@listOfGeneSetCollections[[gscName]][[gsName]],
-                       exponent = object@para$exponent, mode = "graph")
+                       exponent = object@para$exponent, mode = "graph", GSEA.results = object@result$GSEA.results[[gscName]],
+                      gsName = gsName)
     gseaPlots(runningScore = test[['runningScore']],
               enrichmentScore = test[['enrichmentScore']],
-              positions = test[['positions']], geneList = object@geneList)
+              positions = test[['positions']], geneList = object@geneList,
+              Adjust.P.value = test[['Adjust.P.value']])
   }
 )
 
@@ -78,50 +70,38 @@ setMethod(
 #' this function plots figures of the positions of genes of the gene set in the ranked gene
 #' list and the location of the enrichment score for top significant gene sets.
 #'
-#' @param object an object. When this function is implemented as the S4 method of class GSCA,
-#' this argument is an object of class GSCA.
-#' @param gscs a character vector specifying the names of gene set collections whose top
-#' significant gene sets will be plotted
-#' @param ntop a single integer or numeric value specifying how many gene sets of top
+#' @param object A GSCA object.
+#' @param gscs A character vector specifying the names of gene set collections whose top
+#' significant gene sets will be plotted.
+#' @param ntop A single integer or numeric value specifying how many gene sets of top
 #'  significance will be plotted.
-#' @param allSig a single logical value. If 'TRUE', all significant gene sets (GSEA adjusted
+#' @param allSig A single logical value. If 'TRUE', all significant gene sets (GSEA adjusted
 #'  p-value < 'pValueCutoff' of slot 'para') will be plotted; otherwise, only top 'ntop' gene
 #'   sets will be plotted.
-#' @param filepath a single character value specifying where to store GSEA figures.
-#' @param output a single character value specifying the format of output image: "pdf" or "png"
-#' @param ... other arguments used by the function png or pdf such as 'width' and 'height'
+#' @param filepath A single character value specifying where to store GSEA figures.
+#' @param output A single character value specifying the format of output image: "pdf" or "png".
+#' @param ... Other arguments used by the function png or pdf such as 'width' and 'height'
 #'
 #' @rdname plotGSEA
+#' @return In the end, this function would plot GSEA figure and store them into the specified path.
+#' @aliases plotGSEA
 #' @examples
-#' ## Not run:
-#' library(org.Dm.eg.db)
-#' library(GO.db)
-#' ## load data for enrichment analyses
-#' data(data4enrich)
-#' ## select hits
-#' hits <- names(data4enrich)[abs(data4enrich) > 2]
-#' ## set up a list of gene set collections
-#' GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
-#' PW_KEGG <- KeggGeneSets(species="Dm")
-#' H_MSig <- MSigDBGeneSets(collection = "h")
-#' ListGSC <- list(GO_MF=GO_MF, H_MSig = H_MSig, PW_KEGG=PW_KEGG)
-#' ## create an object of class 'GSCA'
-#' gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
-#' ## print gsca
-#' gsca
-#' ## do preprocessing
-#' gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
-#' ## do hypergeometric tests and GSEA
-#' gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
-#' summarize(gsca)
+#' ## load a GSCA object(see the examples of analyze GSCA for details)
+#' data(d7_gsca)
+#'
+#' ## summarize d7_gsca
+#' summarize(d7_gsca)
+#'
 #' ## plot  significant gene sets in GO_MF and PW_KEGG
-#' plotGSEA(gsca, gscs=c("GO_MF","PW_KEGG"), ntop=1, filepath=".")
+#' \dontrun{
+#' plotGSEA(d7_gsca, gscs=c("GO_MF","PW_KEGG"), ntop=3, filepath=".")
+#' }
 #' @export
 ##plot GSEA for GSCA
 setMethod(
   "plotGSEA",
   "GSCA",
-  function(object, gscs, ntop=NULL, allSig=FALSE, filepath=".", output="png", ...) {
+  function(object, gscs, ntop=NULL, allSig=FALSE, filepath=".", output="pdf", ...) {
     ##check arguments
     paraCheck("Report", "filepath", filepath)
     paraCheck("Report", "output", output)
@@ -137,7 +117,9 @@ setMethod(
         for(gs.name in gs.names){
           makeGSEAplots(geneList=object@geneList, geneSet=object@listOfGeneSetCollections[[gsc]][[gs.name]],
                         exponent=object@para$exponent, filepath=filepath,
-                        filename=gsub("/", "_", gs.name), output=output, ...=...)
+                        filename=gsub("/", "_", gs.name), output=output,
+                        GSEA.results = object@result$GSEA.results[[gsc]],
+                        gsName = gs.name, ...=...)
         }
       }
     }
@@ -145,8 +127,9 @@ setMethod(
 )
 
 
-
-gseaPlots <- function(runningScore, enrichmentScore, positions, geneList) {
+#' @import graphics
+#' @importFrom grDevices colorRampPalette
+gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust.P.value) {
   ##check arguments
   paraCheck("GSCAClass", "genelist", geneList)
   # paraCheck("Report", "filepath", filepath)
@@ -171,47 +154,87 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList) {
   ##if(output == "png" )
   ##    png(file.path(filepath, paste("gsea_plots", filename, ".png", sep="")))
   ##set the graphical parameters
-  par(pin=c(5, 1.5), mfrow=c(2, 1), lwd=1, mai=c(0.2, 1, 1, 1))
+  def.par <- par(no.readonly = TRUE)
+  gsea.layout <- layout(matrix(c(1, 2, 3)), heights = c(0.9,0.3,0.1))
+  # layout.show(gsea.layout)
+  par(mai=c(0, 1, 0.5, 0.2))
+  ##Plot the running score and add a vertical line at the position of
+  ##the enrichment score (maximal absolute value of the running score)
+  plot(x=c(1:length(runningScore)), y=runningScore, type="l", ylab="Enrichment score(ES)", lwd=3, col="green",
+       cex.lab = 1.5, bg = "aliceblue", xaxt = "n", las = 1)
+  grid(NULL, NULL, lwd = 1)
+  abline(h=0, lty = 2)
+
+  if(enrichmentScore > 0){
+  text(x = length(geneList)/7*5, y = (enrichmentScore)/4*3,
+       labels = paste("ES:", signif(enrichmentScore, 3), "\nAdjust.P.value:",
+                      ifelse(Adjust.P.value == 0, "<1e-4", signif(Adjust.P.value, 2))),
+       cex = 1.5)} else {
+         text(x = length(geneList)/6, y = (enrichmentScore)/4*3,
+              labels = paste("ES:", signif(enrichmentScore, 3), "\nAdjust.P.value:",
+                             ifelse(Adjust.P.value == 0, "<1e-4", signif(Adjust.P.value, 2))),
+              cex = 1.5)
+       }
+  #-------------------## plot a color barplot indicating the phenotypes
+  par(mai=c(0, 1, 0, 0.2))
+  plot(0, type = "n", xaxt = "n", xaxs = "i", xlab = "", yaxt = "n",
+       ylab = "", xlim = c(1, length(geneList)), lwd = 3)
+  abline(v=which(positions == 1), lwd = 0.75)
+  #------------------------------------------------------------------
   ##Plot the phenotypes along the geneList, and add a vertical line
   ##for each match between geneList and gene set
   ##this is done using the 'positions' output of gseaScores,
   ##which stores a one for each match position and a zero otherwise
-  plot(x=seq(1, length(geneList)), type="l", y=geneList,
-       ylab="Phenotypes", xlab=NA, col="red3", lwd=2, xaxt="n")
-  abline(v=which(positions == 1))
-  abline(h=0)
-  lines(x=seq(1, length(geneList)), type="l", y=geneList,
-        ylab="Phenotypes", xlab=NA, col="red3", lwd=2, xaxt="n")
-  ##Plot the running score and add a vertical line at the position of
-  ##the enrichment score (maximal absolute value of the running score)
-  par(mai=c(1, 1, 0.1, 1))
-  plot(x=c(1:length(runningScore)), y=runningScore,type="l",
-       xlab="Position in the ranked list of genes", ylab="Running enrichment score", lwd=4, col="darkgreen")
-  abline(h=0)
-  abline(v=which(runningScore == enrichmentScore), lty=3, col="red3", lwd=3)
+
+  par(mai = c(0.1, 1, 0, 0.2))
+  ticks = 1000
+  ran <- range(geneList, na.rm = TRUE)
+  offset <- ceiling(ticks * ran[1] / (ran[1] - ran[2]))
+  offset <- ifelse(offset <= 0, 1, offset)
+  offset <- ifelse(offset >= ticks, ticks-1, offset)
+  palette <- c(colorRampPalette(c("blue", "white"))(offset),
+               colorRampPalette(c("white", "red"))(ticks - offset))
+  rank.colors <- palette[ceiling((geneList - ran[1]) / (ran[2] - ran[1]) * ticks)]
+
+  rank.colors <- rle(rank.colors)
+  barplot(matrix(rank.colors$lengths), col = rank.colors$values,
+          border = NA, horiz = TRUE,xaxt = "n", xlim = c(1, length(geneList)))
+  box()
+  text(length(geneList) * 0.01, 0.7, "Positive", adj = c(0, NA))
+  text(length(geneList) * 0.99, 0.7, "Negative", adj = c(1, NA))
+  par(def.par)  #- reset to default
 }
 
 
-##Write html reports
+## Write html reports
+#' @importFrom grDevices dev.off pdf png
 makeGSEAplots <- function(geneList, geneSet, exponent, filepath,
-                          filename, output='png', ...) {
+                          filename, output,
+                          GSEA.results,
+                          gsName, ...) {
   test <- gseaScores(geneList = geneList, geneSet = geneSet,
-                     exponent = exponent, mode = "graph")
+                     exponent = exponent, mode = "graph", GSEA.results = GSEA.results,
+                     gsName = gsName)
   filename<-sub("\\W","_", filename, perl=TRUE)
+  if(!file.exists(file.path(filepath, "gsea_plots")))
+    dir.create(file.path(filepath, "gsea_plots"))
   if(output == "pdf" )
-    pdf(file=file.path(filepath, paste("gsea_plots", filename, ".pdf", sep="")), ...=...)
+    pdf(file=file.path(filepath, "gsea_plots", paste(filename, ".pdf", sep="")),
+        onefile = FALSE, ...=...)
   if(output == "png" )
-    png(filename=file.path(filepath, paste("gsea_plots", filename, ".png", sep="")), ...=...)
+    png(filename=file.path(filepath, "gsea_plots", paste(filename, ".png", sep="")), ...=...)
   gseaPlots(runningScore = test[['runningScore']],
             enrichmentScore = test[['enrichmentScore']],
-            positions = test[['positions']], geneList = geneList)
+            positions = test[['positions']], geneList = geneList,
+            Adjust.P.value = test[['Adjust.P.value']])
   dev.off()
 }
 
 
 ##This function computes enrichment scores for GSEA, running score and
 ##position of hits for a gene set.
-gseaScores <- function(geneList, geneSet, exponent=1, mode="score") {
+gseaScores <- function(geneList, geneSet, exponent=1, mode="score", gsName = gsName,
+                       GSEA.results = GSEA.results) {
   paraCheck("GSCAClass", "genelist", geneList)
   paraCheck("Analyze", "exponent", exponent)
   paraCheck("Report", "gs", geneSet)
@@ -243,10 +266,12 @@ gseaScores <- function(geneList, geneSet, exponent=1, mode="score") {
       ES<-ifelse(abs(ESmin)>abs(ESmax), ESmin, ESmax)
     }
   }
+  ## get GSEA adjust pvalues
+  adjust.p.value <- GSEA.results[which(rownames(GSEA.results) == gsName), "Adjusted.Pvalue"]
   ##Return the relevant information according to mode
   if(mode=="score")
     return(ES)
   if(mode=="graph")
     return(list("enrichmentScore"=ES, "runningScore"=runningES,
-                "positions"=as.integer(hits)))
+                "positions"=as.integer(hits), "Adjust.P.value" = adjust.p.value))
 }

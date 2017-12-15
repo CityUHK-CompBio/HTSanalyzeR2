@@ -3,18 +3,21 @@
 \docType{methods}
 \name{viewGSEA,GSCA-method}
 \alias{viewGSEA,GSCA-method}
+\alias{viewGSEA}
 \title{Plot a figure of GSEA results for one gene set}
 \usage{
 \S4method{viewGSEA}{GSCA}(object, gscName, gsName)
 }
 \arguments{
-\item{object}{an object. When this function is implemented as the S4 method of class GSCA,
-this argument is an object of class GSCA}
+\item{object}{A GSCA object.}
 
-\item{gscName}{a single character value specifying the name of the gene set collection where
-the gene set is}
+\item{gscName}{A single character value specifying the name of the gene set collection where
+the gene set is.}
 
-\item{gsName}{a single character value specifying the name of the gene set to be plotted}
+\item{gsName}{A single character value specifying the name of the gene set to be plotted.}
+}
+\value{
+In the end, this function would draw a GSEA figure for specified gene set.
 }
 \description{
 This is a generic function. When implemented as the S4 method for objects of class GSCA,
@@ -26,27 +29,17 @@ We suggest to print the names of top significant gene sets using the
 function \code{\link[HTSanalyzeR2]{getTopGeneSets}} before plotting the GSEA results.
 }
 \examples{
-## Not run:
-library(org.Dm.eg.db)
-library(GO.db)
-## load data for enrichment analyses
-data(data4enrich)
-## select hits
-hits <- names(data4enrich)[abs(data4enrich) > 2]
-## set up a list of gene set collections
-GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
-ListGSC <- list(GO_MF=GO_MF)
-## create an object of class 'GSCA'
-gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
-## print gsca
-gsca
-## do preprocessing
-gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
-## do hypergeometric tests and GSEA
-gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
-summarize(gsca)
-##print top significant gene sets in GO_MF
-topGS_GO_MF <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
+## load a GSCA object(see the examples of analyze GSCA for details)
+data(d7_gsca)
+
+## summarize gsca
+summarize(d7_gsca)
+
+## print top significant gene sets in GO_MF
+topGS_GO_MF <- getTopGeneSets(d7_gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
+
 ## view GSEA results for one gene set
-viewGSEA(gsca, "GO_MF", topGS_GO_MF[["GO_MF"]][1])
+\dontrun{
+viewGSEA(d7_gsca, "GO_MF", topGS_GO_MF[["GO_MF"]][1])
+}
 }

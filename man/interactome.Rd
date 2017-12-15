@@ -3,7 +3,8 @@
 \docType{methods}
 \name{interactome,NWA-method}
 \alias{interactome,NWA-method}
-\title{Create an interactome from BioGRID data sets}
+\alias{interactome}
+\title{Create an interactome from BioGRID database or input custom interactome}
 \usage{
 \S4method{interactome}{NWA}(object, interactionMatrix = NULL, species,
   link = "http://thebiogrid.org/downloads/archives/Release\%20Archive/BIOGRID-3.4.138/BIOGRID-ORGANISM-3.4.138.tab2.zip",
@@ -11,42 +12,78 @@
   verbose = TRUE)
 }
 \arguments{
-\item{object}{an object. When this function is implemented as the S4
-method of class NWA, this argument is an object of class 'NWA'}
+\item{object}{An NWA object.}
 
-\item{interactionMatrix}{an interaction matrix including columns
+\item{interactionMatrix}{An interaction matrix including columns
 'InteractionType', 'InteractorA' and 'InteractorB'. If this matrix
-is available, the interactome can be directly built based on it.}
+is available, the interactome can be directly built based on it instead
+of downloading from BioGRID.}
 
-\item{species}{a single character value specifying the species for
-which the data should be read.}
+\item{species}{A single character value specifying the species for which the data should be downloaded.
+The current version supports one of the following species: "Dm" ("Drosophila_melanogaster"),
+ "Hs" ("Homo_sapiens"), "Rn" ("Rattus_norvegicus"), "Mm" ("Mus_musculus"),
+ "Ce" ("Caenorhabditis_elegans").}
 
-\item{link}{the link (url) where the data should be downloaded (in
-tab2 format). The default link is version 3.4.138}
+\item{link}{The link (url) where the data should be downloaded (in
+tab2 format). The default link is version 3.4.138 of BioGRID.}
 
-\item{reportDir}{a single character value specifying the directory
+\item{reportDir}{A single character value specifying the directory
 to store reports. The BioGRID data set will be downloaded and stored
 in a subdirectory called 'Data' in 'reportDir'.}
 
-\item{genetic}{a single logical value. If TRUE, genetic interactions
+\item{genetic}{A single logical value. If TRUE, genetic interactions
 will be kept; otherwise, they will be removed from the data set.}
 
-\item{force}{force to download the data set.}
+\item{force}{Force to download the data set.}
 
-\item{verbose}{a single logical value indicating to display detailed
+\item{verbose}{A single logical value indicating to display detailed
 messages (when verbose=TRUE) or not (when verbose=FALSE)}
+}
+\value{
+In the end, this function will return an updated object with slot 'interactome'
+as an object of class 'igraph'.
 }
 \description{
 This is a generic function.
 When implemented as the S4 method of class NWA, this function creates an
 interactome before conducting network analysis.
 }
+\details{
+This function provides two options to create an interactome for network analysis.
+The user can either input an interaction matrix including columns 'InteractionType',
+'InteractionA' and 'InteractionB', or set 'species', 'link' and 'genetic' to download
+data set from BioGRID and extract corresponding interactions to build the interactome.
+
+Another way to set up the interactome is to input an igraph object when the NWA object
+is created (i.e. nwa=NWA(pvalues, phenotypes, interactome)).
+}
 \examples{
-#' # load the preprocessed p-values and phenotypes data of S4 class, either nwa or nwam,
-# Case1: using "nwa" (without the interactionMatrix)
-data(nwa)
-nwa_inter <- interactome(nwa, species="Dm", reportDir="biogrid", genetic=FALSE)
-# Case2: using "nwa" (when the interactionMatrix is available)
-data(nwam)
-nwam <- interactome(nwam, species="Dm", reportDir="biogrid", genetic=FALSE)
+library(org.Hs.eg.db)
+library(GO.db)
+## load data for subnetwork analyses
+data(d7)
+pvalues <- d7$neg.p.value
+names(pvalues) <- d7$id
+
+## input phenotypes if you want to color nodes by it
+phenotypes <- as.vector(d7$neg.lfc)
+names(phenotypes) <- d7$id
+
+## Example1: create an object of class 'NWA' by inputting an igraph object as the interactome
+data(Biogrid_HS_Interactome)
+nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes, interactome=Biogrid_HS_Interactome)
+
+
+## Example2: create an object of class 'NWA' without interactome
+nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes)
+## create an interactome for nwa by inputting an interaction matrix
+data(Biogrid_HS_Mat)
+nwa1 <- interactome(nwa, interactionMatrix = Biogrid_HS_Mat, genetic=FALSE)
+
+## Example3: create an object of class 'NWA' without interactome
+nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes)
+\dontrun{
+## create an interactome for nwa by downloading for BioGRID database
+nwa1 <- interactome(nwa, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
+}
 }

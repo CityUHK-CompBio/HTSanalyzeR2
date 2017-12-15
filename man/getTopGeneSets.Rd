@@ -3,35 +3,35 @@
 \docType{methods}
 \name{getTopGeneSets,GSCA-method}
 \alias{getTopGeneSets,GSCA-method}
-\title{Select top significant gene sets from GSEA results}
+\alias{getTopGeneSets}
+\title{Select top significant gene sets from results of GSCA object}
 \usage{
 \S4method{getTopGeneSets}{GSCA}(object, resultName, gscs, ntop = NULL,
   allSig = FALSE)
 }
 \arguments{
-\item{object}{an object. When this function is implemented as the S4 method
-of class GSCA, this argument is an object of class GSCA.}
+\item{object}{A GSCA object.}
 
-\item{resultName}{a single character value: 'HyperGeo.results' or
-'GSEA.results'}
+\item{resultName}{A single character value: 'HyperGeo.results' or
+'GSEA.results'.}
 
-\item{gscs}{a character vector specifying the names of gene set collections
-from which the top significant gene sets will be selected}
+\item{gscs}{A character vector specifying the names of gene set collections
+from which the top significant gene sets will be selected.}
 
-\item{ntop}{a single integer or numeric value specifying to select how many
+\item{ntop}{A single integer or numeric value specifying to select how many
 gene sets of top significance.}
 
-\item{allSig}{a single logical value. If 'TRUE', all significant gene sets
-(GSEA adjusted p-value < 'pValueCutoff' of slot 'para') will be selected;
+\item{allSig}{A single logical value. If 'TRUE', all significant gene sets
+(adjusted p-value < 'pValueCutoff' of slot 'para') will be selected regardless of 'ntop';
 otherwise, only top 'ntop' gene sets will be selected.}
 }
 \value{
-a list of character vectors, each of which contains the names of top
-significant gene sets for each gene set collection
+A named list of character vectors, each element contains the names of top
+significant gene sets for each gene set collection.
 }
 \description{
 This is a generic function.
-This function selects top significant gene sets from GSEA results for
+This function selects top significant gene sets from results of an GSCA object for
 user-specified gene collections. If 'ntop' is given, then top 'ntop'
 significant gene sets in gene set collections 'gscs' will be selected
 and their names will be returned. If 'allSig=TRUE', then all significant
@@ -39,27 +39,13 @@ and their names will be returned. If 'allSig=TRUE', then all significant
 be selected and their names will be returned.
 }
 \examples{
-## Not run:
-library(org.Dm.eg.db)
-library(GO.db)
-## load data for enrichment analyses
-data(data4enrich)
-## select hits
-hits <- names(data4enrich)[abs(data4enrich) > 2]
-## set up a list of gene set collections
-GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
-ListGSC <- list(GO_MF=GO_MF)
-## create an object of class 'GSCA'
-gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
-## print gsca
-gsca
-## do preprocessing
-gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
-## do hypergeometric tests and GSEA
-gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
-summarize(gsca)
-##print top significant gene sets in GO_MF
-topGS_GO_MF <- getTopGeneSets(gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
-## End(Not run)
+## load a GSCA object(see the examples of analyze GSCA for details)
+data(d7_gsca)
 
+summarize(d7_gsca)
+## print top significant gene sets in GO_MF
+topGS_GO_MF <- getTopGeneSets(d7_gsca, "GSEA.results", gscs = "GO_MF", allSig=TRUE)
+
+## print top significant gene sets in GO_MF and PW_KEGG
+topGS <- getTopGeneSets(d7_gsca, "GSEA.results", gscs = c("GO_MF", "PW_KEGG"), allSig=TRUE)
 }

@@ -3,63 +3,65 @@
 \docType{methods}
 \name{analyze,GSCA-method}
 \alias{analyze,GSCA-method}
+\alias{analyze}
 \alias{analyze,NWA-method}
 \title{Gene Set Collection Analysis or NetWork Analysis}
 \usage{
 \S4method{analyze}{GSCA}(object, para = list(pValueCutoff = 0.05,
   pAdjustMethod = "BH", nPermutations = 1000, minGeneSetSize = 15, exponent =
-  1), verbose = TRUE, doGSOA = TRUE, doGSEA = TRUE)
+  1), verbose = TRUE, doGSOA = FALSE, doGSEA = TRUE)
 
 \S4method{analyze}{NWA}(object, fdr = 0.001, species, verbose = TRUE)
 }
 \arguments{
-\item{object}{an object. When this function is implemented as the S4
+\item{object}{An object. When this function is implemented as the S4
 method of class 'GSCA' or 'NWA', this argument is an object of class
 'GSCA' or 'NWA'.}
 
-\item{para}{a list of parameters for GSEA and hypergeometric tests.}
+\item{para}{A list of parameters for GSEA and hypergeometric tests.
+This argument is only for class GSCA.}
 
-\item{verbose}{a single logical value specifying to display detailed messages
-(when verbose=TRUE) or not (when verbose=FALSE)}
+\item{verbose}{A single logical value specifying to display detailed messages
+(when verbose=TRUE) or not (when verbose=FALSE).}
 
-\item{doGSOA}{a single logical value specifying to perform gene set
-overrepresentation analysis (when doGSOA=TRUE) or not (when doGSOA=FALSE)}
+\item{doGSOA}{A single logical value specifying to perform gene set
+overrepresentation analysis(hypergeometric test) (when doGSOA=TRUE) or not (when doGSOA=FALSE).}
 
-\item{doGSEA}{a single logical value specifying to perform gene set
-enrichment analysis (when doGSEA=TRUE) or not (when doGSEA=FALSE)}
+\item{doGSEA}{A single logical value specifying to perform gene set
+enrichment analysis (when doGSEA=TRUE) or not (when doGSEA=FALSE).}
 
-\item{fdr}{a single numeric value specifying the false discovery for the scoring of nodes
+\item{fdr}{A single numeric value specifying the false discovery for the scoring of nodes
 (see BioNet::scoreNodes and Dittrich et al., 2008 for details)}
 
-\item{species}{a single character value specifying the species for which the data should be read.}
+\item{species}{A single character value specifying the species for which the data should be read.}
 
-\item{para$pValueCutoff}{a single numeric value specifying the cutoff for p-values considered
-significant}
+\item{pValueCutoff}{A single numeric value specifying the cutoff for adjusted p-values considered
+significant.}
 
-\item{para$pAdjustMethod}{a single character value specifying the p-value adjustment method to be used
-(see 'p.adjust' for details)}
+\item{pAdjustMethod}{A single character value specifying the p-value adjustment method to be used
+(see 'p.adjust' for details).}
 
-\item{para$nPermutations}{a single integer or numeric value specifying the number of permutations for
-deriving p-values in GSEA}
+\item{nPermutations}{A single integer or numeric value specifying the number of permutations for
+deriving p-values in GSEA.}
 
-\item{para$minGeneSetSize}{a single integer or numeric value specifying the minimum number of elements
-in a gene set that must map to elements of the gene universe. Gene sets with
+\item{minGeneSetSize}{A single integer or numeric value specifying the minimum number of elements
+shared by a gene set and the input total genes. Gene sets with
 fewer than this number are removed from both hypergeometric analysis and GSEA.}
 
-\item{para$exponent}{a single integer or numeric value used in weighting phenotypes in GSEA.}
+\item{exponent}{A single integer or numeric value used in weighting phenotypes in GSEA.}
 }
 \value{
 In the end, this function will return an updated object of
-class GSCA or NWA.
+class GSCA or NWA. All the analyzed results could be found in slot \emph{result}.
 }
 \description{
 This is a generic function.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{GSCA}: The function will store the results from function
-analyzeGeneSetCollections in slot result, and update information about
-these results to slot summary of class GSCA.
+\item \code{GSCA}: The function will perform gene set collection analysis
+on a GSCA object and update information about these results to slot
+\emph{summary} of class GSCA.
 
 \item \code{NWA}: The function will store the subnetwork module identified
 by BioNet (if species is given, labels of nodes will also be mapped from
@@ -70,42 +72,86 @@ slot summary of class NWA.
 \examples{
 # ====================================================
 # Gene Set Collection Analysis Part
-## Not run:
-library(org.Dm.eg.db)
+library(org.Hs.eg.db)
 library(GO.db)
-## load data for enrichment analyses
-data(data4enrich)
-## select hits
-hits <- names(data4enrich)[abs(data4enrich) > 2]
+library(KEGGREST)
+## load data for enrichment analyse
+data(d7)
+phenotype <- as.vector(d7$neg.lfc)
+names(phenotype) <- d7$id
+
+## select hits if you also want to do GSOA, otherwise ignore it
+hits <-  names(phenotype[which(abs(phenotype) > 2)])
+
 ## set up a list of gene set collections
-GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
-ListGSC <- list(GO_MF=GO_MF)
+GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+PW_KEGG <- KeggGeneSets(species="Hs")
+ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
+
 ## create an object of class 'GSCA'
-gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
-## print gsca
-gsca
+gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
+
 ## do preprocessing
-gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
+gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+                    duplicateRemoverMethod="max", orderAbsValue=FALSE)
+
+## support parallel calculation using doParallel package
+if (requireNamespace("doParallel", quietly=TRUE)) {
+doParallel::registerDoParallel(cores=2)
+} else {
+}
+
 ## do hypergeometric tests and GSEA
-gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
-summarize(gsca)
-## End(not run)
-# ==================================================================
-# NetWork Analysis
-# Conducting the preparation steps
-data(xn)
-data(data4enrich)
-# Conducting one sample t-test & compute the p-values
-test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn,annotationColumn="GeneID", alternative="two.sided",tests=c("T-test"))
-library(BioNet)
-pvalues <- BioNet::aggrPvals(test.stats, order=2, plot=FALSE)
-nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
-nwa <- preprocess(nwa, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
-nwa_inter <- interactome(nwa, species="Dm", reportDir="biogrid", genetic=FALSE)
-# Case1: Conducting the network analysis step
-nwa_result <- analyze(nwa_inter, fdr=0.0001, species="Dm")
-# Case2: Conducting the network analysis step(with the interactionMatrix)
-data(nwam)
-nwam_inter <- interactome(nwam, species="Dm", reportDir="biogrid", genetic=FALSE)
-nwam_result <- analyze(nwam_inter, fdr=0.0001, species="Dm")
+gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.01, pAdjustMethod ="BH",
+                                  nPermutations=100, minGeneSetSize=10, exponent=1),
+                                  doGSOA = TRUE, doGSEA = TRUE)
+
+## summarize gsca2 and get results
+summarize(gsca2)
+head(getResult(gsca2)$GSEA.results$GO_MF)
+head(getResult(gsca2)$HyperGeo.results$PW_KEGG)
+
+# ===========================================================
+\dontrun{
+# Network Analysis
+library(org.Hs.eg.db)
+library(GO.db)
+## load data for network analyse
+data(d7)
+pvalues <- d7$neg.p.value
+names(pvalues) <- d7$id
+
+## input phenotypes if you want to color nodes by it
+phenotypes <- as.vector(d7$neg.lfc)
+names(phenotypes) <- d7$id
+
+## create an object of class 'NWA' with phenotypes
+nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes)
+
+## do preprocessing
+nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+                   duplicateRemoverMethod="max")
+
+## create an interactome for nwa1 by downloading from BioGRID database
+nwa2 <- interactome(nwa1, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
+
+## analyze
+nwa3 <- analyze(nwa2, fdr=0.0001, species="Hs")
+## summarize nwa3
+summarize(nwa3)
+}
+}
+\references{
+Aravind Subramanian, Pablo Tamayo, Vamsi K. Mootha, Sayan Mukherjee, Benjamin L. Ebert,
+Michael A. Gillette, Amanda Paulovich, Scott L. Pomeroy, Todd R. Golub, Eric S. Lander, and Jill P. Mesirov
+Gene set enrichment analysis: A knowledge-based approach for interpreting genome-wide expression profiles
+PNAS 2005 102 (43) 15545-15550; published ahead of print September 30, 2005, doi:10.1073/pnas.0506580102
+
+Beisser D, Klau GW, Dandekar T, Muller T, Dittrich MT. BioNet: an R-Package
+for the functional analysis of biological networks. Bioinformatics.
+2010 Apr 15;26(8):1129-30.
+
+Dittrich MT, Klau GW, Rosenwald A., Dandekar T and Muller T. Identifying functional modules
+in protein-protein interaction networks: an integrated exact approach. Bioinformatics
+2008 24(13):i223-i231.
 }

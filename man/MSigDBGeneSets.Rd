@@ -2,27 +2,27 @@
 % Please edit documentation in R/gsca_load_genesets.R
 \name{MSigDBGeneSets}
 \alias{MSigDBGeneSets}
-\title{Create a list of gene sets based on MSigDB collection terms}
+\title{Create a list of gene sets for Homo Sapiens based on MSigDB collection terms}
 \usage{
-MSigDBGeneSets(collection = "h")
+MSigDBGeneSets(collection = "c2")
 }
 \arguments{
 \item{collection}{A single character value specifying a choice of collection.
-It should be one of the following character strings: 'h'(hallmark gene sets),
-'c1'(positional gene sets), 'c2'(curated gene sets), 'c3'(motif gene sets),
-'c4'(computational gene sets), 'c5'(GO gene sets), 'c6'(oncogenic signatures),
-'c7'(immunologic signatures)}
+It should be either 'c2'(curated gene sets) or 'c5'(GO gene sets). More details please refer to
+\href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB}.}
 }
 \value{
-Return A list of gene sets.
+Return a list of gene sets of specific collection for Homo Sapiens in
+\href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB} of version 6.1.
 }
 \description{
-This function creates gene set collections based on MSigDB.
-It is collection-specific, and returns a GeneSetCollection objects with
+This function creates gene set collections for Homo Sapiens based on MSigDB of version 6.1. Currently only
+commonly used 'c2' and 'c5' gene sets could be gotten by this function.
+It is collection-specific, and returns a list of gene sets collection with
 the elements of the gene sets represented by Entrez Gene IDs.
 }
 \examples{
-H_MSig <- MSigDBGeneSets(collection = "h")
+C2_MSig <- MSigDBGeneSets(collection = "c2")
 
 }
 \seealso{

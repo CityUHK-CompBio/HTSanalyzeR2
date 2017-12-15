@@ -14,6 +14,7 @@ namesToList <- function(x) {
 }
 
 ## This is the central function for argument checking
+#' @importFrom methods is
 paraCheck <- function(group, paraName, para) {
   switch(group,
          LoadGeneSets = {
@@ -58,21 +59,16 @@ paraCheck <- function(group, paraName, para) {
 
          NWAClass = {
            if(paraName == "pvalues") {
-             if(!is.numeric(para) || length(para) == 0 || is.null(names(para)))
-               stop("'pvalues' should be a named numeric vector with length > 0!\n")
-           }
-           if(paraName == "phenotypes") {
-             if(is.matrix(para)) {
-               if(!is.matrix(para) || nrow(para) == 0 || is.null(rownames(para)))
-                 stop("'phenotypes/phenotypeVector' should be a named numeric matrix with rownum > 0!\n")
-             } else {
                if(!(is.numeric(para) || is.integer(para)) || length(para) == 0 || is.null(names(para)))
-                 stop("'phenotypes/phenotypeVector' should be a named numeric vector with length > 0!\n")
+                 stop("'pvalues' should be a named numeric vector with length > 0!\n")
              }
-           }
+           if(paraName == "phenotypes") {
+               if(!(is.numeric(para) || is.integer(para)) || length(para) == 0 || is.null(names(para)))
+                 stop("'phenotypes' should be a named numeric vector with length > 0!\n")
+             }
            if(paraName == "interactome") {
              if(!is.na(para) && (!is(para,"igraph") || igraph::vcount(para) == 0 || igraph::ecount(para) == 0))
-               stop("Input 'interactome/graph' should be a igraph object with node and edge No > 0!\n")
+               stop("Input 'interactome/graph' should be an igraph object with node and edge No > 0!\n")
            }
          },
 
@@ -84,7 +80,7 @@ paraCheck <- function(group, paraName, para) {
                         "'max', 'min', 'average', 'fc.avg(fold change average)'"))
            }
            if (paraName == "orderAbsValue" &&
-              !is.logical(para) || length(para) != 1) {
+              (!is.logical(para) || length(para) != 1)) {
              stop("'orderAbsValue' should be a logical value!\n")
            }
            if (paraName == "genetic") {
@@ -145,7 +141,7 @@ paraCheck <- function(group, paraName, para) {
            }
            if (paraName =="hits" &&
              (!is.character(para) || length(para)==0)) {
-               stop("'hits' should be a character vector with length > 0!\n")
+               stop("GSOA should have 'hits' and hits' should be a character vector with length > 0!\n")
            }
            if (paraName == "fdr") {
              if(!is.numeric(para) || para>1)
@@ -184,6 +180,10 @@ paraCheck <- function(group, paraName, para) {
            if(paraName == "resultName") {
              if(!is.character(para) || length(para)!=1)
                stop("'resultName' should be a character!\n")
+           }
+           if(paraName == "specificGeneset"){
+             if(!is.list(para) || length(para) < 1 || is.null(names(para)))
+               stop("'specificGeneset' should be a named list with length > 0!\n")
            }
          },
          Report = {
@@ -276,13 +276,13 @@ paraCheck <- function(group, paraName, para) {
            if (paraName == "normCellHTSobject") {
              if (!is(para,"cellHTS"))
                stop("The argument 'cellHTSobject/normCellHTSobject' should be a cellHTS object")
-             if (!state(para)["configured"])
+             if (!cellHTS2::state(para)["configured"])
                stop("The cellHTS object should be configured to perform the statistical tests")
-             if (!state(para)["normalized"])
+             if (!cellHTS2::state(para)["normalized"])
                warning("Your cellHTS object has not been normalized, this could impact the results of these tests", immediate.=TRUE)
-             if (state(para)["scored"])
+             if (cellHTS2::state(para)["scored"])
                stop("This cellHTS object has been scored; the statistical analysis should be performed on the normalized signal intensities", immediate.=TRUE)
-             if (!state(para)["annotated"])
+             if (!cellHTS2::state(para)["annotated"])
                stop("This cellHTS object has not been annotated",immediate.=TRUE)
            }
            if (paraName == "annotationColumn") {
@@ -311,7 +311,87 @@ paraCheck <- function(group, paraName, para) {
            if (paraName == "species" &&
                (!is.character(para) || length(para) != 1))
              stop("'species' should be a character!\n")
-         })
+         },
+         gscaTS = {
+           if(paraName == "object" && class(para) != "GSCABatch"){
+             stop("'object' should be an object of class GSCABatch!\n")
+           }
+           if(paraName == "gscaList" && (!is.list(para) || length(para) < 2 || is.null(names(para)) || any(is.na(names(para)))))
+           {stop("'gscaList' should be a named list of GSCA objects with length more than 1!\n")}
+
+         },
+         nwaTS = {
+           if(paraName == "object" && class(para) != "NWABatch"){
+             stop("'object' should be an object of class NWABatch!\n")
+           }
+           if(paraName == "nwaList" &&
+              (!is.list(para) || length(para) < 2 || is.null(names(para)) || any(is.na(names(para)))))
+           {stop("'nwaList' should be a named list of NWA objects with length more than 1!\n")}
+
+         },
+         GSCABatch = {
+           if(paraName == "expInfor"){
+             if(nrow(para) < 2){
+               stop("'expInfor' should be a matrix specifying each experiment ID and descriptions with nrow more than 1!\n")}
+             if(any(!(c("ID", "Description") %in% colnames(para) ))){
+               stop("'expInfor' should have at least 2 columns named as 'ID' and 'Description',
+                    each row refers to an individual experiment!\n")
+             }
+             if(!(is.character(para[, "ID"])) || !(is.character(para[, "Description"]))){
+               stop("'ID' and 'Description' column of 'expInfor' should be a character vector!\n")
+             }
+             if(any(duplicated(para[, "ID"]))){
+               stop("'ID' in expInfor should not have duplicated value!\n")
+             }
+               }
+
+           if(paraName == "phenotypeTS" &&
+              (is.null(names(unlist(para))) || any(!is.numeric(unlist(para))) || any(unlist(lapply(para, length)) == 0) )){
+             stop("'phenotypeTS' should be a list, each element should be a numeric vector named with gene identifier!\n")
+           }
+           if (paraName == "hitsTS" &&
+               (any(!is.character(unlist(para))) || any(unlist(lapply(para, length)) == 0) )) {
+             stop("'hitsTS' should be a list, each element should be a character vector with length > 0!\n")
+           }
+         },
+
+       NWABatch = {
+         if(paraName == "expInfor"){
+           if(nrow(para) < 2){
+             stop("'expInfor' should be a matrix specifying each experiment ID and descriptions with nrow more than 1!\n")}
+           if(any(!(c("ID", "Description") %in% colnames(para) ))){
+             stop("'expInfor' should have at least 2 columns named as 'ID' and 'Description',
+                    each row refers to an individual experiment!\n")
+           }
+           if(!(is.character(para[, "ID"])) || !(is.character(para[, "Description"]))){
+             stop("'ID' and 'Description' column of expInfor should be a character vactor!\n")
+           }
+           if(any(duplicated(para[, "ID"]))){
+             stop("'ID' in expInfor should not have duplicated value!\n")
+           } }
+
+         if(paraName == "pvalueTS" &&
+            (is.null(names(unlist(para))) || any(!is.numeric(unlist(para))) || any(unlist(lapply(para, length)) == 0) )){
+           stop("'pvalueTS' should be a list, each element should be a numeric vector named with gene identifier!\n")
+         }
+         if(paraName == "interactome") {
+           if(!is.na(para) && (!is(para,"igraph") || igraph::vcount(para) == 0 || igraph::ecount(para) == 0))
+             stop("Input 'interactome/graph' should be a igraph object with node and edge No > 0!\n")
+         }
+         if(paraName == "phenotypeTS" &&
+            (is.null(names(unlist(para))) || any(!is.numeric(unlist(para))) )){
+           stop("'phenotypeTS' should be a list, each element should be a numeric vector named with gene identifier!\n")
+         }
+       },
+       Pipeline = {
+         if(paraName == "hitsCutoffLogFC" && !is.numeric(para)){
+           stop("'hitsCutoffLogFC' should be a numeric value to choose hits based on cutoff of log2fold change!\n")
+         }
+         if(paraName == "hitsCutoffPval" && !is.numeric(para)){
+           stop("'hitsCutoffPval' should be a numeric value to choose hits based on cutoff of pvalue!\n")
+         }
+
+       })
 }
 
 

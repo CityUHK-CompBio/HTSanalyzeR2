@@ -4,7 +4,7 @@
 \alias{GOGeneSets}
 \title{Create a list of gene sets based on GO terms}
 \usage{
-GOGeneSets(species = "Dm", ontologies = c("MF"))
+GOGeneSets(species = "Hs", ontologies = c("MF"))
 }
 \arguments{
 \item{species}{A single character value specifying a choice of species,
@@ -12,7 +12,8 @@ such as "Dm" ("Drosophila_melanogaster"), "Hs" ("Homo_sapiens"),
 "Rn" ("Rattus_norvegicus") or "Mm" ("Mus_musculus").}
 
 \item{ontologies}{A single character value or a character vector
-specifying an ontology or multiple ontologies.}
+specifying an ontology or multiple ontologies. Valid format could be any
+combination of "BP", "MF" and "CC".}
 }
 \value{
 A list of gene sets, with names as GO IDs. Each gene set is
@@ -29,9 +30,10 @@ AnnotationDbi, GO.db and the species db, such as org.Dm.eg.db.
 }
 \examples{
 library(GO.db)
-library(org.Dm.eg.db)
-DM_GO_CC<-GOGeneSets(species="Dm",ontologies=c("CC"))
+library(org.Hs.eg.db)
+HS_GO_CC <- GOGeneSets(species="Hs",ontologies=c("CC"))
 
+HS_GO <- GOGeneSets(species="Hs",ontologies=c("CC", "MF", "BP"))
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{KeggGeneSets}}, \code{\link[HTSanalyzeR2]{MSigDBGeneSets}}

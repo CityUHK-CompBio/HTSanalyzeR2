@@ -4,20 +4,20 @@
 #' performs statistical tests on it for the significance of a set of observations
 #' for each condition tested in a high-throughput screen.
 #'
-#' @param cellHTSobject an object of class cellHTS
-#' @param annotationColumn a single character value specifying the name of the
+#' @param cellHTSobject An object of class cellHTS.
+#' @param annotationColumn A single character value specifying the name of the
 #' column in the fData(cellHTSobject) data frame from which the feature
-#' identifiers will be extracted
-#' @param controls a single character value specifying the name of the controls
+#' identifiers will be extracted.
+#' @param controls A single character value specifying the name of the controls
 #' to be used as a control population in the two-sample tests (this HAS to be
 #' corresponding to how these control wells have been annotated in the column
 #' "controlStatus" of the fData(cellHTSobject) data frame). If nothing is
 #' specified, the function will look for negative controls labelled "neg".
-#' @param alternative a single character value specifying the alternative
-#' hypothesis: "two.sided", "less" or "greater"
-#' @param logged a single logical value specifying whether or not the data has
-#' been logged during the normalization process
-#' @param tests a single character value specifying the tests to be performed:
+#' @param alternative A single character value specifying the alternative
+#' hypothesis: "two.sided", "less" or "greater".
+#' @param logged A single logical value specifying whether or not the data has
+#' been logged during the normalization process.
+#' @param tests A single character value specifying the tests to be performed:
 #' "T-test", "MannWhitney" or "RankProduct". If nothing is specified, all three
 #' tests will be performed. Be aware that the Rank Product test is slower than
 #' the other two, and returns a percent false discovery (equivalent to a FDR,
@@ -36,7 +36,7 @@
 #' Please be aware that both types of tests are less reliable when the number
 #' of replicates for each construct is low.
 #'
-#' @return a matrix with two columns, one for each type of test (two-sample and
+#' @return A matrix with two columns, one for each type of test (two-sample and
 #' one-sample test) except the Rank Product (no alternative), and a row for each
 #' construct (row names corresponding to the identifiers given by the
 #' "annotationcolumn" entry).
@@ -46,6 +46,13 @@
 #' RNAi screens. Genome Biology 7:7 R66 (2006)."
 #'
 #' @export
+#' @importFrom cellHTS2 Data
+#' @importFrom stats median t.test wilcox.test
+#' @importFrom RankProd RP
+#' @examples
+#' data(xn)
+#' test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn, annotationColumn="GeneID",
+#'                                       alternative="two.sided", tests=c("T-test"))
 cellHTS2OutputStatTests <- function(cellHTSobject,
                                     annotationColumn = "GeneID",
                                     controls = "neg",
@@ -59,14 +66,14 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
 
   ## check that the annotationColumn is one column in the
   #  fData(cellHTSobject) dataframe
-  if(!(annotationColumn %in% colnames(fData(cellHTSobject))))
+  if(!(annotationColumn %in% colnames(Biobase::fData(cellHTSobject))))
     stop(paste("The 'annotationColumn' parameter does not match ",
                "any column in your cellHTS object", sep=""))
 
   ##check that 'controls' matches a status in the 'controlStatus'
   # column of the cellHTS cellHTSobject
   paraCheck("StatTest", "nwStatsControls", controls)
-  if(!(controls %in% fData(cellHTSobject)[, "controlStatus"]))
+  if(!(controls %in% Biobase::fData(cellHTSobject)[, "controlStatus"]))
     stop(paste("The 'controls' parameter does not match to any ",
                "status in the 'controlStatus' column of your cellHTS object",
                sep=""))
@@ -79,13 +86,13 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
   ##columns=replicates, with row names = identifiers in the
   ##"annotationColumn" of the fData() data frame
   dataNw <- Data(cellHTSobject)[, 1:ncol(Data(cellHTSobject)), 1]
-  rownames(dataNw) <- fData(cellHTSobject)[, annotationColumn]
-  dataNw <- dataNw[which(fData(cellHTSobject)[, "controlStatus"] ==
+  rownames(dataNw) <- Biobase::fData(cellHTSobject)[, annotationColumn]
+  dataNw <- dataNw[which(Biobase::fData(cellHTSobject)[, "controlStatus"] ==
                            "sample"), ]
   dataNw <- dataNw[which(!is.na(rownames(dataNw))), ]
-  ##make a vector of data for the control 	population
+  ##make a vector of data for the control population
   controlData <- Data(cellHTSobject)[
-    which(fData(cellHTSobject)[, "controlStatus"] == controls),
+    which(Biobase::fData(cellHTSobject)[, "controlStatus"] == controls),
     1:ncol(Data(cellHTSobject)), 1]
   controlData <- as.vector(controlData)
   ##compute the median of all samples, for the one sample tests
@@ -178,7 +185,7 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
     })
     rownames(replicatesmatrix) <- names(replicates)
     #Compute the Rank Product test
-    rankptest <- RP(data = replicatesmatrix,
+    rankptest <- RankProd::RP(data = replicatesmatrix,
                     cl=rep(1, ncol(replicatesmatrix)), logged=logged,
                     gene.names = rownames(replicatesmatrix))
   }

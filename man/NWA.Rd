@@ -2,43 +2,64 @@
 % Please edit documentation in R/nwa_class.R
 \name{NWA}
 \alias{NWA}
-\title{An S4 class for NetWork Analysis on high-throughput screens}
+\alias{NWA-class}
+\title{An S4 class for NetWork Analysis on high-throughput data}
 \usage{
-NWA(pvalues, phenotypes = as.numeric(NA), interactome = NA)
+NWA(pvalues, phenotypes = as.numeric(), interactome = NA)
+}
+\arguments{
+\item{pvalues}{A numeric or integer vector of pvalues named by gene identifiers.}
+
+\item{phenotypes}{A numeric or integer vector of phenotypes named by gene identifiers.
+When it is available, nodes in identified subnetwork would be coloured by it
+(red:+, blue:- as default). Otherwise, all nodes in the subnetwork would have no difference.}
+
+\item{interactome}{An object of class igraph.}
+}
+\value{
+This function will create a new object of class 'NWA'.
 }
 \description{
 This class includes a series of methods to do network analysis for
-high-throughput screens.
+high-throughput data.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{pvalues}}{a numeric vector of p-values.}
+\item{\code{fdr}}{One parameter for BioNet to score nodes in the interactome.}
 
-\item{\code{phenotypes}}{a numeric or integer vector of phenotypes.}
-
-\item{\code{interactome}}{an object of class igraph.}
-
-\item{\code{fdr}}{one parameter for BioNet to score nodes in the interactome.}
-
-\item{\code{result}}{a list consisting of subnetwork module identified by BioNet
+\item{\code{result}}{A list consisting of subnetwork module identified by BioNet
 and a vector of labels for nodes of the subnetwork module.}
 
-\item{\code{summary}}{a list of summary information for p-values, phenotypes,
+\item{\code{summary}}{A list of summary information for pvalues, phenotypes,
 interactome and result.}
 
-\item{\code{preprocessed}}{a logical value specifying whether or not input data
+\item{\code{preprocessed}}{A logical value specifying whether or not input data
 has been preprocessed.}
 }}
 
 \examples{
-# loading the pre_selected sample data
-data(xn)
-data(data4enrich)
-# Conducting one sample t-test & compute the p-values
-test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn,annotationColumn="GeneID", alternative="two.sided",tests=c("T-test"))
-library(BioNet)
+library(org.Hs.eg.db)
+library(GO.db)
+## load data for network analyses
+data(d7)
+pvalues <- d7$neg.p.value
+names(pvalues) <- d7$id
+
+## define phenotypes if you want to color nodes by it, otherwise ignore it!
+phenotypes <- as.vector(d7$neg.lfc)
+names(phenotypes) <- d7$id
+
+## Example1: create an object of class 'NWA' with phenotypes
+nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes)
+
+## Example2: create an object of class 'NWA' without phenotypes
+nwa <- NWA(pvalues=pvalues)
 }
 \seealso{
-\code{\link[HTSanalyzeR2]{preprocess}} \code{\link[HTSanalyzeR2]{analyze}} \code{\link[HTSanalyzeR2]{summarize}} \code{\link[HTSanalyzeR2]{interactome}} \code{\link[HTSanalyzeR2]{report}}
+\code{\link[HTSanalyzeR2]{preprocess}},
+ \code{\link[HTSanalyzeR2]{analyze}},
+  \code{\link[HTSanalyzeR2]{summarize}},
+   \code{\link[HTSanalyzeR2]{interactome}},
+    \code{\link[HTSanalyzeR2]{report}}
 }

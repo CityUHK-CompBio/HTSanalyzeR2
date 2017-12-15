@@ -3,6 +3,7 @@
 \docType{methods}
 \name{summarize,GSCA-method}
 \alias{summarize,GSCA-method}
+\alias{summarize}
 \alias{summarize,NWA-method}
 \title{Print summary information for an object of class GSCA or NWA}
 \usage{
@@ -11,11 +12,16 @@
 \S4method{summarize}{NWA}(object, what = "ALL")
 }
 \arguments{
-\item{object}{an object. When this function is implemented as the S4 method
-of class GSCA or NWA, this argument is an object of class GSCA or NWA.}
+\item{object}{A GSCA object or NWA object.}
 
-\item{what}{a single character value or a character vector of key words
-specifying what to print (see details below).}
+\item{what}{A single character value or a character vector of key words
+specifying what to print (see Methods below). Default will print a summary of all
+information.}
+}
+\value{
+In the end, this function would return a summary of the NWA object.
+
+In the end, this function would return a summary of the NWA object.
 }
 \description{
 This is a generic function.
@@ -30,7 +36,7 @@ function prints a summary of information about the slots of these classes.
 'result') and 'ALL' (all slots).
 
 \item \code{NWA}: For an object of class NWA, the key words include 'Pval'
-(the slot 'pvalue'), 'Phenotype' (the slot 'phenotype'), 'Interactome' (the
+(the slot 'pvalues'), 'Phenotype' (the slot 'phenotypes'), 'Interactome' (the
 slot 'interactome'), 'Para' (the slot 'fdr'), 'Result' (the slot 'result')
 and 'ALL' (all slots).
 }}
@@ -38,40 +44,20 @@ and 'ALL' (all slots).
 \examples{
 # =================================================================
 # GSCA class
-## Not run:
-library(org.Dm.eg.db)
-library(GO.db)
-## load data for enrichment analyses
-data(data4enrich)
-## select hits
-hits <- names(data4enrich)[abs(data4enrich) > 2]
-## set up a list of gene set collections
-GO_MF <- GOGeneSets(species="Dm", ontologies=c("MF"))
-ListGSC <- list(GO_MF=GO_MF)
-## create an object of class 'GSCA'
-gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = data4enrich, hits = hits)
-## print gsca
-gsca
-## do preprocessing
-gsca <- preprocess(gsca, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max", orderAbsValue=FALSE)
-## do hypergeometric tests and GSEA
-gsca <- analyze(gsca, para=list(pValueCutoff=0.05, pAdjustMethod ="BH", nPermutations=100, minGeneSetSize=200, exponent=1))
-## summarize gsca
-summarize(gsca, what = "ALL")
-## End(not run)
-# ==========================================================
+## load a GSCA object(see the examples of analyze GSCA for details)
+data(d7_gsca)
+
+## summarize d7_gsca
+summarize(d7_gsca, what = "ALL")
+summarize(d7_gsca, what = "Result")
+\dontrun{
+# =================================================================
 # NWA class
-# Conducting the preparation steps
-data(xn)
-data(data4enrich)
-# Conducting one sample t-test & compute the p-values
-test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn,annotationColumn="GeneID", alternative="two.sided",tests=c("T-test"))
-library(BioNet)
-pvalues <- BioNet::aggrPvals(test.stats, order=2, plot=FALSE)
-nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
-nwa <- preprocess(nwa, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
-nwa_inter <- interactome(nwa, species="Dm", reportDir="biogrid", genetic=FALSE)
-nwa_result <- analyze(nwa_inter, fdr=0.0001, species="Dm")
-# Conducting the summary of the results
-summer_result<-summarize(nwa_result)
+## load a NWA object(see the examples of analyze NWA for details)
+data(d7_nwa)
+
+## summarize d7_nwa
+summarize(d7_nwa, what = "ALL")
+summarize(d7_nwa, what = "Result")
+}
 }

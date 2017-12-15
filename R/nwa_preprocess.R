@@ -10,37 +10,32 @@ if (!isGeneric("interactome")) {
 
 #' @rdname preprocess
 #' @examples
-#' # loading the pre_selected sample data
-#' data(xn)
-#' data(data4enrich)
-#' # Conducting one sample t-test & compute the p-values
-#' test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn,annotationColumn="GeneID", alternative="two.sided",tests=c("T-test"))
-#' library(BioNet)
-#' pvalues <- BioNet::aggrPvals(test.stats, order=2, plot=FALSE)
-#' # Case1: Using the enrich vector
-#' nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
-#' nwa <- preprocess(nwa, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
-#' # Case2: Using the enrich matrix
-#' # generate the simulated enrich matrix
-#' colCount <- 10
-#' data4enrichMat <- matrix(rep(data4enrich, colCount), length(data4enrich), colCount)
-#' factor <- matrix(0, length(data4enrich), colCount)
-#' factor[, 0] <- runif(length(data4enrich), 0, 0.4)
-#' for(i in c(2:colCount)) factor[, i] <- factor[, i - 1] + runif(length(data4enrich), 0, 0.4)
-#' factor[,colCount] <- 1
-#' factor[factor > 1] <- 1
-#' data4enrichMat <- data4enrichMat * factor
-#' rownames(data4enrichMat) <- names(data4enrich)
-#' colnames(data4enrichMat) <- paste0(c(1:colCount), "h")
-#' nwam <- NWA(pvalues=pvalues, phenotypes=data4enrichMat)
-#' nwam <- preprocess(nwam, species="Dm", initialIDs="FLYBASECG", keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
+#' # ===========================================================
+#' # NWA class
+#' library(org.Hs.eg.db)
+#' library(GO.db)
+#' ## load data for subnetwork analyses
+#' data(d7)
+#' pvalues <- d7$neg.p.value
+#' names(pvalues) <- d7$id
+#'
+#' ## input phenotypes if you want to color nodes by it
+#' phenotypes <- as.vector(d7$neg.lfc)
+#' names(phenotypes) <- d7$id
+#'
+#' ## create an object of class 'NWA' with phenotypes
+#' nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes)
+#'
+#' ## do preprocessing
+#' nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+#'                    duplicateRemoverMethod="max")
 #' @export
-#' @include gsca_class.R
+#' @include nwa_class.R
 setMethod("preprocess", signature = "NWA",
   function(object,
-           species = "Dm",
+           species = "Hs",
            duplicateRemoverMethod = "max",
-           initialIDs = "FLYBASECG",
+           initialIDs = "SYMBOL",
            keepMultipleMappings = TRUE,
            verbose = TRUE) {
 
@@ -58,21 +53,17 @@ setMethod("preprocess", signature = "NWA",
 
     ## 1.remove NA
     if(verbose) cat("--Removing invalid p-values and phenotypes ...\n")
-    pvalues <- pvalues[which(!is.na(pvalues)
-                             & names(pvalues) != "" & !is.na(names(pvalues)))]
-    ## valid p-values
-    object@summary$input[1, "valid"] <- length(pvalues)
-    if(length(pvalues) == 0)
-      stop("Input 'pvalues' contains no useful data!\n")
-    if(!is.null(phenotypes)) {
-      if(is.matrix(phenotypes)) {
-        phenotypes <- phenotypes[apply(!is.na(phenotypes), 1, all) &
-                                   rownames(phenotypes) != "" &
-                                   !is.na(rownames(phenotypes)), ]
-        object@summary$input[2,"valid"] <- nrow(phenotypes)
-        if(nrow(phenotypes) == 0)
-          stop("Input 'phenotypes' contains no useful data!\n")
-      } else {
+
+      pvalues <- pvalues[which(!is.na(pvalues)
+                               & names(pvalues) != "" & !is.na(names(pvalues)))]
+      ## valid p-values
+      object@summary$input[1, "valid"] <- length(pvalues)
+      if(length(pvalues) == 0)
+        stop("Input 'pvalues' contains no useful data!\n")
+
+    #----------------------------------------------------------------------
+    if(length(phenotypes) > 0) {
+
         phenotypes <- phenotypes[which((!is.na(phenotypes)) &
                                          (names(phenotypes) != "" &
                                             !is.na(names(phenotypes))))]
@@ -80,7 +71,6 @@ setMethod("preprocess", signature = "NWA",
         object@summary$input[2,"valid"] <- length(phenotypes)
         if(length(phenotypes) == 0)
           stop("Input 'phenotypes' contains no useful data!\n")
-      }
     }
 
     ## 2.duplicate remover
@@ -89,20 +79,12 @@ setMethod("preprocess", signature = "NWA",
                                 method = duplicateRemoverMethod)
     ## p-values after removing duplicates
     object@summary$input[1, "duplicate removed"] <- length(pvalues)
-
-    if(!is.null(phenotypes)) {
-      if(is.matrix(phenotypes)) {
-        # TODO
-        # phenotypes <- duplicateRemover(geneList = phenotypes,
-        #                                method = duplicateRemoverMethod)
-        ## phenotypes after removing duplicates
-        object@summary$input[2, "duplicate removed"] <- nrow(phenotypes)
-      } else {
+   #-----------------------------------------------------------------------
+    if(length(phenotypes) > 0) {
         phenotypes <- duplicateRemover(geneList = phenotypes,
                                        method = duplicateRemoverMethod)
         ## phenotypes after removing duplicates
         object@summary$input[2, "duplicate removed"] <- length(phenotypes)
-      }
     }
 
     ## 3.convert annotations in pvalues
@@ -116,7 +98,7 @@ setMethod("preprocess", signature = "NWA",
         keepMultipleMappings = keepMultipleMappings,
         verbose = verbose
       )
-      if(!is.null(phenotypes)) {
+      if(length(phenotypes) > 0) {
         phenotypes <- annotationConvertor(
           geneList = phenotypes,
           species = species,
@@ -130,9 +112,8 @@ setMethod("preprocess", signature = "NWA",
     ## p-values after annotation conversion
     object@summary$input[1, "converted to entrez"] <- length(pvalues)
     ## phenotypes after annotation conversion
-    if(!is.null(phenotypes))
-      object@summary$input[2,"converted to entrez"] <-
-        ifelse(is.matrix(phenotypes), nrow(phenotypes), length(phenotypes))
+    if(length(phenotypes) > 0)
+      object@summary$input[2,"converted to entrez"] <- length(phenotypes)
 
     ## 5.update genelist and hits, and return object
     object@pvalues <- pvalues
@@ -145,39 +126,73 @@ setMethod("preprocess", signature = "NWA",
 )
 
 
-#' Create an interactome from BioGRID data sets
+#' Create an interactome from BioGRID database or input custom interactome
 #'
 #' This is a generic function.
 #' When implemented as the S4 method of class NWA, this function creates an
 #' interactome before conducting network analysis.
 #'
+#' @aliases interactome
 #' @rdname interactome
-#' @param object an object. When this function is implemented as the S4
-#' method of class NWA, this argument is an object of class 'NWA'
-#' @param interactionMatrix an interaction matrix including columns
+#' @param object An NWA object.
+#' @param interactionMatrix An interaction matrix including columns
 #' 'InteractionType', 'InteractorA' and 'InteractorB'. If this matrix
-#' is available, the interactome can be directly built based on it.
-#' @param species a single character value specifying the species for
-#' which the data should be read.
-#' @param link the link (url) where the data should be downloaded (in
-#' tab2 format). The default link is version 3.4.138
-#' @param reportDir a single character value specifying the directory
+#' is available, the interactome can be directly built based on it instead
+#' of downloading from BioGRID.
+#' @param species A single character value specifying the species for which the data should be downloaded.
+#' The current version supports one of the following species: "Dm" ("Drosophila_melanogaster"),
+#'  "Hs" ("Homo_sapiens"), "Rn" ("Rattus_norvegicus"), "Mm" ("Mus_musculus"),
+#'  "Ce" ("Caenorhabditis_elegans").
+#' @param link The link (url) where the data should be downloaded (in
+#' tab2 format). The default link is version 3.4.138 of BioGRID.
+#' @param reportDir A single character value specifying the directory
 #' to store reports. The BioGRID data set will be downloaded and stored
 #' in a subdirectory called 'Data' in 'reportDir'.
-#' @param genetic a single logical value. If TRUE, genetic interactions
+#' @param genetic A single logical value. If TRUE, genetic interactions
 #' will be kept; otherwise, they will be removed from the data set.
-#' @param force force to download the data set.
-#' @param verbose a single logical value indicating to display detailed
+#' @param force Force to download the data set.
+#' @param verbose A single logical value indicating to display detailed
 #' messages (when verbose=TRUE) or not (when verbose=FALSE)
+#' @details
+#' This function provides two options to create an interactome for network analysis.
+#' The user can either input an interaction matrix including columns 'InteractionType',
+#' 'InteractionA' and 'InteractionB', or set 'species', 'link' and 'genetic' to download
+#' data set from BioGRID and extract corresponding interactions to build the interactome.
+#'
+#' Another way to set up the interactome is to input an igraph object when the NWA object
+#' is created (i.e. nwa=NWA(pvalues, phenotypes, interactome)).
 #' @examples
-#' #' # load the preprocessed p-values and phenotypes data of S4 class, either nwa or nwam,
-#' # Case1: using "nwa" (without the interactionMatrix)
-#' data(nwa)
-#' nwa_inter <- interactome(nwa, species="Dm", reportDir="biogrid", genetic=FALSE)
-#' # Case2: using "nwa" (when the interactionMatrix is available)
-#' data(nwam)
-#' nwam <- interactome(nwam, species="Dm", reportDir="biogrid", genetic=FALSE)
+#' library(org.Hs.eg.db)
+#' library(GO.db)
+#' ## load data for subnetwork analyses
+#' data(d7)
+#' pvalues <- d7$neg.p.value
+#' names(pvalues) <- d7$id
+#'
+#' ## input phenotypes if you want to color nodes by it
+#' phenotypes <- as.vector(d7$neg.lfc)
+#' names(phenotypes) <- d7$id
+#'
+#' ## Example1: create an object of class 'NWA' by inputting an igraph object as the interactome
+#' data(Biogrid_HS_Interactome)
+#' nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes, interactome=Biogrid_HS_Interactome)
+#'
+#'
+#' ## Example2: create an object of class 'NWA' without interactome
+#' nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes)
+#' ## create an interactome for nwa by inputting an interaction matrix
+#' data(Biogrid_HS_Mat)
+#' nwa1 <- interactome(nwa, interactionMatrix = Biogrid_HS_Mat, genetic=FALSE)
+#'
+#' ## Example3: create an object of class 'NWA' without interactome
+#' nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes)
+#' \dontrun{
+#' ## create an interactome for nwa by downloading for BioGRID database
+#' nwa1 <- interactome(nwa, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
+#' }
 #' @export
+#' @return In the end, this function will return an updated object with slot 'interactome'
+#' as an object of class 'igraph'.
 #' @importFrom BioNet makeNetwork
 #' @importFrom igraph vcount ecount
 setMethod(
@@ -192,7 +207,7 @@ setMethod(
     if(missing(species) && is.null(interactionMatrix))
       stop("You should either input 'interactionMatrix' or ",
            "specifiy 'species' to download biogrid dataset!\n")
-    if(!missing(species)) {
+    if(is.null(interactionMatrix) && !missing(species)) {
       paraCheck("LoadGeneSets", "species", species)
       object@summary$db[, "species"] <- species
     }
@@ -230,8 +245,8 @@ setMethod(
     if(!genetic)
       InteractionsData <- InteractionsData[
         which(InteractionsData[, "InteractionType"] != "genetic"), ]
-    ## Make a igraph object from the data
-    object@interactome <- makeNetwork(
+    ## Make an igraph object from the data
+    object@interactome <- BioNet::makeNetwork(
       source = InteractionsData[, "InteractorA"],
       target = InteractionsData[, "InteractorB"],
       edgemode = "undirected",
@@ -250,6 +265,7 @@ setMethod(
 # user-specified folder and extracts the interactions data for a given
 # species.
 #' @importFrom data.table fread
+#' @importFrom utils download.file unzip
 biogridDataDownload <- function(link, species = "Hs", dataDirectory = ".",
                                 force = FALSE, verbose = TRUE) {
   ## check arguments
@@ -277,9 +293,23 @@ biogridDataDownload <- function(link, species = "Hs", dataDirectory = ".",
 
     if(!file.exists(dataDirectory)) dir.create(dataDirectory)
 
-    download.file(url = link,
-                  destfile = file.path(dataDirectory,
-                                       "Biogrid-all-org"), quiet=TRUE)
+    retry <- 0
+    MD5 <- "83f6abdad6e3f49991d2fb3c9587847b"
+    repeat{
+      retry <- retry + 1
+      download.file(url = link, destfile = file.path(dataDirectory,
+                                         "Biogrid-all-org"), quiet=TRUE)
+      download.md5 <- tools::md5sum(file.path(dataDirectory, "Biogrid-all-org"))
+      names(download.md5) <- NULL
+      if(identical(MD5, download.md5) || retry > 3){
+        break
+      }
+    }
+
+    if (!identical(MD5, download.md5)) {
+      stop("Downloaded BioGRID interactome file is corrupted!\n")
+    }
+
     unzip(zipfile = file.path(dataDirectory, "Biogrid-all-org"),
           exdir = dataDirectory)
   } else {
@@ -293,7 +323,8 @@ biogridDataDownload <- function(link, species = "Hs", dataDirectory = ".",
 
   biogridSpecies <- fread(
     file.path(dataDirectory, grep(bionet.species[species],
-            listfiles, value = TRUE)), header = T, skip=0, data.table = F)
+              listfiles, value = TRUE)), header = TRUE, skip=0,
+              data.table = FALSE, stringsAsFactors = FALSE)
 
   ## Extract the relevant columns from the tab-delimited file that was read
   source <- as.character(biogridSpecies[, "Entrez Gene Interactor A"])
@@ -302,7 +333,16 @@ biogridDataDownload <- function(link, species = "Hs", dataDirectory = ".",
   ## Create a matrix from the data, and names its columns accordingly
   interactions <- cbind(source, target, interac.type)
   colnames(interactions) <- c("InteractorA", "InteractorB", "InteractionType")
-
+  ## pre-process network: duplication removing(same interactions from different experiment)
+  ## and single node edge
+  interactions <- unique(interactions)
+  dupRow <- unlist(sapply(1:nrow(interactions), function(x) {
+    if(interactions[x, 1] == interactions[x, 2]){
+      x
+    }
+  }))
+  interactions <- interactions[-dupRow, ]
+  #--------------------------------------------
   interactions
 }
 

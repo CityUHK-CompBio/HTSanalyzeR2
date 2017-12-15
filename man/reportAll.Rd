@@ -4,24 +4,60 @@
 \alias{reportAll}
 \title{Write HTML reports for both enrichment and network analyses}
 \usage{
-reportAll(gsca, nwa, gscaNodeOptions = NULL, nwaNodeOptions = NULL,
-  reportDir = "AnalysisReport")
+reportAll(gsca = NULL, nwa = NULL, TSOrder = NULL,
+  specificGeneset = NULL, reportDir = "AnalysisReport")
 }
 \arguments{
-\item{gsca}{an object of class GSCA}
+\item{gsca}{A GSCA object or a list of GSCA objects.}
 
-\item{nwa}{an object of class NWA}
+\item{nwa}{An NWA object or a list of NWA objects.}
 
-\item{gscaNodeOptions}{a list of interested gene set terms which can be edited in the shiny report such as
-changing the shape of this set, etc.}
+\item{TSOrder}{A character specifying the visulization order of 'Time Series' data in shiny report. Only works when
+reporting for 'Time Series' data, default is the ID order in 'expInfor'.}
 
-\item{nwaNodeOptions}{a list of interested phenotypes which can be edited in the shiny report such as
-changing the shape of this set, etc.}
+\item{specificGeneset}{A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap,GSCA-method}}
+for details.}
 
-\item{reportDir}{a single character value specifying the directory to store reports. For default both the
-enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport"}
+\item{reportDir}{A single character value specifying the directory to store reports. For default both the
+enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport".}
+}
+\value{
+In the end, this function would generate a html report.
 }
 \description{
-This function can create HTML reports for both gene sets enrichment analysis and network analysis using
-shiny.
+This function can create shiny reports for both gene sets enrichment analysis and network analysis.
+}
+\examples{
+\dontrun{
+## load data
+data(d7_gsca, d7_nwa, gscaTS, nwaTS)
+
+## Example1: report both gsca and nwa
+reportAll(gsca=d7_gsca, nwa=d7_nwa)
+
+## Example2: report gscaTS
+reportAll(gsca=gscaTS)
+
+## Example3: report nwaTS
+reportAll(nwa=nwaTS)
+
+## Example4: report both gscaTS and nwaTS
+reportAll(gsca=gscaTS, nwa=nwaTS)
+
+## Example5: change order for time series data
+reportAll(gsca=gscaTS, TSOrder=names(gscaTS)[c(3, 1, 2)])
+reportAll(nwa=nwaTS, TSOrder=names(nwaTS)[c(3, 2, 1)])
+
+## Example6: view specificGeneset enrichment map for gscaTS using reportAll
+library(igraph)
+## As told previously, specificGeneset needs to be a subset of all analyzed gene sets
+## which can be roughly gotten by:
+tmp <- getTopGeneSets(gscaTS[[1]], resultName = "GSEA.results",
+                      gscs=c("GO_BP"), ntop = 20000, allSig = FALSE)
+## In that case, we can define specificGeneset as below:
+GO_BP_geneset <- tmp$GO_BP[c(4,2,6,9,12)]
+## the name of specificGenesets also needs to match with the names of tmp
+specificGeneset <- list("GO_BP"=GO_BP_geneset)
+reportAll(gsca=gscaTS, specificGeneset=specificGeneset)
+}
 }
