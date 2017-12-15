@@ -1,13 +1,3 @@
----
-output: github_document
----
-
-```{r, echo = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  fig.path = "man/figures/"
-)
-```
 
 # HTSanalyzeR2  
 
@@ -135,7 +125,7 @@ gsca3 <- appendGSTerms(gsca2,
 viewEnrichMap(gsca3, gscs=c("PW_KEGG"),
               allSig = FALSE, gsNameType = "term", ntop = 5)
 ```
-![](man/figures/readme.example1.PNG)
+![](vignettes/figures/readme.example1.PNG)
 
 ```
 ## visualize all results in an interactive report
