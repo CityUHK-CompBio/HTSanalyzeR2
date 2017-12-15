@@ -1,5 +1,5 @@
 ---
-title: "HTSanalyzeR2: An R package for gene set enrichment and network analysis of various high-throughput data"
+title: "HTSanalyzeR2: A R package for gene set enrichment and network analysis of various high-throughput data"
 author: 
 - name: Lina Zhu 
   affiliation: Department of Biomedical Sciences, City University of Hong Kong, Hong Kong
@@ -18,7 +18,7 @@ abstract: This package provides gene set over-representation, enrichment and net
 bibliography: bibliography.bib
 
 vignette: >
-  %\VignetteIndexEntry{HTSanalyzeR2: An R package for gene set enrichment and network analysis of various high-throughput data}
+  %\VignetteIndexEntry{HTSanalyzeR2: A R package for gene set enrichment and network analysis of various high-throughput data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -269,6 +269,7 @@ Similar to 'GSCA', you can also view the subnetwork by *viewSubNet*. Again, for 
 ```{r, eval=FALSE}
 viewSubNet(nwa3)
 ```
+
 ![](/home/Lina/HTSanalyzeR2/HTSanalyzeR2/vignettes/figures/network.PNG)
 
 ### Summarize results
@@ -519,5 +520,3 @@ sessionInfo()
 ```
 
 # References
-
-

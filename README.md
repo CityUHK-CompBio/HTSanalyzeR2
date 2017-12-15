@@ -1,3 +1,14 @@
+---
+output: github_document
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.path = "man/figures/"
+)
+```
+
 # HTSanalyzeR2  
 
 Welcome to the homepage of HTSanalyzeR2 package.
@@ -73,4 +84,80 @@ Details about this:
 3. `igraph` requres xml library. Please install `libxml2-dev` on Ubuntu or corresponding package on other OS.
 
 4. `RankProd` need package `Rmpfr`, which requires gmp and mpfr library. Please install `libgmp-dev` and `libmpfr-dev` on Ubuntu or corresponding package on other OS.
+
+
+
+## Quick Start
+
+Here is a simple but useful case study to use **HTSanalyzeR2** to perform gene set enrichment analysis and further visualize all the results in an interactive html report.
+
+The only required input for **HTSanalyzeR2** is a list of interested genes with weight under a specific phenotype. For example, in the following case study, we take the output from *limma* by comparing CMS4 with non-CMS4 colon cancer samples. Details please refer to our vignette.
+
+Before starting the demonstration, you need to load the following packages:
+```
+library(HTSanalyzeR2)
+library(org.Hs.eg.db)
+library(KEGGREST)
+library(igraph)
+```
+Start analysis:
+```
+## prepare input for analysis
+data(GSE33113_limma)
+phenotype <- as.vector(GSE33113_limma$logFC)
+names(phenotype) <- rownames(GSE33113_limma)
+
+## specify the gene sets type you want to analyze
+PW_KEGG <- KeggGeneSets(species="Hs")
+ListGSC <- list(PW_KEGG=PW_KEGG)
+
+## iniate a *GSCA* object
+gsca <- GSCA(listOfGeneSetCollections=ListGSC, 
+            geneList=phenotype)
+            
+## preprocess
+gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL",
+                    keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
+                    orderAbsValue=FALSE)
+
+## analysis
+gsca2 <- analyze(gsca1, 
+                 para=list(pValueCutoff=0.05, pAdjustMethod="BH",
+                           nPermutations=100, minGeneSetSize=180,
+                           exponent=1), 
+                           doGSOA = TRUE)
+
+## append gene sets terms
+gsca3 <- appendGSTerms(gsca2, 
+                       keggGSCs=c("PW_KEGG"))
+
+## view enrichment Map
+viewEnrichMap(gsca3, gscs=c("PW_KEGG"),
+              allSig = FALSE, gsNameType = "term", ntop = 5)
+```
+![](man/figures/readme.example1.PNG)
+
+```
+## visualize all results in an interactive report
+report(gsca3)
+```
+
+## Getting help
+
+Should you have any questions about this package, you can either email to the developers listed in the *Description* part of this package or create an issue in the [issue part](https://github.com/CityUHK-CompBio/HTSanalyzeR2/issues).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
