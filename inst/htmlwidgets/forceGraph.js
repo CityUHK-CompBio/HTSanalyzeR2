@@ -756,7 +756,7 @@ HTMLWidgets.widget(fg = {
             labels[0] = labels[10] = config.info.upperBound;
             labels[5] = 0;
         } else if (config.info.graphType == 'NWA') {
-            if (schemes.length == 1 && config.info.graphType != 'GSEA') {
+            if (schemes.length == 1) {
                 labels[0] = pal.domain[0];
                 labels[10] = pal.domain[1];
             } else {
