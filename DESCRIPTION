@@ -2,7 +2,7 @@ Package: HTSanalyzeR2
 Type: Package
 Title: Gene set over-representation, enrichment and network analyses for high-
        throughput data and corresponding time-series data
-Version: 0.99.10
+Version: 0.99.11
 Author: Lina ZHU <zhulina0609@gmail.com>, Feng GAO <gaofeng21cn@gmail.com>, 
         Xiupei MEI <meixiupei@gmail.com>, Xin Wang <xinwang2hms@gmail.com>
 Maintainer: Lina ZHU <zhulina0609@gmail.com>

@@ -101,7 +101,7 @@ HTMLWidgets.widget(fg = {
         var configurableKeys = ["settings", "layout", "label", "node", "edge"]; // "scheme"
         for(var ki in configurableKeys) {
             var key = configurableKeys[ki];
-            if(key in options) { 
+            if(key in options) {
                 for (var sk in options[key]) {
                     if(options[key][sk] != null) {
                         config[key][sk] = options[key][sk];
@@ -444,7 +444,7 @@ HTMLWidgets.widget(fg = {
             var cur = fg.currentSituation();
             var sv = cur.state.supervisor;
             var meta = cur.config.metadata;
-            
+
             cur.config.node.borderColor = val;
             meta.sigmaSettings.defaultNodeBorderColor = hex2rgba(val);
             sv.sigInst.settings("defaultNodeBorderColor", meta.sigmaSettings.defaultNodeBorderColor);
@@ -734,7 +734,7 @@ HTMLWidgets.widget(fg = {
         if (config.scheme.dual.pos.enabled) schemes.push("pos");
         if (config.scheme.dual.neg.enabled) schemes.push("neg");
 
-        if (schemes.length == 1) {
+        if (schemes.length == 1 && config.info.graphType != 'GSEA') {
             var pal = config.scheme.dual[schemes[0]];
             for(var i = 0; i < ticks; i++) {
                 colors[i] = _interpolateColor(pal.range, i / (ticks - 1), "hex");
@@ -756,7 +756,7 @@ HTMLWidgets.widget(fg = {
             labels[0] = labels[10] = config.info.upperBound;
             labels[5] = 0;
         } else if (config.info.graphType == 'NWA') {
-            if (schemes.length == 1) {
+            if (schemes.length == 1 && config.info.graphType != 'GSEA') {
                 labels[0] = pal.domain[0];
                 labels[10] = pal.domain[1];
             } else {
