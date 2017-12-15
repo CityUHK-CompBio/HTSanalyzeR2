@@ -13,6 +13,7 @@ date: "`r Sys.Date()`"
 package: HTSanalyzeR2
 output: 
         BiocStyle::pdf_document
+        
 abstract: This package provides gene set over-representation, enrichment and network analyses for various preprocessed high-throughput data as well as corresponding time-series data including CRISPR, RNA-seq, micro-array and RNAi. It could also generate a dynamic shiny report encompassing all the results and visualizations, facilitating the users maximally for downloading, modifying the visualization parts with personal preference and sharing with others by publishing the report to [Shinyapps.io](http://shiny.rstudio.com/articles/shinyapps.html).
 
 bibliography: bibliography.bib
