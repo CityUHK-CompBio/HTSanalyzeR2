@@ -1,7 +1,7 @@
 
 # HTSanalyzeR2  
 
-Welcome to the homepage of HTSanalyzeR2 package.
+Welcome to the homepage of **HTSanalyzeR2** package!
 
 This package provides gene set over-representation, enrichment and network analyses for various preprocessed high-throughput data as well as corresponding time-series data including CRISPR, RNA-seq, micro-array and RNAi. It could also generate a dynamic shiny report encompassing all the results and visualizations, facilitating the users maximally for downloading, modifying the visualization parts with personal preference and sharing with others by publishing the report to [Shinyapps.io](http://shiny.rstudio.com/articles/shinyapps.html).
 
@@ -11,6 +11,7 @@ If you are a current bioconductor user and have `devtools` package installed, yo
 
 ```
 # Installation requires bioconductor and devtools, please use the following commands if you've not
+
 source("https://bioconductor.org/biocLite.R")
 biocLite("devtools")
 
@@ -21,7 +22,7 @@ devtools::install_github("CityUHK-CompBio/HTSanalyzeR2", build_vignettes=TRUE)
 
 ## Dependency
 
-`HTSanalyzeR2` requires the following R/Bioconductor packages for its full function:    
+**HTSanalyzeR2** requires the following R/Bioconductor packages for its full function:    
 
 - GO.db 
 - cellHTS2 
@@ -45,7 +46,7 @@ devtools::install_github("CityUHK-CompBio/HTSanalyzeR2", build_vignettes=TRUE)
 - stats 
 - utils 
 
-`HTSanalyzeR2` also suggests the following R/Bioconductor packages for improved user experience:  
+**HTSanalyzeR2** also suggests the following R/Bioconductor packages for improved user experience:  
 
 - BiocStyle  
 - rmarkdown  
