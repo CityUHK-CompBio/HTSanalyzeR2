@@ -12,13 +12,11 @@ If you are a current bioconductor user and have `devtools` package installed, yo
 ```
 # Installation requires bioconductor and devtools, please use the following commands if you've not
 source("https://bioconductor.org/biocLite.R")
-biocLite(c("devtools"))
+biocLite("devtools")
 
-# Then install HTSanalyzeR2
-
-devtools::install_github("CityUHK-CompBio/HTSanalyzeR2", build_vignettes=TRUE, 
-  repos=BiocInstaller::biocinstallRepos(),
-  dependencies=TRUE, type="source")
+# Before installing HTSanalyzeR2, you need also to install the dependent package `GO.db`
+biocLite("GO.db")
+devtools::install_github("CityUHK-CompBio/HTSanalyzeR2", build_vignettes=TRUE)
 ```
 
 ## Dependency
@@ -81,7 +79,7 @@ Details about this:
 
 Here is a simple but useful case study to use **HTSanalyzeR2** to perform gene set enrichment analysis and further visualize all the results in an interactive html report.
 
-The only required input for **HTSanalyzeR2** is a list of interested genes with weight under a specific phenotype. For example, in the following case study, we take the output from *limma* by comparing CMS4 with non-CMS4 colon cancer samples. Details please refer to our vignette.
+The only required input for **HTSanalyzeR2** is a list of interested genes with weight under a specific phenotype. For example, in the following case study, we take the output from *limma* by comparing CMS4 with non-CMS4 colon cancer samples. Details please refer to our [vignette](https://github.com/CityUHK-CompBio/HTSanalyzeR2/blob/master/vignettes/HTSanalyzeR2-vignette.pdf).
 
 Before starting the demonstration, you need to load the following packages:
 ```
