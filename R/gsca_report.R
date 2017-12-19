@@ -255,7 +255,7 @@ availableResults <- function(results, byRow = TRUE) {
     res <- names(res[res==1])
 
   } else {
-    res <- colnames(results)[colSums(results, na.rm = TRUE) > 0]
+    res <- colnames(results)[colSums(results, na.rm = TRUE) >= 0]
   }
   res
 }
