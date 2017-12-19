@@ -17,7 +17,7 @@ biocLite("devtools")
 
 # Before installing HTSanalyzeR2, you need also to install the dependent package `GO.db`
 biocLite("GO.db")
-devtools::install_github("CityUHK-CompBio/HTSanalyzeR2", build_vignettes=TRUE)
+devtools::install_github("CityUHK-CompBio/HTSanalyzeR2")
 ```
 
 ## Dependency
