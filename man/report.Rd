@@ -7,7 +7,7 @@
 \alias{report,NWA-method}
 \title{Write HTML reports for enrichment or network analyses}
 \usage{
-\S4method{report}{GSCA}(object, specificGeneset = NULL,
+\S4method{report}{GSCA}(object, specificGeneset = NULL, cutoff = NULL,
   reportDir = "GSCAReport")
 
 \S4method{report}{NWA}(object, reportDir = "NWAReport")
@@ -19,6 +19,10 @@ method of class 'GSCA' or 'NWA', this argument is an object of class
 
 \item{specificGeneset}{A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap,GSCA-method}}
 for details.}
+
+\item{cutoff}{A numeric value between 0 and 1. This parameter is setted as a cutoff of edge weight in the enrichment
+map for better visualization. When the edge weight, namely the Jaccard coefficient between two gene sets, is less than
+this cutoff, this edge would not be showed in the enrichment map.}
 
 \item{reportDir}{A single character value specifying the directory to store reports. For default
 the enrichment analysis reports will be stored in the directory called "GSCAReport".}

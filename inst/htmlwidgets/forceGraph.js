@@ -753,7 +753,8 @@ HTMLWidgets.widget(fg = {
                 labels[i] = ticks - 1 - i;
             }
         } else if (config.info.graphType == 'GSEA') {
-            labels[0] = labels[10] = config.info.upperBound;
+            ceiledBound = Math.ceil(config.info.upperBound);
+            labels[0] = labels[10] = ceiledBound;
             labels[5] = 0;
         } else if (config.info.graphType == 'NWA') {
             if (schemes.length == 1) {

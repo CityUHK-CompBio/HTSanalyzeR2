@@ -11,8 +11,8 @@ gsca <- results$gsca
 nwa <- results$nwa
 gscaObjs <- NULL
 nwaObjs <- NULL
-specificGeneset = results$specificGeneset
-
+specificGeneset <- results$specificGeneset
+cutoff <- results$cutoff
 
 ## ============================================ Preprocessing ==============================================
 gscaTS <- !is.null(gsca) && class(gsca) == "list"
@@ -21,11 +21,13 @@ nwaTS <- !is.null(nwa) && class(nwa) == "list"
 if(!is.null(gsca)) {
   gscaSeriesTickInput <- NULL
   gscaProcessSlider <- NULL
+  gscaTimePointName <- NULL
   if(gscaTS) {
     gscaObjs <- gsca
     gscaSeriesTicks <- names(gscaObjs)
-    gscaSeriesTickInput <- selectInput('series_tick_res', 'Series Tick', gscaSeriesTicks)
-    gscaProcessSlider <- sliderInput("process_map", "Process", 1, length(gscaSeriesTicks), value = 1, step = 1, animate = animationOptions(interval=1000))
+    gscaSeriesTickInput <- selectInput('series_tick_res', 'Time Point', gscaSeriesTicks)
+    gscaProcessSlider <- sliderInput("process_map", "Time Point", 1, length(gscaSeriesTicks), value = 1, step = 1, animate = animationOptions(interval=1000))
+    gscaTimePointName <- menuItemOutput("series_tick_name")
     for(name in gscaSeriesTicks) {
       gscaObjs[[name]] <- HTSanalyzeR2:::appendLinks(gscaObjs[[name]])
       gscaObjs[[name]] <- HTSanalyzeR2:::combineResults(gscaObjs[[name]])
@@ -106,7 +108,7 @@ ifNotNull <- function(obj, item) {
 
 ## ============================================ Define ui ==================================================
 
-header <- dashboardHeader(title = "HTSAnalyzeR2", dropdownMenu(type = "messages", icon = icon("cogs"), badgeStatus = NULL))
+header <- dashboardHeader(title = "HTSanalyzeR2", dropdownMenu(type = "messages", icon = icon("cogs"), badgeStatus = NULL))
 
 sidebar <- dashboardSidebar(
   sidebarMenu(
@@ -122,6 +124,7 @@ sidebar <- dashboardSidebar(
                              icon = icon("area-chart"),
                              selectInput('analysis_map', 'Analysis', availableAnalysis[-3]),
                              selectInput('genesets_map', 'Gene Sets Collection', c(specificGenesetItem, availableGeneSets)),
+                             gscaTimePointName,
                              gscaProcessSlider
     )),
     ifNotNull(nwa, menuItem("Network Analysis",
@@ -239,6 +242,7 @@ create_enrich_map <- function(gscaObj, seriesObjs, input) {
     allSig=TRUE,
     gsNameType="id",
     specificGeneset = specGeneset,
+    cutoff = cutoff,
     seriesObjs = seriesObjs)
 }
 
@@ -269,6 +273,7 @@ server <- function(input, output, session) {
   )
 
   observeEvent(input$process_map, {
+    output$series_tick_name <- renderMenu({ menuItem(names(gscaObjs)[input$process_map], icon = icon("time", lib = "glyphicon"))})
     output$map_output <- HTSanalyzeR2:::updateForceGraph(list(process = input$process_map))
   })
 

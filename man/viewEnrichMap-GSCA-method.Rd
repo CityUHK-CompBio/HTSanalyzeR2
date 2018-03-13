@@ -8,7 +8,7 @@
 \usage{
 \S4method{viewEnrichMap}{GSCA}(object, resultName = "GSEA.results", gscs,
   ntop = NULL, allSig = TRUE, gsNameType = "id", specificGeneset = NULL,
-  options = list(), seriesObjs = NULL)
+  cutoff = NULL, options = list(), seriesObjs = NULL)
 }
 \arguments{
 \item{object}{A GSCA object.}
@@ -32,7 +32,11 @@ set names should be one of the following: "id", "term" or "none".}
 
 \item{specificGeneset}{A named list of specific gene sets. Specifically, this term needs to be
 a subset of all analyzed gene sets which can be roughly gotten by
-\strong{getTopGeneSets(object, resultName, gscs, ntop = 20000, allSig = FALSE)}.
+\strong{getTopGeneSets(object, resultName, gscs, ntop = 20000, allSig = FALSE)}.}
+
+\item{cutoff}{A numeric value between 0 and 1. This parameter is setted as a cutoff of edge weight in the enrichment
+map for better visualization. When the edge weight, namely the Jaccard coefficient between two gene sets, is less than
+this cutoff, this edge would not be showed in the enrichment map.
 The order of the list must match the order of results gotten by aboved function \strong{getTopGeneSets}.}
 
 \item{options}{A list of options to modify the enrichmentmap. Details are not showed here due to too
@@ -71,18 +75,28 @@ map a mess as well as of no information. To this end, user can set the parameter
 library(igraph)
 data(d7_gsca)
 
-## Example1: view an enrichment map for top 7 significant 'GO_MF' gene sets of GSEA results
+## Example1: view an enrichment map for top 30 significant 'GO_MF' gene sets of GSEA results
 \dontrun{
 viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
-              allSig = FALSE, ntop = 7, gsNameType = "term")
+              allSig = FALSE, ntop = 30, gsNameType = "term")
 }
-## Example2: view an enrichment map for top 7 significant 'GO_MF'
+
+## Example2: view an enrichment map for top 15 significant 'GO_MF'
 ## and 'PW_KEGG' gene sets of GSEA results
 \dontrun{
 viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
-              allSig = FALSE, ntop = 7, gsNameType = "term")
+              allSig = FALSE, ntop = 15, gsNameType = "term")
 }
-## Example3: view an enrichment map with specificGenesets in 'GO_MF' gene sets of GSEA results
+
+## Example3: view an enrichment map for top 15 significant 'GO_MF'
+## and 'PW_KEGG' gene sets of GSEA results, edge Jaccard coefficient less than 0.05
+## would not be showed in the enrichment map.
+\dontrun{
+viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
+              allSig = FALSE, ntop = 15, gsNameType = "term", cutoff = 0.05)
+}
+
+## Example4: view an enrichment map with specificGenesets in 'GO_MF' gene sets of GSEA results
 ## As told previously, specificGeneset needs to be a subset of all analyzed gene sets
 ## which can be roughly gotten by:
 tmp <- getTopGeneSets(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
@@ -97,7 +111,7 @@ viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
               ntop = NULL, specificGeneset = specificGeneset)
 }
 
-## Example4: view an enrichment map with specificGenesets in 'GO_MF'
+## Example5: view an enrichment map with specificGenesets in 'GO_MF'
 ## and 'PW_KEGG' gene sets of GSEA results
 tmp <- getTopGeneSets(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
                       ntop = 20000, allSig = FALSE)

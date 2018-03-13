@@ -193,7 +193,8 @@ setMethod("extractEnrichMap", signature = "GSCA",
                    ntop = NULL,
                    allSig = TRUE,
                    gsNameType = "id",
-                   specificGeneset = NULL) {
+                   specificGeneset = NULL,
+                   cutoff = NULL) {
             paraCheck("Report", "gsNameType", gsNameType)
             ## get top gene sets
             if(is.null(specificGeneset)){
@@ -274,7 +275,10 @@ setMethod("extractEnrichMap", signature = "GSCA",
                   sapply((i + 1):nrow(tempdf),
                          function(j) {
                            b <- gsInUni[[gscID[j]]][[gsID[j]]]
-                           length(intersect(a, b)) / length(union(a,b))
+                           tmp <- length(intersect(a, b)) / length(union(a,b))
+                           ## set cutoff to show edge
+                           if(is.null(cutoff)) {tmp} else if(tmp < cutoff){tmp <- 0}
+                           tmp
                          }
                   )
                 map.mat[(i + 1):nrow(tempdf), i] <<- map.mat[i, (i + 1):nrow(tempdf)]
@@ -358,6 +362,9 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #' @param specificGeneset A named list of specific gene sets. Specifically, this term needs to be
 #' a subset of all analyzed gene sets which can be roughly gotten by
 #' \strong{getTopGeneSets(object, resultName, gscs, ntop = 20000, allSig = FALSE)}.
+#' @param cutoff A numeric value between 0 and 1. This parameter is setted as a cutoff of edge weight in the enrichment
+#' map for better visualization. When the edge weight, namely the Jaccard coefficient between two gene sets, is less than
+#' this cutoff, this edge would not be showed in the enrichment map.
 #' The order of the list must match the order of results gotten by aboved function \strong{getTopGeneSets}.
 #' @param options A list of options to modify the enrichmentmap. Details are not showed here due to too
 #' many options. Users are highly recommended to modify the enrichment map in a shiny report by
@@ -386,18 +393,28 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #' library(igraph)
 #' data(d7_gsca)
 #'
-#' ## Example1: view an enrichment map for top 7 significant 'GO_MF' gene sets of GSEA results
+#' ## Example1: view an enrichment map for top 30 significant 'GO_MF' gene sets of GSEA results
 #' \dontrun{
 #' viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
-#'               allSig = FALSE, ntop = 7, gsNameType = "term")
+#'               allSig = FALSE, ntop = 30, gsNameType = "term")
 #' }
-#' ## Example2: view an enrichment map for top 7 significant 'GO_MF'
+#'
+#' ## Example2: view an enrichment map for top 15 significant 'GO_MF'
 #' ## and 'PW_KEGG' gene sets of GSEA results
 #' \dontrun{
 #' viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
-#'               allSig = FALSE, ntop = 7, gsNameType = "term")
+#'               allSig = FALSE, ntop = 15, gsNameType = "term")
 #' }
-#' ## Example3: view an enrichment map with specificGenesets in 'GO_MF' gene sets of GSEA results
+#'
+#' ## Example3: view an enrichment map for top 15 significant 'GO_MF'
+#' ## and 'PW_KEGG' gene sets of GSEA results, edge Jaccard coefficient less than 0.05
+#' ## would not be showed in the enrichment map.
+#' \dontrun{
+#' viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
+#'               allSig = FALSE, ntop = 15, gsNameType = "term", cutoff = 0.05)
+#' }
+#'
+#' ## Example4: view an enrichment map with specificGenesets in 'GO_MF' gene sets of GSEA results
 #' ## As told previously, specificGeneset needs to be a subset of all analyzed gene sets
 #' ## which can be roughly gotten by:
 #' tmp <- getTopGeneSets(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
@@ -412,7 +429,7 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #'               ntop = NULL, specificGeneset = specificGeneset)
 #' }
 #'
-#' ## Example4: view an enrichment map with specificGenesets in 'GO_MF'
+#' ## Example5: view an enrichment map with specificGenesets in 'GO_MF'
 #' ## and 'PW_KEGG' gene sets of GSEA results
 #' tmp <- getTopGeneSets(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
 #'                       ntop = 20000, allSig = FALSE)
@@ -441,10 +458,11 @@ setMethod("viewEnrichMap", signature = "GSCA",
                    allSig = TRUE,
                    gsNameType = "id",
                    specificGeneset = NULL,
+                   cutoff = NULL,
                    options = list(),
                    seriesObjs = NULL) {
 
-            g <- extractEnrichMap(object, resultName, gscs, ntop, allSig, gsNameType, specificGeneset)
+            g <- extractEnrichMap(object, resultName, gscs, ntop, allSig, gsNameType, specificGeneset, cutoff)
 
             em_nodes <- as_data_frame(g, "vertices")
             em_links <- as_data_frame(g, "edge")
@@ -466,7 +484,7 @@ setMethod("viewEnrichMap", signature = "GSCA",
               series <- names(seriesObjs)
               defaultKey <- series[1]
               # seriesDF: (nodes = nodeDF, edges = edgeDF, nodeSeriesCols = nodeCols, edgeSeriesCols = edgeCols)
-              seriesDF <- fetchGSCASeriesValues(seriesObjs, resultName, gscs, ntop, allSig, gsNameType, specificGeneset)
+              seriesDF <- fetchGSCASeriesValues(seriesObjs, resultName, gscs, ntop, allSig, gsNameType, specificGeneset, cutoff)
               # Create series mappings
               nodeCols <- seriesDF$nodeSeriesCols
               nodeColNames <- sub("adjPvalue", "color", nodeCols)
@@ -498,10 +516,10 @@ setMethod("viewEnrichMap", signature = "GSCA",
 
 #' @importFrom igraph as_data_frame
 fetchGSCASeriesValues <- function(gscaObjs, resultName = "GSEA.results", gscs,
-                            ntop = NULL, allSig = TRUE, gsNameType = "id", specificGeneset = NULL) {
+                            ntop = NULL, allSig = TRUE, gsNameType = "id", specificGeneset = NULL, cutoff = NULL) {
   # TODO: check the objs
   extractedValues <- lapply(seq_along(gscaObjs), function(i) {
-    g <- extractEnrichMap(gscaObjs[[i]], resultName, gscs, ntop, allSig, gsNameType, specificGeneset)
+    g <- extractEnrichMap(gscaObjs[[i]], resultName, gscs, ntop, allSig, gsNameType, specificGeneset, cutoff)
     dfList <- list( edges = data.frame(from=character(0), to=character(0), weight=numeric(0)),
            vertices=data.frame(name=character(0), geneSetSize=numeric(0), adjPvalue=numeric(0), obsPvalue=numeric(0),
                               colorScheme=character(0), label=character(0), label_id=character(0), label_term=character(0)))

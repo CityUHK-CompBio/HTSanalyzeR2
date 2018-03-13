@@ -1,6 +1,8 @@
 if (!isGeneric("report")) {
   setGeneric("report",
-             function(object, specificGeneset = NULL, reportDir = "GSCAReport")
+             function(object, specificGeneset = NULL,
+                      cutoff = NULL,
+                      reportDir = "GSCAReport")
     standardGeneric("report"), package = "HTSanalyzeR2")
 }
 
@@ -18,6 +20,9 @@ if (!isGeneric("report")) {
 #' the enrichment analysis reports will be stored in the directory called "GSCAReport".
 #' @param specificGeneset A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap,GSCA-method}}
 #' for details.
+#' @param cutoff A numeric value between 0 and 1. This parameter is setted as a cutoff of edge weight in the enrichment
+#' map for better visualization. When the edge weight, namely the Jaccard coefficient between two gene sets, is less than
+#' this cutoff, this edge would not be showed in the enrichment map.
 #'
 #' @details
 #' This will generate a shiny report including all the GSCA or NWA results.
@@ -56,8 +61,9 @@ if (!isGeneric("report")) {
 #'
 #' @export
 setMethod("report", signature = "GSCA",
-          function(object, specificGeneset = NULL, reportDir = "GSCAReport") {
-            reportAll(gsca = object, nwa = NULL, specificGeneset = specificGeneset, reportDir = reportDir)
+          function(object, specificGeneset = NULL,
+                   cutoff = NULL, reportDir = "GSCAReport") {
+            reportAll(gsca = object, nwa = NULL, specificGeneset = specificGeneset, reportDir = reportDir, cutoff = cutoff)
           }
 )
 
@@ -72,6 +78,9 @@ setMethod("report", signature = "GSCA",
 #'reporting for 'Time Series' data, default is the ID order in 'expInfor'.
 #'@param specificGeneset A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap,GSCA-method}}
 #' for details.
+#'@param cutoff A numeric value between 0 and 1. This parameter is setted as a cutoff of edge weight in the enrichment
+#' map for better visualization. When the edge weight, namely the Jaccard coefficient between two gene sets, is less than
+#' this cutoff, this edge would not be showed in the enrichment map.
 #'@param reportDir A single character value specifying the directory to store reports. For default both the
 #'  enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport".
 #'
@@ -111,7 +120,8 @@ setMethod("report", signature = "GSCA",
 #' specificGeneset <- list("GO_BP"=GO_BP_geneset)
 #' reportAll(gsca=gscaTS, specificGeneset=specificGeneset)
 #' }
-reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL, specificGeneset = NULL, reportDir = "AnalysisReport") {
+reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL,
+                      specificGeneset = NULL, cutoff = NULL, reportDir = "AnalysisReport") {
   if(!is.null(gsca) && class(gsca) != "GSCA") {
     if(class(gsca) != "list" || any(sapply(gsca, class) != "GSCA")) {
       stop("the parameter gsca should be a GSCA object or a list of GSCA objects\n")
@@ -151,7 +161,7 @@ reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL, specificGeneset =
   shinyApp <- system.file("templates/app.R", package="HTSanalyzeR2")
   file.copy(from = shinyApp, to = reportDir, overwrite = TRUE)
 
-  results <- list(gsca = gsca, nwa = nwa, specificGeneset = specificGeneset)
+  results <- list(gsca = gsca, nwa = nwa, specificGeneset = specificGeneset, cutoff = cutoff)
   saveRDS(results, file = file.path(reportDir, "results.RData"))
 
   shiny::runApp(reportDir)

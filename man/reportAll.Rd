@@ -5,7 +5,7 @@
 \title{Write HTML reports for both enrichment and network analyses}
 \usage{
 reportAll(gsca = NULL, nwa = NULL, TSOrder = NULL,
-  specificGeneset = NULL, reportDir = "AnalysisReport")
+  specificGeneset = NULL, cutoff = NULL, reportDir = "AnalysisReport")
 }
 \arguments{
 \item{gsca}{A GSCA object or a list of GSCA objects.}
@@ -17,6 +17,10 @@ reporting for 'Time Series' data, default is the ID order in 'expInfor'.}
 
 \item{specificGeneset}{A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap,GSCA-method}}
 for details.}
+
+\item{cutoff}{A numeric value between 0 and 1. This parameter is setted as a cutoff of edge weight in the enrichment
+map for better visualization. When the edge weight, namely the Jaccard coefficient between two gene sets, is less than
+this cutoff, this edge would not be showed in the enrichment map.}
 
 \item{reportDir}{A single character value specifying the directory to store reports. For default both the
 enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport".}
