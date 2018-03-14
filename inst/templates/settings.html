@@ -6,7 +6,7 @@
             <ul class="collapse list-unstyled" id="layoutPanel">
                 <li>
                     <div id="layoutSwitches" class="form-group shiny-input-checkboxgroup shiny-input-container">
-                      <label class="control-label" for="layoutSwitches">Switches</label>
+                      <label class="control-label" for="layoutSwitches">Mode</label>
                       <div class="shiny-options-group">
                         <div class="checkbox">
                           <label>
@@ -20,10 +20,19 @@
                             <span>Strong Gravity Mode</span>
                           </label>
                         </div>
+
+                        <label class="control-label" for="layoutSwitches">Parameters</label>
+
                         <div class="checkbox">
                           <label>
                             <input type="checkbox" name="layoutSwitches" value="layoutOutboundAttractionDistribution"/>
-                            <span>Outbound Attraction Distribution</span>
+                            <span>Edge Repel</span> 
+                          </label>
+                        </div>
+                        <div class="checkbox" style="display: none;">
+                          <label>
+                            <input type="checkbox" name="layoutSwitches" value="layoutEdgeWeightInfluence"/>
+                            <span>Edge Weight Influence</span>
                           </label>
                         </div>
                         <div class="checkbox">
@@ -32,7 +41,7 @@
                             <span>Adjust Sizes</span>
                           </label>
                         </div>
-                        <div class="checkbox">
+                        <div class="checkbox" style="display: none;">
                           <label>
                             <input type="checkbox" name="layoutSwitches" value="layoutBarnesHutOptimize"/>
                             <span>Barnes-Hut Optimize</span>
@@ -45,26 +54,26 @@
                 <li>
                     <div class="form-group shiny-input-container">
                       <label class="control-label" for="layoutGravity">Gravity</label>
-                      <input class="js-range-slider" id="layoutGravity" data-min="-50" data-max="500" data-from="30" data-step="10" data-grid="true" data-grid-num="11.0" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
+                      <input class="js-range-slider" id="layoutGravity" data-min="-50" data-max="50" data-from="30" data-step="1" data-grid="true" data-grid-num="10.0" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
                     </div>
                 </li>
 
                 <li>
-                    <div class="form-group shiny-input-container">
+                    <div class="form-group shiny-input-container"  style="display: none;">
                       <label class="control-label" for="layoutBarnesHutTheta">Barnes-Hut Theta</label>
                       <input class="js-range-slider" id="layoutBarnesHutTheta" data-min="-10.0" data-max="10.0" data-from="0.1" data-step="0.1" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
                     </div>
                 </li>
 
-                <li>
+               <!--  <li>
                     <div class="form-group shiny-input-container">
                       <label class="control-label" for="layoutEdgeWeightInfluence">Edge Weight Influence</label>
                       <input class="js-range-slider" id="layoutEdgeWeightInfluence" data-min="0.0" data-max="10" data-from="1" data-step="0.1" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
                     </div>
-                </li>
+                </li> -->
 
                 <li>
-                    <div class="form-group shiny-input-container">
+                    <div class="form-group shiny-input-container" style="display: none;">
                       <label class="control-label" for="layoutSlowDown">Slowdown</label>
                       <input class="js-range-slider" id="layoutSlowDown" data-min="50" data-max="1000" data-from="200" data-step="10" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-data-type="number"/>
                     </div>
@@ -166,7 +175,7 @@
             <ul class="collapse list-unstyled" id="schemePanel">
                 <li>
                     <div id="dualPos" class="form-group shiny-input-container">
-                        <h5>Dual <small>Pos:</small></h5>
+                        <h5>Positive: </h5>
                         <div style="position:relative; width: 100%; height: 35px">
                             <canvas id="posPalette" width="100" height="1" style="width:100%; height:30px"></canvas>
                             <input id="posValue0" class="text" value="0" style="position:absolute;width:80px; left:5px;top:5px;text-align:left; background:none;border:none;" readonly>
@@ -185,7 +194,7 @@
                 </li>
                 <li>
                     <div id="dualNeg" class="form-group shiny-input-container">
-                        <h5>Dual <small>Neg:</small></h5>
+                        <h5>Negative:</h5>
                         <div style="position:relative; width: 100%; height: 35px">
                             <canvas id="negPalette" width="100" height="1" style="width:100%; height:30px"></canvas>
                             <input id="negValue0" class="text" value="0" style="position:absolute;width:80px; left:5px;top:5px;text-align:left; background:none;border:none;" readonly>

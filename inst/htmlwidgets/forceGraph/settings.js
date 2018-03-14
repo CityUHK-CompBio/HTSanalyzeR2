@@ -40,17 +40,19 @@ refreshValues = function(panel, config) {
     $("#layoutSwitches .checkbox input[value='layoutOutboundAttractionDistribution']", panel).prop("checked", config.layout.outboundAttractionDistribution);
     $("#layoutSwitches .checkbox input[value='layoutAdjustSizes']", panel).prop("checked", config.layout.adjustSizes);
     $("#layoutSwitches .checkbox input[value='layoutBarnesHutOptimize']", panel).prop("checked", config.layout.barnesHutOptimize);
+    $("#layoutSwitches .checkbox input[value='layoutEdgeWeightInfluence']", panel).prop("checked", config.layout.edgeWeightInfluence != 0);
+
 
     $("#layoutGravity", panel).data("ionRangeSlider").update({from: config.layout.gravity});
     $("#layoutBarnesHutTheta", panel).data("ionRangeSlider").update({from: config.layout.barnesHutTheta});
-    $("#layoutEdgeWeightInfluence", panel).data("ionRangeSlider").update({from: config.layout.edgeWeightInfluence});
+    // $("#layoutEdgeWeightInfluence", panel).data("ionRangeSlider").update({from: config.layout.edgeWeightInfluence});
     $("#layoutSlowDown", panel).data("ionRangeSlider").update({from: config.layout.slowDown});
 
     // Label
     $("#labelOption input[value='" + config.label.text + "']", panel).prop("checked", true);
     $("#labelScale", panel).data("ionRangeSlider").update({from: config.label.scale});
     $("#labelColor", panel).colourpicker("value", config.label.color);
-    
+
     // Node
     $("#nodeScale", panel).data("ionRangeSlider").update({from: config.node.scale});
     $("#nodeOpacity", panel).data("ionRangeSlider").update({from: config.node.opacity});
@@ -103,6 +105,9 @@ configureSettingHandlers = function(handlers) {
     $("#layoutSwitches .checkbox input[value='layoutBarnesHutOptimize']").change(function() {
         handlers['barnesHutOptimize'](this.checked);
     });
+    $("#layoutSwitches .checkbox input[value='layoutEdgeWeightInfluence']").change(function() {
+        handlers['edgeWeightInfluence'](this.checked ? 1 : 0);
+    });
 
     $("#layoutGravity").on("change", function() {
         var value = $(this).prop("value");
@@ -112,10 +117,10 @@ configureSettingHandlers = function(handlers) {
         var value = $(this).prop("value");
         handlers["barnesHutTheta"](value);
     });
-    $("#layoutEdgeWeightInfluence").on("change", function() {
-        var value = $(this).prop("value");
-        handlers["edgeWeightInfluence"](value);
-    });
+    // $("#layoutEdgeWeightInfluence").on("change", function() {
+    //     var value = $(this).prop("value");
+    //     handlers["edgeWeightInfluence"](value);
+    // });
     $("#layoutSlowDown").on("change", function() {
         var value = $(this).prop("value");
         handlers["slowDown"](value);
@@ -152,7 +157,7 @@ configureSettingHandlers = function(handlers) {
         var value = $(this).colourpicker("value");
         handlers["nodeBorderColor"](value);
     });
-    
+
     // Edge
     $("#edgeScale").on("change", function() {
         var value = $(this).prop("value");
