@@ -100,7 +100,7 @@ var forceGraphFuncs = function(funcId) {
     var handlers = forceGraphObj.store["handlers"];
     if(handlers && handlers[funcId]) {
       handlers[funcId]();
-    } 
+    }
   }
 }
 
@@ -134,7 +134,7 @@ var initReportFramework = function() {
     }
   });
 
-  $('section.sidebar ul.sidebar-menu li').click(function(ev) {
+  $('section.sidebar ul.sidebar-menu li.treeview').click(function(ev) {
     $(".tab-content .tab-pane.active").removeClass("active");
     var tabId = $("a", ev.currentTarget).attr("href");
     tabId = tabId.substring(tabId.lastIndexOf('#'));

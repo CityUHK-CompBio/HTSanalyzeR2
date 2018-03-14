@@ -193,9 +193,11 @@ HTMLWidgets.widget(fg = {
             }
         }
 
-        if (!sigma.layouts.isForceLinkRunning()) {
-            sv.sigInst.refresh();
-        }
+        sv.sigInst.refresh({skipIndexation: true});
+
+        // if (!sigma.layouts.isForceLinkRunning()) {
+        //     sv.sigInst.refresh({skipIndexation: true});
+        // }
     },
 
     construct: function(state, x) {
@@ -373,7 +375,7 @@ HTMLWidgets.widget(fg = {
             }
             meta.sigmaSettings.drawLabels = val != 'none';
             sv.sigInst.settings("drawLabels", meta.sigmaSettings.drawLabels);
-            sv.sigInst.refresh();
+            sv.sigInst.refresh({skipIndexation: true});
         }
         handlers.labelScale = function(val) {
             // console.log("labelScale" + ": " + val);
@@ -384,7 +386,7 @@ HTMLWidgets.widget(fg = {
             cur.config.label.scale = val;
             meta.sigmaSettings.defaultLabelSize = 14 * val;
             sv.sigInst.settings("defaultLabelSize", meta.sigmaSettings.defaultLabelSize);
-            sv.sigInst.refresh();
+            sv.sigInst.refresh({skipIndexation: true});
         }
         handlers.labelColor = function(val) {
             // console.log("labelColor" + ": " + val);
@@ -395,7 +397,7 @@ HTMLWidgets.widget(fg = {
             cur.config.label.color = val;
             meta.sigmaSettings.defaultLabelColor = hex2rgba(val);
             sv.sigInst.settings("defaultLabelColor", meta.sigmaSettings.defaultLabelColor);
-            sv.sigInst.refresh();
+            sv.sigInst.refresh({skipIndexation: true});
         }
 
         // Node
@@ -411,7 +413,7 @@ HTMLWidgets.widget(fg = {
             }
             meta.sigmaSettings.maxNodeSize = cur.config.settings.maxNodeSize * val;
             sv.sigInst.settings("maxNodeSize", meta.sigmaSettings.maxNodeSize);
-            sv.sigInst.refresh();
+            sv.sigInst.refresh({skipIndexation: true});
         }
         handlers.nodeOpacity = function(val) {
             // console.log("nodeOpacity" + ": " + val);
@@ -426,7 +428,7 @@ HTMLWidgets.widget(fg = {
                     meta.graph.nodes[i].color = meta.interpolator(palette, meta.data.nodes.color[i], cur.config.node.opacity);
                 }
             }
-            sv.sigInst.refresh();
+            sv.sigInst.refresh({skipIndexation: true});
         }
         handlers.nodeBorderWidth = function(val) {
             // console.log("nodeBorderWidth" + ": " + val);
@@ -437,7 +439,7 @@ HTMLWidgets.widget(fg = {
             cur.config.node.borderWidth = parseFloat(val);
             meta.sigmaSettings.nodeBorderSize = parseFloat(val);
             sv.sigInst.settings("nodeBorderSize", meta.sigmaSettings.nodeBorderSize);
-            sv.sigInst.refresh();
+            sv.sigInst.refresh({skipIndexation: true});
         }
         handlers.nodeBorderColor = function(val) {
             // console.log("nodeBorderColor" + ": " + val);
@@ -448,7 +450,7 @@ HTMLWidgets.widget(fg = {
             cur.config.node.borderColor = val;
             meta.sigmaSettings.defaultNodeBorderColor = hex2rgba(val);
             sv.sigInst.settings("defaultNodeBorderColor", meta.sigmaSettings.defaultNodeBorderColor);
-            sv.sigInst.refresh();
+            sv.sigInst.refresh({skipIndexation: true});
         }
 
         // Edge
@@ -464,7 +466,7 @@ HTMLWidgets.widget(fg = {
             }
             meta.sigmaSettings.maxEdgeSize = cur.config.settings.maxEdgeSize * val;
             sv.sigInst.settings("maxEdgeSize", meta.sigmaSettings.maxEdgeSize);
-            sv.sigInst.refresh();
+            sv.sigInst.refresh({skipIndexation: true});
         }
         handlers.edgeColor = function(val) {
             // console.log("edgeColor" + ": " + val);
@@ -475,7 +477,7 @@ HTMLWidgets.widget(fg = {
             cur.config.edge.color = val;
             meta.sigmaSettings.defaultEdgeColor = hex2rgba(val);
             sv.sigInst.settings("defaultEdgeColor", meta.sigmaSettings.defaultEdgeColor);
-            sv.sigInst.refresh();
+            sv.sigInst.refresh({skipIndexation: true});
         }
 
         // Color Scheme
@@ -494,7 +496,7 @@ HTMLWidgets.widget(fg = {
                         meta.graph.nodes[i].color = meta.interpolator(palette, meta.data.nodes.color[i], cur.config.node.opacity);
                     }
                 }
-                sv.sigInst.refresh();
+                sv.sigInst.refresh({skipIndexation: true});
                 fg.refreshLegend(cur.state, cur.config);
             }
         }
@@ -673,14 +675,17 @@ HTMLWidgets.widget(fg = {
 
             // Target
             fg.store.currentTab = el;
+
+            state = fg.getElementState(el);
+            if(state.hasOwnProperty("supervisor")) {
+                var config = fg.getConfig(state);
+                fg.build(state, config);
+                fg.initPlugins(state);
+            }
+
         }
 
-        var state = fg.getElementState(el);
-        if(state.hasOwnProperty("supervisor")) {
-            var config = fg.getConfig(state);
-            fg.build(state, config);
-            fg.initPlugins(state);
-        }
+
     },
 
     build: function(state, config) {
