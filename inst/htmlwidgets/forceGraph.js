@@ -28,7 +28,7 @@ HTMLWidgets.widget(fg = {
                     outboundAttractionDistribution: false,
                     adjustSizes: false,
                     barnesHutOptimize: false,
-                    gravity: 30,
+                    gravity: 10,
                     barnesHutTheta: 0.1,
                     edgeWeightInfluence: 0,
                     slowDown: 200
