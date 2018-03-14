@@ -682,10 +682,7 @@ HTMLWidgets.widget(fg = {
                 fg.build(state, config);
                 fg.initPlugins(state);
             }
-
         }
-
-
     },
 
     build: function(state, config) {
@@ -698,9 +695,10 @@ HTMLWidgets.widget(fg = {
         sv.config = meta.forceConfig;
         sv.sigInst.settings(meta.sigmaSettings);
         sigma.layouts.killForceLink();
-        sigma.layouts.startForceLink(sv.sigInst, sv.config);
+        var fa = sigma.layouts.startForceLink(sv.sigInst, sv.config);
         sv.sigInst.refresh();
 
+        fa.bind('start stop', function(event) { switchBtnIcon(event.type) });
         fg.refreshLegend(state, config);
 
         if($("#settingBar").length > 0) {

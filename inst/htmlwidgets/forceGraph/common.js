@@ -104,6 +104,14 @@ var forceGraphFuncs = function(funcId) {
   }
 }
 
+var switchBtnIcon = function(target) {
+  var icon = $(".tab-pane.active .cust-setting-btn.cust-btn-pause i")
+  if(target == "start") {
+    icon.removeClass("fa-play").addClass("fa-pause").attr("status", "playing");
+  } else if (target == "stop") {
+    icon.removeClass("fa-pause").addClass("fa-play").attr("status", "pausing");
+  }
+}
 
 /// Custom the dashboard framework.
 var initReportFramework = function() {
