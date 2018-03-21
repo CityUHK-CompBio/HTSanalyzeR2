@@ -486,29 +486,33 @@ calcGSEA <-
       cat("--Calculating the permutations ...", "\n")
     }
 
-    ## tag the gene sets that can be used in the analysis, i.e. those
-    # that are smaller than the size of the gene list and that have more
-    # than 'minGeneSetSize' elements that can be found in the geneList
-    #
-    # tagGeneSets <- sapply(combinedGeneSets, function(geneSet)
-    #   length(geneSet) < length(geneList) &&
-    #     sum(geneSet %in% listNames) >= minGeneSetSize)
-    tagGeneSets <- sapply(combinedGeneSets, function(geneSet)
-        sum(geneSet %in% listNames) >= minGeneSetSize)
+    ## filter gene sets
 
-    combinedGeneSets <- combinedGeneSets[tagGeneSets]
+    combinedGeneSets <- lapply(combinedGeneSets, intersect, listNames)
+    overlaps <- sapply(combinedGeneSets, length)
 
-    overlaps <-
-      sapply(combinedGeneSets, function(geneSet)
-        sum(listNames %in% geneSet))
+    ind <- overlaps >= minGeneSetSize
+
+    combinedGeneSets <- combinedGeneSets[ind]
+    overlaps <- overlaps[ind]
+
+    ## get scores
+
+    # gScores <- sapply(combinedGeneSets, function(geneSet) calcGScoreCPP(listNames %in% geneSet, geneList, exponent))
+
+    n_sep <- 1000
     gScores <-
-      sapply(combinedGeneSets, function(geneSet)
-        calcGScoreCPP(listNames %in% geneSet, geneList, exponent))
+      foreach(idx = 1:(ceiling(length(combinedGeneSets)/n_sep)), .combine = c, .packages="HTSanalyzeR2") %dopar% {
+        sapply(combinedGeneSets[((idx-1)*n_sep + 1):min(idx*n_sep, length(combinedGeneSets))],
+               function(geneSet) calcGScoreCPP(listNames %in% geneSet, geneList, exponent))
+      }
+
     groups <- split(gScores, overlaps)
     overlaps2 <- as.integer(names(groups))
 
-    permScores <-
-      foreach(idx = seq_along(overlaps2), .combine = rbind, .packages="HTSanalyzeR2") %dopar% {
+    res <-
+      foreach(idx = seq_along(overlaps2), .combine = cbind, .packages="HTSanalyzeR2") %dopar% {
+
         overlap <- overlaps2[idx]
         hits <-
           rep(c(TRUE, FALSE), c(overlap, length(geneList) - overlap))
@@ -516,31 +520,13 @@ calcGSEA <-
           calcGScoreCPP(sample(hits), geneList, exponent)
         })
 
-        perm
-        ## add pseudo count to avoid zero p-value
-        # c(-Inf, perm, Inf)
-      }
-
-    rownames(permScores) <- names(groups)
-
-    res <-
-      foreach(idx = seq_along(groups), .combine = cbind, .packages="HTSanalyzeR2") %dopar% {
-        overlap <- overlaps2[idx]
-        ## observedScore, Pvalue, Adjusted.Pvalue, FDR, overlap
         values <- sapply(groups[[idx]], function(gScore) {
-          p <- mean(gScore > permScores[idx,])
+          p <- mean(gScore > perm)
           pVal <- 2 * (ifelse(p > 0.5, 1 - p, p))
 
-          ## HTSanalyzeR ver.
-          # pVal <-
-          #   ifelse(gScore > 0,
-          #          mean(permScores[idx,] > gScore),
-          #          mean(permScores[idx,] < gScore))
           c(gScore, pVal, NA, overlap)
         })
       }
-
-
 
     res <- t(res)
     colnames(res) <-
