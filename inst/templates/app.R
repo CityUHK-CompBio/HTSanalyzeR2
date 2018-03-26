@@ -78,10 +78,9 @@ trim_result <- function(result, digits = 3) {
 }
 
 create_data_table <- function(gscaObj, analysis, genesets) {
-  funcBody <- ifelse(analysis != "GSEA", "return data",
-                     paste("return type === 'display' && Number(data) == 0 ? '<",
+  funcBody <- paste("return type === 'display' && Number(data) == 0 ? '<",
                            format((1/gscaObj@para$nPermutations), scientific=TRUE, digits = 1),
-                           "' : data", sep = ''))
+                           "' : data", sep = '')
   jsRender <- JS(paste("function(data, type, row, meta) {", funcBody, "}"))
   jsCallback <- JS("table.page(0).draw(false)")
 

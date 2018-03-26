@@ -13,7 +13,7 @@
 \S4method{report}{NWA}(object, reportDir = "NWAReport")
 }
 \arguments{
-\item{object}{An object. When this function is implemented as the S4
+\item{object}{An analyzed object. When this function is implemented as the S4
 method of class 'GSCA' or 'NWA', this argument is an object of class
 'GSCA' or 'NWA'.}
 

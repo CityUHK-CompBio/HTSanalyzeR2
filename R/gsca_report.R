@@ -13,7 +13,7 @@ if (!isGeneric("report")) {
 #' When implemented as the method of class GSCA or NWA, this function produces reports for
 #' either the Gene Set Collection Analysis or the NetWork Analysis.
 #' @aliases report
-#' @param object  An object. When this function is implemented as the S4
+#' @param object  An analyzed object. When this function is implemented as the S4
 #' method of class 'GSCA' or 'NWA', this argument is an object of class
 #' 'GSCA' or 'NWA'.
 #' @param reportDir A single character value specifying the directory to store reports. For default
@@ -72,7 +72,7 @@ setMethod("report", signature = "GSCA",
 #'
 #'This function can create shiny reports for both gene sets enrichment analysis and network analysis.
 #'
-#'@param gsca A GSCA object or a list of GSCA objects.
+#'@param gsca A analyzed GSCA object or a list of analyzed GSCA objects.
 #'@param nwa An NWA object or a list of NWA objects.
 #'@param TSOrder A character specifying the visulization order of 'Time Series' data in shiny report. Only works when
 #'reporting for 'Time Series' data, default is the ID order in 'expInfor'.
