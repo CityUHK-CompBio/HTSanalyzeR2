@@ -7,6 +7,8 @@ This package provides gene set over-representation, enrichment and network analy
 
 ## Quick Installation
 
+**This package is available under R(>= 3.4).**
+
 If you are a current bioconductor user and have `devtools` package installed, you only need to call `install_github` function in `devtools` to install `HTSanalyzeR2`. If you encountered errors, please refer to the section *Potential Dependency Issues*.  
 
 ```
