@@ -1,5 +1,5 @@
 ---
-title: "HTSanalyzeR2: A R package for gene set enrichment and network analysis of various high-throughput data"
+title: "HTSanalyzeR2: An R package for gene set enrichment and network analysis of various high-throughput data"
 author: 
 - name: Lina Zhu 
   affiliation: Department of Biomedical Sciences, City University of Hong Kong, Hong Kong
@@ -19,7 +19,7 @@ abstract: This package provides gene set over-representation, enrichment analysi
 bibliography: bibliography.bib
 
 vignette: >
-  %\VignetteIndexEntry{HTSanalyzeR2: A R package for gene set enrichment and network analysis of various high-throughput data}
+  %\VignetteIndexEntry{HTSanalyzeR2: An R package for gene set enrichment and network analysis of various high-throughput data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -480,7 +480,7 @@ reportAll(gsca=gscaTS3, specificGeneset=specificGeneset)
 
 ```
 
-After calling *report* or *reportAll*, it would automaticlly generate a directory with names starting with "GSCAReport", "NWAReport" or "AnalysisReport" which includes the result named as "results.RData" and a R script named as "app.R". Open "app.R" in RStudio, users can publish and share the report with others via [Shinyapps.io](http://www.shinyapps.io/), details please go to [Shinyapps.io](http://www.shinyapps.io/).
+After calling *report* or *reportAll*, it would automaticlly generate a directory with names starting with "GSCAReport", "NWAReport" or "AnalysisReport" which includes the result named as "results.RData" and an R script named as "app.R". Open "app.R" in RStudio, users can publish and share the report with others via [Shinyapps.io](http://www.shinyapps.io/), details please go to [Shinyapps.io](http://www.shinyapps.io/).
 
 # Special usage of HTSanalyzeR2
 
