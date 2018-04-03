@@ -79,3 +79,19 @@
 #analysis_info.active {
     right: 0;
 }
+
+#network_info {
+    width: 360px;
+    position: fixed;
+    top: 0;
+    right: -360px;
+    height: 100vh;
+    z-index: 999;
+    background: #eee;
+    transition: all 0.2s;
+    padding: 65px 10px 10px 10px;
+}
+
+#network_info.active {
+    right: 0;
+}

@@ -165,7 +165,13 @@ body <- dashboardBody(
               column(width = 12,
                      box(width = NULL, status = "success", solidHeader = TRUE,
                          title = "Network Analysis",
-                         HTSanalyzeR2:::forceGraphOutput("network_output")))
+                         HTSanalyzeR2:::forceGraphOutput("network_output"))),
+              div(id = "network_info",
+                  infoBoxOutput("para6", width = NULL),
+                  infoBoxOutput("para7", width = NULL),
+                  infoBoxOutput("para8", width = NULL),
+                  infoBoxOutput("para9", width = NULL),
+                  infoBoxOutput("para10", width = NULL))
             )
     ),
 
@@ -222,7 +228,17 @@ renderGSCASummary <- function(input, output, gscaObj) {
 
 }
 
-renderNWASummary <- function(input, output) {
+renderNWASummary <- function(input, output, nwaObj) {
+  output$para6 <- renderValueBox(infoBox(color = "teal", title = "Database", subtitle = "Database",
+                                         value = nwaObj@summary$db[, "name"]))
+  output$para7 <- renderValueBox(infoBox(color = "teal", title = "Species", subtitle = "Species",
+                                         value = nwaObj@summary$db[, "species"]))
+  output$para8 <- renderValueBox(infoBox(color = "teal", title = "#Node, #Edge", subtitle = "#Node, #Edge",
+                                         value = paste(nwaObj@summary$db[, "node No"], nwaObj@summary$db[, "edge No"])))
+  output$para9 <- renderValueBox(infoBox(color = "teal", title = "FDR", subtitle = "FDR",
+                                         value = nwaObj@summary$para[, "FDR"]))
+  output$para10 <- renderValueBox(infoBox(color = "teal", title = "#Node, #Edge", subtitle = "Subnetwork identified",
+                                         value = paste(nwaObj@summary$result[, "node No"], nwaObj@summary$result[, "edge No"])))
   # HTSanalyzeR2:::generateNWASummary(nwaObj)
 }
 
@@ -286,13 +302,14 @@ server <- function(input, output, session) {
 
   observeEvent(input$process_net, {
     output$network_output <- HTSanalyzeR2:::updateForceGraph(list(process = input$process_net))
-    renderNWASummary(input, output) # nwaObjs[[input$process_net]]
+    obj <- nwaObjs[[input$process_net]]
+    renderNWASummary(input, output, obj) # nwaObjs[[input$process_net]]
   })
 
   ## TODO: undefined behavior
   observeEvent({42}, {
     output$network_output <- HTSanalyzeR2:::renderForceGraph(create_network(nwa, nwaObjs))
-    renderNWASummary(input, output) # nwaObjs[[input$process_net]]
+    renderNWASummary(input, output, nwa) # nwaObjs[[input$process_net]]
   })
 }
 

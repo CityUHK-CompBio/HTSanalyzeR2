@@ -87,6 +87,12 @@ var registerForceGraph = function(fg) {
   forceGraphObj = fg;
 }
 
+var collapseSidebars = function() {
+  $('#settingBar').removeClass('active');
+  $('#analysis_info').removeClass('active');
+  $('#network_info').removeClass('active');
+}
+
 var tabSwitched = function(tabId) {
   // console.log("tab switched to " + tabId);
   if(forceGraphObj != null) {
@@ -130,17 +136,33 @@ var initReportFramework = function() {
   $(".tab-content .tab-pane" + tabId).addClass("active");
   $('li.messages-menu i').attr("class", tabId == "#shiny-tab-table_tab" ? "fa fa-tags" : "fa fa-cogs");
 
+  // NWA info panel
+  if($('section.sidebar ul.sidebar-menu li a[href="#shiny-tab-network_tab"]').length == 1) {
+    $('li.messages-menu').before('<li class="netinfo-menu" style="display: none;"><a><i class="fa fa-tags"></i></a></li>');
+    $('li.netinfo-menu').click(function (ev) {
+      ev.stopPropagation();
+      var currentTabId = $(".tab-content > div.active").attr("id")
+      if(currentTabId == "shiny-tab-network_tab") {
+        $('#settingBar').removeClass('active');
+        $('#network_info').toggleClass('active');
+      }
+    });
+  }
+
   // Add Listeners
   $('li.messages-menu a').removeAttr("href");
   $('li.messages-menu').click(function (ev) {
     ev.stopPropagation();
-  var currentTabId = $(".tab-content > div.active").attr("id")
+    var currentTabId = $(".tab-content > div.active").attr("id")
     if(currentTabId == "shiny-tab-table_tab") {
       $('#analysis_info').toggleClass('active');
     } else {
+      $('#network_info').removeClass('active');
       $('#settingBar').toggleClass('active');
     }
   });
+
+
 
   $('section.sidebar ul.sidebar-menu li.treeview').click(function(ev) {
     $(".tab-content .tab-pane.active").removeClass("active");
@@ -149,8 +171,9 @@ var initReportFramework = function() {
     $(".tab-content .tab-pane" + tabId).addClass("active");
 
     $('li.messages-menu i').attr("class", tabId == "#shiny-tab-table_tab" ? "fa fa-tags" : "fa fa-cogs")
-    $('#settingBar').removeClass('active');
-
+    $('li.netinfo-menu').css("display", tabId == "#shiny-tab-network_tab" ? "block" : "none");
+    
+    collapseSidebars();
     tabSwitched(tabId);
   });
 
