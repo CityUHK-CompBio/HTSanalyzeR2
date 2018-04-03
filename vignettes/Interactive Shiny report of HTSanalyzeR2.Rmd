@@ -1,0 +1,65 @@
+---
+title: "Interactive Shiny report of HTSanalyzeR2"
+author: 
+- name: Lina Zhu 
+  affiliation: Department of Biomedical Sciences, City University of Hong Kong, Hong Kong
+- name: Feng Gao
+  affiliation: Department of Biomedical Sciences, City University of Hong Kong, Hong Kong
+- name: Xiupei Mei
+  affiliation: Department of Computer Science, City University of Hong Kong, Hong Kong
+- name: Xin Wang
+  affiliation: Department of Biomedical Sciences, City University of Hong Kong, Hong Kong 
+date: "`r Sys.Date()`"
+package: HTSanalyzeR2
+output: 
+        BiocStyle::pdf_document
+bibliography: bibliography1.bib
+
+vignette: >
+  %\VignetteIndexEntry{Shiny report of HTSanalyzeR2}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+In this short tutorial, we give a detailed illustration for the shiny report part of HTSanalyzeR2 package to visualize the results and modify figures in different aspects.
+
+# Interactive Shiny report visualization
+
+## Visualize single *GSCA* object for single data set
+
+For single data set analysis, after analyzed by HTSanalyzeR2, we can get a gsca object and use the function *report* to launch the shiny report. 
+```{r, eval=FALSE}
+data(d7_gsca)
+report(d7_gsca)
+```
+
+## Visualize single *NWA* object for single data set
+```{r}
+data(d7_nwa)
+report(d7_nwa)
+```
+
+
+## Visualize a list of *GSCA* object for time series/comparative analysis
+```{r}
+data(gscaTS)
+reportAll(gscaTS)
+```
+
+## Visualize a list of *NWA* object for time series/comparative analysis
+```{r}
+data(nwaTS)
+reportAll(nwaTS)
+```
+
+
+
+
+
+

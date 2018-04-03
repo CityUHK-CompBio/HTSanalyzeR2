@@ -25,8 +25,8 @@ if(!is.null(gsca)) {
   if(gscaTS) {
     gscaObjs <- gsca
     gscaSeriesTicks <- names(gscaObjs)
-    gscaSeriesTickInput <- selectInput('series_tick_res', 'Time Point', gscaSeriesTicks)
-    gscaProcessSlider <- sliderInput("process_map", "Time Point", 1, length(gscaSeriesTicks), value = 1, step = 1, animate = animationOptions(interval=1000))
+    gscaSeriesTickInput <- selectInput('series_tick_res', 'Experiment', gscaSeriesTicks)
+    gscaProcessSlider <- sliderInput("process_map", "Experiment", 1, length(gscaSeriesTicks), value = 1, step = 1, animate = animationOptions(interval=1000))
     gscaTimePointName <- menuItemOutput("series_tick_name")
     for(name in gscaSeriesTicks) {
       gscaObjs[[name]] <- HTSanalyzeR2:::appendLinks(gscaObjs[[name]])
