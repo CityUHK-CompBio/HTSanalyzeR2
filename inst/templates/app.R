@@ -229,15 +229,15 @@ renderGSCASummary <- function(input, output, gscaObj) {
 }
 
 renderNWASummary <- function(input, output, nwaObj) {
-  output$para6 <- renderValueBox(infoBox(color = "teal", title = "Database", subtitle = "Database",
+  output$para6 <- renderValueBox(infoBox(color = "teal", title = "Interactome Name", subtitle = "",
                                          value = nwaObj@summary$db[, "name"]))
-  output$para7 <- renderValueBox(infoBox(color = "teal", title = "Species", subtitle = "Species",
+  output$para7 <- renderValueBox(infoBox(color = "teal", title = "Species", subtitle = "",
                                          value = nwaObj@summary$db[, "species"]))
-  output$para8 <- renderValueBox(infoBox(color = "teal", title = "#Node, #Edge", subtitle = "#Node, #Edge",
+  output$para8 <- renderValueBox(infoBox(color = "teal", title = "Interactome", subtitle = "Node Edges",
                                          value = paste(nwaObj@summary$db[, "node No"], nwaObj@summary$db[, "edge No"])))
-  output$para9 <- renderValueBox(infoBox(color = "teal", title = "FDR", subtitle = "FDR",
+  output$para9 <- renderValueBox(infoBox(color = "teal", title = "FDR", subtitle = "",
                                          value = nwaObj@summary$para[, "FDR"]))
-  output$para10 <- renderValueBox(infoBox(color = "teal", title = "#Node, #Edge", subtitle = "Subnetwork identified",
+  output$para10 <- renderValueBox(infoBox(color = "teal", title = "Identified subnetwork", subtitle = "Node Edges",
                                          value = paste(nwaObj@summary$result[, "node No"], nwaObj@summary$result[, "edge No"])))
   # HTSanalyzeR2:::generateNWASummary(nwaObj)
 }
