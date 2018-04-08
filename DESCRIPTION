@@ -41,7 +41,9 @@ Imports:
     graphics,
     grDevices,
     stats,
-    utils 
+    utils,
+    BiocParallel,
+    fgsea
 Collate: 
     'utils.R'
     'class_union.R'

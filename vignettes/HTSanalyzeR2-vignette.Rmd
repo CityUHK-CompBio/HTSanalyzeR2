@@ -76,7 +76,6 @@ library(org.Hs.eg.db)
 library(KEGGREST)
 library(GO.db)
 library(igraph)
-library(limma)
 ```
 
 # Case study1: Single dataset analysis for gene expression data

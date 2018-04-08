@@ -1,5 +1,5 @@
 ---
-title: "Interactive Shiny report of HTSanalyzeR2"
+title: "Interactive-Shiny-report-of-HTSanalyzeR2"
 author: 
 - name: Lina Zhu 
   affiliation: Department of Biomedical Sciences, City University of Hong Kong, Hong Kong

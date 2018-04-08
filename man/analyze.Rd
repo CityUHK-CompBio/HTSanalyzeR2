@@ -9,7 +9,8 @@
 \usage{
 \S4method{analyze}{GSCA}(object, para = list(pValueCutoff = 0.05,
   pAdjustMethod = "BH", nPermutations = 1000, minGeneSetSize = 15, exponent =
-  1), verbose = TRUE, doGSOA = FALSE, doGSEA = TRUE)
+  1), verbose = TRUE, doGSOA = FALSE, doGSEA = TRUE,
+  GSEA.by = "HTSanalyzeR2")
 
 \S4method{analyze}{NWA}(object, fdr = 0.001, species, verbose = TRUE)
 }
@@ -29,6 +30,10 @@ overrepresentation analysis(hypergeometric test) (when doGSOA=TRUE) or not (when
 
 \item{doGSEA}{A single logical value specifying to perform gene set
 enrichment analysis (when doGSEA=TRUE) or not (when doGSEA=FALSE).}
+
+\item{GSEA.by}{A single character value to choose which algorithm to do GSEA. Valid value
+could either be "HTSanalyzeR2"(default) or "fgsea". If performed by "fgsea", the result explanation
+please refer to \code{\link[fgsea:fgsea]{fgsea}}.}
 
 \item{fdr}{A single numeric value specifying the false discovery for the scoring of nodes
 (see BioNet::scoreNodes and Dittrich et al., 2008 for details)}

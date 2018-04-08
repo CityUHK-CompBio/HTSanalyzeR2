@@ -6,6 +6,8 @@ if (!isGeneric("analyze")) {
 #' Gene Set Collection Analysis or NetWork Analysis
 #'
 #' This is a generic function.
+#'
+#' @importFrom BiocParallel bplapply
 #' @describeIn analyze The function will perform gene set collection analysis
 #' on a GSCA object and update information about these results to slot
 #' \emph{summary} of class GSCA.
@@ -35,7 +37,9 @@ if (!isGeneric("analyze")) {
 #' overrepresentation analysis(hypergeometric test) (when doGSOA=TRUE) or not (when doGSOA=FALSE).
 #' @param doGSEA A single logical value specifying to perform gene set
 #' enrichment analysis (when doGSEA=TRUE) or not (when doGSEA=FALSE).
-#'
+#' @param GSEA.by A single character value to choose which algorithm to do GSEA. Valid value
+#' could either be "HTSanalyzeR2"(default) or "fgsea". If performed by "fgsea", the result explanation
+#' please refer to \code{\link[fgsea:fgsea]{fgsea}}.
 #' @return In the end, this function will return an updated object of
 #' class GSCA or NWA. All the analyzed results could be found in slot \emph{result}.
 #' @include gsca_class.R
@@ -98,7 +102,8 @@ setMethod("analyze", signature = "GSCA",
                      exponent = 1),
                    verbose = TRUE,
                    doGSOA = FALSE,
-                   doGSEA = TRUE) {
+                   doGSEA = TRUE,
+                   GSEA.by="HTSanalyzeR2") {
 
             paraCheck("General", "verbose", verbose)
             paraCheck("Analyze", "doGSOA", doGSOA)
@@ -136,7 +141,8 @@ setMethod("analyze", signature = "GSCA",
                 exponent = object@para$exponent,
                 verbose = verbose,
                 doGSOA = doGSOA,
-                doGSEA = doGSEA
+                doGSEA = doGSEA,
+                GSEA.by = GSEA.by
               )
 
             ## update summary information(first analyze and then update summary)
@@ -182,7 +188,8 @@ analyzeGeneSetCollections <-
            exponent = 1,
            verbose = TRUE,
            doGSOA = TRUE,
-           doGSEA = TRUE) {
+           doGSEA = TRUE,
+           GSEA.by = "HTSanalyzeR2") {
     ## check arguments
     if ((!doGSOA) && (!doGSEA))
       stop(
@@ -197,6 +204,7 @@ analyzeGeneSetCollections <-
     }
 
     numGeneSetCollections <- length(listOfGeneSetCollections)
+    GSEA.by <- match.arg(GSEA.by, c("HTSanalyzeR2", "fgsea"))
 
     ## filter 'listOfGeneSetCollections' by 'minGeneSetSize'
     maxOverlap <- 0
@@ -258,6 +266,7 @@ analyzeGeneSetCollections <-
 
     ## GSEA
     if (doGSEA) {
+      if(GSEA.by == "HTSanalyzeR2"){
       GSEA.results.list <-
         calcGSEA(
           listOfGeneSetCollections,
@@ -268,9 +277,29 @@ analyzeGeneSetCollections <-
           pAdjustMethod,
           verbose
         )
-      cat("-Gene set enrichment analysis complete \n")
+      cat("-Gene set enrichment analysis using HTSanalyzeR2 complete \n")
       cat("==============================================\n\n")
-    } else {
+      } else {
+        # ## calculate maximum gene set sizes
+        # maxGSSize <- max(unlist(lapply(listOfGeneSetCollections, function(x){
+        #   max.tmp <- max(unlist(lapply(x, function(y) {
+        #     length(y)
+        #   })))
+        # })))  ## no need!
+        ## using fgsea to do GSEA
+        geneList <- sort(geneList)
+        GSEA.results.list <- GSEA_fgsea(
+          listOfGeneSetCollections,
+          geneList,
+          nPermutations,
+          minGeneSetSize,
+          exponent,
+          pAdjustMethod,
+          verbose
+        )
+        cat("-Gene set enrichment analysis using fgsea complete \n")
+        cat("==============================================\n\n")
+    }} else {
       GSEA.results.list = NULL
     }
 
@@ -477,12 +506,12 @@ calcGSEA <-
              use.names = FALSE)
     names(combinedGeneSets) <-
       unlist(lapply(listOfGeneSetCollections, names), use.names = FALSE)
-    groupInfo <-
-      rep(names(listOfGeneSetCollections),
-          lapply(listOfGeneSetCollections, length))
+    # groupInfo <-
+    #   rep(names(listOfGeneSetCollections),
+    #       lapply(listOfGeneSetCollections, length))
 
     if (verbose) {
-      cat("-Performing gene set enrichment analysis ...", "\n")
+      cat("-Performing gene set enrichment analysis using HTSanalyzeR2...", "\n")
       cat("--Calculating the permutations ...", "\n")
     }
 
@@ -556,4 +585,54 @@ calcGSEA <-
     return(results)
   }
 
+##' @importFrom fgsea fgsea
+GSEA_fgsea <- function(listOfGeneSetCollections,
+                       geneList,
+                       nPermutations,
+                       minGeneSetSize,
+                       exponent,
+                       pAdjustMethod,
+                       verbose){
+  combinedGeneSets <-
+    unlist(listOfGeneSetCollections,
+           recursive = FALSE,
+           use.names = FALSE)
+  names(combinedGeneSets) <-
+    unlist(lapply(listOfGeneSetCollections, names), use.names = FALSE)
+  if (verbose) {
+    cat("-Performing gene set enrichment analysis using fgsea...", "\n")
+    cat("--Calculating the permutations ...", "\n")
+  }
+  ## use fgsea to do gsea
+  tmp_res <- fgsea(pathways=combinedGeneSets,
+                   stats=geneList,
+                   nperm=nPermutations,
+                   minSize=minGeneSetSize,
+                   maxSize=Inf,
+                   gseaParam=exponent,
+                   nproc = 0)
+  tmp_res <- as.data.frame(tmp_res)
+  tmp_res$padj <- p.adjust(tmp_res$pval, method=pAdjustMethod)
+  rownames(tmp_res) <- tmp_res$pathway
+  tmp_res <- tmp_res[, c("ES", "pval", "padj", "NES", "nMoreExtreme",
+                         "size", "leadingEdge")]
+  colnames(tmp_res) <- c("Observed.score","Pvalue","Adjusted.Pvalue",
+                         "NES", "nMoreExtreme",
+                         "size", "leadingEdge")
+  tmp_res[, "leadingEdge"] <- sapply(tmp_res[, "leadingEdge"], function(x) {
+    paste0(x, collapse =";")
+  })
+  ## Extract results dataframe for each gene set collection and orders them
+  # by adjusted p-value
+  results <- list()
+  sapply(seq_along(listOfGeneSetCollections), function(i) {
+    GSEA.res.mat <-
+      tmp_res[rownames(tmp_res) %in% names(listOfGeneSetCollections[[i]]), , drop = FALSE]
+    GSEA.res.mat <-
+      GSEA.res.mat[order(GSEA.res.mat[, "Adjusted.Pvalue"]), , drop = FALSE]
+    results[[i]] <<- GSEA.res.mat
+  })
 
+  names(results) <- names(listOfGeneSetCollections)
+  return(results)
+}

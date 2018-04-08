@@ -95,6 +95,9 @@ preprocessGscaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #' @param doGSEA a single logical value specifying whether to perform gene set
 #' enrichment analysis (when doGSEA=TRUE) or not (when doGSEA=FALSE),
 #' default is TRUE.
+#' @param GSEA.by A single character value to choose which algorithm to do GSEA. Valid value
+#' could either be "HTSanalyzeR2"(default) or "fgsea". If performed by "fgsea", the result explanation
+#' please refer to \code{\link[fgsea:fgsea]{fgsea}}.
 #' @return In the end, this function will return an updated list of GSCA object.
 #' @seealso \code{\link[HTSanalyzeR2]{analyze}}
 #' @export
@@ -147,12 +150,13 @@ preprocessGscaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #' }
 analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="BH",
                                       nPermutations=1000, minGeneSetSize=15,
-                                      exponent=1), verbose = TRUE, doGSOA = FALSE,
-                          doGSEA = TRUE){
+                                      exponent=1),
+                          verbose = TRUE, doGSOA = FALSE,
+                          doGSEA = TRUE, GSEA.by = "HTSanalyzeR2"){
               paraCheck("gscaTS", "gscaList", gscaList)
               tmpName <- names(gscaList)
               tmp <- lapply(gscaList, function(x){
-                  analyze(x, para=para, verbose=verbose, doGSOA=doGSOA, doGSEA=doGSEA)
+                  analyze(x, para=para, verbose=verbose, doGSOA=doGSOA, doGSEA=doGSEA, GSEA.by = "HTSanalyzeR2")
                         })
               names(tmp) <- tmpName
               tmp
