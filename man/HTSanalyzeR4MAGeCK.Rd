@@ -10,7 +10,8 @@ HTSanalyzeR4MAGeCK(MAGeCKdata, selectDirection = "negative", doGSOA = FALSE,
   keepMultipleMappings = TRUE, duplicateRemoverMethod = "max",
   orderAbsValue = FALSE, pValueCutoff = 0.05, pAdjustMethod = "BH",
   nPermutations = 1000, minGeneSetSize = 15, exponent = 1,
-  verbose = TRUE, keggGSCs = NULL, goGSCs = NULL, msigdbGSCs = NULL,
+  verbose = TRUE, GSEA.by = "HTSanalyzeR2", keggGSCs = NULL,
+  goGSCs = NULL, msigdbGSCs = NULL, doNWA = FALSE,
   interactionMatrix = NULL, reportDir = "HTSanalyzerReport",
   nwAnalysisGenetic = FALSE, nwAnalysisFdr = 0.001)
 }
@@ -70,11 +71,17 @@ from both hypergeometric analysis and GSEA.}
 \item{verbose}{A single logical value specifying to display detailed messages
 (when verbose=TRUE) or not (when verbose=FALSE)}
 
+\item{GSEA.by}{A single character value to choose which algorithm to do GSEA. Valid value
+could either be "HTSanalyzeR2"(default) or "fgsea". If performed by "fgsea", the result explanation
+please refer to \code{\link[fgsea:fgsea]{fgsea}}.}
+
 \item{keggGSCs}{A character vector of names of all KEGG gene set collections.}
 
 \item{goGSCs}{A character vector of names of all GO gene set collections.}
 
 \item{msigdbGSCs}{A character vector of names of all MSigDB gene set collections.}
+
+\item{doNWA}{A logic value specifying whether to do subnetwork analysis or not, default is FALSE.}
 
 \item{interactionMatrix}{An interaction matrix including columns
 'InteractionType', 'InteractorA' and 'InteractorB'. If this matrix
@@ -115,8 +122,9 @@ ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
 ## start analysis
 HTSanalyzeR4MAGeCK(MAGeCKdata = d7,
                    selectDirection = "negative",
-                   doGSOA = FALSE,
+                   doGSOA = TRUE,
                    doGSEA = TRUE,
+                   hitsCutoffPval = 0.01,
                    listOfGeneSetCollections = ListGSC,
                    species = "Hs",
                    initialIDs = "SYMBOL",
@@ -125,6 +133,7 @@ HTSanalyzeR4MAGeCK(MAGeCKdata = d7,
                    minGeneSetSize = 200,
                    keggGSCs=c("PW_KEGG"),
                    goGSCs = c("GO_MF"),
+                   doNWA = TRUE,
                    nwAnalysisFdr = 0.0001)
 }
 }

@@ -43,9 +43,13 @@
 #' shared by a gene set and the input total genes. Gene sets with fewer than this number are removed
 #' from both hypergeometric analysis and GSEA.
 #' @param exponent A single integer or numeric value used in weighting phenotypes in GSEA.
+#' @param GSEA.by A single character value to choose which algorithm to do GSEA. Valid value
+#' could either be "HTSanalyzeR2"(default) or "fgsea". If performed by "fgsea", the result explanation
+#' please refer to \code{\link[fgsea:fgsea]{fgsea}}.
 #' @param keggGSCs A character vector of names of all KEGG gene set collections.
 #' @param goGSCs A character vector of names of all GO gene set collections.
 #' @param msigdbGSCs A character vector of names of all MSigDB gene set collections.
+#' @param doNWA A logic value specifying whether to do subnetwork analysis or not, default is FALSE.
 #' @param interactionMatrix An interaction matrix including columns
 #' 'InteractionType', 'InteractorA' and 'InteractorB'. If this matrix
 #' is available, the interactome can be directly built based on it.
@@ -74,8 +78,9 @@
 #' ## start analysis
 #' HTSanalyzeR4MAGeCK(MAGeCKdata = d7,
 #'                    selectDirection = "negative",
-#'                    doGSOA = FALSE,
+#'                    doGSOA = TRUE,
 #'                    doGSEA = TRUE,
+#'                    hitsCutoffPval = 0.01,
 #'                    listOfGeneSetCollections = ListGSC,
 #'                    species = "Hs",
 #'                    initialIDs = "SYMBOL",
@@ -84,6 +89,7 @@
 #'                    minGeneSetSize = 200,
 #'                    keggGSCs=c("PW_KEGG"),
 #'                    goGSCs = c("GO_MF"),
+#'                    doNWA = TRUE,
 #'                    nwAnalysisFdr = 0.0001)
 #' }
 #' @export
@@ -105,9 +111,11 @@ HTSanalyzeR4MAGeCK <- function(MAGeCKdata,
                                minGeneSetSize = 15,
                                exponent = 1,
                                verbose  = TRUE,
+                               GSEA.by = "HTSanalyzeR2",
                                keggGSCs = NULL,
                                goGSCs = NULL,
                                msigdbGSCs = NULL,
+                               doNWA = FALSE,
                                interactionMatrix = NULL,
                                reportDir = "HTSanalyzerReport",
                                nwAnalysisGenetic = FALSE,
@@ -172,6 +180,7 @@ HTSanalyzeR4MAGeCK <- function(MAGeCKdata,
       stop("Please define either 'hitsCutoffLogFC' or 'hitsCutoffPval' to do GSOA!\n")
     }else if(!is.null(hitsCutoffLogFC) && !is.null(hitsCutoffPval)){
       warning("both 'hitsCutoffLogFC' and 'hitsCutoffPval' have vaule, would only use 'hitsCutoffLogFC' to choose hits!\n")
+      hits <- names(data4enrich[which(abs(data4enrich) > hitsCutoffLogFC)])
     }else if(!is.null(hitsCutoffLogFC)){
       hits <- names(data4enrich[which(abs(data4enrich) > hitsCutoffLogFC)])
     }else {
@@ -189,11 +198,13 @@ HTSanalyzeR4MAGeCK <- function(MAGeCKdata,
   ##do analysis
   gsca <- analyze(gsca, para=list(pValueCutoff = pValueCutoff, pAdjustMethod = pAdjustMethod,
                                   nPermutations = nPermutations, minGeneSetSize = minGeneSetSize,
-                                  exponent = exponent), doGSOA = doGSOA, doGSEA = doGSEA)
+                                  exponent = exponent),
+                  doGSOA = doGSOA, doGSEA = doGSEA, GSEA.by = GSEA.by)
   gsca <- appendGSTerms(gsca, keggGSCs=keggGSCs, goGSCs=goGSCs, msigdbGSCs = msigdbGSCs)
   #----------------------------------------------------------------------
   ## Network analysis
   ##create a NWA (NetWork Analysis) object
+  if(doNWA){
   nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
   ##preprocessing
   nwa <- preprocess(nwa, species=species, initialIDs=initialIDs, keepMultipleMappings=keepMultipleMappings,
@@ -206,5 +217,8 @@ HTSanalyzeR4MAGeCK <- function(MAGeCKdata,
   nwa <- analyze(nwa, fdr = nwAnalysisFdr, species = species, verbose = verbose)
   # saveRDS(gsca, nwa, file = file.path(reportDir,
                                    # paste(deparse(substitute(MAGeCKdata)), ".RData", sep="")))
+  } else {
+    nwa = NULL
+  }
   reportAll(gsca, nwa)
 }
