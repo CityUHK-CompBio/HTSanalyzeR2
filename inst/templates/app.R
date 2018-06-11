@@ -77,21 +77,26 @@ trim_result <- function(result, digits = 3) {
   result
 }
 
-create_data_table <- function(gscaObj, analysis, genesets) {
-  funcBody <- paste("return type === 'display' && Number(data) == 0 ? '<",
-                           format((1/gscaObj@para$nPermutations), scientific=TRUE, digits = 1),
-                           "' : data", sep = '')
-  jsRender <- JS(paste("function(data, type, row, meta) {", funcBody, "}"))
-  jsCallback <- JS("table.page(0).draw(false)")
+colValueRender <- function(minZeroValue) {
+  JS(paste("function(data, type, row, meta) { return type === 'display' && Number(data) == 0 ? '", minZeroValue, "' : data }"))
+}
 
+create_data_table <- function(gscaObj, analysis, genesets) {
   analysis_to_show <- ifelse(analysis == "Significant in both", "Sig.adj.pvals.in.both", paste0(analysis, ".results"))
   res <- gscaObj@result[[analysis_to_show]][[genesets]]
   res <- trim_result(res, digits = 3)
 
-  target_cols <- c("HyperGeo.Adj.Pvalue", "GSEA.Adj.Pvalue", "Pvalue", "Adjusted.Pvalue")
-  dt_options <- list(pageLength = 13, dom = 'Bfrtip', buttons = c('copy', 'csv', 'pdf', 'print'),
-                     columnDefs = list(list(targets = which(colnames(res) %in% target_cols) - 1, render = jsRender)))
+  gseaDispValue <- ifelse(is.null(gscaObj@para$nPermutations), "0", format((1/gscaObj@para$nPermutations), scientific=TRUE, digits = 1))
+  jsRenders <- list(GSEA = colValueRender(gseaDispValue), HyperGeo = colValueRender('1e-06'))
 
+  columnDefs <- list(list(targets = which(colnames(res) == "HyperGeo.Adj.Pvalue") - 1, render = jsRenders[["HyperGeo"]]),
+                     list(targets = which(colnames(res) == "GSEA.Adj.Pvalue") - 1, render = jsRenders[["GSEA"]]))
+  if (analysis != "Significant in both") {
+    columnDefs <- list(list(targets = which(colnames(res) %in% c("Pvalue", "Adjusted.Pvalue")) - 1, render = jsRenders[[analysis]]))
+  }
+
+  dt_options <- list(pageLength = 13, dom = 'Bfrtip', buttons = c('copy', 'csv', 'pdf', 'print'), columnDefs = columnDefs)
+  jsCallback <- JS("table.page(0).draw(false)")
   dt <- DT::datatable(res, filter = 'top', rownames = FALSE, escape = FALSE, extensions = 'Buttons', options = dt_options, callback = jsCallback)
   if (analysis != "Significant in both") {
     dt <- formatStyle(dt, 'Adjusted.Pvalue', target = "row", fontWeight = styleInterval(gscaObj@para$pValueCutoff, c('bold', 'weight')))
@@ -238,7 +243,7 @@ renderNWASummary <- function(input, output, nwaObj) {
   output$para9 <- renderValueBox(infoBox(color = "teal", title = "FDR", subtitle = "",
                                          value = nwaObj@summary$para[, "FDR"]))
   output$para10 <- renderValueBox(infoBox(color = "teal", title = "Identified subnetwork", subtitle = "Node Edges",
-                                         value = paste(nwaObj@summary$result[, "node No"], nwaObj@summary$result[, "edge No"])))
+                                          value = paste(nwaObj@summary$result[, "node No"], nwaObj@summary$result[, "edge No"])))
   # HTSanalyzeR2:::generateNWASummary(nwaObj)
 }
 
