@@ -1,27 +1,40 @@
-#' Create a list of gene sets for Homo Sapiens based on MSigDB collection terms
+#' Create a list of gene sets for specific species from MSigDB database
 #'
-#' This function creates gene set collections for Homo Sapiens based on MSigDB of version 6.1. Currently only
-#' commonly used 'c2' and 'c5' gene sets could be gotten by this function.
+#' This function creates gene set collections based on MSigDB database version 6.1. Currently
+#' our package only supports all 8 collections for Homo Sapiens as well as
+#' 'c2', 'c6' and 'c7' for Mus musculus.
 #' It is collection-specific, and returns a list of gene sets collection with
 #' the elements of the gene sets represented by Entrez Gene IDs.
 #'
 #' @param collection A single character value specifying a choice of collection.
-#' It should be either 'c2'(curated gene sets) or 'c5'(GO gene sets). More details please refer to
+#' Valid values include 'h'(hallmark gene sets), 'c1' (positional gene sets),
+#' 'c2' (curated gene sets), 'c3' (motif gene sets), 'c4' (computational gene sets),
+#' 'c5' (GO gene sets), 'c6' (oncogenic signatures), 'c7' (immunologic signatures).
+#' More details please refer to
 #' \href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB}.
+#' @param species A single character value specifying the species of the gene sets of MSigDB.
+#' Now we only support 'Hs' (Homo_Sapiens) for all 8 gene set collections
+#' and 'Mm' (Mus_musculus) for 'c2', 'c6' and 'c7' gene set collections.
 #'
-#' @return Return a list of gene sets of specific collection for Homo Sapiens in
+#' @return Return a list of gene sets of specific collection in
 #' \href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB} of version 6.1.
 #'
 #' @seealso \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{KeggGeneSets}}
 #'
 #' @examples
-#' C2_MSig <- MSigDBGeneSets(collection = "c2")
+#' C2_MSig <- MSigDBGeneSets(collection = "c2", species = "Hs")
 #'
 #' @export
-MSigDBGeneSets <- function(collection = "c2") {
+MSigDBGeneSets <- function(collection = "c2", species = "Hs") {
   paraCheck("LoadGeneSets", "collection", collection)
-
-  gene.sets <- MSigDB[[paste(collection, ".db", sep = "")]]
+  inquiry <- paste(collection, species, "db", sep = ".")
+  if(!inquiry %in% names(MSigDB)){
+    stop(paste("Invalid gene set collection and specie, ",
+               "HTSanalyzeR2 now only supports all 8 collections ",
+              "for Homo Sapiens as well as 'c2', 'c6' and 'c7' ",
+              "for Mus musculus!\n", sep = ""))
+  }
+  gene.sets <- MSigDB[[inquiry]]
   return(gene.sets)
 }
 
