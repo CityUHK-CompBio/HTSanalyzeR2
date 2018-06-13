@@ -86,14 +86,10 @@ create_data_table <- function(gscaObj, analysis, genesets) {
   res <- gscaObj@result[[analysis_to_show]][[genesets]]
   res <- trim_result(res, digits = 3)
 
-<<<<<<< HEAD
+
   gseaDispValue <- ifelse(is.null(gscaObj@para$nPermutations), "0",
-                          paste("<", format((1/gscaObj@para$nPermutations), scientific=TRUE, digits = 1), sep = ""))
-  jsRenders <- list(GSEA = colValueRender(gseaDispValue), HyperGeo = colValueRender('<1e-06'))
-=======
-  gseaDispValue <- ifelse(is.null(gscaObj@para$nPermutations), "0", format((1/gscaObj@para$nPermutations), scientific=TRUE, digits = 1))
+                          paste(format((1/gscaObj@para$nPermutations), scientific=TRUE, digits = 1), sep = ""))
   jsRenders <- list(GSEA = colValueRender(gseaDispValue), HyperGeo = colValueRender('1e-06'))
->>>>>>> ac7ee72f06e5c6e6277be409e114747b4c9ae843
 
   columnDefs <- list(list(targets = which(colnames(res) == "HyperGeo.Adj.Pvalue") - 1, render = jsRenders[["HyperGeo"]]),
                      list(targets = which(colnames(res) == "GSEA.Adj.Pvalue") - 1, render = jsRenders[["GSEA"]]))
