@@ -252,6 +252,7 @@ setMethod("extractEnrichMap", signature = "GSCA",
             tempdf <-
               do.call("rbind",
                       lapply(tempList, data.frame, stringsAsFactors = FALSE))
+            rownames(tempdf) <- paste(tempdf$gscID, tempdf$gsID, sep = '.')
             if (gsNameType == "term" &&
                 !("Gene.Set.Term" %in% colnames(tempdf)))
               stop(
