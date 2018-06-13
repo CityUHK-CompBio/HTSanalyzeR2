@@ -116,7 +116,7 @@ gsca2 <- analyze(gsca1,
                  para=list(pValueCutoff=0.05, pAdjustMethod="BH",
                            nPermutations=100, minGeneSetSize=180,
                            exponent=1), 
-                           doGSOA = TRUE)
+                           doGSOA = FALSE)
 
 ## append gene sets terms
 gsca3 <- appendGSTerms(gsca2, 
@@ -136,19 +136,3 @@ report(gsca3)
 ## Getting help
 
 Should you have any questions about this package, you can either email to the developers listed in the *DESCRIPTION* part of this package or create an issue in the [issue part](https://github.com/CityUHK-CompBio/HTSanalyzeR2/issues).
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
