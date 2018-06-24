@@ -29,7 +29,7 @@ MSigDBGeneSets <- function(collection = "c2", species = "Hs") {
   paraCheck("LoadGeneSets", "collection", collection)
   inquiry <- paste(collection, species, "db", sep = ".")
   if(!inquiry %in% names(MSigDB)){
-    stop(paste("Invalid gene set collection and specie, ",
+    stop(paste("Invalid gene set collection and species, ",
                "HTSanalyzeR2 now only supports all 8 collections ",
               "for Homo Sapiens as well as 'c2', 'c6' and 'c7' ",
               "for Mus musculus!\n", sep = ""))
