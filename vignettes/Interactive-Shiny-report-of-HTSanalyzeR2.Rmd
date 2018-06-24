@@ -39,12 +39,12 @@ report(d7_gsca)
 ```
 
 
-### The hypergeometric test result table[Figure1]
+### The hypergeometric test result table [Figure1]
 
-![The hypergeometric test result table](/home/Lina/HTSanalyzeR2/HTSanalyzeR2/vignettes/figures/1.PNG)
+![The hypergeometric test result table](figures/1.PNG)
 
 
-### Parameters for modifying the figure[Figure2]
+### Parameters for modifying the figure [Figure2]
 
 There are five main parts for users to modify their figure by interactive operations including:**Layout**, **Label**, **Node**, **Edge** and **Color Scheme**. Following is a detailed explanation for each part.
 
@@ -57,7 +57,7 @@ There are five main parts for users to modify their figure by interactive operat
 + **Edge**: A widge to modify the edges with two easy-to-understand parameters: *Edge Scale* and *Edge Color*.
 + **Color Scheme**: A widge to change the default color.
 
-![The enrichment map of hypergeometric test result](/home/Lina/HTSanalyzeR2/HTSanalyzeR2/vignettes/figures/2.PNG)
+![The enrichment map of hypergeometric test result](figures/2.PNG)
 
 
 ## Visualize single *NWA* object for individual data set
@@ -66,8 +66,8 @@ data(d7_nwa)
 report(d7_nwa)
 ```
 
-### The identified subnetwork[Figure3]
-![The identified subnetwork](/home/Lina/HTSanalyzeR2/HTSanalyzeR2/vignettes/figures/3.PNG)
+### The identified subnetwork [Figure3]
+![The identified subnetwork](figures/3.PNG)
 
 ## Visualize a list of *GSCA* objects for time series/comparative analysis
 ```{r, eval=FALSE}
@@ -77,12 +77,12 @@ data(gscaTS)
 reportAll(gscaTS, cutoff = 0.035)
 ```
 
-### GSEA results table for time series/comparative analysis[Figure4]
-![GSEA results table for time series/comparative analysis](/home/Lina/HTSanalyzeR2/HTSanalyzeR2/vignettes/figures/4.PNG)
+### GSEA results table for time series/comparative analysis [Figure4]
+![GSEA results table for time series/comparative analysis](figures/4.PNG)
 
 
-### Union enrichment map for time series/comparative analysis[Figure5]
-![Union enrichment map for time series/comparative analysis](/home/Lina/HTSanalyzeR2/HTSanalyzeR2/vignettes/figures/5.PNG)
+### Union enrichment map for time series/comparative analysis [Figure5]
+![Union enrichment map for time series/comparative analysis](figures/5.PNG)
 
 
 ## Visualize a list of *NWA* objects for time series/comparative analysis
@@ -91,8 +91,8 @@ data(nwaTS)
 reportAll(nwaTS)
 ```
 
-### Union subnetwork for time series/comparative analysis[Figure6]
-![Union subnetwork for time series/comparative analysis](/home/Lina/HTSanalyzeR2/HTSanalyzeR2/vignettes/figures/6.PNG)
+### Union subnetwork for time series/comparative analysis [Figure6]
+![Union subnetwork for time series/comparative analysis](figures/6.PNG)
 
 
 ## Visualize both *GSCA* and *NWA* objects simultaneously
@@ -101,8 +101,8 @@ reportAll(gsca = gscaTS, nwa = nwaTS)
 
 ```
 
-### Visualize both GSEA and netwrok result in the same report[Figure7]
-![Visualize both GSEA and netwrok result in the same report](/home/Lina/HTSanalyzeR2/HTSanalyzeR2/vignettes/figures/7.PNG)
+### Visualize both GSEA and netwrok result in the same report [Figure7]
+![Visualize both GSEA and netwrok result in the same report](figures/7.PNG)
 
 # Session Info
 

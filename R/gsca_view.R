@@ -160,18 +160,18 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust
   par(mai=c(0, 1, 0.5, 0.2))
   ##Plot the running score and add a vertical line at the position of
   ##the enrichment score (maximal absolute value of the running score)
-  plot(x=c(1:length(runningScore)), y=runningScore, type="l", ylab="Enrichment score(ES)", lwd=3, col="green",
+  plot(x=c(1:length(runningScore)), y=runningScore, type="l", ylab="Enrichment score (ES)", lwd=3, col="green",
        cex.lab = 1.5, bg = "aliceblue", xaxt = "n", las = 1)
   grid(NULL, NULL, lwd = 1)
   abline(h=0, lty = 2)
 
   if(enrichmentScore > 0){
   text(x = length(geneList)/7*5, y = (enrichmentScore)/4*3,
-       labels = paste("ES:", signif(enrichmentScore, 3), "\nAdjust.P.value:",
+       labels = paste("ES = ", signif(enrichmentScore, 3), "\nAdjust.P.value = ",
                       ifelse(Adjust.P.value == 0, "<1e-4", signif(Adjust.P.value, 2))),
        cex = 1.5)} else {
          text(x = length(geneList)/6, y = (enrichmentScore)/4*3,
-              labels = paste("ES:", signif(enrichmentScore, 3), "\nAdjust.P.value:",
+              labels = paste("ES = ", signif(enrichmentScore, 3), "\nAdjust.P.value = ",
                              ifelse(Adjust.P.value == 0, "<1e-4", signif(Adjust.P.value, 2))),
               cex = 1.5)
        }

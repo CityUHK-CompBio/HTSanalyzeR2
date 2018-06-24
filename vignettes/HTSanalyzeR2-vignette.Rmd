@@ -12,7 +12,9 @@ author:
 date: "`r Sys.Date()`"
 package: HTSanalyzeR2
 output: 
-        BiocStyle::pdf_document
+        BiocStyle::pdf_document:
+          fig_width: 10
+          fig_height: 10
         
 abstract: This package provides gene set over-representation, gene set enrichment analysis and enriched subnetwork analyses for various preprocessed high-throughput data as well as time series data generated either by CRISPR, RNA-seq, micro-array or RNAi in a unified workflow. More importantly, it could generate an interactive shiny report encompassing all the results and visualizations, facilitating the users maximally for downloading, modifying the visualization parts with personal preference and sharing with others by publishing the report to [Shinyapps.io](http://shiny.rstudio.com/articles/shinyapps.html).
 
@@ -25,7 +27,10 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE,
+                      fig.align   = 'center',
+                      fig.width   = 8,
+                      fig.height = 4)
 ```
 
 # An overview of HTSanalyzeR2
@@ -37,6 +42,8 @@ While high-throughput experiments are no longer bottlenecks for biologists to di
 + For time series data or a similar experiment coming from different groups, **HTSanalyzeR2** can perform time series analysis and comparative analysis for mutual comparison.
 
 + **HTSanalyzeR2** could generate an interactive report for users downloading, modifying the visualizations as well as sharing with others.
+
+![A schematic workflow of HTSanalyzeR2](figures/workflow.png)
 
 ## Supported analysis
 
@@ -67,7 +74,7 @@ While high-throughput experiments are no longer bottlenecks for biologists to di
     - c5: GO gene sets
     - c6: oncogenic signatures
     - c7: immunologic signatures
-+ Customized  gene sets 
++ Customized  gene sets
 
 ## Supported species
 
@@ -119,20 +126,20 @@ Then, if you want to do hypergeometric test on a list of interested genes simult
 
 ```{r}
 ## define hits if you want to do hypergeometric test
-hits <- rownames(GSE33113_limma[abs(GSE33113_limma$logFC) > 1 & 
+hits <- rownames(GSE33113_limma[abs(GSE33113_limma$logFC) > 1 &
                                   GSE33113_limma$adj.P.Val < 0.05, ])
 ```
 
 Then we must define the gene set collections. A gene set collection is a list of gene sets, each of  which consists of a group of genes with a similar known function. **HTSanalyzeR2** provides facilities which greatly simplify the creation of up-to-date gene set collections including three Gene Ontology terms: Molecular Function (MF), Biological Process (BP), Cellular Component (CC) and KEGG pathways. Gene sets in a comprehensive molecular signatures database, [MSigDB](http://software.broadinstitute.org/gsea/msigdb)(@Arthur2011), for Homo Sapiens and Mus musculus are also provided. Here to simplify the demonstration, we will only use one GO, KEGG and one MSigDB gene set collection. To work properly, you need to choose the right species for your input genes. Besides, these gene set collections must be provided as a named list as below:
 
 ```{r}
-## generate gene set collection 
-GO_BP <- GOGeneSets(species="Hs", ontologies=c("BP"))
+## generate gene set collection
+GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
 PW_KEGG <- KeggGeneSets(species="Hs")
 MSig_C2 <- MSigDBGeneSets(collection = "c2", species = "Hs")
 
 ## combine all needed gene set collections into a named list for further analysis
-ListGSC <- list(GO_BP=GO_BP, PW_KEGG=PW_KEGG, MSig_C2=MSig_C2)
+ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG, MSig_C2=MSig_C2)
 ```
 
 ### Initialize and preprocess
@@ -142,7 +149,7 @@ An S4 class named 'GSCA' is developed to perform hypergeometric test in order to
 To initialize a new 'GSCA' object, the previous prepared phenotype and a named list of gene sets collections are needed. In addition, as said before, if you also want to do hypergeometric test, 'hits' is needed.
 
 ```{r}
-gsca <- GSCA(listOfGeneSetCollections=ListGSC, 
+gsca <- GSCA(listOfGeneSetCollections=ListGSC,
             geneList=phenotype, hits=hits)
 ```
 
@@ -165,10 +172,10 @@ After getting a preprocessed 'GSCA' object, you can perform hypergeometric test 
 + *exponent*: a single integer or numeric value used in weighting phenotypes in GSEA, as described by Subramanian et al. (@Subramanian2005).
 
 ```{r, results='hide', eval=FALSE}
-gsca2 <- analyze(gsca1, 
+gsca2 <- analyze(gsca1,
                  para=list(pValueCutoff=0.05, pAdjustMethod="BH",
                            nPermutations=100, minGeneSetSize=150,
-                           exponent=1), 
+                           exponent=1),
                  doGSOA = TRUE, doGSEA = TRUE)
 ```
 
@@ -183,10 +190,10 @@ if (requireNamespace("doParallel", quietly=TRUE)) {
 } else {
 }
 
-gsca2 <- analyze(gsca1, 
+gsca2 <- analyze(gsca1,
                  para=list(pValueCutoff=0.05, pAdjustMethod="BH",
                            nPermutations=100, minGeneSetSize=150,
-                           exponent=1), 
+                           exponent=1),
                  doGSOA = TRUE, doGSEA = TRUE)
 ```
 
@@ -194,16 +201,16 @@ After analyzing, all the results are stored in slot *result* and can be easily a
 
 ```{r}
 ## 1. hypergeometric test result using BP gene sets from GO
-head(getResult(gsca2)$HyperGeo.results$GO_BP, 3)
+head(getResult(gsca2)$HyperGeo.results$GO_MF, 3)
 
 ## 2. GSEA result using KEGG gene sets
 head(getResult(gsca2)$GSEA.results$PW_KEGG, 3)
 
-## 3. result both significant regarding to pvalues in hypergeometric test 
+## 3. result both significant regarding to pvalues in hypergeometric test
 ##    and GSEA using 'c2' gene sets from MSigDB
 head(getResult(gsca2)$Sig.pvals.in.both$MSig_C2, 3)
 
-## 4. result both significant regarding to adjust pvalues in hypergeometric test 
+## 4. result both significant regarding to adjust pvalues in hypergeometric test
 ##    and GSEA using 'c2' gene sets from MSigDB
 head(getResult(gsca2)$Sig.adj.pvals.in.both$MSig_C2, 3)
 ```
@@ -211,10 +218,11 @@ head(getResult(gsca2)$Sig.adj.pvals.in.both$MSig_C2, 3)
 In addition, to make the results more understandable, users are highly recommended to annotate the gene sets ID to names by function *appendGSTerms*. As a result, an additional column named 'Gene.Set.Term' would appear.
 
 ```{r, message=FALSE}
-gsca3 <- appendGSTerms(gsca2, goGSCs=c("GO_BP"),
-                       keggGSCs=c("PW_KEGG"), 
+gsca3 <- appendGSTerms(gsca2, goGSCs=c("GO_MF"),
+                       keggGSCs=c("PW_KEGG"),
                        msigdbGSCs = c("MSig_C2"))
-head(getResult(gsca3)$GSEA.results$PW_KEGG, 3)  
+
+head(getResult(gsca3)$GSEA.results$PW_KEGG, 3)
 ```
 
 ### Summarize results
@@ -230,17 +238,17 @@ summarize(gsca3)
 To better view the GSEA result for a single gene set, you can use *viewGSEA* to plot the positions of the genes of the gene set in the ranked phenotypes and the location of the enrichment score. To this end, you must first get the gene set ID by *getTopGeneSets*, which can return all or the top significant gene sets from GSEA results.  Basically, the user needs to specify the type of results – "HyperGeo.results" or "GSEA.results", the name(s) of the gene set collection(s) as well as the type of selection– all (by parameter 'allSig') or top (by parameter 'ntop') significant gene sets.
 
 
-```{r, fig.height=4, fig.width=7}
+```{r, fig.cap = "GSEA result plot of one gene set of the Molecular Function collection", fig.width=10, fig.height=6,  fig.align="center"}
 topGS <- getTopGeneSets(gsca3, resultName="GSEA.results",
-                        gscs=c("GO_BP", "PW_KEGG"), allSig=TRUE)
+                        gscs=c("GO_MF", "PW_KEGG"), allSig=TRUE)
 topGS
-viewGSEA(gsca3, gscName="GO_BP", gsName=topGS[["GO_BP"]][3])
+viewGSEA(gsca3, gscName="GO_MF", gsName=topGS[["GO_MF"]][4])
 ```
 
 You can also plot all or the top significant gene sets in batch and store them as png or pdf format into a specified path by using *plotGSEA*.
 
 ```{r, eval=FALSE}
-plotGSEA(gsca3, gscs=c("GO_BP", "PW_KEGG"), ntop=3, filepath=".")
+plotGSEA(gsca3, gscs=c("GO_MF", "PW_KEGG"), ntop=3, filepath=".")
 ```
 
 ### Enrichment Map
@@ -250,27 +258,39 @@ To get a comprehensive view of the hypergeometric test result or GSEA result ins
 However, users are always highly recommended to use function *report* to visualize and modify the enrichment map with personal preference in an interactive report, such as different layout, color and size of nodes, types of labels and etc. More details please go to Part4: An interactive Shiny report of results.
 
 
-```{r, fig.height=4, fig.width=6, eval=FALSE}
-## the enrichment map for top 5 significant gene sets in 'PW_KEGG' and 'GO_MF'
-viewEnrichMap(gsca3, gscs=c("PW_KEGG", "GO_BP"),
-              allSig = FALSE, gsNameType = "term", ntop = 5)
+```{r, eval=FALSE}
+## the enrichment map of GSEA result for top 5 significant 
+## gene sets in 'PW_KEGG' and 'GO_MF'
+viewEnrichMap(gsca3, resultName = "GSEA.results",
+              gscs=c("PW_KEGG", "GO_MF"),
+              allSig = FALSE, gsNameType = "term", ntop = 3)
 ```
 
-![](/data/home/Lina/67/HTSanalyzeR2/HTSanalyzeR2/vignettes/figures/enrichMap1.PNG)
+![Enrichment Map of GSEA result on top 3 significant gene sets of both "PW_KEGG" and "GO_MF"](figures/enrichmentMap1.PNG)
 
+
+```{r, eval=FALSE}
+## the enrichment map of hypergeometric test result for
+## top 5 significant gene sets in 'PW_KEGG' and 'GO_MF'
+viewEnrichMap(gsca3, resultName = "HyperGeo.results",
+              gscs=c("PW_KEGG", "GO_MF"),
+              allSig = FALSE, gsNameType = "term", ntop = 3)
+```
+
+![Enrichment Map of hypergeometric test result on top 3 significant gene sets of both "PW_KEGG" and "GO_MF"](figures/enrichmentMap2.PNG)
 
 ### Enrichment Map with specific gene sets
 
 It is often the case that the enrichment map would be of large size due to the huge number of enriched gene sets. However, you may only be interested in a small part of them. A big size of enrichment map would also be in a mess and lose the information it can offer. In that way, **HTSanalyzeR2** provides an interface allowing users to draw the enrichment map on their interested gene sets. More details please see the help documentation of function *viewEnrichMap*.
 
-```{r, warning=FALSE, fig.height=3.5, fig.width=6, eval=FALSE}
+```{r, warning=FALSE, fig.height=4, fig.width=8, eval=FALSE}
 ## specificGeneset needs to be a subset of all analyzed gene sets
 ## which can be roughly gotten by:
 tmp <- getTopGeneSets(gsca3, resultName = "GSEA.results", gscs=c("PW_KEGG"),
                       ntop = 200, allSig = FALSE)
 
 ## In that case, we can define specificGeneset such as below:
-PW_KEGG_geneset <- tmp$PW_KEGG[c(2, 3, 6, 7, 10, 11)]
+PW_KEGG_geneset <- tmp$PW_KEGG[c(2, 3, 6, 7, 10, 18)]
 
 ## the name of specificGenesets also needs to match with the names of tmp
 specificGeneset <- list("PW_KEGG"=PW_KEGG_geneset)
@@ -279,7 +299,7 @@ viewEnrichMap(gsca3, resultName = "GSEA.results", gscs=c("PW_KEGG"),
               ntop = NULL, specificGeneset = specificGeneset)
 ```
 
-![](/data/home/Lina/67/HTSanalyzeR2/HTSanalyzeR2/vignettes/figures/enrichMap2.PNG)
+![Enrichment Map of GSEA result on several specific gene sets of "PW_KEGG"](figures/enrichmentMap3.PNG)
 
 ## Enriched subnetwork analysis
 
@@ -318,10 +338,10 @@ getInteractome(nwa2)
 
 Having preprocessed the input data and created the interactome, the subnetwork analysis could be performed by using the *analyze* method. This function will plot a figure showing the fitting of the BioNet model to your distribution of pvalues (@Beisser2010), which is a good way to check the choice of statistics used in this function. The argument *fdr* of the method *analyze* is the false discovery rate for BioNet to fit the beta-uniform mixture (BUM) model. The parameters of the fitted model will then be used for the scoring function, which subsequently enables the BioNet package to search the optimal scoring subnetwork. See BioNet for more details (@Beisser2010).
 
-Here, to simplify this vignette, we set a very strict 'fdr' as 1e-07. In practice, you may want to set a less strict one (e.g. 0.01)
+Here, to simplify this vignette, we set a very strict 'fdr' as 1e-06. In practice, you may want to set a less strict one (e.g. 0.01).
 
-```{r, results='hide', message=FALSE, warning=FALSE}
-nwa3 <- analyze(nwa2, fdr=1e-07, species="Hs")
+```{r, results='hide', message=FALSE, warning=FALSE, eval=TRUE, fig.cap = "Fitting BUM model to p-values by BioNet", fig.width=10, fig.height=6, fig.align="center"}
+nwa3 <- analyze(nwa2, fdr=1e-06, species="Hs")
 ```
 
 Similar to 'GSCA', you can also view the subnetwork by *viewSubNet*. Again, for better visualization, modification and downloading, users are highly recommended to view the result in an interactive Shiny report by function *report*.
@@ -330,19 +350,19 @@ Similar to 'GSCA', you can also view the subnetwork by *viewSubNet*. Again, for 
 viewSubNet(nwa3)
 ```
 
-![](/data/home/Lina/67/HTSanalyzeR2/HTSanalyzeR2/vignettes/figures/network.PNG)
+![Enriched subnetwork identified by BioNet](figures/subnetwork1.PNG)
 
 ### Summarize results
 
 Like 'GSCA', the method *summarize* could also be used to get a general summary of an analyzed 'NWA' object including inputs, interactome, parameters for analysis and the size of identified subnetwork.
 
-```{r}
+```{r, eval=TRUE}
 summarize(nwa3)
 ```
 
 # Case study2: Time series analysis for CRISPR data
 
-This case study uses a time series CRISPR genome-wide drop-out data as a demonstration to perform time series analysis. Data 'd7', 'd13' and 'd25' are three gRNA sequencing data after transducting the CRISPR system into a human cancer cellline on day 7, day 13 and day 25 separately (@Tzelepis2016), they are further preprocessed by [MAGeCK] (https://sourceforge.net/p/mageck/wiki/Home/) to identify significant essential genes from genome-scale CRISPR knockout screens. Again, here to simply the compilation of this vignette, we skip the preprocessed steps and start from the results gotten by MAGeCK. 
+This case study uses a time series CRISPR genome-wide drop-out data as a demonstration to perform time series analysis. Data 'd7', 'd13' and 'd25' are three gRNA sequencing data after transducting the CRISPR system into a human cancer cellline on day 7, day 13 and day 25 separately (@Tzelepis2016), they are further preprocessed by [MAGeCK](https://sourceforge.net/p/mageck/wiki/Home/) to identify significant essential genes from genome-scale CRISPR knockout screens. Again, here to simply the compilation of this vignette, we skip the preprocessed steps and start from the results gotten by MAGeCK.
 
 ## Hypergeometric test and gene set enrichment analysis
 
@@ -361,6 +381,7 @@ data(d7, d13, d25)
 expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2, byrow = FALSE,
                    dimnames = list(NULL, c("ID", "Description")))
 datalist <- list(d7, d13, d25)
+
 phenotypeTS <- lapply(datalist, function(x) {
   tmp <- as.vector(x$neg.lfc)
   names(tmp) <- x$id
@@ -486,16 +507,23 @@ report(nwa=nwa3)
 
 ## 3. generate an interactive shiny report for gsca object using reportAll
 reportAll(gsca=gsca3)
-
-## 4. generate an interactive shiny report for both gsca 
-##    and nwa object using reportAll
-reportAll(gsca=gsca3, nwa=nwa3)
 ```
+
+You can even visualize both 'GSCA' and 'NWA' object with *reportAll* function. Particularly, to better visualize the enrichmentmap, you can filter away edges with small Jaccard coefficient by setting parameter 'cutoff'.
+```{r, eval=FALSE}
+reportAll(gsca=gsca3, nwa=nwa3, cutoff = 0.08)
+```
+
+![A screenshot of Shiny report on Hypergeometric test table of 'gsca3' and 'nwa3'](figures/shinyReport1.PNG)
+
+![A screenshot of Shiny report on GSEA enrichment map of 'gsca3' and 'nwa3'](figures/shinyReport2.PNG)
+
+![A screenshot of Shiny report on subnetwork of 'gsca3' and 'nwa3'](figures/shinyReport3.PNG)
 
 For time series data, you should use *reportAll* to generate the report. In addition, you can reset the order of time series data for visualization by setting the argument 'TSOrder'.
 
 ```{r, eval = FALSE}
-## 1. generate an interactive shiny report for 
+## 1. generate an interactive shiny report for
 ##    a list of gsca objects using reportAll
 reportAll(gsca=gscaTS3)
 
@@ -515,19 +543,20 @@ Intriguingly, for time series data result, you can see a dynamic change for each
 Similar with single data set analysis, you can also see the enrichment map of specific genesets for time series data by specify the argument 'specificGeneset' in *reportAll*.
 
 ```{r, eval = FALSE}
-## As told previously, specificGeneset needs to be a subset of all 
+## As told previously, specificGeneset needs to be a subset of all
 ## analyzed gene sets which can be roughly gotten by:
 tmp <- getTopGeneSets(gscaTS3[[1]], resultName = "GSEA.results",
                       gscs=c("GO_BP"), ntop = 20000, allSig = FALSE)
 
 ## In that case, we can define specificGeneset as below:
-GO_BP_geneset <- tmp$GO_BP[c(4,2,6,9,12)]
+GO_BP_geneset <- tmp$GO_BP[c(4,2,6,9,12, 15:20)]
 
 ## the name of specificGenesets also needs to match with the names of tmp
 specificGeneset <- list("GO_BP"=GO_BP_geneset)
-reportAll(gsca=gscaTS3, specificGeneset=specificGeneset)
-
+reportAll(gsca=gscaTS3, specificGeneset=specificGeneset, cutoff = 0.06)
 ```
+
+![A screenshot of Shiny report on GSEA enrichment map with specific gene sets of 'gscaTS3'](figures/shinyReport4.PNG)
 
 After calling *report* or *reportAll*, it would automaticlly generate a directory with names starting with "GSCAReport", "NWAReport" or "AnalysisReport" which includes the result named as "results.RData" and an R script named as "app.R". Open "app.R" in RStudio, users can publish and share the report with others via [Shinyapps.io](http://www.shinyapps.io/), details please go to [Shinyapps.io](http://www.shinyapps.io/).
 
@@ -544,7 +573,7 @@ hits1 <- d7$id[1:200]
 ## set all the coding genes of Homo sapiens as phenotype
 allgenes <- keys(TxDb.Hsapiens.UCSC.hg19.knownGene, keytype = "GENEID")
 ## change Entrez ID to gene name to keep consistent with hits
-allgenes <- mapIds(org.Hs.eg.db, keys = allgenes, 
+allgenes <- mapIds(org.Hs.eg.db, keys = allgenes,
                    keytype = "ENTREZID", column = "SYMBOL")
 
 ## give phenotype a pseudo value to fit for HTSanalyzeR2
@@ -579,15 +608,15 @@ ListGSC <- list(CustomGS=CustomGS)
 
 ## An interface to fgsea package
 
-HTSanalyzeR2 also provides an interface to [fgsea]((https://bioconductor.org/packages/release/bioc/html/fgsea.html)) package which proposes a novel algorithm for fast preranked gene set enrichment analysis using cumulative statistic calculation. Details please see [fgsea](https://www.biorxiv.org/content/early/2016/06/20/060012) (@Sergushichev2016). 
+HTSanalyzeR2 also provides an interface to [fgsea]((https://bioconductor.org/packages/release/bioc/html/fgsea.html)) package which proposes a novel algorithm for fast preranked gene set enrichment analysis using cumulative statistic calculation. Details please see [fgsea](https://www.biorxiv.org/content/early/2016/06/20/060012) (@Sergushichev2016).
 
-To perform GSEA by **fgsea** instead of HTSanlayzeR2, users need to specifiy the parameter *GSEA.by* in *analyze* (for single data set) or *analyzeGscaTS* (for time series analysis) with *fgsea*. Otherwise, it will use **HTSanalyzeR2** by default. 
+To perform GSEA by **fgsea** instead of HTSanlayzeR2, users need to specifiy the parameter *GSEA.by* in *analyze* (for single data set) or *analyzeGscaTS* (for time series analysis) with *fgsea*. Otherwise, it will use **HTSanalyzeR2** by default.
 
 ```{r, eval=FALSE}
-gsca4 <- analyze(gsca1, 
+gsca4 <- analyze(gsca1,
                  para=list(pValueCutoff=0.05, pAdjustMethod="BH",
                            nPermutations=100, minGeneSetSize=150,
-                           exponent=1), 
+                           exponent=1),
                  doGSOA = TRUE, doGSEA = TRUE,
                  GSEA.by = "fgsea")
 ```
@@ -597,21 +626,21 @@ gsca4 <- analyze(gsca1,
 Once you've finished the GSEA or hypergeometric test, you may be interested in some pathways and wonder which genes are shared by that pathway and you input gene list.
 
 ```{r}
-## Suppose you are interested in "cell adhesion" in Biological processes,
-## in Gene Ontology, We can retrieve the GO ID of this pathway:
-GO_BPrslt <- getResult(gsca3)$HyperGeo.results$GO_BP
-cell_adhension_GOID <- rownames(GO_BPrslt[GO_BPrslt$Gene.Set.Term == 
-                                            "cell adhesion", ])
+## Suppose you are interested in "growth factor activity" in 'Molecular Function',
+## of Gene Ontology, We can retrieve the GO ID of this pathway:
+GO_MFrslt <- getResult(gsca3)$HyperGeo.results$GO_MF
+GOID <- rownames(GO_MFrslt[GO_MFrslt$Gene.Set.Term ==
+                                            "growth factor activity", ])
 
 ## Then get the genes in this pathways
-cell_adhension_gene <- GO_BP[[cell_adhension_GOID]]
+pathway_gene <- GO_MF[[GOID]]
 
 ## change Entrez ID to gene symbol
-cell_adhension_gene <- mapIds(org.Hs.eg.db, keys = cell_adhension_gene, 
-                              keytype = "ENTREZID", column = "SYMBOL")
+pathway_gene <- mapIds(org.Hs.eg.db, keys = pathway_gene,
+                       keytype = "ENTREZID", column = "SYMBOL")
 
 ## get the shared genes between this pathway and your input gene list
-intersect(cell_adhension_gene, hits)
+intersect(pathway_gene, hits)
 ```
 
 # A pipeline function for CRISPR data pre-processed by MAGeCK
@@ -619,7 +648,7 @@ intersect(cell_adhension_gene, hits)
 For the CRISPR data pre-processed by MAGeCK, we also provide a pipeline function to do a comprehensive analysis including GSEA and subnetwork analysis, which would be seamless linking with MAGeCK and provides great convenience to the users. Finally, it would automaticlly generate a dynamic shiny report containing all the results.
 
 ```{r, eval=FALSE}
-ListGSC = list(GO_BP=GO_BP, PW_KEGG=PW_KEGG)
+ListGSC = list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
 HTSanalyzeR4MAGeCK(MAGeCKdata = d7,
                    selectDirection = "negative",
                    doGSOA = FALSE,
@@ -633,7 +662,7 @@ HTSanalyzeR4MAGeCK(MAGeCKdata = d7,
                    minGeneSetSize = 100,
                    exponent = 1,
                    keggGSCs=c("PW_KEGG"),
-                   goGSCs = c("GO_BP"),
+                   goGSCs = c("GO_MF"),
                    msigdbGSCs = NULL,
                    doNWA = TRUE,
                    reportDir = "HTSanalyzerReport",
