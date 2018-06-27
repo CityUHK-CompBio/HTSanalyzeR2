@@ -199,7 +199,7 @@ setMethod(
   "interactome",
   signature = "NWA",
   function(object, interactionMatrix = NULL, species,
-           link = "http://thebiogrid.org/downloads/archives/Release%20Archive/BIOGRID-3.4.138/BIOGRID-ORGANISM-3.4.138.tab2.zip",
+           link = "https://downloads.thebiogrid.org/Download/BioGRID/Release-Archive/BIOGRID-3.4.161/BIOGRID-ORGANISM-3.4.161.tab2.zip",
            reportDir = "HTSanalyzerReport", genetic = FALSE,
            force = FALSE, verbose = TRUE) {
     ## check arguments
@@ -272,7 +272,7 @@ biogridDataDownload <- function(link, species = "Hs", dataDirectory = ".",
   if(!missing(link) && !is.null(link))
     paraCheck("PreProcess", "link", link)
   else
-    link <- "http://thebiogrid.org/downloads/archives/Release%20Archive/BIOGRID-3.4.138/BIOGRID-ORGANISM-3.4.138.tab2.zip"
+    link <- "https://downloads.thebiogrid.org/Download/BioGRID/Release-Archive/BIOGRID-3.4.161/BIOGRID-ORGANISM-3.4.161.tab2.zip"
   paraCheck("LoadGeneSets", "species", species)
   paraCheck("PreProcess", "dataDirectory", dataDirectory)
   paraCheck("General", "verbose", verbose)

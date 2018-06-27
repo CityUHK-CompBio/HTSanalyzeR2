@@ -35,7 +35,7 @@ if (!isGeneric("report")) {
 #'
 #' For NWA object, the identified subnetwork could be modified according to the user's preferences
 #' in many ways such as layout, color, and etc. Details please see the vignette of our package.
-#' @return In the end, this function would generate a html report.
+#' @return In the end, this function would generate a Shiny report.
 #' @examples
 #' # =======================================================
 #' # GSCA class
@@ -51,19 +51,26 @@ if (!isGeneric("report")) {
 #' tmp <- getTopGeneSets(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
 #'                       ntop = 20000, allSig = FALSE)
 #' ## In that case, we can define specificGeneset as below:
-#' GO_MF_geneset <- tmp$GO_MF[c(4,2,6,9,12)]
+#' GO_MF_geneset <- tmp$GO_MF[20:35]
 #' ## the name of specificGenesets also needs to match with the names of tmp
 #' specificGeneset <- list("GO_MF"=GO_MF_geneset)
 #' \dontrun{
 #' report(d7_gsca, specificGeneset=specificGeneset)
 #' }
+#'
+#' ## Example3: report d7_gsca using a cutoff to filter away edges with small weight
+#' \dontrun{
+#' report(d7_gsca, cutoff = 0.01)
+#' }
+#'
 #' @rdname report
 #'
 #' @export
 setMethod("report", signature = "GSCA",
           function(object, specificGeneset = NULL,
                    cutoff = NULL, reportDir = "GSCAReport") {
-            reportAll(gsca = object, nwa = NULL, specificGeneset = specificGeneset, reportDir = reportDir, cutoff = cutoff)
+            reportAll(gsca = object, nwa = NULL, specificGeneset = specificGeneset,
+                      reportDir = reportDir, cutoff = cutoff)
           }
 )
 
@@ -115,11 +122,15 @@ setMethod("report", signature = "GSCA",
 #' tmp <- getTopGeneSets(gscaTS[[1]], resultName = "GSEA.results",
 #'                       gscs=c("GO_BP"), ntop = 20000, allSig = FALSE)
 #' ## In that case, we can define specificGeneset as below:
-#' GO_BP_geneset <- tmp$GO_BP[c(4,2,6,9,12)]
+#' GO_BP_geneset <- tmp$GO_BP[c(4:10, 20:30)]
 #' ## the name of specificGenesets also needs to match with the names of tmp
 #' specificGeneset <- list("GO_BP"=GO_BP_geneset)
 #' reportAll(gsca=gscaTS, specificGeneset=specificGeneset)
+#'
+#' ## Example7: report gscaTS using a cutoff to filter away edges with small weight
+#' reportAll(gsca=gscaTS, cutoff = 0.03)
 #' }
+#'
 reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL,
                       specificGeneset = NULL, cutoff = NULL, reportDir = "AnalysisReport") {
   if(!is.null(gsca) && class(gsca) != "GSCA") {

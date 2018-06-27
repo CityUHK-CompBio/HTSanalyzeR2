@@ -167,12 +167,12 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust
 
   if(enrichmentScore > 0){
   text(x = length(geneList)/7*5, y = (enrichmentScore)/4*3,
-       labels = paste("ES = ", signif(enrichmentScore, 3), "\nAdjust.P.value = ",
-                      ifelse(Adjust.P.value == 0, "<1e-4", signif(Adjust.P.value, 2))),
+       labels = paste("ES = ", signif(enrichmentScore, 3), "\nAdjust.P.value ",
+                      ifelse(Adjust.P.value == 0, "< 1e-6", paste0("= ", signif(Adjust.P.value, 2)))),
        cex = 1.5)} else {
          text(x = length(geneList)/6, y = (enrichmentScore)/4*3,
-              labels = paste("ES = ", signif(enrichmentScore, 3), "\nAdjust.P.value = ",
-                             ifelse(Adjust.P.value == 0, "<1e-4", signif(Adjust.P.value, 2))),
+              labels = paste("ES = ", signif(enrichmentScore, 3), "\nAdjust.P.value ",
+                             ifelse(Adjust.P.value == 0, "< 1e-6", paste0("= ", signif(Adjust.P.value, 2)))),
               cex = 1.5)
        }
   #-------------------## plot a color barplot indicating the phenotypes

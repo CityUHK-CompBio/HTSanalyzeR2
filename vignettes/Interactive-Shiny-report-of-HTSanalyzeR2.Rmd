@@ -33,32 +33,35 @@ In this short tutorial, we give a detailed illustration for the shiny report par
 ## Visualize single *GSCA* object for individual data set
 
 For single data set analysis, after analyzed by HTSanalyzeR2, we can get a *GSCA* object and use the function *report* to launch the shiny report. 
+
 ```{r, eval=FALSE}
 data(d7_gsca)
 report(d7_gsca)
 ```
 
 
-### The hypergeometric test result table [Figure1]
+### The hypergeometric test result table (Figure1)
 
 ![The hypergeometric test result table](figures/1.PNG)
 
+The above screenshot shows the hypergeometric test result table where users can either get a general summary of the analysis parameters, choose which analysis and which gene set collection to show or download the result by different format.
 
-### Parameters for modifying the figure [Figure2]
+### Parameters for modifying the figure (Figure2)
 
 There are five main parts for users to modify their figure by interactive operations including:**Layout**, **Label**, **Node**, **Edge** and **Color Scheme**. Following is a detailed explanation for each part.
 
 + **Layout**: A widge to control the whole pattern
      + Mode: There are two layout modes inside this Shiny report, users can choose any of them to get better visualization based on their data.
      + Parameters: Two more parameters *Egde Repel* and *Adjust Sizes* could be used to make the figure looser.
-     + Gravity: Ranging from -50 to 50, users can adjust it step by step. The larger it is, the more even the pattern would be.
+     + Gravity: Ranging from -50 to 50, users can adjust it step by step. The larger it is, the looser the pattern would be.
 + **Label**: A widge to modify the label of nodes with three easy-to-understand parameters: *Text*, *Label Scale* and *Label color*.
-+ **Node**: A widge to modify the nodes with four easy-to-understand parameters: *Scale*, *Opacity*, *Border Width* and *Border Color*.
-+ **Edge**: A widge to modify the edges with two easy-to-understand parameters: *Edge Scale* and *Edge Color*.
++ **Node**: A widge to modify the nodes with four parameters: *Scale*, *Opacity*, *Border Width* and *Border Color*.
++ **Edge**: A widge to modify the edges with two parameters: *Edge Scale* and *Edge Color*.
 + **Color Scheme**: A widge to change the default color.
 
 ![The enrichment map of hypergeometric test result](figures/2.PNG)
 
+The above screenshot shows the enrichment map of hypergeometric test result. Users can click the topright button to modify the figure based on their data and preference. After 
 
 ## Visualize single *NWA* object for individual data set
 ```{r, eval=FALSE}
@@ -66,7 +69,7 @@ data(d7_nwa)
 report(d7_nwa)
 ```
 
-### The identified subnetwork [Figure3]
+### The identified subnetwork (Figure3)
 ![The identified subnetwork](figures/3.PNG)
 
 ## Visualize a list of *GSCA* objects for time series/comparative analysis
@@ -77,11 +80,11 @@ data(gscaTS)
 reportAll(gscaTS, cutoff = 0.035)
 ```
 
-### GSEA results table for time series/comparative analysis [Figure4]
+### GSEA results table for time series/comparative analysis (Figure4)
 ![GSEA results table for time series/comparative analysis](figures/4.PNG)
 
 
-### Union enrichment map for time series/comparative analysis [Figure5]
+### Union enrichment map for time series/comparative analysis (Figure5)
 ![Union enrichment map for time series/comparative analysis](figures/5.PNG)
 
 
@@ -91,7 +94,7 @@ data(nwaTS)
 reportAll(nwaTS)
 ```
 
-### Union subnetwork for time series/comparative analysis [Figure6]
+### Union subnetwork for time series/comparative analysis (Figure6)
 ![Union subnetwork for time series/comparative analysis](figures/6.PNG)
 
 
@@ -101,7 +104,7 @@ reportAll(gsca = gscaTS, nwa = nwaTS)
 
 ```
 
-### Visualize both GSEA and netwrok result in the same report [Figure7]
+### Visualize both GSEA and netwrok result in the same report (Figure7)
 ![Visualize both GSEA and netwrok result in the same report](figures/7.PNG)
 
 # Session Info

@@ -151,8 +151,8 @@ setMethod("getTopGeneSets", signature = "GSCA",
                   all.gs.names[object@result[[resultName]][[gsc]][, "Adjusted.Pvalue"] < object@para$pValueCutoff]
               } else {
                 if (ntop > nrow(object@result[[resultName]][[gsc]])) {
-                  if(ntop != 20000)
-                  {warning("'ntop' is larger than the number of gene sets in specified gene set collection!\n")}
+                  # if(ntop != 20000)
+                  # {warning("'ntop' is larger than the number of gene sets in specified gene set collection!\n")}
                   this.ntop <- nrow(object@result[[resultName]][[gsc]])
                   gs.names <- all.gs.names[1:this.ntop]
                 } else

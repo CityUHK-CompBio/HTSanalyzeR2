@@ -16,7 +16,6 @@ if (!isGeneric("report")) {
 #' report(d7_nwa)
 #' }
 #' @export
-#' @return in the end, this function would generate a shiny report.
 setMethod("report",
           "NWA",
           function(object, reportDir = "NWAReport") {

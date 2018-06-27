@@ -28,9 +28,7 @@ this cutoff, this edge would not be showed in the enrichment map.}
 the enrichment analysis reports will be stored in the directory called "GSCAReport".}
 }
 \value{
-In the end, this function would generate a html report.
-
-in the end, this function would generate a shiny report.
+In the end, this function would generate a Shiny report.
 }
 \description{
 This is a generic function.
@@ -66,12 +64,18 @@ report(d7_gsca)
 tmp <- getTopGeneSets(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
                       ntop = 20000, allSig = FALSE)
 ## In that case, we can define specificGeneset as below:
-GO_MF_geneset <- tmp$GO_MF[c(4,2,6,9,12)]
+GO_MF_geneset <- tmp$GO_MF[20:35]
 ## the name of specificGenesets also needs to match with the names of tmp
 specificGeneset <- list("GO_MF"=GO_MF_geneset)
 \dontrun{
 report(d7_gsca, specificGeneset=specificGeneset)
 }
+
+## Example3: report d7_gsca using a cutoff to filter away edges with small weight
+\dontrun{
+report(d7_gsca, cutoff = 0.01)
+}
+
 \dontrun{
 # =================================================================
 # NWA class

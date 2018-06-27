@@ -59,9 +59,13 @@ library(igraph)
 tmp <- getTopGeneSets(gscaTS[[1]], resultName = "GSEA.results",
                       gscs=c("GO_BP"), ntop = 20000, allSig = FALSE)
 ## In that case, we can define specificGeneset as below:
-GO_BP_geneset <- tmp$GO_BP[c(4,2,6,9,12)]
+GO_BP_geneset <- tmp$GO_BP[c(4:10, 20:30)]
 ## the name of specificGenesets also needs to match with the names of tmp
 specificGeneset <- list("GO_BP"=GO_BP_geneset)
 reportAll(gsca=gscaTS, specificGeneset=specificGeneset)
+
+## Example7: report gscaTS using a cutoff to filter away edges with small weight
+reportAll(gsca=gscaTS, cutoff = 0.03)
 }
+
 }
