@@ -743,6 +743,10 @@ HTMLWidgets.widget(fg = {
     },
 
     drawLegend: function(state, config) {
+        if(!config.scheme.dual.pos.enabled && !config.scheme.dual.neg.enabled) {
+            return fg.emptyLegend();
+        }
+
         var ticks = config.info.graphType == 'HyperGeo' ? 7 : 11;
         var dimension = [$(state.container).width(), $(state.container).height()];
         var colors = Array(ticks).fill("#FDFDFD");
@@ -845,6 +849,10 @@ HTMLWidgets.widget(fg = {
         gTitle.append(title);
         appendChildren(g, [gTitle]);
         return g;
+    }, 
+
+    emptyLegend: function() {
+        return document.createElementNS('http://www.w3.org/2000/svg', 'g');
     }
 
 });
