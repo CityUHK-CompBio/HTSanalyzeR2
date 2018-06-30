@@ -452,6 +452,21 @@ HTMLWidgets.widget(fg = {
             sv.sigInst.settings("defaultNodeBorderColor", meta.sigmaSettings.defaultNodeBorderColor);
             sv.sigInst.refresh({skipIndexation: true});
         }
+        handlers.nodeColorNA = function(val) {
+            // console.log("nodeColorNA" + ": " + val);
+            var cur = fg.currentSituation();
+            var sv = cur.state.supervisor;
+            var meta = cur.config.metadata;
+
+            cur.config.node.NANodeColor = val;
+            var naColor = hex2rgba(val);
+            for(var i = 0; i < meta.graph.nodes.length; i++) {
+                if(meta.graph.nodes[i].scheme == null) {
+                    meta.graph.nodes[i].color = naColor;
+                }
+            }
+            sv.sigInst.refresh({skipIndexation: true});
+        }
 
         // Edge
         handlers.edgeScale = function(val) {

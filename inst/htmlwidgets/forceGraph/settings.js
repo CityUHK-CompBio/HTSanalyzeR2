@@ -58,6 +58,7 @@ refreshValues = function(panel, config) {
     $("#nodeOpacity", panel).data("ionRangeSlider").update({from: config.node.opacity});
     $("#nodeBorderWidth", panel).data("ionRangeSlider").update({from: config.node.borderWidth});
     $("#nodeBorderColor", panel).colourpicker("value", config.node.borderColor);
+    $("#nodeColorNA", panel).colourpicker("value", config.node.NANodeColor);
 
     // Edge
     $("#edgeScale", panel).data("ionRangeSlider").update({from: config.edge.scale});
@@ -156,6 +157,10 @@ configureSettingHandlers = function(handlers) {
     $("#nodeBorderColor").on("change", function() {
         var value = $(this).colourpicker("value");
         handlers["nodeBorderColor"](value);
+    });
+    $("#nodeColorNA").on("change", function() {
+        var value = $(this).colourpicker("value");
+        handlers["nodeColorNA"](value);
     });
 
     // Edge
