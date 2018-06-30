@@ -751,6 +751,17 @@ HTMLWidgets.widget(fg = {
             }
         }
 
+        // fix digits and filter zero
+        var nice = function(vals, filterZero) {
+            var digits = 1;
+            if(vals[0].toFixed(digits) === vals[1].toFixed(digits)) digits++;
+            if(vals[0].toFixed(digits) === vals[1].toFixed(digits)) digits++;
+            var res = [vals[0].toFixed(digits), vals[1].toFixed(digits)];
+            if(filterZero && parseFloat(res[0]) == 0) res[0] = "";
+            if(filterZero && parseFloat(res[1]) == 0) res[1] = "";
+            return res;
+        }
+
         if (config.info.graphType == 'HyperGeo') {
             for (var i = 0; i < ticks; i++) {
                 labels[i] = ticks - 1 - i;
@@ -761,14 +772,17 @@ HTMLWidgets.widget(fg = {
             labels[5] = 0;
         } else if (config.info.graphType == 'NWA') {
             if (schemes.length == 1) {
-                labels[0] = pal.domain[0].toFixed(1);
-                labels[10] = pal.domain[1].toFixed(1);
+                var palLabels = nice(pal.domain, false)
+                labels[0] = palLabels[0];
+                labels[10] = palLabels[1];
             } else {
-                labels[0] = config.scheme.dual.pos.domain[0].toFixed(1);
-                labels[4] = config.scheme.dual.pos.domain[1].toFixed(1);
-                labels[5] = 0;
-                labels[6] = config.scheme.dual.neg.domain[1].toFixed(1);
-                labels[10] = config.scheme.dual.neg.domain[0].toFixed(1);
+                var posLabels = nice(config.scheme.dual.pos.domain, true)
+                labels[0] = posLabels[0]
+                labels[4] = posLabels[1]
+                labels[5] = "0";
+                var negLabels = nice(config.scheme.dual.neg.domain, true)
+                labels[6] = negLabels[1];
+                labels[10] = negLabels[0];
             }
         }
 
