@@ -643,6 +643,33 @@ pathway_gene <- mapIds(org.Hs.eg.db, keys = pathway_gene,
 intersect(pathway_gene, hits)
 ```
 
+# A pipeline function for common phenotype data
+
+For common phenotype data, we provide a pipeline function *HTSanalyzeR2Pipe* to perform a comprehensive analysis including GSEA and subnetwork analysis. Finally, it will return a list of *GSCA* object and *NWA* object.
+
+```{r, eval=FALSE}
+data4enrich <- as.vector(d7$neg.lfc)
+names(data4enrich) <- d7$id
+hits <-  names(data4enrich[which(abs(data4enrich) > 2)])
+ListGSC = list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
+rslt <- HTSanalyzeR2Pipe(data4enrich = data4enrich,
+                         hits = hits,
+                         doGSOA = TRUE,
+                         doGSEA = TRUE,
+                         listOfGeneSetCollections = ListGSC,
+                         species = "Hs",
+                         initialIDs = "SYMBOL",
+                         pValueCutoff = 0.05,
+                         nPermutations = 1000,
+                         cores = 2,
+                         minGeneSetSize = 15,
+                         keggGSCs=c("PW_KEGG"),
+                         goGSCs = c("GO_MF"),
+                         doNWA = FALSE)
+report(rslt$gsca)
+```
+
+
 # A pipeline function for CRISPR data pre-processed by MAGeCK
 
 For the CRISPR data pre-processed by MAGeCK, we also provide a pipeline function to do a comprehensive analysis including GSEA and subnetwork analysis, which would be seamless linking with MAGeCK and provides great convenience to the users. Finally, it would automaticlly generate a dynamic shiny report containing all the results.
