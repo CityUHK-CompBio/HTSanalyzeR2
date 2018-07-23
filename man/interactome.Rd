@@ -7,7 +7,7 @@
 \title{Create an interactome from BioGRID database or input custom interactome}
 \usage{
 \S4method{interactome}{NWA}(object, interactionMatrix = NULL, species,
-  link = "https://downloads.thebiogrid.org/Download/BioGRID/Release-Archive/BIOGRID-3.4.161/BIOGRID-ORGANISM-3.4.161.tab2.zip",
+  link = "https://downloads.thebiogrid.org/Download/BioGRID/Release-Archive/BIOGRID-3.4.162/BIOGRID-ORGANISM-3.4.162.tab2.zip",
   reportDir = "HTSanalyzerReport", genetic = FALSE, force = FALSE,
   verbose = TRUE)
 }

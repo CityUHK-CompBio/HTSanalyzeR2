@@ -3,6 +3,7 @@
 export(GOGeneSets)
 export(GSCA)
 export(GSCABatch)
+export(HTSanalyzeR2Pipe)
 export(HTSanalyzeR4MAGeCK)
 export(KeggGeneSets)
 export(MSigDBGeneSets)
