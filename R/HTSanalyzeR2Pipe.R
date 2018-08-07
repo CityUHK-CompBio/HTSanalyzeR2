@@ -87,10 +87,12 @@
 #'                          minGeneSetSize = 100,
 #'                          keggGSCs=c("PW_KEGG"),
 #'                          goGSCs = c("GO_MF"),
-#'                          doNWA = FALSE)}
+#'                          doNWA = FALSE)
+#'
+#' report(rslt$gsca)}
 #' @export
 HTSanalyzeR2Pipe <- function(data4enrich,
-                             hits = NULL,
+                             hits = character(),
                              doGSOA = FALSE,
                              doGSEA = TRUE,
                              listOfGeneSetCollections,
