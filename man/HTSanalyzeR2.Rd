@@ -11,9 +11,9 @@ enrichment and network analyses on various high-throughput data generated from R
 microarray, RNA-seq and CRISPR. The over-representation analysis is performed based on hypergeometric tests. The
 enrichment analysis is based on the GSEA algorithm (Subramanian et al. PNAS
 2005). The network analysis identifies enriched subnetworks based on
-algorithms from the BioNet package (Beisser et al., Bioinformatics 2010). A shiny point of
+algorithms from the BioNet package (Beisser et al., Bioinformatics 2010). A unique point of
 this package compared to other similar packages lies in that it can deal with "Time series" data
-with high efficiency. In addition, it can generate a dynamic shiny report including all the results
+with high efficiency. In addition, it can generate a dynamic Shiny report including all the results
 in, which would be easily for users to download, modify visualizations and even share with others.
 A pipeline is also specifically designed for CRISPR data pre-processed
 by MAGeCK to perform integrative analyses including
@@ -27,7 +27,7 @@ The most important classes in this package are 'GSCA' (Gene Set Collection
 Analyses), 'NWA' (NetWork Analyses), 'GSCABatch' (Gene Set Collection
 Analyses for time-series data) and 'NWABatch' (NetWork Analyses for time-series data).
 As an example, a pipeline (see function
-'HTSanalyzeR4MAGeCK') is developed in this package for CRISPR data.
+'HTSanalyzeR4MAGeCK') is developed in this package for CRISPR data preprocessed by MAGeCK.
 Based on these four classes and other functions, users can design
 their own pipelines specifically for their own data sets.
 

@@ -13,7 +13,7 @@ such as "Dm" ("Drosophila_melanogaster"), "Hs" ("Homo_sapiens"),
 }
 \value{
 A list of gene sets, with names as KEGG pathway IDs. Each gene
-set is a group of genes named by Entrez gene identifiers.
+set is a group of genes represented by Entrez identifiers.
 }
 \description{
 This function creates a list of gene sets based on KEGG pathways terms.

@@ -33,14 +33,11 @@ setMethod("initialize",
             paraCheck("NWAClass", "pvalues", pvalues)
             if (length(phenotypes) > 0){
               paraCheck("NWAClass", "phenotypes", phenotypes)
-              # if(!identical(names(pvalues), names(phenotypes))){
-              #   stop("'pvalues' and 'phenotypes' should have the same length and be one-to-one match!\n")
-              # }
             }
             if (any(!is.na(interactome))){
               paraCheck("NWAClass", "interactome", interactome)}
 
-            ##
+            ## update NWA object
             .Object@pvalues <- pvalues
             .Object@phenotypes <- phenotypes
             .Object@interactome <- interactome
@@ -107,7 +104,6 @@ setMethod("initialize",
 #' has been preprocessed.
 #' @usage NWA(pvalues, phenotypes = as.numeric(), interactome = NA)
 #' @return This function will create a new object of class 'NWA'.
-#'
 #' @seealso \code{\link[HTSanalyzeR2]{preprocess}},
 #'  \code{\link[HTSanalyzeR2]{analyze}},
 #'   \code{\link[HTSanalyzeR2]{summarize}},
@@ -140,7 +136,7 @@ NWA <- function(pvalues, phenotypes = as.numeric(), interactome = NA) {
   if (!is.na(interactome))
     paraCheck("NWAClass", "interactome", interactome)
 
-  ##
+  ## initialize a new object
   object <- methods::new(
     Class = "NWA",
     pvalues = pvalues,

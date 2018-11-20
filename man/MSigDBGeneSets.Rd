@@ -25,13 +25,11 @@ Return a list of gene sets of specific collection in
 \description{
 This function creates gene set collections based on MSigDB database version 6.1. Currently
 our package only supports all 8 collections for Homo Sapiens as well as
-'c2', 'c6' and 'c7' for Mus musculus.
-It is collection-specific, and returns a list of gene sets collection with
-the elements of the gene sets represented by Entrez Gene IDs.
+'c2', 'c6' and 'c7' for Mus musculus. It returns a list of gene sets collections
+with the elements of the gene sets represented by Entrez Gene IDs.
 }
 \examples{
 C2_MSig <- MSigDBGeneSets(collection = "c2", species = "Hs")
-
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{KeggGeneSets}}

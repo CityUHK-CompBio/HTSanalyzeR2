@@ -12,12 +12,10 @@ if(!isGeneric("plotGSEA"))
 #' @details
 #' We suggest to print the names of top significant gene sets using the
 #' function \code{\link[HTSanalyzeR2]{getTopGeneSets}} before plotting the GSEA results.
-#'
 #' @param object A GSCA object.
 #' @param gscName A single character value specifying the name of the gene set collection where
 #' the gene set is.
 #' @param gsName A single character value specifying the name of the gene set to be plotted.
-#'
 #' @rdname viewGSEA
 #' @aliases viewGSEA
 #' @return In the end, this function would draw a GSEA figure for specified gene set.
@@ -81,7 +79,6 @@ setMethod(
 #' @param filepath A single character value specifying where to store GSEA figures.
 #' @param output A single character value specifying the format of output image: "pdf" or "png".
 #' @param ... Other arguments used by the function png or pdf such as 'width' and 'height'
-#'
 #' @rdname plotGSEA
 #' @return In the end, this function would plot GSEA figure and store them into the specified path.
 #' @aliases plotGSEA
@@ -130,14 +127,14 @@ setMethod(
 #' @import graphics
 #' @importFrom grDevices colorRampPalette
 gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust.P.value) {
-  ##check arguments
+
+  ## check arguments
   paraCheck("GSCAClass", "genelist", geneList)
-  # paraCheck("Report", "filepath", filepath)
-  # paraCheck("Report", "filename", filename)
-  # paraCheck("Report", "output", output)
-  ##check that the 'runningScore' is a vector of length=length of geneList
+
+  ## check that the 'runningScore' is a vector of length=length of geneList
   if(!is.numeric(runningScore) || length(runningScore)==0)
     stop("'runningScore' should be a numerical vector!\n")
+
   ##check that the 'positions' vector contains only zeros and ones,
   ##and is of the right length and class
   if(!(is.numeric(positions) || is.integer(positions)) || length(positions)==0)
@@ -148,16 +145,12 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust
     stop("The length of 'runningScore' should be the same as the length of 'geneList'!\n")
   if(length(positions) != length(geneList))
     stop("The length of 'positions' should be the same as the length of 'geneList'!\n")
-  ##open a file
-  ##if(output == "pdf" )
-  ##    pdf(file.path(filepath, paste("gsea_plots", filename, ".pdf", sep="")))
-  ##if(output == "png" )
-  ##    png(file.path(filepath, paste("gsea_plots", filename, ".png", sep="")))
+
   ##set the graphical parameters
   def.par <- par(no.readonly = TRUE)
   gsea.layout <- layout(matrix(c(1, 2, 3)), heights = c(0.9,0.3,0.1))
-  # layout.show(gsea.layout)
   par(mai=c(0, 1, 0.5, 0.2))
+
   ##Plot the running score and add a vertical line at the position of
   ##the enrichment score (maximal absolute value of the running score)
   plot(x=c(1:length(runningScore)), y=runningScore, type="l", ylab="Enrichment score (ES)", lwd=3, col="green",
@@ -243,7 +236,6 @@ gseaScores <- function(geneList, geneSet, exponent=1, mode="score", gsName = gsN
 
   nh <- length(geneSet)
   N <- length(geneList)
-
   ES <- 0
   Phit <- rep(0, N)
   Pmiss <- rep(0, N)
@@ -268,7 +260,7 @@ gseaScores <- function(geneList, geneSet, exponent=1, mode="score", gsName = gsN
   }
   ## get GSEA adjust pvalues
   adjust.p.value <- GSEA.results[which(rownames(GSEA.results) == gsName), "Adjusted.Pvalue"]
-  ##Return the relevant information according to mode
+  ## Return the relevant information according to mode
   if(mode=="score")
     return(ES)
   if(mode=="graph")

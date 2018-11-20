@@ -10,16 +10,14 @@
 #' @param initialIDs A single character value specifying the type of initial
 #' identifiers for input nwaList.
 #' @param keepMultipleMappings A single logical value. If TRUE, the function
-#'   keeps the entries with multiple mappings (first mapping is kept). If FALSE,
-#'   the entries with multiple mappings will be discarded.
+#' keeps the entries with multiple mappings (first mapping is kept). If FALSE,
+#' the entries with multiple mappings will be discarded.
 #' @param duplicateRemoverMethod A single character value specifying the method
-#'   to remove the duplicates. See duplicateRemover for details.
+#' to remove the duplicates. See duplicateRemover for details.
 #' @param verbose A single logical value specifying whether to display detailed messages
-#'   (when verbose=TRUE) or not (when verbose=FALSE), default is TRUE.
+#' (when verbose=TRUE) or not (when verbose=FALSE), default is TRUE.
 #' @return In the end, this function will return an updated list of NWA object.
-#'
 #' @seealso \code{\link[HTSanalyzeR2]{preprocess}}
-#'
 #' @export
 #' @examples
 #' data(d7, d13, d25)
@@ -49,13 +47,15 @@
 #' nwaTS1 <- preprocessNwaTS(nwaTS, species="Hs", initialIDs="SYMBOL",
 #'                          keepMultipleMappings=TRUE, duplicateRemoverMethod="max")
 preprocessNwaTS <- function(object, species="Hs", initialIDs="SYMBOL",
-                            keepMultipleMappings=TRUE, duplicateRemoverMethod="max", verbose = TRUE){
+                            keepMultipleMappings=TRUE,
+                            duplicateRemoverMethod="max", verbose = TRUE){
   paraCheck("nwaTS", "object", object)
   tmpName <- names(object@listOfNWA)
   tmp <- lapply(object@listOfNWA, function(x){
     preprocess(x, species=species, initialIDs=initialIDs,
                keepMultipleMappings=keepMultipleMappings,
-               duplicateRemoverMethod=duplicateRemoverMethod, verbose=verbose)
+               duplicateRemoverMethod=duplicateRemoverMethod,
+               verbose=verbose)
   })
   names(tmp) <- tmpName
   tmp
@@ -88,9 +88,7 @@ preprocessNwaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #' @param force Force to download the data set.
 #' @param verbose A single logical value indicating to display detailed
 #' messages (when verbose=TRUE) or not (when verbose=FALSE).
-#'
 #' @return In the end, this function will return an updated list of NWA object.
-#'
 #' @seealso \code{\link[HTSanalyzeR2]{interactome}}
 #' @examples
 #' data(d7, d13, d25)
@@ -145,7 +143,8 @@ interactomeNwaTS <- function(nwaList, interactionMatrix = NULL, species,
   tmpName <- names(nwaList)
   tmp <- lapply(nwaList, function(x){
     interactome(x, interactionMatrix=interactionMatrix, species=species,
-                link=link, reportDir=reportDir, genetic=genetic, force=force, verbose=verbose)
+                link=link, reportDir=reportDir, genetic=genetic,
+                force=force, verbose=verbose)
   })
   names(tmp) <- tmpName
   tmp
@@ -167,10 +166,8 @@ interactomeNwaTS <- function(nwaList, interactionMatrix = NULL, species,
 #' @param species A single character value specifying the species for which the data should be read.
 #' @param verbose A single logical value specifying to display detailed messages
 #'  (when verbose=TRUE) or not (when verbose=FALSE), default is TRUE.
-#'
 #' @return In the end, this function will return an updated list of NWA objects.
 #' @seealso \code{\link[HTSanalyzeR2]{analyze}}
-#'
 #' @export
 #' @examples
 #' data(d7, d13, d25)

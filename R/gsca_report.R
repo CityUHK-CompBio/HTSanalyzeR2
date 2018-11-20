@@ -13,9 +13,7 @@ if (!isGeneric("report")) {
 #' When implemented as the method of class GSCA or NWA, this function produces reports for
 #' either the Gene Set Collection Analysis or the NetWork Analysis.
 #' @aliases report
-#' @param object  An analyzed object. When this function is implemented as the S4
-#' method of class 'GSCA' or 'NWA', this argument is an object of class
-#' 'GSCA' or 'NWA'.
+#' @param object  A 'GSCA' or 'NWA'object.
 #' @param reportDir A single character value specifying the directory to store reports. For default
 #' the enrichment analysis reports will be stored in the directory called "GSCAReport".
 #' @param specificGeneset A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap,GSCA-method}}
@@ -23,7 +21,6 @@ if (!isGeneric("report")) {
 #' @param cutoff A numeric value between 0 and 1. This parameter is setted as a cutoff of edge weight in the enrichment
 #' map for better visualization. When the edge weight, namely the Jaccard coefficient between two gene sets, is less than
 #' this cutoff, this edge would not be showed in the enrichment map.
-#'
 #' @details
 #' This will generate a shiny report including all the GSCA or NWA results.
 #'
@@ -79,7 +76,7 @@ setMethod("report", signature = "GSCA",
 #'
 #'This function can create shiny reports for both gene sets enrichment analysis and network analysis.
 #'
-#'@param gsca A analyzed GSCA object or a list of analyzed GSCA objects.
+#'@param gsca An analyzed GSCA object or a list of analyzed GSCA objects.
 #'@param nwa An NWA object or a list of NWA objects.
 #'@param TSOrder A character specifying the visulization order of 'Time Series' data in shiny report. Only works when
 #'reporting for 'Time Series' data, default is the ID order in 'expInfor'.
@@ -90,8 +87,6 @@ setMethod("report", signature = "GSCA",
 #' this cutoff, this edge would not be showed in the enrichment map.
 #'@param reportDir A single character value specifying the directory to store reports. For default both the
 #'  enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport".
-#'
-#'
 #' @export
 #' @return In the end, this function would generate a html report.
 #' @examples
@@ -132,7 +127,8 @@ setMethod("report", signature = "GSCA",
 #' }
 #'
 reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL,
-                      specificGeneset = NULL, cutoff = NULL, reportDir = "AnalysisReport") {
+                      specificGeneset = NULL, cutoff = NULL,
+                      reportDir = "AnalysisReport") {
   if(!is.null(gsca) && class(gsca) != "GSCA") {
     if(class(gsca) != "list" || any(sapply(gsca, class) != "GSCA")) {
       stop("the parameter gsca should be a GSCA object or a list of GSCA objects\n")
@@ -268,7 +264,6 @@ combineResults <- function(gsca) {
 availableResults <- function(results, byRow = TRUE) {
   res <- c(0, 0, 0)
   names(res) <- c("HyperGeo", "GSEA", "Significant in both")
-  # res <- res[which(!is.na(rowSums(results)) & rowSums(results) > 0)]
   if(byRow) {
     if(!is.null(results$HyperGeo.results)) res["HyperGeo"] <- 1
     if(!is.null(results$GSEA.results)) res["GSEA"] <- 1

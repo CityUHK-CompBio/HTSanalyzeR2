@@ -51,7 +51,7 @@ setMethod("initialize",
             .Object
           })
 
-#' An S4 class for Time series data package in Gene Set Collection Analyses on high-throughput screens
+#' An S4 class for Time series data packaging in Gene Set Collection Analyses on high-throughput screens
 #'
 #' This S4 class packages time-series data for further GSCA. To put it more clearly, it'll finally generate a list of
 #' GSCA objects for further analyses.
@@ -105,11 +105,14 @@ setMethod("initialize",
 #' gscaTS
 GSCABatch <- function(expInfor, listOfGeneSetCollections, phenotypeTS,
                       hitsTS = list()) {
+
+  ## parameters check
   paraCheck("GSCABatch", "expInfor", expInfor)
   paraCheck("GSCABatch", "phenotypeTS", phenotypeTS)
   paraCheck("GSCAClass", "gscs", listOfGeneSetCollections)
   if(length(hitsTS) > 0)  paraCheck("GSCABatch", "hitsTS", hitsTS)
 
+  ## initialize a new object
   object <- methods::new(
     Class = "GSCABatch",
     expInfor = expInfor,
@@ -278,7 +281,7 @@ NWABatch <- function(expInfor, pvalueTS , phenotypeTS = list(), interactome = NA
   if (!is.na(interactome))
     paraCheck("NWABatch", "interactome", interactome)
 
-  ##
+  ## initialize a new object
   object <- methods::new(
     Class = "NWABatch",
     expInfor = expInfor,

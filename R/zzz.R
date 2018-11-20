@@ -1,5 +1,5 @@
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage("Welcome message (HTSanalyzeR2)\n"
+  packageStartupMessage("Welcome to HTSanalyzeR2!\n"
                         , appendLF = FALSE)
 }
 

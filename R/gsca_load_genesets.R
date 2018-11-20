@@ -2,9 +2,8 @@
 #'
 #' This function creates gene set collections based on MSigDB database version 6.1. Currently
 #' our package only supports all 8 collections for Homo Sapiens as well as
-#' 'c2', 'c6' and 'c7' for Mus musculus.
-#' It is collection-specific, and returns a list of gene sets collection with
-#' the elements of the gene sets represented by Entrez Gene IDs.
+#' 'c2', 'c6' and 'c7' for Mus musculus. It returns a list of gene sets collections
+#' with the elements of the gene sets represented by Entrez Gene IDs.
 #'
 #' @param collection A single character value specifying a choice of collection.
 #' Valid values include 'h'(hallmark gene sets), 'c1' (positional gene sets),
@@ -15,15 +14,11 @@
 #' @param species A single character value specifying the species of the gene sets of MSigDB.
 #' Now we only support 'Hs' (Homo_Sapiens) for all 8 gene set collections
 #' and 'Mm' (Mus_musculus) for 'c2', 'c6' and 'c7' gene set collections.
-#'
 #' @return Return a list of gene sets of specific collection in
 #' \href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB} of version 6.1.
-#'
 #' @seealso \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{KeggGeneSets}}
-#'
 #' @examples
 #' C2_MSig <- MSigDBGeneSets(collection = "c2", species = "Hs")
-#'
 #' @export
 MSigDBGeneSets <- function(collection = "c2", species = "Hs") {
   paraCheck("LoadGeneSets", "collection", collection)
@@ -39,7 +34,6 @@ MSigDBGeneSets <- function(collection = "c2", species = "Hs") {
 }
 
 
-
 #' Create a list of KEGG gene sets
 #'
 #' This function creates a list of gene sets based on KEGG pathways terms.
@@ -49,15 +43,11 @@ MSigDBGeneSets <- function(collection = "c2", species = "Hs") {
 #' @param species A single character value specifying a choice of species,
 #' such as "Dm" ("Drosophila_melanogaster"), "Hs" ("Homo_sapiens"),
 #' "Rn" ("Rattus_norvegicus") or "Mm" ("Mus_musculus").
-#'
 #' @return A list of gene sets, with names as KEGG pathway IDs. Each gene
-#' set is a group of genes named by Entrez gene identifiers.
-#'
+#' set is a group of genes represented by Entrez identifiers.
 #' @details This function needs Internet connection and relies on the
 #' following packages: KEGGREST.
-#'
 #' @seealso \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{MSigDBGeneSets}}
-#'
 #' @examples
 #' library(KEGGREST)
 #' library(org.Hs.eg.db)
@@ -121,28 +111,23 @@ KeggGeneSets <- function(species = "Hs") {
 }
 
 
-#' Create a list of gene sets based on GO terms
+#' Create a list of gene sets based on Gene Ontology terms
 #'
-#' This function creates a list of gene sets based on GO terms.
+#' This function creates a list of gene sets based on Gene Ontology terms.
 #' It is species-specific, and returns a list of gene sets, each
 #' of which is a character vector of Entrez identifiers.
 #'
 #' @param species A single character value specifying a choice of species,
 #' such as "Dm" ("Drosophila_melanogaster"), "Hs" ("Homo_sapiens"),
 #' "Rn" ("Rattus_norvegicus") or "Mm" ("Mus_musculus").
-#'
 #' @param ontologies A single character value or a character vector
 #' specifying an ontology or multiple ontologies. Valid format could be any
 #' combination of "BP", "MF" and "CC".
-#'
 #' @return A list of gene sets, with names as GO IDs. Each gene set is
 #' a character vector of Entrez identifiers.
-#'
 #' @details This function relies on the following packages:
 #' AnnotationDbi, GO.db and the species db, such as org.Dm.eg.db.
-#'
 #' @seealso \code{\link[HTSanalyzeR2]{KeggGeneSets}}, \code{\link[HTSanalyzeR2]{MSigDBGeneSets}}
-#'
 #' @examples
 #' library(GO.db)
 #' library(org.Hs.eg.db)

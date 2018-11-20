@@ -24,7 +24,6 @@ setGeneric("getTopGeneSets", function(object,
 #' specifying what to print (see Methods below). Default will print a summary of all
 #' information.
 #' @return In the end, this function would return a summary of the NWA object.
-#'
 #' @examples
 #' # =================================================================
 #' # GSCA class
@@ -38,8 +37,8 @@ setGeneric("getTopGeneSets", function(object,
 #' @export
 setMethod("summarize", signature = "GSCA",
           function(object, what = "ALL") {
-
             paraCheck("Summarize", "GSCAwhat", what)
+
             ##what can be "GSC" (gene set collection), "GeneList", "Hits", "Para", "Result"
             if (any(c("ALL", "GSC") %in% what)) {
               cat("\n")
@@ -133,7 +132,6 @@ setMethod("getTopGeneSets", signature = "GSCA",
               stop("Please run Hypergeometric or GSEA analysis before using this function!\n")
             gsc.names <- names(object@result[[resultName]])
             if (!all(gscs %in% gsc.names))
-              # stop("Wrong Gene Set Collection name(s) in 'gscs'! \n")
               stop("No enrichment map found under this cutoff!\n")
             if (!is.null(ntop))
               paraCheck("Summarize", "ntop", ntop)

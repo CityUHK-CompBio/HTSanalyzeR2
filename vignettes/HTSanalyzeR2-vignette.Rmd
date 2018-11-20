@@ -163,7 +163,7 @@ gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL",
 
 ### Perform analysis
 
-After getting a preprocessed 'GSCA' object, you can perform hypergeometric test and gene set enrichment analysis using the function named *analyze*. This funciton needs an argument called *para*, which is a list of parameters including:
+After getting a preprocessed 'GSCA' object, you can perform hypergeometric test and gene set enrichment analysis using the function named *analyze*. This function needs an argument called *para*, which is a list of parameters including:
 
 + *pValueCutoff*: a single numeric value specifying the cutoff for adjusted pvalues considered significant.
 + *pAdjustMethod*: a single character value specifying the pvalue adjustment method.
@@ -200,7 +200,7 @@ gsca2 <- analyze(gsca1,
 After analyzing, all the results are stored in slot *result* and can be easily accessed using a function named *getResult*. If hypergeometric test and GSEA are both performed, gene sets which are both significant in this two kinds of analysis based on either pvalue or adjusted pvalue can be accessed.
 
 ```{r}
-## 1. hypergeometric test result using BP gene sets from GO
+## 1. hypergeometric test result using MF gene sets from GO
 head(getResult(gsca2)$HyperGeo.results$GO_MF, 3)
 
 ## 2. GSEA result using KEGG gene sets

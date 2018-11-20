@@ -2,7 +2,7 @@
 % Please edit documentation in R/Batch_class.R
 \name{GSCABatch}
 \alias{GSCABatch}
-\title{An S4 class for Time series data package in Gene Set Collection Analyses on high-throughput screens}
+\title{An S4 class for Time series data packaging in Gene Set Collection Analyses on high-throughput screens}
 \usage{
 GSCABatch(expInfor, listOfGeneSetCollections, phenotypeTS, hitsTS = list())
 }

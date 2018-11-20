@@ -27,7 +27,7 @@ For example, the commonly used ones are "Dm" ("Drosophila_melanogaster"),
 
 \item{initialIDs}{A single character value specifying the type of
 initial identifiers for input 'geneList'. The valid terms need match with
-the keytypes of species db such as keytypes(org.Hs.eg.db).}
+the keytypes of species databases such as keytypes(org.Hs.eg.db).}
 
 \item{keepMultipleMappings}{A single logical value. If TRUE, the function
 keeps the entries with multiple mappings (first mapping is kept). If FALSE,

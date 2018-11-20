@@ -13,7 +13,6 @@ if (!isGeneric("viewSubNet")) {
 #' Extract the subnetwork form an analyzed NWA object as an igraph object
 #' for further external using. Users can also use it to modify the subnetwork.
 #' @param object An NWA object.
-#'
 #' @importFrom igraph V E
 #' @export
 #' @aliases extractSubNet

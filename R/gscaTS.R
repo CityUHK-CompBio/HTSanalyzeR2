@@ -11,21 +11,19 @@
 #' For example, the commonly used ones are "Dm" ("Drosophila_melanogaster"),
 #' "Hs" ("Homo_sapiens"), "Rn" ("Rattus_norvegicus"), "Mm" ("Mus_musculus"),
 #' "Ce" ("Caenorhabditis_elegans"), and etc.
-#'
 #' @param initialIDs A single character value specifying the type of
 #' initial identifiers for input phenotypeTS The valid terms need match with
 #' the keytypes of species db such as keytypes(org.Hs.eg.db).
 #' @param keepMultipleMappings A single logical value. If TRUE, the function
-#'   keeps the entries with multiple mappings (first mapping is kept). If FALSE,
-#'   the entries with multiple mappings will be discarded.
-#'
+#' keeps the entries with multiple mappings (first mapping is kept). If FALSE,
+#' the entries with multiple mappings will be discarded.
 #' @param duplicateRemoverMethod A single character value specifying the method
-#'   to remove the duplicates. See help(duplicateRemover) for details.
+#' to remove the duplicates. See help(duplicateRemover) for details.
 #' @param orderAbsValue A single logical value indicating whether the values
-#'   should be converted to absolute values and then ordered (if TRUE), or
-#'   ordered as they are (if FALSE).
+#' should be converted to absolute values and then ordered (if TRUE), or
+#' ordered as they are (if FALSE).
 #' @param verbose A single logical value specifying to display detailed messages
-#'   (when verbose=TRUE) or not (when verbose=FALSE).
+#' (when verbose=TRUE) or not (when verbose=FALSE).
 #' @return In the end, this function will return an updated list of GSCA object.
 #' @seealso \code{\link[HTSanalyzeR2]{preprocess}}
 #' @export
@@ -70,7 +68,8 @@ preprocessGscaTS <- function(object, species="Hs", initialIDs="SYMBOL",
     tmpName <- names(object@listOfGSCA)
     tmp <- lapply(object@listOfGSCA, function(x){
     preprocess(x, species=species, initialIDs=initialIDs,
-               keepMultipleMappings=keepMultipleMappings, duplicateRemoverMethod=duplicateRemoverMethod,
+               keepMultipleMappings=keepMultipleMappings,
+               duplicateRemoverMethod=duplicateRemoverMethod,
                orderAbsValue=orderAbsValue, verbose=verbose)
   })
     names(tmp) <- tmpName
@@ -156,7 +155,8 @@ analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="
               paraCheck("gscaTS", "gscaList", gscaList)
               tmpName <- names(gscaList)
               tmp <- lapply(gscaList, function(x){
-                  analyze(x, para=para, verbose=verbose, doGSOA=doGSOA, doGSEA=doGSEA, GSEA.by = "HTSanalyzeR2")
+                  analyze(x, para=para, verbose=verbose, doGSOA=doGSOA,
+                          doGSEA=doGSEA, GSEA.by = GSEA.by)
                         })
               names(tmp) <- tmpName
               tmp
@@ -172,7 +172,6 @@ analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="
 #' @param keggGSCs A character vector of names of all KEGG gene set collections.
 #' @param goGSCs A character vector of names of all GO gene set collections.
 #' @param msigdbGSCs A character vector of names of all MSigDB gene set collections.
-#'
 #' @seealso \code{\link[HTSanalyzeR2]{appendGSTerms}}
 #' @export
 #' @return In the end, this function will return an updated list of GSCA object.
@@ -232,7 +231,9 @@ appendGSTermsTS <- function(gscaList, keggGSCs=NULL, goGSCs=NULL, msigdbGSCs=NUL
              paraCheck("gscaTS", "gscaList", gscaList)
              tmpName <- names(gscaList)
              tmp <- lapply(gscaList, function(x){
-             appendGSTerms(x, keggGSCs = keggGSCs, goGSCs = goGSCs, msigdbGSCs = msigdbGSCs)
+             appendGSTerms(x, keggGSCs = keggGSCs,
+                           goGSCs = goGSCs,
+                           msigdbGSCs = msigdbGSCs)
            })
              names(tmp) <- tmpName
              tmp

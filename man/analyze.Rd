@@ -15,9 +15,7 @@
 \S4method{analyze}{NWA}(object, fdr = 0.001, species, verbose = TRUE)
 }
 \arguments{
-\item{object}{An object. When this function is implemented as the S4
-method of class 'GSCA' or 'NWA', this argument is an object of class
-'GSCA' or 'NWA'.}
+\item{object}{A 'GSCA' or 'NWA'object.}
 
 \item{para}{A list of parameters for GSEA and hypergeometric tests.
 This argument is only for class GSCA.}

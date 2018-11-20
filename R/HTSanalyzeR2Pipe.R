@@ -143,11 +143,13 @@ HTSanalyzeR2Pipe <- function(data4enrich,
   #---------------------------------------------------------------------
   ## Gene set enrichment analysis and hypergeometric analysis
   ##create a GSCA object
-  gsca <- GSCA(listOfGeneSetCollections = listOfGeneSetCollections, geneList = data4enrich, hits = hits)
+  gsca <- GSCA(listOfGeneSetCollections = listOfGeneSetCollections,
+               geneList = data4enrich, hits = hits)
   ##preprocessing of input gene list and hit list * remove NA;
   ##duplicate operations; annotation conversions; order phenotypes
   gsca <- preprocess(gsca, species = species, initialIDs = initialIDs,
-                     keepMultipleMappings = keepMultipleMappings, duplicateRemoverMethod = duplicateRemoverMethod,
+                     keepMultipleMappings = keepMultipleMappings,
+                     duplicateRemoverMethod = duplicateRemoverMethod,
                      orderAbsValue = orderAbsValue)
   doParallel::registerDoParallel(cores=cores)
   ##do analysis
@@ -162,11 +164,13 @@ HTSanalyzeR2Pipe <- function(data4enrich,
   if(doNWA){
     nwa <- NWA(pvalues=nwaPvalues, phenotypes=data4enrich)
     ##preprocessing
-    nwa <- preprocess(nwa, species=species, initialIDs=initialIDs, keepMultipleMappings=keepMultipleMappings,
+    nwa <- preprocess(nwa, species=species, initialIDs=initialIDs,
+                      keepMultipleMappings=keepMultipleMappings,
                       duplicateRemoverMethod=duplicateRemoverMethod)
     ##create an interactome
     nwa <- interactome(nwa, interactionMatrix = interactionMatrix,
-                       species = species, reportDir = reportDir, genetic = nwAnalysisGenetic,
+                       species = species, reportDir = reportDir,
+                       genetic = nwAnalysisGenetic,
                        verbose = verbose)
     ##do analysis
     nwa <- analyze(nwa, fdr = nwAnalysisFdr, species = species, verbose = verbose)

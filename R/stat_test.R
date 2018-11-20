@@ -22,7 +22,6 @@
 #' tests will be performed. Be aware that the Rank Product test is slower than
 #' the other two, and returns a percent false discovery (equivalent to a FDR,
 #' not a p-value).
-#'
 #' @details
 #' The tests are computed taking into account only the wells labelled "sample"
 #' in the column "controlStatus" of the fData(cellHTSobject).
@@ -35,16 +34,13 @@
 #' pre-screened for being associated with a phenotype.
 #' Please be aware that both types of tests are less reliable when the number
 #' of replicates for each construct is low.
-#'
 #' @return A matrix with two columns, one for each type of test (two-sample and
 #' one-sample test) except the Rank Product (no alternative), and a row for each
 #' construct (row names corresponding to the identifiers given by the
 #' "annotationcolumn" entry).
-#'
 #' @references
 #' Michael Boutros, Ligia P. Bras L and Wolfgang Huber. Analysis of cell-based
 #' RNAi screens. Genome Biology 7:7 R66 (2006)."
-#'
 #' @export
 #' @importFrom cellHTS2 Data
 #' @importFrom stats median t.test wilcox.test

@@ -8,7 +8,7 @@ reportAll(gsca = NULL, nwa = NULL, TSOrder = NULL,
   specificGeneset = NULL, cutoff = NULL, reportDir = "AnalysisReport")
 }
 \arguments{
-\item{gsca}{A analyzed GSCA object or a list of analyzed GSCA objects.}
+\item{gsca}{An analyzed GSCA object or a list of analyzed GSCA objects.}
 
 \item{nwa}{An NWA object or a list of NWA objects.}
 

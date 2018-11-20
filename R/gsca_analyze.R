@@ -12,9 +12,7 @@ if (!isGeneric("analyze")) {
 #' on a GSCA object and update information about these results to slot
 #' \emph{summary} of class GSCA.
 #' @aliases analyze
-#' @param object An object. When this function is implemented as the S4
-#' method of class 'GSCA' or 'NWA', this argument is an object of class
-#' 'GSCA' or 'NWA'.
+#' @param object A 'GSCA' or 'NWA'object.
 #' @param para A list of parameters for GSEA and hypergeometric tests.
 #' This argument is only for class GSCA.
 #' @param pValueCutoff
@@ -105,13 +103,13 @@ setMethod("analyze", signature = "GSCA",
                    doGSEA = TRUE,
                    GSEA.by="HTSanalyzeR2") {
 
+            ## parameters check
             paraCheck("General", "verbose", verbose)
             paraCheck("Analyze", "doGSOA", doGSOA)
             paraCheck("Analyze", "doGSEA", doGSEA)
             paraCheck("Analyze", "GSCAPara", para)
             if ((!doGSOA) && (!doGSEA))
               stop("Please set doGSOA (hypergeometric tests) and/or doGSEA (GSEA) to TURE!\n")
-
 
             object@para <- para
             ## update summary information
@@ -280,12 +278,6 @@ analyzeGeneSetCollections <-
       cat("-Gene set enrichment analysis using HTSanalyzeR2 complete \n")
       cat("==============================================\n\n")
       } else {
-        # ## calculate maximum gene set sizes
-        # maxGSSize <- max(unlist(lapply(listOfGeneSetCollections, function(x){
-        #   max.tmp <- max(unlist(lapply(x, function(y) {
-        #     length(y)
-        #   })))
-        # })))  ## no need!
         ## using fgsea to do GSEA
         geneList <- sort(geneList)
         GSEA.results.list <- GSEA_fgsea(
@@ -506,9 +498,6 @@ calcGSEA <-
              use.names = FALSE)
     names(combinedGeneSets) <-
       unlist(lapply(listOfGeneSetCollections, names), use.names = FALSE)
-    # groupInfo <-
-    #   rep(names(listOfGeneSetCollections),
-    #       lapply(listOfGeneSetCollections, length))
 
     if (verbose) {
       cat("-Performing gene set enrichment analysis using HTSanalyzeR2...", "\n")
@@ -516,7 +505,6 @@ calcGSEA <-
     }
 
     ## filter gene sets
-
     combinedGeneSets <- lapply(combinedGeneSets, intersect, listNames)
     overlaps <- sapply(combinedGeneSets, length)
 
@@ -526,22 +514,17 @@ calcGSEA <-
     overlaps <- overlaps[ind]
 
     ## get scores
-
-    # gScores <- sapply(combinedGeneSets, function(geneSet) calcGScoreCPP(listNames %in% geneSet, geneList, exponent))
-
     n_sep <- 1000
     gScores <-
       foreach(idx = 1:(ceiling(length(combinedGeneSets)/n_sep)), .combine = c, .packages="HTSanalyzeR2") %dopar% {
         sapply(combinedGeneSets[((idx-1)*n_sep + 1):min(idx*n_sep, length(combinedGeneSets))],
                function(geneSet) calcGScoreCPP(listNames %in% geneSet, geneList, exponent))
       }
-
     groups <- split(gScores, overlaps)
     overlaps2 <- as.integer(names(groups))
 
     res <-
       foreach(idx = seq_along(overlaps2), .combine = cbind, .packages="HTSanalyzeR2") %dopar% {
-
         overlap <- overlaps2[idx]
         hits <-
           rep(c(TRUE, FALSE), c(overlap, length(geneList) - overlap))

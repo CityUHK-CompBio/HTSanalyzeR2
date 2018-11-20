@@ -8,7 +8,7 @@ if (!isGeneric("getResult")) {
 
 #' Accessors for the 'result' slot of a 'GSCA' or 'NWA' object.
 #'
-#' This 'result' slot store all the results of an analyzed 'GSCA' or 'NWA' object.
+#' This 'result' slot stores all the results of an analyzed 'GSCA' or 'NWA' object.
 #' @include gsca_class.R
 #' @rdname getResult
 #' @aliases getResult
@@ -21,8 +21,6 @@ if (!isGeneric("getResult")) {
 #' data(d7_gsca)
 #' rslt <- getResult(d7_gsca)
 setMethod("getResult", signature = "GSCA", function(object) object@result)
-
-
 #' @rdname getResult
 #' @include nwa_class.R
 #' @export

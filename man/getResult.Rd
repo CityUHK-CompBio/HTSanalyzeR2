@@ -18,7 +18,7 @@
 This function will return all the results as a list.
 }
 \description{
-This 'result' slot store all the results of an analyzed 'GSCA' or 'NWA' object.
+This 'result' slot stores all the results of an analyzed 'GSCA' or 'NWA' object.
 }
 \examples{
 # ===========================================================

@@ -2,7 +2,7 @@
 % Please edit documentation in R/gsca_load_genesets.R
 \name{GOGeneSets}
 \alias{GOGeneSets}
-\title{Create a list of gene sets based on GO terms}
+\title{Create a list of gene sets based on Gene Ontology terms}
 \usage{
 GOGeneSets(species = "Hs", ontologies = c("MF"))
 }
@@ -20,7 +20,7 @@ A list of gene sets, with names as GO IDs. Each gene set is
 a character vector of Entrez identifiers.
 }
 \description{
-This function creates a list of gene sets based on GO terms.
+This function creates a list of gene sets based on Gene Ontology terms.
 It is species-specific, and returns a list of gene sets, each
 of which is a character vector of Entrez identifiers.
 }

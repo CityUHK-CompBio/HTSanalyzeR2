@@ -7,7 +7,6 @@ if (!isGeneric("analyze")) {
 #' by BioNet (if species is given, labels of nodes will also be mapped from
 #' Entrez IDs to gene symbols), and update information about these results to
 #' slot summary of class NWA.
-#'
 #' @param species
 #' A single character value specifying the species for which the data should be read.
 #' @param fdr

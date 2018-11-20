@@ -13,9 +13,7 @@
 \S4method{report}{NWA}(object, reportDir = "NWAReport")
 }
 \arguments{
-\item{object}{An analyzed object. When this function is implemented as the S4
-method of class 'GSCA' or 'NWA', this argument is an object of class
-'GSCA' or 'NWA'.}
+\item{object}{A 'GSCA' or 'NWA'object.}
 
 \item{specificGeneset}{A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap,GSCA-method}}
 for details.}

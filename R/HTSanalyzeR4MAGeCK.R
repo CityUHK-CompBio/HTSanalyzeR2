@@ -122,7 +122,7 @@ HTSanalyzeR4MAGeCK <- function(MAGeCKdata,
                                nwAnalysisFdr = 0.001
                                ){
   #------------------------------------------------------------------
-  ## check common parameter
+  ## check common parameters
   paraCheck("Analyze", "doGSOA", doGSOA)
   paraCheck("Analyze", "doGSEA", doGSEA)
   if(!is.null(hitsCutoffLogFC)){
@@ -193,7 +193,8 @@ HTSanalyzeR4MAGeCK <- function(MAGeCKdata,
   ##preprocessing of input gene list and hit list * remove NA;
   ##duplicate operations; annotation conversions; order phenotypes
   gsca <- preprocess(gsca, species = species, initialIDs = initialIDs,
-                     keepMultipleMappings = keepMultipleMappings, duplicateRemoverMethod = duplicateRemoverMethod,
+                     keepMultipleMappings = keepMultipleMappings,
+                     duplicateRemoverMethod = duplicateRemoverMethod,
                      orderAbsValue = orderAbsValue)
   ##do analysis
   gsca <- analyze(gsca, para=list(pValueCutoff = pValueCutoff, pAdjustMethod = pAdjustMethod,
@@ -207,7 +208,8 @@ HTSanalyzeR4MAGeCK <- function(MAGeCKdata,
   if(doNWA){
   nwa <- NWA(pvalues=pvalues, phenotypes=data4enrich)
   ##preprocessing
-  nwa <- preprocess(nwa, species=species, initialIDs=initialIDs, keepMultipleMappings=keepMultipleMappings,
+  nwa <- preprocess(nwa, species=species, initialIDs=initialIDs,
+                    keepMultipleMappings=keepMultipleMappings,
                     duplicateRemoverMethod=duplicateRemoverMethod)
   ##create an interactome
   nwa <- interactome(nwa, interactionMatrix = interactionMatrix,
