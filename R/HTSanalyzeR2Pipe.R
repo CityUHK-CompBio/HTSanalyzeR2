@@ -179,5 +179,5 @@ HTSanalyzeR2Pipe <- function(data4enrich,
   } else {
     nwa = NULL
   }
-  list("gsca" = gsca, "nwa" = gsca)
+  list("gsca" = gsca, "nwa" = nwa)
 }

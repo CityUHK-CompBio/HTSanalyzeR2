@@ -293,23 +293,9 @@ biogridDataDownload <- function(link, species = "Hs", dataDirectory = ".",
 
     if(!file.exists(dataDirectory)) dir.create(dataDirectory)
 
-    retry <- 0
-    # MD5 <- "83f6abdad6e3f49991d2fb3c9587847b"
-    repeat{
-      retry <- retry + 1
-      download.file(url = link, destfile = file.path(dataDirectory,
-                                         "Biogrid-all-org"), quiet=TRUE)
-      download.md5 <- tools::md5sum(file.path(dataDirectory, "Biogrid-all-org"))
-      names(download.md5) <- NULL
-      if(retry > 3){ ## identical(MD5, download.md5) ||
-        break
-      }
-    }
-
-    # if (!identical(MD5, download.md5)) {
-    #   stop("Downloaded BioGRID interactome file is corrupted!\n")
-    # }
-
+    download.file(url = link, 
+                  destfile = file.path(dataDirectory, "Biogrid-all-org"), 
+                  quiet=TRUE)
     unzip(zipfile = file.path(dataDirectory, "Biogrid-all-org"),
           exdir = dataDirectory)
   } else {
