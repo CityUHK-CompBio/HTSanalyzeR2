@@ -46,9 +46,6 @@ many options. Users are highly recommended to modify the enrichment map in a shi
 \item{seriesObjs}{A list of GSCA object. Internally used in the shiny report for visualizing the
 enrichment map of time series data. No need to explicitly set it!}
 }
-\value{
-An object of igraph with all attributes about the enrichement map.
-}
 \description{
 This is a generic function. When implemented as the S4 method for objects
 of class GSCA, this function will plot an enrichment map for GSEA or

@@ -7,7 +7,7 @@ if (!isGeneric("viewSubNet")) {
     standardGeneric("viewSubNet"), package = "HTSanalyzeR2")
 }
 
-## Generate the igraph object for "plotD3Graph"
+
 #' Extract the subnetwork as an igraph object
 #'
 #' Extract the subnetwork form an analyzed NWA object as an igraph object
@@ -109,7 +109,12 @@ setMethod("viewSubNet", signature = "NWA",
             forceGraph(em_nodes, em_links, nMappings, lMappings, graphOptions, seriesData = series)
           })
 
-
+#' Extract and combine subnetwork information of given NWA objects.
+#'
+#' This method is internally used for force-graph drawing. The subnetwork data of all the NWA objects
+#' are extacted and combined into corresponding dataframes. The attributes that are changes with the time
+#' are also returned.
+#'
 #' @importFrom igraph as_data_frame
 fetchNWASeriesValues <- function(nwaObjs) {
   # TODO: check the objs

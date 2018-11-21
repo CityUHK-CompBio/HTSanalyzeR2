@@ -184,8 +184,45 @@ appendMSigDBTerm <- function(df) {
 }
 
 
-
+#' Extract the enrichment map as an igraph object
+#'
+#' Extract the enrichment map from an analyzed GSCA object as igraph object for further external using.
+#' Users can also modify the igraph object.
+#'
+#' @param object A GSCA object.
+#' @param resultName A single character value specifying draw an enrichment map based on
+#' which result. Could only be 'HyperGeo.results' or 'GSEA.results'.
+#' @param gscs A character vector specifying the names of gene set collections
+#' of which the top significant gene sets will be plotted.
+#' @param ntop A single integer or numeric value specifying how many gene
+#' sets of top significance will be plotted.
+#' @param allSig A single logical value. If 'TRUE', all significant gene sets
+#' (GSEA adjusted p-value < 'pValueCutoff' of slot 'para') will be used; otherwise,
+#' only top 'ntop' gene sets will be used.
+#' @param gsNameType A single character value specifying the type of the gene set names that
+#' will be displayed as the names of nodes in the enrichment map. The type of the gene
+#' set names should be one of the following: "id", "term" or "none".
+#' @param specificGeneset A named list of specific gene sets. Specifically, this term needs to be
+#' a subset of all analyzed gene sets which can be roughly gotten by
+#' \strong{getTopGeneSets(object, resultName, gscs, ntop = 20000, allSig = FALSE)}.
+#' @param cutoff A numeric value between 0 and 1. This parameter is setted as a cutoff of edge weight in the enrichment
+#' map for better visualization. When the edge weight, namely the Jaccard coefficient between two gene sets, is less than
+#' this cutoff, this edge would not be showed in the enrichment map.
+#' The order of the list must match the order of results gotten by aboved function \strong{getTopGeneSets}.
+#'
+#' @export
+#' @aliases extractEnrichMap
 #' @importFrom igraph graph.adjacency simplify V V<- E E<-
+#' @return An object of igraph with all attributes about the enrichement map.
+#' @examples
+#' ## load a GSCA object(see the examples of 'analyze' GSCA for details)
+#' library(igraph)
+#' data(d7_gsca)
+#'
+#' ## extract the enrichment map for top 30 significant 'GO_MF' gene sets of GSEA results in an igraph object
+#' extractEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
+#'                 allSig = FALSE, ntop = 30, gsNameType = "term")
+#'
 setMethod("extractEnrichMap", signature = "GSCA",
           function(object,
                    resultName = "GSEA.results",
@@ -388,7 +425,6 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #'ones. Especially when the number of the significant gene sets are huge, which would make the enrichment
 #'map a mess as well as of no information. To this end, user can set the parameter \strong{specificGeneset}.
 #'
-#' @return An object of igraph with all attributes about the enrichement map.
 #' @examples
 #' ## load a GSCA object(see the examples of 'analyze' GSCA for details)
 #' library(igraph)
@@ -513,9 +549,12 @@ setMethod("viewEnrichMap", signature = "GSCA",
             forceGraph(em_nodes, em_links, nMappings, lMappings, graphOptions, seriesData = series)
           })
 
-## Available graphOptions:
-
-
+#' Extract and combine enrichment map information of given GSCA objects.
+#'
+#' This method is internally used for force-graph drawing. The enrichment map data of all the GSCA objects
+#' are extacted and combined into corresponding dataframes. The attributes that are changes with the time
+#' are also returned.
+#'
 #' @importFrom igraph as_data_frame
 fetchGSCASeriesValues <- function(gscaObjs, resultName = "GSEA.results", gscs,
                             ntop = NULL, allSig = TRUE, gsNameType = "id", specificGeneset = NULL, cutoff = NULL) {
@@ -565,7 +604,8 @@ fetchGSCASeriesValues <- function(gscaObjs, resultName = "GSEA.results", gscs,
 }
 
 
-
+#' Generate an empty igraph object with given vertex/edge attributes
+#'
 #' @importFrom igraph make_empty_graph set_vertex_attr
 makeEmptyGraph <- function(NAttributes, EAttributes) {
   g <- igraph::make_empty_graph(n = 0, directed = TRUE)
