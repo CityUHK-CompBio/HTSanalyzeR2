@@ -14,11 +14,13 @@ If you are a current bioconductor user and have `devtools` package installed, yo
 ```
 # Installation requires bioconductor and devtools, please use the following commands if you've not
 
-source("https://bioconductor.org/biocLite.R")
-biocLite("devtools", dependencies=TRUE)
+if (!requireNamespace("BiocManager"))
+    install.packages("BiocManager")
+BiocManager::install()
+install.packages("devtools")
 
 # Before installing HTSanalyzeR2, you need also to install the dependent package `GO.db`
-biocLite("GO.db", dependencies=TRUE)
+BiocManager::install("GO.db", version = "3.8")
 devtools::install_github("CityUHK-CompBio/HTSanalyzeR2", dependencies=TRUE)
 ```
 
