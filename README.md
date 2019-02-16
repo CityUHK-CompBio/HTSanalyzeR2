@@ -7,7 +7,7 @@ This package provides gene set over-representation, enrichment and network analy
 
 ## Quick Installation
 
-**This package is available under R(>= 3.4).**
+**This package is available under R(>= 3.5).**
 
 If you are a current bioconductor user and have `devtools` package installed, you only need to call `install_github` function in `devtools` to install `HTSanalyzeR2`. If you encountered errors, please refer to the section *Potential Dependency Issues*.  
 
@@ -74,7 +74,7 @@ Details about this:
 
 2. `devtools` need package `httr`, which requires curl library. Please install `libcurl4-openssl-dev` on Ubuntu or corresponding package on other OS.
 
-3. `igraph` requres xml library. Please install `libxml2-dev` on Ubuntu or corresponding package on other OS.
+3. `igraph` requires xml library. Please install `libxml2-dev` on Ubuntu or corresponding package on other OS.
 
 4. `RankProd` need package `Rmpfr`, which requires gmp and mpfr library. Please install `libgmp-dev` and `libmpfr-dev` on Ubuntu or corresponding package on other OS.
 

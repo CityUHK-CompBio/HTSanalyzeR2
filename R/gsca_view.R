@@ -58,7 +58,8 @@ setMethod(
     gseaPlots(runningScore = test[['runningScore']],
               enrichmentScore = test[['enrichmentScore']],
               positions = test[['positions']], geneList = object@geneList,
-              Adjust.P.value = test[['Adjust.P.value']])
+              Adjust.P.value = test[['Adjust.P.value']],
+              gsName = gsName)
   }
 )
 
@@ -126,7 +127,9 @@ setMethod(
 
 #' @import graphics
 #' @importFrom grDevices colorRampPalette
-gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust.P.value) {
+gseaPlots <- function(runningScore, enrichmentScore,
+                      positions, geneList, Adjust.P.value,
+                      gsName) {
 
   ## check arguments
   paraCheck("GSCAClass", "genelist", geneList)
@@ -149,27 +152,34 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust
   ##set the graphical parameters
   def.par <- par(no.readonly = TRUE)
   gsea.layout <- layout(matrix(c(1, 2, 3)), heights = c(0.9,0.3,0.1))
-  par(mai=c(0, 1, 0.5, 0.2))
+  par(mai=c(0, 1.2, 0.5, 0.2), cex.axis=2.5)
 
   ##Plot the running score and add a vertical line at the position of
   ##the enrichment score (maximal absolute value of the running score)
-  plot(x=c(1:length(runningScore)), y=runningScore, type="l", ylab="Enrichment score (ES)", lwd=3, col="green",
-       cex.lab = 1.5, bg = "aliceblue", xaxt = "n", las = 1)
-  grid(NULL, NULL, lwd = 1)
+  plot(x=c(1:length(runningScore)), y=runningScore, type="l",
+      lwd=3, col="green",
+      # cex.lab = 2.5,
+      ylab="",
+      bg = "aliceblue", xaxt = "n", las = 1)
+  title(main = gsName, cex.main = 3,
+        ylab="Enrichment score (ES)",
+        mgp=c(4.5, 1, 0),
+        cex.lab=3)
+  grid(NULL, NULL, lwd = 2)
   abline(h=0, lty = 2)
 
   if(enrichmentScore > 0){
   text(x = length(geneList)/7*5, y = (enrichmentScore)/4*3,
-       labels = paste("ES = ", signif(enrichmentScore, 3), "\nAdjust.P.value ",
+       labels = paste("ES = ", signif(enrichmentScore, 3), "\nFDR ",
                       ifelse(Adjust.P.value == 0, "< 1e-6", paste0("= ", signif(Adjust.P.value, 2)))),
-       cex = 1.5)} else {
+       cex = 3)} else {
          text(x = length(geneList)/6, y = (enrichmentScore)/4*3,
-              labels = paste("ES = ", signif(enrichmentScore, 3), "\nAdjust.P.value ",
+              labels = paste("ES = ", signif(enrichmentScore, 3), "\nFDR ",
                              ifelse(Adjust.P.value == 0, "< 1e-6", paste0("= ", signif(Adjust.P.value, 2)))),
-              cex = 1.5)
+              cex = 3)
        }
   #-------------------## plot a color barplot indicating the phenotypes
-  par(mai=c(0, 1, 0, 0.2))
+  par(mai=c(0, 1.2, 0, 0.2))
   plot(0, type = "n", xaxt = "n", xaxs = "i", xlab = "", yaxt = "n",
        ylab = "", xlim = c(1, length(geneList)), lwd = 3)
   abline(v=which(positions == 1), lwd = 0.75)
@@ -179,7 +189,7 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust
   ##this is done using the 'positions' output of gseaScores,
   ##which stores a one for each match position and a zero otherwise
 
-  par(mai = c(0.1, 1, 0, 0.2))
+  par(mai = c(0.1, 1.2, 0, 0.2))
   ticks = 1000
   ran <- range(geneList, na.rm = TRUE)
   offset <- ceiling(ticks * ran[1] / (ran[1] - ran[2]))
@@ -193,8 +203,8 @@ gseaPlots <- function(runningScore, enrichmentScore, positions, geneList, Adjust
   barplot(matrix(rank.colors$lengths), col = rank.colors$values,
           border = NA, horiz = TRUE,xaxt = "n", xlim = c(1, length(geneList)))
   box()
-  text(length(geneList) * 0.01, 0.7, "Positive", adj = c(0, NA))
-  text(length(geneList) * 0.99, 0.7, "Negative", adj = c(1, NA))
+  text(length(geneList) * 0.01, 0.7, "Positive", adj = c(0, NA), cex = 1.7)
+  text(length(geneList) * 0.99, 0.7, "Negative", adj = c(1, NA), cex = 1.7)
   par(def.par)  #- reset to default
 }
 

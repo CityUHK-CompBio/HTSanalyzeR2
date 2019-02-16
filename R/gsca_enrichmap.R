@@ -521,7 +521,8 @@ setMethod("viewEnrichMap", signature = "GSCA",
               series <- names(seriesObjs)
               defaultKey <- series[1]
               # seriesDF: (nodes = nodeDF, edges = edgeDF, nodeSeriesCols = nodeCols, edgeSeriesCols = edgeCols)
-              seriesDF <- fetchGSCASeriesValues(seriesObjs, resultName, gscs, ntop, allSig, gsNameType, specificGeneset, cutoff)
+              seriesDF <- fetchGSCASeriesValues(seriesObjs, resultName, gscs,
+                                                ntop, allSig, gsNameType, specificGeneset, cutoff)
               # Create series mappings
               nodeCols <- seriesDF$nodeSeriesCols
               nodeColNames <- sub("adjPvalue", "color", nodeCols)
