@@ -54,12 +54,13 @@ setMethod(
 
     test <- gseaScores(geneList = object@geneList, geneSet = object@listOfGeneSetCollections[[gscName]][[gsName]],
                        exponent = object@para$exponent, mode = "graph", GSEA.results = object@result$GSEA.results[[gscName]],
-                      gsName = gsName)
+                       gsName = gsName)
     gseaPlots(runningScore = test[['runningScore']],
               enrichmentScore = test[['enrichmentScore']],
               positions = test[['positions']], geneList = object@geneList,
               Adjust.P.value = test[['Adjust.P.value']],
-              gsName = gsName)
+              gsName = gsName,
+              nPermutations = object@summary$para$gsea[, "nPermutations"])
   }
 )
 
@@ -117,7 +118,9 @@ setMethod(
                         exponent=object@para$exponent, filepath=filepath,
                         filename=gsub("/", "_", gs.name), output=output,
                         GSEA.results = object@result$GSEA.results[[gsc]],
-                        gsName = gs.name, ...=...)
+                        gsName = gs.name,
+                        nPermutations = object@summary$para$gsea[, "nPermutations"],
+                        ...=...)
         }
       }
     }
@@ -129,7 +132,7 @@ setMethod(
 #' @importFrom grDevices colorRampPalette
 gseaPlots <- function(runningScore, enrichmentScore,
                       positions, geneList, Adjust.P.value,
-                      gsName) {
+                      gsName, nPermutations) {
 
   ## check arguments
   paraCheck("GSCAClass", "genelist", geneList)
@@ -152,31 +155,42 @@ gseaPlots <- function(runningScore, enrichmentScore,
   ##set the graphical parameters
   def.par <- par(no.readonly = TRUE)
   gsea.layout <- layout(matrix(c(1, 2, 3)), heights = c(0.9,0.3,0.1))
-  par(mai=c(0, 1.2, 0.5, 0.2), cex.axis=2.5)
+  par(mai=c(0, 1.2, 0.5, 0.2), cex.axis=2)
 
   ##Plot the running score and add a vertical line at the position of
   ##the enrichment score (maximal absolute value of the running score)
   plot(x=c(1:length(runningScore)), y=runningScore, type="l",
       lwd=3, col="green",
       # cex.lab = 2.5,
-      ylab="",
-      bg = "aliceblue", xaxt = "n", las = 1)
-  title(main = gsName, cex.main = 3,
+      ylab="", yaxt = "n",
+      bg = "aliceblue", xaxt = "n")
+  label <- seq(round(min(runningScore), digits = 1),
+               round(max(runningScore), digits = 1),
+               by = 0.1)
+  axis(2, at=label,
+       labels=label, las=1)
+  title(main = gsName, cex.main = 2.5,
         ylab="Enrichment score (ES)",
         mgp=c(4.5, 1, 0),
-        cex.lab=3)
+        cex.lab=2)
   grid(NULL, NULL, lwd = 2)
   abline(h=0, lty = 2)
 
+  nPermutations <- as.numeric(nPermutations)
+  minP <- formatC(1/nPermutations, format = "e", digits = 0)
   if(enrichmentScore > 0){
   text(x = length(geneList)/7*5, y = (enrichmentScore)/4*3,
        labels = paste("ES = ", signif(enrichmentScore, 3), "\nFDR ",
-                      ifelse(Adjust.P.value == 0, "< 1e-6", paste0("= ", signif(Adjust.P.value, 2)))),
-       cex = 3)} else {
+                      ifelse(Adjust.P.value == 0,
+                             paste0("< ", minP),
+                             paste0("= ", signif(Adjust.P.value, 2)))),
+       cex = 2)} else {
          text(x = length(geneList)/6, y = (enrichmentScore)/4*3,
               labels = paste("ES = ", signif(enrichmentScore, 3), "\nFDR ",
-                             ifelse(Adjust.P.value == 0, "< 1e-6", paste0("= ", signif(Adjust.P.value, 2)))),
-              cex = 3)
+                             ifelse(Adjust.P.value == 0,
+                                    paste0("< ", minP),
+                                    paste0("= ", signif(Adjust.P.value, 2)))),
+              cex = 2)
        }
   #-------------------## plot a color barplot indicating the phenotypes
   par(mai=c(0, 1.2, 0, 0.2))
@@ -214,7 +228,9 @@ gseaPlots <- function(runningScore, enrichmentScore,
 makeGSEAplots <- function(geneList, geneSet, exponent, filepath,
                           filename, output,
                           GSEA.results,
-                          gsName, ...) {
+                          gsName,
+                          nPermutations = object@summary$para$gsea[, "nPermutations"],
+                          ...) {
   test <- gseaScores(geneList = geneList, geneSet = geneSet,
                      exponent = exponent, mode = "graph", GSEA.results = GSEA.results,
                      gsName = gsName)
@@ -229,7 +245,9 @@ makeGSEAplots <- function(geneList, geneSet, exponent, filepath,
   gseaPlots(runningScore = test[['runningScore']],
             enrichmentScore = test[['enrichmentScore']],
             positions = test[['positions']], geneList = geneList,
-            Adjust.P.value = test[['Adjust.P.value']])
+            Adjust.P.value = test[['Adjust.P.value']],
+            gsName = gsName,
+            nPermutations = object@summary$para$gsea[, "nPermutations"])
   dev.off()
 }
 
