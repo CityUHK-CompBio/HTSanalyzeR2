@@ -26,13 +26,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
-In this short tutorial, we give a detailed illustration for the shiny report part of **HTSanalyzeR2** to visualize the results and modify figures in different aspects.
+In this short tutorial, we will give a detailed illustration for the interactive Shiny report of **HTSanalyzeR2** to visualize the results and modify figures in different aspects.
 
 # Interactive Shiny report visualization
 
 ## Visualize single *GSCA* object for individual data set
 
-For single data set analysis, after analyzed by HTSanalyzeR2, we can get a *GSCA* object and use the function *report* to launch the shiny report. 
+For single data set analysis, after performing gene set analysis by HTSanalyzeR2, we can get a *GSCA* object and use the function *report* to launch the Shiny report. 
 
 ```{r, eval=FALSE}
 data(d7_gsca)
@@ -40,13 +40,13 @@ report(d7_gsca)
 ```
 
 
-### The hypergeometric test result table (Figure1)
+### The GSOA result table [Figure1]
 
-![The hypergeometric test result table](figures/1.PNG)
+![The GSOA result table](figures/1.PNG)
 
-The above screenshot shows the hypergeometric test result table where users can either get a general summary of the analysis parameters, choose which analysis and which gene set collection to show or download the result by different format.
+The above screenshot shows the GSOA result table where users can either get a general summary of the analysis parameters, choose which analysis and which gene set collection to show or download the result by different format.
 
-### Parameters for modifying the figure (Figure2)
+### Parameters for modifying the figure [Figure2]
 
 There are five main parts for users to modify their figure by interactive operations including:**Layout**, **Label**, **Node**, **Edge** and **Color Scheme**. Following is a detailed explanation for each part.
 
@@ -59,53 +59,64 @@ There are five main parts for users to modify their figure by interactive operat
 + **Edge**: A widge to modify the edges with two parameters: *Edge Scale* and *Edge Color*.
 + **Color Scheme**: A widge to change the default color.
 
-![The enrichment map of hypergeometric test result](figures/2.PNG)
+![The enrichment map of GSOA result](figures/2.PNG)
 
-The above screenshot shows the enrichment map of hypergeometric test result. Users can click the topright button to modify the figure based on their data and preference. After 
+The above screenshot shows the enrichment map of GSOA result. Users can click the topright button to modify the figure based on their data and preference. 
 
 ## Visualize single *NWA* object for individual data set
+
+For single data set analysis, after performing enriched subnetwork analysis by HTSanalyzeR2, we can get a *NWA* object and use the function *report* to launch the Shiny report.
+
 ```{r, eval=FALSE}
 data(d7_nwa)
 report(d7_nwa)
 ```
 
-### The identified subnetwork (Figure3)
+### The identified subnetwork [Figure3]
 ![The identified subnetwork](figures/3.PNG)
 
-## Visualize a list of *GSCA* objects for time series/comparative analysis
+The below screenshot shows the identified subnetwork where users can either get a general
+summary of the subnetwork attributes, modify the subnetwork based on their data and preference or download the subnetwork in svg format for further use.
+
+## Visualize a list of *GSCA* objects for "Time-course" data
 ```{r, eval=FALSE}
 data(gscaTS)
 ## To make the figure more compact, we set a cutoff 
 ## to move any other edges with low Jaccard coefficient.
-reportAll(gscaTS, cutoff = 0.035)
+reportAll(gscaTS, cutoff = 0.03)
 ```
 
-### GSEA results table for time series/comparative analysis (Figure4)
-![GSEA results table for time series/comparative analysis](figures/4.PNG)
+### GSEA results table for "Time-course" data [Figure4]
+![GSEA results table for "Time-course" data](figures/4.PNG)
 
+The above screenshot shows the GSOA result tables for Time-course data with three time points where users can either get a general summary of the analysis parameters, choose which analysis, which gene set collection and which experiment result to show or download the result by different format.
 
-### Union enrichment map for time series/comparative analysis (Figure5)
-![Union enrichment map for time series/comparative analysis](figures/5.PNG)
+### Union enrichment map for "Time-course" data [Figure5]
+![Union enrichment map for "Time-course" data](figures/5.PNG)
 
+The below screenshot shows the union enrichment maps of GSEA result for "Time-course" data with filtered edges by setting a cutoff on the edges. Users can click the topright button to modify the figure based on their data and preference. Here, we can clearly see a gradual change among three union enrichment maps with the same layout.
 
-## Visualize a list of *NWA* objects for time series/comparative analysis
+## Visualize a list of *NWA* objects for "Time-course" data
 ```{r, eval=FALSE}
 data(nwaTS)
-reportAll(nwaTS)
+reportAll(nwa = nwaTS)
 ```
 
-### Union subnetwork for time series/comparative analysis (Figure6)
-![Union subnetwork for time series/comparative analysis](figures/6.PNG)
+### Union subnetwork for "Time-course" data [Figure6]
+![Union subnetwork for "Time-course" data](figures/6.PNG)
 
 
 ## Visualize both *GSCA* and *NWA* objects simultaneously
 ```{r, eval=FALSE}
 reportAll(gsca = gscaTS, nwa = nwaTS)
-
 ```
 
-### Visualize both GSEA and netwrok result in the same report (Figure7)
-![Visualize both GSEA and netwrok result in the same report](figures/7.PNG)
+The above screenshot shows the union subnetworks for "Time-course" data. Users can click the topright button to modify the figure based on their data and preference. We can clearly see a gradual change among three union subnetworks with the same layout.
+
+### Visualize both GSEA and network result in the same report [Figure7]
+![Visualize both GSEA and network result in the same report](figures/7.PNG)
+
+If you do both gene set analysis and enriched subnetwork analysis, it's also possible to visualize both of them in the same Shiny report as showed here.
 
 # Session Info
 
