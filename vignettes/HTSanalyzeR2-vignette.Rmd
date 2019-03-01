@@ -261,17 +261,26 @@ summarize(gsca3)
 To better view the GSEA result for a single gene set, you can use *viewGSEA* to plot the positions of the genes of the gene set in the ranked phenotypes and the location of the enrichment score. To this end, you must first get the gene set ID by *getTopGeneSets*, which can return all or the top significant gene sets from GSEA results.  Basically, the user needs to specify the type of results – "HyperGeo.results" or "GSEA.results", the name(s) of the gene set collection(s) as well as the type of selection– all (by parameter 'allSig') or top (by parameter 'ntop') significant gene sets.
 
 
-```{r, fig.cap = "GSEA result plot of one gene set of the Molecular Function collection", fig.align="center", fig.small = TRUE}
+```{r}
 topGS <- getTopGeneSets(gsca3, resultName="GSEA.results",
                         gscs=c("GO_MF", "PW_KEGG"), allSig=TRUE)
 topGS
+```
+
+```{r, eval=FALSE}
 viewGSEA(gsca3, gscName="GO_MF", gsName=topGS[["GO_MF"]][2])  ## [Figure 2]
 ```
 
+![GSEA result plot of one gene set of the Molecular Function collection](figures/GSEAplot1.png)
 
-```{r, fig.cap = "GSEA result plot of one gene set of the KEGG collection",  fig.align="center", fig.small = TRUE}
-viewGSEA(gsca3, gscName="PW_KEGG", gsName=topGS[["PW_KEGG"]][4])  ## [Figure 3]
+It is also possible for users to change the appearance of the GSEA plot, such as: range of enrichment score profile for multiple plots comparison, etc. Details please go to find the help documentation of funciton *viewGSEA*.
+```{r, eval=FALSE}
+viewGSEA(gsca3, gscName="PW_KEGG", gsName=topGS[["PW_KEGG"]][5],
+         ESline.col = "green",
+         rankMetric.col = "darkgrey")  ## [Figure 3]
 ```
+
+![GSEA result plot of one gene set of the KEGG collection](figures/GSEAplot2.png)
 
 You can also plot all or the top significant gene sets in batch and store them as png or pdf format into a specified path by using *plotGSEA*.
 
