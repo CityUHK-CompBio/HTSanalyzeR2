@@ -129,16 +129,16 @@ topGS <- getTopGeneSets(gsca3, resultName="GSEA.results",
                         gscs=c("PW_KEGG"), allSig=TRUE)
 viewGSEA(gsca3, gscName="PW_KEGG", gsName=topGS[["PW_KEGG"]][2])
 ```
-![](vignettes/figures/readme.example1.png)
+![GSEA plot](vignettes/figures/readme.example1.png)
 
 ```
 
 
 ## view enrichment Map
 viewEnrichMap(gsca3, gscs=c("PW_KEGG"),
-              allSig = FALSE, gsNameType = "term", ntop = 5)
+              allSig = TRUE, gsNameType = "term")
 ```
-![](vignettes/figures/readme.example2.png)
+![Enrichment map for all significant KEGG pathways](vignettes/figures/readme.example2.png)
 
 ```
 ## visualize all results in an interactive report
@@ -151,4 +151,4 @@ Should you have any questions about this package, you can either email to the de
 
 ## Interaction with the maintainer
 
-You're always welcome to [email](https://github.com/CityUHK-CompBio/HTSanalyzeR2/blob/master/DESCRIPTION) to the maintainer of **HTSanalyzeR2** if you need more reasonable and general requests of this package. 
+You're always welcomed to [email](https://github.com/CityUHK-CompBio/HTSanalyzeR2/blob/master/DESCRIPTION) to the maintainer of **HTSanalyzeR2** if you need more reasonable and general requests of this package. 
