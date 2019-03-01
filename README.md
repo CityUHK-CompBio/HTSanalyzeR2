@@ -124,11 +124,21 @@ gsca2 <- analyze(gsca1,
 gsca3 <- appendGSTerms(gsca2, 
                        keggGSCs=c("PW_KEGG"))
 
+## draw GSEA plot for a specific gene set
+topGS <- getTopGeneSets(gsca3, resultName="GSEA.results",
+                        gscs=c("PW_KEGG"), allSig=TRUE)
+viewGSEA(gsca3, gscName="PW_KEGG", gsName=topGS[["PW_KEGG"]][2])
+```
+![](vignettes/figures/readme.example1.png)
+
+```
+
+
 ## view enrichment Map
 viewEnrichMap(gsca3, gscs=c("PW_KEGG"),
               allSig = FALSE, gsNameType = "term", ntop = 5)
 ```
-![](vignettes/figures/readme.example1.PNG)
+![](vignettes/figures/readme.example2.png)
 
 ```
 ## visualize all results in an interactive report
