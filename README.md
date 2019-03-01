@@ -148,3 +148,7 @@ report(gsca3)
 ## Getting help
 
 Should you have any questions about this package, you can either email to the developers listed in the *DESCRIPTION* part of this package or create an issue in the [issue part](https://github.com/CityUHK-CompBio/HTSanalyzeR2/issues).
+
+## Interaction with the maintainer
+
+You're always welcome to [email](https://github.com/CityUHK-CompBio/HTSanalyzeR2/blob/master/DESCRIPTION) to the maintainer of **HTSanalyzeR2** if you need more reasonable and general requests of this package. 
