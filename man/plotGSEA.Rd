@@ -7,7 +7,9 @@
 \title{Plot and save figures of GSEA results for top significant gene sets}
 \usage{
 \S4method{plotGSEA}{GSCA}(object, gscs, ntop = NULL, allSig = FALSE,
-  filepath = ".", output = "pdf", ...)
+  filepath = ".", output = "pdf", ES.range = NULL,
+  rankMetric.range = NULL, ESline.col = "FireBrick",
+  hits.col = "black", rankMetric.col = "CadetBlue", ...)
 }
 \arguments{
 \item{object}{A GSCA object.}
@@ -25,6 +27,20 @@ p-value < 'pValueCutoff' of slot 'para') will be plotted; otherwise, only top 'n
 \item{filepath}{A single character value specifying where to store GSEA figures.}
 
 \item{output}{A single character value specifying the format of output image: "pdf" or "png".}
+
+\item{ES.range}{A numeric vector for user-defined range of enrichment score showing in the
+top part of GSEA plot. Default is the range of actual enrichment score of result. However, users are
+also allowed to set by themselves for better comparison with other GSEA plots.}
+
+\item{rankMetric.range}{A numeric vector for user-defined range of ranked gene lists showing in the
+bottom part of GSEA plot. Default is the range of actual ranked gene lists of result. However, users are
+also allowed to set by themselves for better comparison with other GSEA plots.}
+
+\item{ESline.col}{The color to be used for enrichment score profile line. Defaults to "FireBrick".}
+
+\item{hits.col}{The color to be used for hits line to show the position of hits. Defaults to "CadetBlue".}
+
+\item{rankMetric.col}{The color to be used for ranked metric line. Defaults to "CadetBlue".}
 
 \item{...}{Other arguments used by the function png or pdf such as 'width' and 'height'}
 }

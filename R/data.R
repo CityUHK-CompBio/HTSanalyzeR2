@@ -89,3 +89,14 @@
 #' @examples
 #' data(xn)
 "xn"
+
+#' Expression of a demo data: GSE33113
+#'
+#' Expression of normalized data GSE33113 in vignette, which contains 21656 genes
+#' expression among 78 colon rectal cancer patients.
+"GSE33113_exp"
+
+#' Concensus molecular subtype label of GSE33113
+#'
+#' Concensus molecular subtype label of GSE33113
+"GSE33113_label"

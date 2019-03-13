@@ -6,9 +6,9 @@
 \alias{extractEnrichMap}
 \title{Extract the enrichment map as an igraph object}
 \usage{
-\S4method{extractEnrichMap}{GSCA}(object, resultName = "GSEA.results", gscs,
-  ntop = NULL, allSig = TRUE, gsNameType = "id", specificGeneset = NULL,
-  cutoff = NULL)
+\S4method{extractEnrichMap}{GSCA}(object, resultName = "GSEA.results",
+  gscs, ntop = NULL, allSig = TRUE, gsNameType = "id",
+  specificGeneset = NULL, cutoff = NULL)
 }
 \arguments{
 \item{object}{A GSCA object.}
@@ -51,7 +51,8 @@ Users can also modify the igraph object.
 library(igraph)
 data(d7_gsca)
 
-## extract the enrichment map for top 30 significant 'GO_MF' gene sets of GSEA results in an igraph object
+## extract the enrichment map for top 30 significant 'GO_MF' gene
+## sets of GSEA results in an igraph object
 extractEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
                 allSig = FALSE, ntop = 30, gsNameType = "term")
 

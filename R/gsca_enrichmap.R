@@ -219,7 +219,8 @@ appendMSigDBTerm <- function(df) {
 #' library(igraph)
 #' data(d7_gsca)
 #'
-#' ## extract the enrichment map for top 30 significant 'GO_MF' gene sets of GSEA results in an igraph object
+#' ## extract the enrichment map for top 30 significant 'GO_MF' gene
+#' ## sets of GSEA results in an igraph object
 #' extractEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
 #'                 allSig = FALSE, ntop = 30, gsNameType = "term")
 #'
@@ -550,12 +551,10 @@ setMethod("viewEnrichMap", signature = "GSCA",
             forceGraph(em_nodes, em_links, nMappings, lMappings, graphOptions, seriesData = series)
           })
 
-#' Extract and combine enrichment map information of given GSCA objects.
-#'
-#' This method is internally used for force-graph drawing. The enrichment map data of all the GSCA objects
-#' are extacted and combined into corresponding dataframes. The attributes that are changes with the time
-#' are also returned.
-#'
+##  Extract and combine enrichment map information of given GSCA objects.
+##  This method is internally used for force-graph drawing. The enrichment map data of all the GSCA objects
+##  are extacted and combined into corresponding dataframes. The attributes that are changes with the time
+##  are also returned.
 #' @importFrom igraph as_data_frame
 fetchGSCASeriesValues <- function(gscaObjs, resultName = "GSEA.results", gscs,
                             ntop = NULL, allSig = TRUE, gsNameType = "id", specificGeneset = NULL, cutoff = NULL) {
@@ -605,8 +604,7 @@ fetchGSCASeriesValues <- function(gscaObjs, resultName = "GSEA.results", gscs,
 }
 
 
-#' Generate an empty igraph object with given vertex/edge attributes
-#'
+## Generate an empty igraph object with given vertex/edge attributes
 #' @importFrom igraph make_empty_graph set_vertex_attr
 makeEmptyGraph <- function(NAttributes, EAttributes) {
   g <- igraph::make_empty_graph(n = 0, directed = TRUE)

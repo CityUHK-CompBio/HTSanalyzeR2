@@ -77,6 +77,9 @@ please refer to \code{\link[fgsea:fgsea]{fgsea}}.}
 
 \item{doNWA}{A logic value specifying whether to do subnetwork analysis or not, default is FALSE.}
 
+\item{nwaPvalues}{A single numeric value specifying the false discovery for the scoring of nodes
+in NWA analysis (see BioNet::scoreNodes and Dittrich et al., 2008 for details)}
+
 \item{interactionMatrix}{An interaction matrix including columns
 'InteractionType', 'InteractorA' and 'InteractorB'. If this matrix
 is available, the interactome can be directly built based on it.}

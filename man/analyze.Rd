@@ -8,8 +8,8 @@
 \title{Gene Set Collection Analysis or NetWork Analysis}
 \usage{
 \S4method{analyze}{GSCA}(object, para = list(pValueCutoff = 0.05,
-  pAdjustMethod = "BH", nPermutations = 1000, minGeneSetSize = 15, exponent =
-  1), verbose = TRUE, doGSOA = FALSE, doGSEA = TRUE,
+  pAdjustMethod = "BH", nPermutations = 1000, minGeneSetSize = 15, exponent
+  = 1), verbose = TRUE, doGSOA = FALSE, doGSEA = TRUE,
   GSEA.by = "HTSanalyzeR2")
 
 \S4method{analyze}{NWA}(object, fdr = 0.001, species, verbose = TRUE)

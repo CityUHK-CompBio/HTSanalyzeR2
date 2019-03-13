@@ -19,7 +19,8 @@ Description: This package provides gene set analysis, enriched subnetwork analys
              part and download results in different formats.
 License: Artistic-2.0
 LazyData: TRUE
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
+Encoding: UTF-8
 Imports: 
     GO.db,
     cellHTS2,
@@ -81,7 +82,9 @@ Suggests:
     knitr,
     org.Hs.eg.db,
     doParallel,
-    Biobase
+    Biobase,
+    limma,
+    TxDb.Hsapiens.UCSC.hg19.knownGene
 VignetteBuilder: knitr
 Depends: R(>= 3.5)
 biocViews: GeneSetEnrichment, NetworkEnrichment, TimeCourse, 

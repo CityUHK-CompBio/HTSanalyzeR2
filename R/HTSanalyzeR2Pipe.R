@@ -43,6 +43,8 @@
 #' @param goGSCs A character vector of names of all GO gene set collections.
 #' @param msigdbGSCs A character vector of names of all MSigDB gene set collections.
 #' @param doNWA A logic value specifying whether to do subnetwork analysis or not, default is FALSE.
+#' @param nwaPvalues A single numeric value specifying the false discovery for the scoring of nodes
+#' in NWA analysis (see BioNet::scoreNodes and Dittrich et al., 2008 for details)
 #' @param interactionMatrix An interaction matrix including columns
 #' 'InteractionType', 'InteractorA' and 'InteractorB'. If this matrix
 #' is available, the interactome can be directly built based on it.

@@ -7,8 +7,9 @@
 \title{Plot the enrichment map for GSEA or GSOA result}
 \usage{
 \S4method{viewEnrichMap}{GSCA}(object, resultName = "GSEA.results", gscs,
-  ntop = NULL, allSig = TRUE, gsNameType = "id", specificGeneset = NULL,
-  cutoff = NULL, options = list(), seriesObjs = NULL)
+  ntop = NULL, allSig = TRUE, gsNameType = "id",
+  specificGeneset = NULL, cutoff = NULL, options = list(),
+  seriesObjs = NULL)
 }
 \arguments{
 \item{object}{A GSCA object.}

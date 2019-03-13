@@ -6,7 +6,10 @@
 \alias{viewGSEA}
 \title{Plot a figure of GSEA results for one gene set}
 \usage{
-\S4method{viewGSEA}{GSCA}(object, gscName, gsName)
+\S4method{viewGSEA}{GSCA}(object, gscName, gsName, ES.range = NULL,
+  rankMetric.range = NULL, main.title = NULL,
+  ESline.col = "FireBrick", hits.col = "black",
+  rankMetric.col = "CadetBlue")
 }
 \arguments{
 \item{object}{A GSCA object.}
@@ -15,14 +18,31 @@
 the gene set is.}
 
 \item{gsName}{A single character value specifying the name of the gene set to be plotted.}
+
+\item{ES.range}{A numeric vector for user-defined range of enrichment score showing in the
+top part of GSEA plot. Default is the range of actual enrichment score of result. However, users are
+also allowed to set by themselves for better comparison with other GSEA plots.}
+
+\item{rankMetric.range}{A numeric vector for user-defined range of ranked gene lists showing in the
+bottom part of GSEA plot. Default is the range of actual ranked gene lists of result. However, users are
+also allowed to set by themselves for better comparison with other GSEA plots.}
+
+\item{main.title}{A single character value specifying the main title of the GSEA plot. Default
+is the name of the gene set.}
+
+\item{ESline.col}{The color to be used for enrichment score profile line. Defaults to "FireBrick".}
+
+\item{hits.col}{The color to be used for hits line to show the position of hits. Defaults to "CadetBlue".}
+
+\item{rankMetric.col}{The color to be used for ranked metric line. Defaults to "CadetBlue".}
 }
 \value{
 In the end, this function would draw a GSEA figure for specified gene set.
 }
 \description{
-This is a generic function. When implemented as the S4 method for objects of class GSCA,
- this function plots a figure
-of the positions of the gene sets in the ranked gene list and the location of the enrichment score.
+This is a generic function. When implemented as the S4 method for
+objects of class GSCA, this function plots a figure of the positions
+of the gene sets in the ranked gene list and the location of the enrichment score.
 }
 \details{
 We suggest to print the names of top significant gene sets using the
@@ -41,5 +61,12 @@ topGS_GO_MF <- getTopGeneSets(d7_gsca, "GSEA.results", gscs = "GO_MF", allSig=TR
 ## view GSEA results for one gene set
 \dontrun{
 viewGSEA(d7_gsca, "GO_MF", topGS_GO_MF[["GO_MF"]][1])
+
+## view GSEA results for the same gene set by user defined enrichment score range,
+## ranked gene list range and enrichment score profile line color.
+viewGSEA(d7_gsca, "GO_MF", topGS_GO_MF[["GO_MF"]][1],
+ES.range = c(-1, 0), rankMetric.range = c(-5, 2),
+ESline.col = "green")
 }
+
 }
