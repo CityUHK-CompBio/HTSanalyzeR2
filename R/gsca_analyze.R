@@ -20,8 +20,8 @@ if (!isGeneric("analyze")) {
 #' significant.
 #' @param pAdjustMethod
 #' A single character value specifying the p-value adjustment method to be used
-#' (see 'p.adjust' for details).
-#' @param nPermutations
+#' (see 'p.adjust' for details), default is "BH".
+#' #' @param nPermutations
 #' A single integer or numeric value specifying the number of permutations for
 #' deriving p-values in GSEA.
 #' @param minGeneSetSize
@@ -40,6 +40,50 @@ if (!isGeneric("analyze")) {
 #' please refer to \code{\link[fgsea:fgsea]{fgsea}}.
 #' @return In the end, this function will return an updated object of
 #' class GSCA or NWA. All the analyzed results could be found in slot \emph{result}.
+#'
+#' ------------------------------------------------------------
+#'
+#' For GSOA result of class GSCA:
+#'
+#' Universe Size: total number of genes as background in GSOA analysis;
+#'
+#' Gene Set Size: number of genes in the gene set;
+#'
+#' Total Hits: number of genes in hits (interested genes);
+#'
+#' Expected Hits: expected number of hits genes in the gene set;
+#'
+#' Observed Hits: observed/actual number of hits genes in the gene set;
+#'
+#' Pvalue: pvalue of the gene set in GSOA analysis;
+#'
+#' Adjusted.Pvalue: adjusted pvalue of the gene set in GSOA analysis
+#'                  using user-defined p-value adjustment method;
+#'
+#' OverlapGene: overlapped genes between hits and the gene set.
+#'
+#' ------------------------------------------------------------
+#'
+#' For GSEA result of class GSCA:
+#'
+#' Observed.score: Enrichment score of the gene set in GSEA analysis;
+#'
+#' Pvalue: pvalue of the gene set in GSEA analysis;
+#'
+#' Adjusted.Pvalue: adjusted pvalue of the gene set in GSEA analysis
+#'                  using user-defined p-value adjustment method;
+#'
+#' LeadingEdge: the subset of the gene set that contribute most to the enrichment
+#'              score.
+#'
+#' ------------------------------------------------------------
+#'
+#' For NWA result of class NWA:
+#'
+#' subnw: an igraph object of the enriched subnetwork;
+#'
+#' labels: gene labels of the nodes in the enriched subnetwork.
+#'
 #' @include gsca_class.R
 #' @export
 #' @references
@@ -404,30 +448,39 @@ calcHyperGeo <- function (listOfGeneSetCollections,
            use.names = FALSE)
   names(combinedGeneSets) <-
     unlist(lapply(listOfGeneSetCollections, names), use.names = FALSE)
-
   universe = names(geneList)
-  overlappedSize <-
-    sapply(combinedGeneSets, function(geneSet)
-      sum(geneSet %in% universe))
 
-  if (all(overlappedSize < minGeneSetSize)) {
-    stop(
-      paste(
-        "The largest number of overlapped genes of gene sets with universe is: ",
-        max(overlappedSize),
-        ", which is < ",
-        minGeneSetSize,
-        "!\n",
-        sep = ""
-      )
-    )
-  }
+
+  # overlappedSize <-
+  #   sapply(combinedGeneSets, function(geneSet)
+  #     sum(geneSet %in% universe))
+  #
+  # if (all(overlappedSize < minGeneSetSize)) {
+  #   stop(
+  #     paste(
+  #       "The largest number of overlapped genes of gene sets with universe is: ",
+  #       max(overlappedSize),
+  #       ", which is < ",
+  #       minGeneSetSize,
+  #       "!\n",
+  #       sep = ""
+  #     )
+  #   )
+  # }
+#
+#   res <-
+#     sapply(combinedGeneSets[overlappedSize >= minGeneSetSize], calcHGTScore, universe, hits)
 
   res <-
-    sapply(combinedGeneSets[overlappedSize >= minGeneSetSize], calcHGTScore, universe, hits)
+    sapply(combinedGeneSets, calcHGTScore, universe, hits)
   res <- t(res)
-  res[, "Adjusted.Pvalue"] <-
-    p.adjust(res[, "Pvalue"], method = pAdjustMethod)
+  res <- as.data.frame(res)
+  for(i in 1:(ncol(res)-1)){
+    res[, i] <- as.numeric(as.character(res[, i]))
+  }
+  res$OverlapGene <- as.character(res$OverlapGene)
+  res$Adjusted.Pvalue <-
+    p.adjust(res$Pvalue, method = pAdjustMethod)
 
   results <- list()
   ## Extract results dataframe for each gene set collection and orders them
@@ -464,7 +517,13 @@ calcHGTScore <- function(geneSet, universe, hits) {
   ex <- (n / N) * m
   HGTresult <-
     ifelse(m == 0, NA, stats::phyper(k - 1, m, N - m, n, lower.tail = FALSE))
-  hyp.vec <- c(N, m, n, ex, k, HGTresult, NA)
+
+  ##################################################
+  ## add overlapped genes
+  OverlapGene <- ifelse(length(overlap) > 0, paste0(overlap, collapse = ","), NA)
+  ##################################################
+
+  hyp.vec <- c(N, m, n, ex, k, HGTresult, NA, OverlapGene)
   names(hyp.vec) <-
     c(
       "Universe Size",
@@ -473,7 +532,8 @@ calcHGTScore <- function(geneSet, universe, hits) {
       "Expected Hits",
       "Observed Hits",
       "Pvalue",
-      "Adjusted.Pvalue"
+      "Adjusted.Pvalue",
+      "OverlapGene"
     )
   return(hyp.vec)
 }
@@ -508,10 +568,9 @@ calcGSEA <-
     combinedGeneSets <- lapply(combinedGeneSets, intersect, listNames)
     overlaps <- sapply(combinedGeneSets, length)
 
-    ind <- overlaps >= minGeneSetSize
-
-    combinedGeneSets <- combinedGeneSets[ind]
-    overlaps <- overlaps[ind]
+    # ind <- overlaps >= minGeneSetSize
+    # combinedGeneSets <- combinedGeneSets[ind]
+    # overlaps <- overlaps[ind]
 
     ## get scores
     n_sep <- 1000
@@ -552,6 +611,15 @@ calcGSEA <-
 
     res <-
       res[, c("Observed.score", "Pvalue", "Adjusted.Pvalue")]
+    ########################################################
+    ## add LeadingEdge genelist]
+    res <- as.data.frame(res)
+    LeadingEdge <- sapply(1:nrow(res), function(i){
+      getLeadingEdge(geneList,
+                     combinedGeneSets[[rownames(res)[i]]],
+                     exponent=exponent)
+    })
+    res[, "LeadingEdge"] <- LeadingEdge
 
     results <- list()
     ## Extract results dataframe for each gene set collection and orders them
@@ -567,6 +635,68 @@ calcGSEA <-
     names(results) <- names(listOfGeneSetCollections)
     return(results)
   }
+
+## This function computes enrichment scores for running score and get leading edge genes
+getLeadingEdge <- function(geneList, geneSet, exponent=1) {
+  ## parameters check
+  paraCheck("GSCAClass", "genelist", geneList)
+  paraCheck("Analyze", "exponent", exponent)
+  paraCheck("Report", "gs", geneSet)
+
+  geneSet <- intersect(names(geneList), geneSet)
+
+  nh <- length(geneSet)
+  N <- length(geneList)
+  Phit <- rep(0, N)
+  Pmiss <- rep(0, N)
+  ES <- 0
+  runningES <- rep(0, N)
+
+
+  ## calculate the enrichment score
+  if(nh > N) {
+    stop("Gene Set is larger than Gene List")
+  } else {
+    hits <- rep(FALSE, N)
+    hits[which(!is.na(match(names(geneList), geneSet)))] <- TRUE
+    if(sum(hits)!=0) {
+      Phit[which(hits)]<-abs(geneList[which(hits)])^exponent
+      NR=sum(Phit)
+      Pmiss[which(!hits)]<-1/(N-nh)
+      Phit=cumsum(Phit/NR)
+      Pmiss=cumsum(Pmiss)
+      runningES<-Phit-Pmiss
+      ESmax<-max(runningES)
+      ESmin<-min(runningES)
+      ES<-ifelse(abs(ESmin)>abs(ESmax), ESmin, ESmax)
+    }
+  }
+  names(runningES) <- names(geneList)
+
+  ## The leading edge subset of a gene set is the subset of members that
+  ## contribute most to the ES. For a positive ES, the leading edge subset
+  ## is the set of members that appear in the ranked list prior to the peak
+  ## score. For a negative ES, it is the set of members that appear
+  ## subsequent to the peak score.
+  ## (https://software.broadinstitute.org/gsea/doc/GSEAUserGuideFrame.html)
+  ES.pos <- which(runningES == ES)
+  if(ES == ESmax){
+    leadingEdge <- names(runningES)[1:ES.pos]
+    leadingEdge <- intersect(leadingEdge, geneSet)
+  } else{
+    leadingEdge <- names(runningES)[(ES.pos+1):length(runningES)]
+    leadingEdge <- intersect(leadingEdge, geneSet)
+    rev(leadingEdge)
+  }
+
+  leadingEdge <- paste0(leadingEdge, collapse = ",")
+  return(leadingEdge)
+}
+
+## Did comparison with the result got by fgsea method,
+## the leading edge list is tottally the same!
+
+
 
 ##' @importFrom fgsea fgsea
 GSEA_fgsea <- function(listOfGeneSetCollections,
@@ -602,9 +732,8 @@ GSEA_fgsea <- function(listOfGeneSetCollections,
   colnames(tmp_res) <- c("Observed.score","Pvalue","Adjusted.Pvalue",
                          "NES", "nMoreExtreme",
                          "size", "leadingEdge")
-  tmp_res[, "leadingEdge"] <- sapply(tmp_res[, "leadingEdge"], function(x) {
-    paste0(x, collapse =";")
-  })
+
+
   ## Extract results dataframe for each gene set collection and orders them
   # by adjusted p-value
   results <- list()

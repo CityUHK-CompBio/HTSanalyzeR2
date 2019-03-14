@@ -42,9 +42,9 @@ please refer to \code{\link[fgsea:fgsea]{fgsea}}.}
 significant.}
 
 \item{pAdjustMethod}{A single character value specifying the p-value adjustment method to be used
-(see 'p.adjust' for details).}
-
-\item{nPermutations}{A single integer or numeric value specifying the number of permutations for
+(see 'p.adjust' for details), default is "BH".
+#' @param nPermutations
+A single integer or numeric value specifying the number of permutations for
 deriving p-values in GSEA.}
 
 \item{minGeneSetSize}{A single integer or numeric value specifying the minimum number of elements
@@ -56,6 +56,49 @@ fewer than this number are removed from both hypergeometric analysis and GSEA.}
 \value{
 In the end, this function will return an updated object of
 class GSCA or NWA. All the analyzed results could be found in slot \emph{result}.
+
+------------------------------------------------------------
+
+For GSOA result of class GSCA:
+
+Universe Size: total number of genes as background in GSOA analysis;
+
+Gene Set Size: number of genes in the gene set;
+
+Total Hits: number of genes of hits (interested genes);
+
+Expected Hits: expected number of hits genes in the gene set;
+
+Observed Hits: observed/actual number of hits genes in the gene set;
+
+Pvalue: pvalue of the gene set in GSOA analysis;
+
+Adjusted.Pvalue: adjusted pvalue of the gene set in GSOA analysis
+                 using user-defined p-value adjustment method;
+
+OverlapGene: overlapped genes between hits and the gene set.
+
+------------------------------------------------------------
+
+For GSEA result of class GSCA:
+
+Observed.score: Enrichment score of the gene set in GSEA analysis;
+
+Pvalue: pvalue of the gene set in GSEA analysis;
+
+Adjusted.Pvalue: adjusted pvalue of the gene set in GSEA analysis
+                 using user-defined p-value adjustment method;
+
+LeadingEdge: the subset of the gene set that contribute most to the enrichment
+             score.
+
+------------------------------------------------------------
+
+For NWA result of class NWA:
+
+subnw: an igraph object of the enriched subnetwork;
+
+labels: gene labels of the nodes in the enriched subnetwork.
 }
 \description{
 This is a generic function.
