@@ -45,7 +45,7 @@ Diverse high-throughput technologies such as microarray, RNA-seq, RNAi and CRISP
 
 + **HTSanalyzeR2** could generate an interactive report for users downloading, visualizing, modifying the figures as well as sharing with others.
 
-![A schematic workflow of HTSanalyzeR2](figures/workflow.png)
+![A schematic workflow of HTSanalyzeR2](figures/workFlow.png)
 
 ## Supported analysis
 

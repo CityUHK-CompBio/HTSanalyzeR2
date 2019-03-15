@@ -160,7 +160,7 @@ setMethod(
     if(!is.null(ntop))
       paraCheck("Summarize", "ntop", ntop)
     paraCheck("Report", "gscs.names", gscs)
-    filenames<-getTopGeneSets(object, "GSEA.results", gscs, ntop, allSig)
+    filenames <- getTopGeneSets(object, "GSEA.results", gscs, ntop, allSig)
     for(gsc in gscs) {
       ##plot for all gs.names
       gs.names<-filenames[[gsc]]
