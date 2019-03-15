@@ -520,7 +520,7 @@ calcHGTScore <- function(geneSet, universe, hits) {
 
   ##################################################
   ## add overlapped genes
-  OverlapGene <- ifelse(length(overlap) > 0, paste0(overlap, collapse = ","), NA)
+  OverlapGene <- ifelse(length(overlap) > 0, paste0(overlap, collapse = ";"), NA)
   ##################################################
 
   hyp.vec <- c(N, m, n, ex, k, HGTresult, NA, OverlapGene)
@@ -689,7 +689,7 @@ getLeadingEdge <- function(geneList, geneSet, exponent=1) {
     rev(leadingEdge)
   }
 
-  leadingEdge <- paste0(leadingEdge, collapse = ",")
+  leadingEdge <- paste0(leadingEdge, collapse = ";")
   return(leadingEdge)
 }
 
@@ -732,6 +732,9 @@ GSEA_fgsea <- function(listOfGeneSetCollections,
   colnames(tmp_res) <- c("Observed.score","Pvalue","Adjusted.Pvalue",
                          "NES", "nMoreExtreme",
                          "size", "leadingEdge")
+  tmp_res$leadingEdge <- lapply(tmp_res$leadingEdge, function(i){
+    paste0(i, collapse = ";")
+  })
 
 
   ## Extract results dataframe for each gene set collection and orders them

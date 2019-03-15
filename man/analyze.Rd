@@ -65,7 +65,7 @@ Universe Size: total number of genes as background in GSOA analysis;
 
 Gene Set Size: number of genes in the gene set;
 
-Total Hits: number of genes of hits (interested genes);
+Total Hits: number of genes in hits (interested genes);
 
 Expected Hits: expected number of hits genes in the gene set;
 

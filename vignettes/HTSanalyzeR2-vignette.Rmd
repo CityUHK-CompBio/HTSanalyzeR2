@@ -709,27 +709,6 @@ gsca4 <- analyze(gsca1,
                  GSEA.by = "fgsea")
 ```
 
-## Extract shared genes between enriched pathways and input gene list
-
-Once you've finished the GSEA or GSOA, you may be interested in some pathways and wonder which genes are shared by that pathway and you input gene list.
-
-```{r}
-## Suppose you are interested in "growth factor activity" in 'Molecular Function',
-## of Gene Ontology, We can retrieve the GO ID of this pathway:
-GO_MFrslt <- getResult(gsca3)$HyperGeo.results$GO_MF
-GOID <- rownames(GO_MFrslt[GO_MFrslt$Gene.Set.Term
-                           == "growth factor activity", ])
-
-## Then get the genes in this pathways
-pathway_gene <- GO_MF[[GOID]]
-
-## change Entrez ID to gene symbol
-pathway_gene <- mapIds(org.Hs.eg.db, keys = pathway_gene,
-                       keytype = "ENTREZID", column = "SYMBOL")
-
-## get the shared genes between this pathway and your input gene list
-intersect(pathway_gene, hits)
-```
 
 # A pipeline function for common phenotype data
 
