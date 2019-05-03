@@ -9,12 +9,14 @@ if (!isGeneric("viewEnrichMap"))
     standardGeneric("viewEnrichMap"), package = "HTSanalyzeR2")
 
 
-#' Append gene set terms to GSCA results
+#' Append gene set terms to GSCA results and gene names annotation
 #'
 #' This is a generic function.
 #' When implemented as the S4 method for objects of class GSCA, this function
 #' finds corresponding annotation terms for GO, KEGG and MSigDB gene sets and
 #' inserts a column named "Gene.Set.Term" to each data frame in the GSCA results.
+#' In the same time, to make results more understandable, it will annotate the gene list
+#' with EntrezID to gene symbol under specific species.
 #'
 #' @rdname appendGSTerms
 #' @aliases appendGSTerms
@@ -22,6 +24,12 @@ if (!isGeneric("viewEnrichMap"))
 #' @param keggGSCs A character vector of names of all KEGG gene set collections.
 #' @param goGSCs A character vector of names of all GO gene set collections.
 #' @param msigdbGSCs A character vector of names of all MSigDB gene set collections.
+#' @param species A single character value specifying the species of the analyzed data.
+#' It supports all the species of OrgDb objects in AnnotationDbi.
+#' The format should be an abbreviation of the organism as setted by AnnotationDbi.
+#' For example, the commonly used ones are "Dm" ("Drosophila_melanogaster"),
+#' "Hs" ("Homo_sapiens"), "Rn" ("Rattus_norvegicus"), "Mm" ("Mus_musculus"),
+#' "Ce" ("Caenorhabditis_elegans"), and etc.
 #'
 #'
 #' @return In the end, this function will return an updated object of class GSCA.
@@ -29,6 +37,8 @@ if (!isGeneric("viewEnrichMap"))
 #' @details This function makes the GSCA results more readable by appending a
 #' column of terms for KEGG and GO gene sets. To do this, the user needs to
 #' specify the names of the gene set collections based on GO, KEGG and MSigDB respectively.
+#' In the same time, to make results more understandable, it will annotate the gene list
+#' with EntrezID to gene symbol under specific species.
 #'
 #' For each GO gene set, the GO id will be mapped to corresponding GO term by
 #' the function mapIds of the package AnnotationDbi.
@@ -78,14 +88,16 @@ if (!isGeneric("viewEnrichMap"))
 #' summarize(gsca2)
 #' head(getResult(gsca2)$GSEA.results$GO_MF)
 #'
-#' ## append gene set terms to results
-#' gsca3 <- appendGSTerms(gsca2, goGSCs=c("GO_MF"), keggGSCs=c("PW_KEGG"), msigdbGSCs=NULL)
+#' ## append gene set terms to results and annotate gene list
+#' gsca3 <- appendGSTerms(gsca2, goGSCs=c("GO_MF"),
+#'                        keggGSCs=c("PW_KEGG"), msigdbGSCs=NULL，
+#'                        species = "Hs")
 #' head(getResult(gsca3)$GSEA.results$GO_MF)
 #' @export
 #'
 setMethod(
   "appendGSTerms", signature = "GSCA",
-  function(object, keggGSCs=NULL, goGSCs=NULL, msigdbGSCs=NULL) {
+  function(object, keggGSCs=NULL, goGSCs=NULL, msigdbGSCs=NULL, species = "Hs") {
     if(length(object@result)==0)
       stop("No results generated!\n")
 
@@ -141,6 +153,13 @@ setMethod(
                  result[[rs]][[gsc]] <<- data.frame(Gene.Set.Term = "--",
                                                     result[[rs]][[gsc]],
                                                     stringsAsFactors = FALSE)
+               if(names(result)[rs] %in% c(
+                 "HyperGeo.results",
+                 "GSEA.results")){
+                 result[[rs]][[gsc]][, ncol(result[[rs]][[gsc]])] <<-
+                   geneListAnno(geneList = result[[rs]][[gsc]][, ncol(result[[rs]][[gsc]])],
+                                species = species)
+               }
              }
            } #if
          }) # sapply function
@@ -179,8 +198,33 @@ appendKEGGTerm<-function(df) {
   newdf
 }
 
+
 appendMSigDBTerm <- function(df) {
   data.frame(Gene.Set.Term = row.names(df), df, stringsAsFactors = FALSE)
+}
+
+## transform EntrezId into gene symbol
+#' @importFrom AnnotationDbi mapIds columns
+geneListAnno <- function(geneList, species){
+  paraCheck("General", "species", species)
+  annopc <- paste("org", species, "eg", "db", sep = ".")
+  annodb <- tryCatch(
+    getFromNamespace(annopc, annopc),
+    error = function(e)
+      NULL
+  )
+  sapply(1:length(geneList), function(i){
+    if(!is.na(geneList[i])){
+      genes <- strsplit(geneList[i], split = ";")[[1]]
+      genes <- suppressMessages(AnnotationDbi::mapIds(annodb,
+                                     keys = genes,
+                                     keytype = "ENTREZID",
+                                     column = "SYMBOL"))
+      genes <- paste(genes, collapse = ";")
+    } else{
+      NA
+    }
+  })
 }
 
 

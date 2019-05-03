@@ -5,7 +5,7 @@
 \title{Append gene set terms to GSCA results for each GSCA object of Time-series data}
 \usage{
 appendGSTermsTS(gscaList, keggGSCs = NULL, goGSCs = NULL,
-  msigdbGSCs = NULL)
+  msigdbGSCs = NULL, species = "Hs")
 }
 \arguments{
 \item{gscaList}{A named list of GSCA object.}
@@ -15,6 +15,13 @@ appendGSTermsTS(gscaList, keggGSCs = NULL, goGSCs = NULL,
 \item{goGSCs}{A character vector of names of all GO gene set collections.}
 
 \item{msigdbGSCs}{A character vector of names of all MSigDB gene set collections.}
+
+\item{species}{A single character value specifying the species of the analyzed data.
+It supports all the species of OrgDb objects in AnnotationDbi.
+The format should be an abbreviation of the organism as setted by AnnotationDbi.
+For example, the commonly used ones are "Dm" ("Drosophila_melanogaster"),
+"Hs" ("Homo_sapiens"), "Rn" ("Rattus_norvegicus"), "Mm" ("Mus_musculus"),
+"Ce" ("Caenorhabditis_elegans"), and etc.}
 }
 \value{
 In the end, this function will return an updated list of GSCA object.
@@ -23,6 +30,8 @@ In the end, this function will return an updated list of GSCA object.
 For each GSCA object in 'gscaList', this function
 finds corresponding annotation terms for GO, KEGG and MSigDB gene sets and
 inserts a column named "Gene.Set.Term" to each data frame in the GSCA results.
+In the same time, to make results more understandable, it will annotate the gene list
+with EntrezID to gene symbol under specific species.
 }
 \examples{
 data(d7, d13, d25)
@@ -73,7 +82,8 @@ head(getResult(gscaTS2[[1]])$GSEA.results$GO_BP, 3)
 
 ## append gene set terms to results
 
-gscaTS3 <- appendGSTermsTS(gscaTS2, goGSCs=c("GO_BP"))
+gscaTS3 <- appendGSTermsTS(gscaTS2, goGSCs=c("GO_BP"),
+                           species = "Hs")
 head(getResult(gscaTS3[[1]])$GSEA.results$GO_BP, 3)
 }
 }

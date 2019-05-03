@@ -4,10 +4,10 @@
 \name{appendGSTerms,GSCA-method}
 \alias{appendGSTerms,GSCA-method}
 \alias{appendGSTerms}
-\title{Append gene set terms to GSCA results}
+\title{Append gene set terms to GSCA results and gene names annotation}
 \usage{
 \S4method{appendGSTerms}{GSCA}(object, keggGSCs = NULL, goGSCs = NULL,
-  msigdbGSCs = NULL)
+  msigdbGSCs = NULL, species = "Hs")
 }
 \arguments{
 \item{object}{A GSCA object.}
@@ -17,6 +17,13 @@
 \item{goGSCs}{A character vector of names of all GO gene set collections.}
 
 \item{msigdbGSCs}{A character vector of names of all MSigDB gene set collections.}
+
+\item{species}{A single character value specifying the species of the analyzed data.
+It supports all the species of OrgDb objects in AnnotationDbi.
+The format should be an abbreviation of the organism as setted by AnnotationDbi.
+For example, the commonly used ones are "Dm" ("Drosophila_melanogaster"),
+"Hs" ("Homo_sapiens"), "Rn" ("Rattus_norvegicus"), "Mm" ("Mus_musculus"),
+"Ce" ("Caenorhabditis_elegans"), and etc.}
 }
 \value{
 In the end, this function will return an updated object of class GSCA.
@@ -26,11 +33,15 @@ This is a generic function.
 When implemented as the S4 method for objects of class GSCA, this function
 finds corresponding annotation terms for GO, KEGG and MSigDB gene sets and
 inserts a column named "Gene.Set.Term" to each data frame in the GSCA results.
+In the same time, to make results more understandable, it will annotate the gene list
+with EntrezID to gene symbol under specific species.
 }
 \details{
 This function makes the GSCA results more readable by appending a
 column of terms for KEGG and GO gene sets. To do this, the user needs to
 specify the names of the gene set collections based on GO, KEGG and MSigDB respectively.
+In the same time, to make results more understandable, it will annotate the gene list
+with EntrezID to gene symbol under specific species.
 
 For each GO gene set, the GO id will be mapped to corresponding GO term by
 the function mapIds of the package AnnotationDbi.
@@ -80,7 +91,9 @@ gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.01, pAdjustMethod ="BH",
 summarize(gsca2)
 head(getResult(gsca2)$GSEA.results$GO_MF)
 
-## append gene set terms to results
-gsca3 <- appendGSTerms(gsca2, goGSCs=c("GO_MF"), keggGSCs=c("PW_KEGG"), msigdbGSCs=NULL)
+## append gene set terms to results and annotate gene list
+gsca3 <- appendGSTerms(gsca2, goGSCs=c("GO_MF"),
+                       keggGSCs=c("PW_KEGG"), msigdbGSCs=NULL，
+                       species = "Hs")
 head(getResult(gsca3)$GSEA.results$GO_MF)
 }

@@ -168,10 +168,21 @@ analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="
 #' For each GSCA object in 'gscaList', this function
 #' finds corresponding annotation terms for GO, KEGG and MSigDB gene sets and
 #' inserts a column named "Gene.Set.Term" to each data frame in the GSCA results.
+#' In the same time, to make results more understandable, it will annotate the gene list
+#' with EntrezID to gene symbol under specific species.
+#'
 #' @param gscaList A named list of GSCA object.
 #' @param keggGSCs A character vector of names of all KEGG gene set collections.
 #' @param goGSCs A character vector of names of all GO gene set collections.
 #' @param msigdbGSCs A character vector of names of all MSigDB gene set collections.
+#' @param species A single character value specifying the species of the analyzed data.
+#' It supports all the species of OrgDb objects in AnnotationDbi.
+#' The format should be an abbreviation of the organism as setted by AnnotationDbi.
+#' For example, the commonly used ones are "Dm" ("Drosophila_melanogaster"),
+#' "Hs" ("Homo_sapiens"), "Rn" ("Rattus_norvegicus"), "Mm" ("Mus_musculus"),
+#' "Ce" ("Caenorhabditis_elegans"), and etc.
+#'
+#'
 #' @seealso \code{\link[HTSanalyzeR2]{appendGSTerms}}
 #' @export
 #' @return In the end, this function will return an updated list of GSCA object.
@@ -224,16 +235,20 @@ analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="
 #'
 #' ## append gene set terms to results
 #'
-#' gscaTS3 <- appendGSTermsTS(gscaTS2, goGSCs=c("GO_BP"))
+#' gscaTS3 <- appendGSTermsTS(gscaTS2, goGSCs=c("GO_BP"),
+#'                            species = "Hs")
 #' head(getResult(gscaTS3[[1]])$GSEA.results$GO_BP, 3)
 #' }
-appendGSTermsTS <- function(gscaList, keggGSCs=NULL, goGSCs=NULL, msigdbGSCs=NULL){
+appendGSTermsTS <- function(gscaList, keggGSCs=NULL,
+                            goGSCs=NULL, msigdbGSCs=NULL,
+                            species = "Hs"){
              paraCheck("gscaTS", "gscaList", gscaList)
              tmpName <- names(gscaList)
              tmp <- lapply(gscaList, function(x){
              appendGSTerms(x, keggGSCs = keggGSCs,
                            goGSCs = goGSCs,
-                           msigdbGSCs = msigdbGSCs)
+                           msigdbGSCs = msigdbGSCs,
+                           species = species)
            })
              names(tmp) <- tmpName
              tmp
