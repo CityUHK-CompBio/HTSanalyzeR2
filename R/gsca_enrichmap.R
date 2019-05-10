@@ -213,19 +213,33 @@ geneListAnno <- function(geneList, species){
     error = function(e)
       NULL
   )
-  sapply(1:length(geneList), function(i){
-    if(!is.na(geneList[i])){
-      genes <- strsplit(geneList[i], split = ";")[[1]]
-      genes <- suppressMessages(AnnotationDbi::mapIds(annodb,
-                                     keys = genes,
-                                     keytype = "ENTREZID",
-                                     column = "SYMBOL"))
-      genes <- paste(genes, collapse = ";")
-    } else{
-      NA
-    }
-  })
+  ## extract geneList with no NA to annotate
+  na.pos <- which(is.na(geneList))
+  if(length(na.pos) == 0){
+    geneList1 <- geneList
+  } else {
+    geneList1 <- geneList[-na.pos]
+  }
+
+  allGene <- unlist(lapply(geneList1, function(i){
+    strsplit(i, split = ";")[[1]]
+  }))
+  geneList1_len <- unlist(lapply(geneList1, function(i){
+    length(strsplit(i, split = ";")[[1]])
+  }))
+  geneAnno <- unlist(suppressMessages(mapIds(annodb, keys = allGene,
+                            keytype = "ENTREZID", column = "SYMBOL")))
+  geneList2 <- unlist(lapply(1:length(geneList1_len), function(i){
+    start <- ifelse(i == 1, 1, sum(geneList1_len[1:(i-1)]) + 1)
+    end <- sum(geneList1_len[1:i])
+    genes <- geneAnno[start:end]
+    paste0(genes, collapse = ";")
+  }))
+  rslt <- rep(NA, length(geneList))
+  rslt[which(!is.na(geneList))] <- geneList2
+  rslt
 }
+
 
 
 #' Extract the enrichment map as an igraph object
