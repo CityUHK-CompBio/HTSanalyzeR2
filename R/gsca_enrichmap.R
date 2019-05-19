@@ -174,7 +174,8 @@ setMethod(
 #' @importFrom AnnotationDbi mapIds
 #' @import GO.db
 appendGOTerm <- function(df) {
-  goterms <- mapIds(GO.db, keys=row.names(df), keytype = "GOID", column = "TERM")
+  goterms <- suppressMessages(mapIds(GO.db, keys=row.names(df),
+                                     keytype = "GOID", column = "TERM"))
   goterms[which(is.na(goterms))] <- "NA"
   names(goterms)[which(is.na(names(goterms)))] <-
     row.names(df)[which(is.na(names(goterms)))]
