@@ -20,7 +20,7 @@ BiocManager::install()
 install.packages("devtools")
 
 # Before installing HTSanalyzeR2, you need also to install the dependent package `GO.db`
-BiocManager::install("GO.db", version = "3.8")
+BiocManager::install("GO.db")
 devtools::install_github("CityUHK-CompBio/HTSanalyzeR2", dependencies=TRUE)
 ```
 
@@ -114,6 +114,9 @@ gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL",
                     orderAbsValue=FALSE)
 
 ## analysis
+if (requireNamespace("doParallel", quietly=TRUE)) {
+    doParallel::registerDoParallel(cores=4)
+}  ## support parallel calculation using multiple cores
 gsca2 <- analyze(gsca1, 
                  para=list(pValueCutoff=0.05, pAdjustMethod="BH",
                            nPermutations=100, minGeneSetSize=180,

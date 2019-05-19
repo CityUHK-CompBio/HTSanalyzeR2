@@ -12,8 +12,8 @@
 #' More details please refer to
 #' \href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB}.
 #' @param species A single character value specifying the species of the gene sets of MSigDB.
-#' Now we only support 'Hs' (Homo_Sapiens) for all 8 gene set collections
-#' and 'Mm' (Mus_musculus) for 'c2', 'c6' and 'c7' gene set collections.
+#' Now we only support 'Hs' (Homo_Sapiens) for all 8 gene set collections.
+#'
 #' @return Return a list of gene sets of specific collection in
 #' \href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB} of version 6.1.
 #' @seealso \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{KeggGeneSets}}
@@ -26,8 +26,7 @@ MSigDBGeneSets <- function(collection = "c2", species = "Hs") {
   if(!inquiry %in% names(MSigDB)){
     stop(paste("Invalid gene set collection and species, ",
                "HTSanalyzeR2 now only supports all 8 collections ",
-              "for Homo Sapiens as well as 'c2', 'c6' and 'c7' ",
-              "for Mus musculus!\n", sep = ""))
+              "for Homo Sapiens!\n", sep = ""))
   }
   gene.sets <- MSigDB[[inquiry]]
   return(gene.sets)

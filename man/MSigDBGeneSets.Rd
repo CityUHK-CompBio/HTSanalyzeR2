@@ -15,8 +15,7 @@ More details please refer to
 \href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB}.}
 
 \item{species}{A single character value specifying the species of the gene sets of MSigDB.
-Now we only support 'Hs' (Homo_Sapiens) for all 8 gene set collections
-and 'Mm' (Mus_musculus) for 'c2', 'c6' and 'c7' gene set collections.}
+Now we only support 'Hs' (Homo_Sapiens) for all 8 gene set collections.}
 }
 \value{
 Return a list of gene sets of specific collection in

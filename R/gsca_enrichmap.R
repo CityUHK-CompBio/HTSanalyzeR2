@@ -222,6 +222,8 @@ geneListAnno <- function(geneList, species){
     geneList1 <- geneList[-na.pos]
   }
 
+  ## if geneList only has NA
+  if(length(geneList1) > 0){
   allGene <- unlist(lapply(geneList1, function(i){
     strsplit(i, split = ";")[[1]]
   }))
@@ -239,6 +241,9 @@ geneListAnno <- function(geneList, species){
   rslt <- rep(NA, length(geneList))
   rslt[which(!is.na(geneList))] <- geneList2
   rslt
+  } else{
+    geneList
+  }
 }
 
 

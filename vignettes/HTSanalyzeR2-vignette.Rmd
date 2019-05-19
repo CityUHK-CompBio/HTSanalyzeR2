@@ -82,7 +82,7 @@ Diverse high-throughput technologies such as microarray, RNA-seq, RNAi and CRISP
 
 + Gene Ontology and KEGG gene sets support any species that have an **OrgDb** object in [Bioconductor](http://bioconductor.org/packages/release/BiocViews.html#___OrgDb).
 
-+ MSigDB gene sets support all 8 gene set collections for **Homo Sapiens** and three gene set collections: 'c2', 'c6' and 'c7' for **Mus musculus**.
++ MSigDB gene sets only support all 8 gene set collections for **Homo Sapiens**.
 
 ## Visualization
 
@@ -210,7 +210,6 @@ During the enrichment analysis of gene sets, the function evaluates the statisti
 ## analyze using 4 cores
 if (requireNamespace("doParallel", quietly=TRUE)) {
     doParallel::registerDoParallel(cores=4)
-} else {
 }
 
 gsca2 <- analyze(gsca1,
