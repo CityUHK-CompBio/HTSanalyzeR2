@@ -1,35 +1,53 @@
 #' Create a list of gene sets for specific species from MSigDB database
 #'
-#' This function creates gene set collections based on MSigDB database version 6.1. Currently
-#' our package only supports all 8 collections for Homo Sapiens as well as
-#' 'c2', 'c6' and 'c7' for Mus musculus. It returns a list of gene sets collections
+#' This function creates gene set collections based on MSigDB database version 6.2. Currently
+#' our package supports all 8 collections for 10 species retrieved by \code{\link[msigdbr]{msigdbr}}.
+#' It returns a list of gene sets collections
 #' with the elements of the gene sets represented by Entrez Gene IDs.
 #'
 #' @param collection A single character value specifying a choice of collection.
-#' Valid values include 'h'(hallmark gene sets), 'c1' (positional gene sets),
-#' 'c2' (curated gene sets), 'c3' (motif gene sets), 'c4' (computational gene sets),
-#' 'c5' (GO gene sets), 'c6' (oncogenic signatures), 'c7' (immunologic signatures).
+#' Valid values include 'H'(hallmark gene sets), 'C1'(positional gene sets),
+#' 'C2'(curated gene sets), 'C3'(motif gene sets), 'C4'(computational gene sets),
+#' 'C5'(GO gene sets), 'C6'(oncogenic signatures), 'C7'(immunologic signatures).
 #' More details please refer to
 #' \href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB}.
 #' @param species A single character value specifying the species of the gene sets of MSigDB.
-#' Now we only support 'Hs' (Homo_Sapiens) for all 8 gene set collections.
+#' Now we support 10 species: 'Bt'(Bos taurus), 'Ce'(Caenorhabditis elegans),
+#' 'Cfa'(Canis lupus familiaris), 'Dm'(Drosophila melanogaster), 'Dr'(Danio rerio),
+#' 'Gg'(Gallus gallus), 'Hs'(Homo sapiens), 'Mm'(Mus musculus), 'Rn'(Rattus norvegicus),
+#' 'Sc'(Saccharomyces cerevisiae) and 'Ss'(Sus scrofa).
 #'
 #' @return Return a list of gene sets of specific collection in
-#' \href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB} of version 6.1.
+#' \href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB} of version 6.2.
 #' @seealso \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{KeggGeneSets}}
 #' @examples
-#' C2_MSig <- MSigDBGeneSets(collection = "c2", species = "Hs")
+#' C2_MSig <- MSigDBGeneSets(species = "Hs", collection = "C2", subcategory = NULL)
 #' @export
-MSigDBGeneSets <- function(collection = "c2", species = "Hs") {
-  paraCheck("LoadGeneSets", "collection", collection)
-  inquiry <- paste(collection, species, "db", sep = ".")
-  if(!inquiry %in% names(MSigDB)){
-    stop(paste("Invalid gene set collection and species, ",
-               "HTSanalyzeR2 now only supports all 8 collections ",
-              "for Homo Sapiens!\n", sep = ""))
-  }
-  gene.sets <- MSigDB[[inquiry]]
-  return(gene.sets)
+#' @importFrom msigdbr msigdbr
+MSigDBGeneSets <- function(species = "Hs", collection = "C2", subcategory = NULL) {
+  # paraCheck("LoadGeneSets", "collection", collection)
+  # inquiry <- paste(collection, species, "db", sep = ".")
+  # paraCheck("LoadGeneSets", "species", species)
+  ## chaneg species to msigdbr format
+  species <- switch(
+    species,
+    "Bt" = "Bos taurus",
+    "Ce" = "Caenorhabditis elegans",
+    "Cfa" = "Canis lupus familiaris",
+    "Dm" = "Drosophila melanogaster",
+    "Dr" = "Danio rerio",
+    "Gg" = "Gallus gallus",
+    "Hs" = "Homo sapiens",
+    "Mm" = "Mus musculus",
+    "Rn" = "Rattus norvegicus",
+    "Sc" = "Saccharomyces cerevisiae",
+    "Ss" = "Sus scrofa",
+    species
+  )
+  m_df = msigdbr::msigdbr(species = species, category = collection, subcategory = subcategory)
+  m_df$entrez_gene <- as.character(m_df$entrez_gene)
+  m_list = split(x = m_df$entrez_gene, f = m_df$gs_name)
+  m_list
 }
 
 
@@ -62,7 +80,7 @@ KeggGeneSets <- function(species = "Hs") {
     "At" = "ath",
     "Bt" = "bta",
     "Ce" = "cel",
-    "Cf" = "cfa",
+    "Cfa" = "cfa",
     "Dm" = "dme",
     "Dr" = "dre",
     "EcK12" = "eco",

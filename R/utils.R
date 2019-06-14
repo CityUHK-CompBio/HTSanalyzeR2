@@ -18,16 +18,16 @@ namesToList <- function(x) {
 paraCheck <- function(group, paraName, para) {
   switch(group,
          LoadGeneSets = {
-           if (paraName == "collection" &&
-               !(para %in% c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7")))
-             stop(
-               paste(
-                 "'collection' does not match any of the names recognized by this function,",
-                 "please provide one of the following character strings:",
-                 "'h', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6' or 'c7'. See ?MSigDBGeneSets for details",
-                 sep = " "
-               )
-             )
+           # if (paraName == "collection" &&
+           #     !(para %in% c("h", "c1", "c2", "c3", "c4", "c5", "c6", "c7")))
+           #   stop(
+           #     paste(
+           #       "'collection' does not match any of the names recognized by this function,",
+           #       "please provide one of the following character strings:",
+           #       "'h', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6' or 'c7'. See ?MSigDBGeneSets for details",
+           #       sep = " "
+           #     )
+           #   )
            if (paraName == "species" &&
                (!is.character(para) || length(para) != 1))
              stop("'species' should be a character!\n")

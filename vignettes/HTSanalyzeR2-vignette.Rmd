@@ -67,22 +67,34 @@ Diverse high-throughput technologies such as microarray, RNA-seq, RNAi and CRISP
     - Biological process (BP)
     - Cellular component (CC)
 + Kyoto Encyclopedia of Genes and Genomes pathways: [KEGG](http://www.genome.jp/kegg/)
-+ Molecular Signatures Database: [MSigDB v6.1](http://software.broadinstitute.org/gsea/msigdb/index.jsp)
-    - h: hallmark gene sets
-    - c1: positional gene sets
-    - c2: curated gene sets
-    - c3: motif gene sets
-    - c4: computational gene sets
-    - c5: GO gene sets
-    - c6: oncogenic signatures
-    - c7: immunologic signatures
++ Molecular Signatures Database: [MSigDB v6.2](http://software.broadinstitute.org/gsea/msigdb/index.jsp)
+    - H: hallmark gene sets
+    - C1: positional gene sets
+    - C2: curated gene sets
+        + CGP (chemical and genetic perturbations);
+        + CP (Canonical pathways);
+        + CP:BIOCARTA (BioCarta gene sets);
+        + CP:KEGG (KEGG gene sets);
+        + CP:REACTOME (Reactome gene sets)
+    - C3: motif gene sets
+        + MIR (microRNA targets);
+        + TFT (transcription factor targets)
+    - C4: computational gene sets
+        + CGN (cancer gene neighborhoods);
+        + CM (cancer modules)
+    - C5: GO gene sets
+        + BP (GO biological process);
+        + CC (GO cellular component);
+        + MF (GO molecular function)
+    - C6: oncogenic signatures
+    - C7: immunologic signatures
 + Customized  gene sets
 
 ## Supported species
 
 + Gene Ontology and KEGG gene sets support any species that have an **OrgDb** object in [Bioconductor](http://bioconductor.org/packages/release/BiocViews.html#___OrgDb).
 
-+ MSigDB gene sets only support all 8 gene set collections for **Homo Sapiens**.
++ MSigDB gene sets support all 8 gene set collections with sub collections for 10 common species: 'Bt'(Bos taurus), 'Ce'(Caenorhabditis elegans), 'Cfa'(Canis lupus familiaris), 'Dm'(Drosophila melanogaster), 'Dr'(Danio rerio), 'Gg'(Gallus gallus), 'Hs'(Homo sapiens), 'Mm'(Mus musculus), 'Rn'(Rattus norvegicus), 'Sc'(Saccharomyces cerevisiae) and 'Ss'(Sus scrofa).
 
 ## Visualization
 
@@ -153,13 +165,13 @@ hits <- rownames(GSE33113_limma[abs(GSE33113_limma$logFC) > 1 &
                                   GSE33113_limma$adj.P.Val < 0.05, ])
 ```
 
-Then we must define the gene set collections. A gene set collection is a list of gene sets, each of  which consists of a group of genes with the same known function. **HTSanalyzeR2** provides facilities which greatly simplify the creation of up-to-date gene set collections including three Gene Ontology terms: Molecular Function (MF), Biological Process (BP), Cellular Component (CC) and KEGG pathways. Gene sets in a comprehensive molecular signatures database, [MSigDB](http://software.broadinstitute.org/gsea/msigdb)(@Arthur2011), for Homo Sapiens and Mus musculus are also provided. Here, to simplify the demonstration, we will only use one GO, KEGG and one MSigDB gene set collection. To work properly, you need to choose the right species for your input genes. Besides, these gene set collections must be provided as a named list as below:
+Then we must define the gene set collections. A gene set collection is a list of gene sets, each of  which consists of a group of genes with the same known function. **HTSanalyzeR2** provides facilities which greatly simplify the creation of up-to-date gene set collections including three Gene Ontology terms: Molecular Function (MF), Biological Process (BP), Cellular Component (CC) and KEGG pathways. Gene sets in a comprehensive molecular signatures database, [MSigDB](http://software.broadinstitute.org/gsea/msigdb)(@Arthur2011), for 10 species are also provided. Here, to simplify the demonstration, we will only use one GO, KEGG and one MSigDB gene set collection. To work properly, you need to choose the right species for your input genes. Besides, these gene set collections must be provided as a named list as below:
 
 ```{r}
 ## generate gene set collection
 GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
 PW_KEGG <- KeggGeneSets(species="Hs")
-MSig_C2 <- MSigDBGeneSets(collection = "c2", species = "Hs")
+MSig_C2 <- MSigDBGeneSets(collection = "C2", species = "Hs")
 
 ## combine all needed gene set collections into a named list for further analysis
 ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG, MSig_C2=MSig_C2)
