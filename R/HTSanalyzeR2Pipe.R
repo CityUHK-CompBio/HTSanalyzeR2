@@ -159,7 +159,7 @@ HTSanalyzeR2Pipe <- function(data4enrich,
                                   nPermutations = nPermutations, minGeneSetSize = minGeneSetSize,
                                   exponent = exponent),
                   doGSOA = doGSOA, doGSEA = doGSEA, GSEA.by = GSEA.by)
-  gsca <- appendGSTerms(gsca, keggGSCs=keggGSCs, goGSCs=goGSCs, msigdbGSCs = msigdbGSCs)
+  gsca <- appendGSTerms(gsca, keggGSCs=keggGSCs, goGSCs=goGSCs, msigdbGSCs = msigdbGSCs, species=species)
   #----------------------------------------------------------------------
   ## Network analysis
   ##create a NWA (NetWork Analysis) object
