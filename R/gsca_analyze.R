@@ -448,6 +448,8 @@ calcHyperGeo <- function (listOfGeneSetCollections,
            use.names = FALSE)
   names(combinedGeneSets) <-
     unlist(lapply(listOfGeneSetCollections, names), use.names = FALSE)
+
+
   universe = names(geneList)
 
 
@@ -558,6 +560,11 @@ calcGSEA <-
              use.names = FALSE)
     names(combinedGeneSets) <-
       unlist(lapply(listOfGeneSetCollections, names), use.names = FALSE)
+
+    ## do not allow duplicated gene sets names (not compatible in getLeadingEdge function...)
+    if(sum(duplicated(names(combinedGeneSets))) > 0){
+      stop("Gene sets with the same names are not allowed for analysis!\n")
+    }
 
     if (verbose) {
       cat("-Performing gene set enrichment analysis using HTSanalyzeR2...", "\n")
