@@ -246,9 +246,10 @@ gseaPlots <- function(runningScore,
       xaxt = "n", xaxs = "i",
       yaxt = "n", ylab="Enrichment score (ES)",
       ylim = ES.range)
-  label <- seq(round(min(ES.range), digits = 1),
-               round(max(ES.range), digits = 1),
-               by = 0.1)
+
+  label <- round(seq(round(min(ES.range), digits = 1),
+                     round(max(ES.range), digits = 1),
+                     by = 0.1), digits = 1)
   axis(2, at=label,
        labels=label, las=1)
   title(main = main.title, cex.main = 1.8)
