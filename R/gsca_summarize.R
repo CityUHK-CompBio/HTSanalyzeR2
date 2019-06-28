@@ -126,10 +126,12 @@ setMethod("getTopGeneSets", signature = "GSCA",
             paraCheck("Summarize", "gscsNames", gscs)
             paraCheck("Summarize", "resultName", resultName)
 
-            if (!(resultName %in% names(object@result)))
-              stop("Please input 'HyperGeo.res ults' or 'GSEA.results'!\n")
-            if (is.null(object@result[[resultName]]))
+            if (is.null(object@result[[resultName]]) || is.null(names(object@result)))
               stop("Please run Hypergeometric or GSEA analysis before using this function!\n")
+
+            if (!(resultName %in% names(object@result)))
+              stop("Please input 'HyperGeo.results' or 'GSEA.results'!\n")
+
             gsc.names <- names(object@result[[resultName]])
             if (!all(gscs %in% gsc.names))
               stop("No enrichment map found under this cutoff!\n")

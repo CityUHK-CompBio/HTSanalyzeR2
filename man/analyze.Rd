@@ -42,9 +42,9 @@ please refer to \code{\link[fgsea:fgsea]{fgsea}}.}
 significant.}
 
 \item{pAdjustMethod}{A single character value specifying the p-value adjustment method to be used
-(see 'p.adjust' for details), default is "BH".
-#' @param nPermutations
-A single integer or numeric value specifying the number of permutations for
+(see 'p.adjust' for details), default is "BH".}
+
+\item{nPermutations}{A single integer or numeric value specifying the number of permutations for
 deriving p-values in GSEA.}
 
 \item{minGeneSetSize}{A single integer or numeric value specifying the minimum number of elements
@@ -76,7 +76,7 @@ Pvalue: pvalue of the gene set in GSOA analysis;
 Adjusted.Pvalue: adjusted pvalue of the gene set in GSOA analysis
                  using user-defined p-value adjustment method;
 
-OverlapGene: overlapped genes between hits and the gene set.
+Overlap.Gene: overlapped genes between hits and the gene set.
 
 ------------------------------------------------------------
 
@@ -89,7 +89,7 @@ Pvalue: pvalue of the gene set in GSEA analysis;
 Adjusted.Pvalue: adjusted pvalue of the gene set in GSEA analysis
                  using user-defined p-value adjustment method;
 
-LeadingEdge: the subset of the gene set that contribute most to the enrichment
+Leading.Edge: the subset of the gene set that contribute most to the enrichment
              score.
 
 ------------------------------------------------------------

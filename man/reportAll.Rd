@@ -5,8 +5,10 @@
 \title{Write HTML reports for both enrichment and network analyses}
 \usage{
 reportAll(gsca = NULL, nwa = NULL, TSOrder = NULL,
-  specificGeneset = NULL, cutoff = NULL,
-  reportDir = "AnalysisReport")
+  specificGeneset = NULL, cutoff = NULL, gseaPlot = TRUE,
+  para = list(output = "pdf", ES.range = NULL, rankMetric.range = NULL,
+  ESline.col = "FireBrick", hits.col = "black", rankMetric.col =
+  "CadetBlue"), reportDir = "AnalysisReport")
 }
 \arguments{
 \item{gsca}{An analyzed GSCA object or a list of analyzed GSCA objects.}
@@ -23,8 +25,16 @@ for details.}
 map for better visualization. When the edge weight, namely the Jaccard coefficient between two gene sets, is less than
 this cutoff, this edge would not be showed in the enrichment map.}
 
-\item{reportDir}{A single character value specifying the directory to store reports. For default both the
-enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport".}
+\item{gseaPlot}{A logical value to choose whether make gsea plot for significant gene
+sets, default is TRUE.}
+
+\item{para}{A list of parameters for gsea plot. See \code{\link[HTSanalyzeR2]{plotGSEA}} for details.}
+
+\item{reportDir}{A single character value specifying the path to store reports. By default,
+the enrichment analysis reports will be stored in the directory called "GSCAReport". Once launching,
+the directory will be generated automatically containing an R code file named app.R, an RDdata
+object named results.RData storing all basic results which can be loaded into R with readRDS() function and
+a folder named gsea_plots containing gsea plots for all significant gene sets.}
 }
 \value{
 In the end, this function would generate a html report.

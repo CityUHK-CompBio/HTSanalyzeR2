@@ -90,7 +90,7 @@ if (!isGeneric("viewEnrichMap"))
 #'
 #' ## append gene set terms to results and annotate gene list
 #' gsca3 <- appendGSTerms(gsca2, goGSCs=c("GO_MF"),
-#'                        keggGSCs=c("PW_KEGG"), msigdbGSCs=NULL，
+#'                        keggGSCs=c("PW_KEGG"), msigdbGSCs=NULL,
 #'                        species = "Hs")
 #' head(getResult(gsca3)$GSEA.results$GO_MF)
 #' @export

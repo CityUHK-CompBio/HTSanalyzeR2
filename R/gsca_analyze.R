@@ -21,7 +21,7 @@ if (!isGeneric("analyze")) {
 #' @param pAdjustMethod
 #' A single character value specifying the p-value adjustment method to be used
 #' (see 'p.adjust' for details), default is "BH".
-#' #' @param nPermutations
+#' @param nPermutations
 #' A single integer or numeric value specifying the number of permutations for
 #' deriving p-values in GSEA.
 #' @param minGeneSetSize
@@ -60,7 +60,7 @@ if (!isGeneric("analyze")) {
 #' Adjusted.Pvalue: adjusted pvalue of the gene set in GSOA analysis
 #'                  using user-defined p-value adjustment method;
 #'
-#' OverlapGene: overlapped genes between hits and the gene set.
+#' Overlap.Gene: overlapped genes between hits and the gene set.
 #'
 #' ------------------------------------------------------------
 #'
@@ -73,7 +73,7 @@ if (!isGeneric("analyze")) {
 #' Adjusted.Pvalue: adjusted pvalue of the gene set in GSEA analysis
 #'                  using user-defined p-value adjustment method;
 #'
-#' LeadingEdge: the subset of the gene set that contribute most to the enrichment
+#' Leading.Edge: the subset of the gene set that contribute most to the enrichment
 #'              score.
 #'
 #' ------------------------------------------------------------
@@ -480,7 +480,7 @@ calcHyperGeo <- function (listOfGeneSetCollections,
   for(i in 1:(ncol(res)-1)){
     res[, i] <- as.numeric(as.character(res[, i]))
   }
-  res$OverlapGene <- as.character(res$OverlapGene)
+  res$Overlap.Gene <- as.character(res$Overlap.Gene)
   res$Adjusted.Pvalue <-
     p.adjust(res$Pvalue, method = pAdjustMethod)
 
@@ -522,10 +522,10 @@ calcHGTScore <- function(geneSet, universe, hits) {
 
   ##################################################
   ## add overlapped genes
-  OverlapGene <- ifelse(length(overlap) > 0, paste0(overlap, collapse = ";"), NA)
+  Overlap.Gene <- ifelse(length(overlap) > 0, paste0(overlap, collapse = ";"), NA)
   ##################################################
 
-  hyp.vec <- c(N, m, n, ex, k, HGTresult, NA, OverlapGene)
+  hyp.vec <- c(N, m, n, ex, k, HGTresult, NA, Overlap.Gene)
   names(hyp.vec) <-
     c(
       "Universe Size",
@@ -535,7 +535,7 @@ calcHGTScore <- function(geneSet, universe, hits) {
       "Observed Hits",
       "Pvalue",
       "Adjusted.Pvalue",
-      "OverlapGene"
+      "Overlap.Gene"
     )
   return(hyp.vec)
 }
@@ -626,7 +626,7 @@ calcGSEA <-
                      combinedGeneSets[[rownames(res)[i]]],
                      exponent=exponent)
     })
-    res[, "LeadingEdge"] <- LeadingEdge
+    res[, "Leading.Edge"] <- LeadingEdge
 
     results <- list()
     ## Extract results dataframe for each gene set collection and orders them
@@ -735,10 +735,10 @@ GSEA_fgsea <- function(listOfGeneSetCollections,
   tmp_res$padj <- p.adjust(tmp_res$pval, method=pAdjustMethod)
   rownames(tmp_res) <- tmp_res$pathway
   tmp_res <- tmp_res[, c("ES", "pval", "padj", "NES", "nMoreExtreme",
-                         "size", "leadingEdge")]
+                         "size", "leading.Edge")]
   colnames(tmp_res) <- c("Observed.score","Pvalue","Adjusted.Pvalue",
                          "NES", "nMoreExtreme",
-                         "size", "leadingEdge")
+                         "size", "leading.Edge")
   tmp_res$leadingEdge <- lapply(tmp_res$leadingEdge, function(i){
     paste0(i, collapse = ";")
   })

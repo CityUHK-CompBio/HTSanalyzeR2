@@ -8,7 +8,9 @@
 \title{Write HTML reports for enrichment or network analyses}
 \usage{
 \S4method{report}{GSCA}(object, specificGeneset = NULL, cutoff = NULL,
-  reportDir = "GSCAReport")
+  reportDir = "GSCAReport", gseaPlot = TRUE, para = list(output =
+  "pdf", ES.range = NULL, rankMetric.range = NULL, ESline.col =
+  "FireBrick", hits.col = "black", rankMetric.col = "CadetBlue"))
 
 \S4method{report}{NWA}(object, reportDir = "NWAReport")
 }
@@ -22,8 +24,16 @@ for details.}
 map for better visualization. When the edge weight, namely the Jaccard coefficient between two gene sets, is less than
 this cutoff, this edge would not be showed in the enrichment map.}
 
-\item{reportDir}{A single character value specifying the directory to store reports. For default
-the enrichment analysis reports will be stored in the directory called "GSCAReport".}
+\item{reportDir}{A single character value specifying the path to store reports. By default,
+the enrichment analysis reports will be stored in the directory called "GSCAReport". Once launching,
+the directory will be generated automatically containing an R code file named app.R, an RDdata
+object named results.RData storing all basic results which can be loaded into R with readRDS() function and
+a folder named gsea_plots containing gsea plots for all significant gene sets.}
+
+\item{gseaPlot}{A logical value to choose whether make gsea plot for significant gene
+sets or not, default is TRUE.}
+
+\item{para}{A list of parameters for gsea plot. See \code{\link[HTSanalyzeR2]{plotGSEA}} for details.}
 }
 \value{
 In the end, this function would generate a Shiny report.

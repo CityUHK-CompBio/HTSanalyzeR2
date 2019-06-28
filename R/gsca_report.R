@@ -2,7 +2,14 @@ if (!isGeneric("report")) {
   setGeneric("report",
              function(object, specificGeneset = NULL,
                       cutoff = NULL,
-                      reportDir = "GSCAReport")
+                      reportDir = "GSCAReport",
+                      gseaPlot = TRUE,
+                      para = list(output="pdf",
+                                  ES.range = NULL,
+                                  rankMetric.range = NULL,
+                                  ESline.col = "FireBrick",
+                                  hits.col = "black",
+                                  rankMetric.col = "CadetBlue"))
     standardGeneric("report"), package = "HTSanalyzeR2")
 }
 
@@ -14,8 +21,14 @@ if (!isGeneric("report")) {
 #' either the Gene Set Collection Analysis or the NetWork Analysis.
 #' @aliases report
 #' @param object  A 'GSCA' or 'NWA'object.
-#' @param reportDir A single character value specifying the directory to store reports. For default
-#' the enrichment analysis reports will be stored in the directory called "GSCAReport".
+#' @param reportDir A single character value specifying the path to store reports. By default,
+#' the enrichment analysis reports will be stored in the directory called "GSCAReport". Once launching,
+#' the directory will be generated automatically containing an R code file named app.R, an RDdata
+#' object named results.RData storing all basic results which can be loaded into R with readRDS() function and
+#' a folder named gsea_plots containing gsea plots for all significant gene sets.
+#' @param gseaPlot A logical value to choose whether make gsea plot for significant gene
+#' sets or not, default is TRUE.
+#' @param para A list of parameters for gsea plot. See \code{\link[HTSanalyzeR2]{plotGSEA}} for details.
 #' @param specificGeneset A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap,GSCA-method}}
 #' for details.
 #' @param cutoff A numeric value between 0 and 1. This parameter is setted as a cutoff of edge weight in the enrichment
@@ -65,9 +78,17 @@ if (!isGeneric("report")) {
 #' @export
 setMethod("report", signature = "GSCA",
           function(object, specificGeneset = NULL,
-                   cutoff = NULL, reportDir = "GSCAReport") {
+                   cutoff = NULL, reportDir = "GSCAReport",
+                   gseaPlot = TRUE,
+                   para = list(output="pdf",
+                               ES.range = NULL,
+                               rankMetric.range = NULL,
+                               ESline.col = "FireBrick",
+                               hits.col = "black",
+                               rankMetric.col = "CadetBlue")) {
             reportAll(gsca = object, nwa = NULL, specificGeneset = specificGeneset,
-                      reportDir = reportDir, cutoff = cutoff)
+                      reportDir = reportDir, cutoff = cutoff, para = para,
+                      gseaPlot = gseaPlot)
           }
 )
 
@@ -76,17 +97,23 @@ setMethod("report", signature = "GSCA",
 #'
 #'This function can create shiny reports for both gene sets enrichment analysis and network analysis.
 #'
-#'@param gsca An analyzed GSCA object or a list of analyzed GSCA objects.
-#'@param nwa An NWA object or a list of NWA objects.
-#'@param TSOrder A character specifying the visulization order of 'Time Series' data in shiny report. Only works when
-#'reporting for 'Time Series' data, default is the ID order in 'expInfor'.
-#'@param specificGeneset A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap,GSCA-method}}
+#' @param gsca An analyzed GSCA object or a list of analyzed GSCA objects.
+#' @param nwa An NWA object or a list of NWA objects.
+#' @param TSOrder A character specifying the visulization order of 'Time Series' data in shiny report. Only works when
+#' reporting for 'Time Series' data, default is the ID order in 'expInfor'.
+#' @param specificGeneset A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap,GSCA-method}}
 #' for details.
-#'@param cutoff A numeric value between 0 and 1. This parameter is setted as a cutoff of edge weight in the enrichment
+#' @param cutoff A numeric value between 0 and 1. This parameter is setted as a cutoff of edge weight in the enrichment
 #' map for better visualization. When the edge weight, namely the Jaccard coefficient between two gene sets, is less than
 #' this cutoff, this edge would not be showed in the enrichment map.
-#'@param reportDir A single character value specifying the directory to store reports. For default both the
-#'  enrichment analysis and network analysis reports will be stored in the directory called "AnalysisReport".
+#' @param gseaPlot A logical value to choose whether make gsea plot for significant gene
+#' sets, default is TRUE.
+#' @param para A list of parameters for gsea plot. See \code{\link[HTSanalyzeR2]{plotGSEA}} for details.
+#' @param reportDir A single character value specifying the path to store reports. By default,
+#' the enrichment analysis reports will be stored in the directory called "GSCAReport". Once launching,
+#' the directory will be generated automatically containing an R code file named app.R, an RDdata
+#' object named results.RData storing all basic results which can be loaded into R with readRDS() function and
+#' a folder named gsea_plots containing gsea plots for all significant gene sets.
 #' @export
 #' @return In the end, this function would generate a html report.
 #' @examples
@@ -128,6 +155,13 @@ setMethod("report", signature = "GSCA",
 #'
 reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL,
                       specificGeneset = NULL, cutoff = NULL,
+                      gseaPlot = TRUE,
+                      para = list(output="pdf",
+                                  ES.range = NULL,
+                                  rankMetric.range = NULL,
+                                  ESline.col = "FireBrick",
+                                  hits.col = "black",
+                                  rankMetric.col = "CadetBlue"),
                       reportDir = "AnalysisReport") {
   if(!is.null(gsca) && class(gsca) != "GSCA") {
     if(class(gsca) != "list" || any(sapply(gsca, class) != "GSCA")) {
@@ -170,6 +204,32 @@ reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL,
 
   results <- list(gsca = gsca, nwa = nwa, specificGeneset = specificGeneset, cutoff = cutoff)
   saveRDS(results, file = file.path(reportDir, "results.RData"))
+
+  ## generate GSEA plots in folder gsea_plots for all significant gene sets
+  ## undo: take gscaTS into consideration...
+  if(gseaPlot){
+  if(!is.null(gsca) && class(gsca) == "GSCA" && !is.null(gsca@result$GSEA.results)){
+    plotGSEA(gsca, gscs = names(gsca@result$GSEA.results),
+             allSig = TRUE, filepath = reportDir,
+             output = para$output, ES.range = para$ES.range,
+             rankMetric.range = para$rankMetric.range,
+             ESline.col = para$ESline.col, hits.col = para$hits.col,
+             rankMetric.col = para$rankMetric.col)
+  } else if(!is.null(gsca) && class(gsca) == "list" && all(sapply(gsca, class) == "GSCA")){ ## for gscaTS
+    gscaName <- names(gsca)
+    lapply(1:length(gsca), function(i){
+      dir.create(file.path(".", reportDir, gscaName[i]))
+      filepath <- file.path(".", reportDir, gscaName[i])
+      plotGSEA(gsca[[i]], gscs = names(gsca[[i]]@result$GSEA.results),
+               allSig = TRUE, filepath = filepath,
+               output = para$output, ES.range = para$ES.range,
+               rankMetric.range = para$rankMetric.range,
+               ESline.col = para$ESline.col, hits.col = para$hits.col,
+               rankMetric.col = para$rankMetric.col)
+    })
+
+  }  ## end else if
+  }  ## end gseaPlot
 
   shiny::runApp(reportDir)
 }
@@ -228,11 +288,13 @@ createLink_GO <- function(val) {
   sprintf('<a href="http://www.ebi.ac.uk/QuickGO/GTerm?id=%s" target="_blank" class="btn btn-primary">%s</a>', val, val)
 }
 
+
+## append search links for gene set
 appendLinks <- function(gsca) {
   for(analysis in c("HyperGeo.results", "GSEA.results", "Sig.pvals.in.both", "Sig.adj.pvals.in.both")) {
     for(geneSets in names(gsca@result[[analysis]])) {
       result <- gsca@result[[analysis]][[geneSets]]
-      if(grepl("GO", geneSets)) {
+      if(grepl("GO", geneSets)) {  ## can not identify right gene set types when not using GO/KEGG to name gene set...
         setLinks <- createLink_GO(rownames(result));
       } else if(grepl("KEGG", geneSets)) {
         setLinks <- createLink_KEGG(rownames(result));
@@ -245,6 +307,7 @@ appendLinks <- function(gsca) {
   gsca
 }
 
+## combine all results in different gene set collections
 combineResults <- function(gsca) {
   for(name in c("HyperGeo.results", "GSEA.results")) {
     if(!is.null(gsca@result[[name]])){
