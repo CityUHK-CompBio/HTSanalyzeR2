@@ -8,7 +8,7 @@
 \title{Write HTML reports for enrichment or network analyses}
 \usage{
 \S4method{report}{GSCA}(object, specificGeneset = NULL, cutoff = NULL,
-  reportDir = "GSCAReport", gseaPlot = TRUE, para = list(output =
+  reportDir = "GSCAReport", gseaPlot = FALSE, para = list(output =
   "pdf", ES.range = NULL, rankMetric.range = NULL, ESline.col =
   "FireBrick", hits.col = "black", rankMetric.col = "CadetBlue"))
 
@@ -31,7 +31,7 @@ object named results.RData storing all basic results which can be loaded into R 
 a folder named gsea_plots containing gsea plots for all significant gene sets.}
 
 \item{gseaPlot}{A logical value to choose whether make gsea plot for significant gene
-sets or not, default is TRUE.}
+sets or not, default is FALSE.}
 
 \item{para}{A list of parameters for gsea plot. See \code{\link[HTSanalyzeR2]{plotGSEA}} for details.}
 }

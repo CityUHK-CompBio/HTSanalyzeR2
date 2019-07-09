@@ -5,7 +5,7 @@
 \title{Write HTML reports for both enrichment and network analyses}
 \usage{
 reportAll(gsca = NULL, nwa = NULL, TSOrder = NULL,
-  specificGeneset = NULL, cutoff = NULL, gseaPlot = TRUE,
+  specificGeneset = NULL, cutoff = NULL, gseaPlot = FALSE,
   para = list(output = "pdf", ES.range = NULL, rankMetric.range = NULL,
   ESline.col = "FireBrick", hits.col = "black", rankMetric.col =
   "CadetBlue"), reportDir = "AnalysisReport")
@@ -26,7 +26,7 @@ map for better visualization. When the edge weight, namely the Jaccard coefficie
 this cutoff, this edge would not be showed in the enrichment map.}
 
 \item{gseaPlot}{A logical value to choose whether make gsea plot for significant gene
-sets, default is TRUE.}
+sets, default is FALSE.}
 
 \item{para}{A list of parameters for gsea plot. See \code{\link[HTSanalyzeR2]{plotGSEA}} for details.}
 

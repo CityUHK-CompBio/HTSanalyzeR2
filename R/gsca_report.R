@@ -3,7 +3,7 @@ if (!isGeneric("report")) {
              function(object, specificGeneset = NULL,
                       cutoff = NULL,
                       reportDir = "GSCAReport",
-                      gseaPlot = TRUE,
+                      gseaPlot = FALSE,
                       para = list(output="pdf",
                                   ES.range = NULL,
                                   rankMetric.range = NULL,
@@ -27,7 +27,7 @@ if (!isGeneric("report")) {
 #' object named results.RData storing all basic results which can be loaded into R with readRDS() function and
 #' a folder named gsea_plots containing gsea plots for all significant gene sets.
 #' @param gseaPlot A logical value to choose whether make gsea plot for significant gene
-#' sets or not, default is TRUE.
+#' sets or not, default is FALSE.
 #' @param para A list of parameters for gsea plot. See \code{\link[HTSanalyzeR2]{plotGSEA}} for details.
 #' @param specificGeneset A named list of specific gene sets. See \code{\link[HTSanalyzeR2]{viewEnrichMap,GSCA-method}}
 #' for details.
@@ -79,7 +79,7 @@ if (!isGeneric("report")) {
 setMethod("report", signature = "GSCA",
           function(object, specificGeneset = NULL,
                    cutoff = NULL, reportDir = "GSCAReport",
-                   gseaPlot = TRUE,
+                   gseaPlot = FALSE,
                    para = list(output="pdf",
                                ES.range = NULL,
                                rankMetric.range = NULL,
@@ -107,7 +107,7 @@ setMethod("report", signature = "GSCA",
 #' map for better visualization. When the edge weight, namely the Jaccard coefficient between two gene sets, is less than
 #' this cutoff, this edge would not be showed in the enrichment map.
 #' @param gseaPlot A logical value to choose whether make gsea plot for significant gene
-#' sets, default is TRUE.
+#' sets, default is FALSE.
 #' @param para A list of parameters for gsea plot. See \code{\link[HTSanalyzeR2]{plotGSEA}} for details.
 #' @param reportDir A single character value specifying the path to store reports. By default,
 #' the enrichment analysis reports will be stored in the directory called "GSCAReport". Once launching,
@@ -155,7 +155,7 @@ setMethod("report", signature = "GSCA",
 #'
 reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL,
                       specificGeneset = NULL, cutoff = NULL,
-                      gseaPlot = TRUE,
+                      gseaPlot = FALSE,
                       para = list(output="pdf",
                                   ES.range = NULL,
                                   rankMetric.range = NULL,
