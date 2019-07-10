@@ -739,7 +739,7 @@ GSEA_fgsea <- function(listOfGeneSetCollections,
   colnames(tmp_res) <- c("Observed.score","Pvalue","Adjusted.Pvalue",
                          "NES", "nMoreExtreme",
                          "size", "leading.Edge")
-  tmp_res$leadingEdge <- lapply(tmp_res$leadingEdge, function(i){
+  tmp_res$leading.Edge <- lapply(tmp_res$leading.Edge, function(i){
     paste0(i, collapse = ";")
   })
 
