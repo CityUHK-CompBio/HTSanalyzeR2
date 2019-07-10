@@ -735,7 +735,7 @@ GSEA_fgsea <- function(listOfGeneSetCollections,
   tmp_res$padj <- p.adjust(tmp_res$pval, method=pAdjustMethod)
   rownames(tmp_res) <- tmp_res$pathway
   tmp_res <- tmp_res[, c("ES", "pval", "padj", "NES", "nMoreExtreme",
-                         "size", "leading.Edge")]
+                         "size", "leadingEdge")]
   colnames(tmp_res) <- c("Observed.score","Pvalue","Adjusted.Pvalue",
                          "NES", "nMoreExtreme",
                          "size", "leading.Edge")
