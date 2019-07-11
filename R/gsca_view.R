@@ -243,7 +243,7 @@ gseaPlots <- function(runningScore,
   par(mar = c(0, 5, 2, 2), cex.axis=1.4, cex.lab = 1.6, mgp = c(3.3,1,0))
   plot(x=c(1:length(runningScore)), y=runningScore, type="l",
       lwd=3, col=ESline.col,
-      xaxt = "n", xaxs = "i",
+      xaxt = "n", xaxs = "i", xlab = NA,
       yaxt = "n", ylab="Enrichment score (ES)",
       ylim = ES.range)
 
