@@ -8,8 +8,9 @@
 \usage{
 \S4method{plotGSEA}{GSCA}(object, gscs, ntop = NULL, allSig = FALSE,
   filepath = ".", output = "pdf", ES.range = NULL,
-  rankMetric.range = NULL, ESline.col = "FireBrick",
-  hits.col = "black", rankMetric.col = "CadetBlue", ...)
+  rankMetric.range = NULL, pheno.title = c("Postive", "Negative"),
+  ESline.col = "FireBrick", hits.col = "black",
+  rankMetric.col = "CadetBlue", ...)
 }
 \arguments{
 \item{object}{A GSCA object.}
@@ -35,6 +36,8 @@ also allowed to set by themselves for better comparison with other GSEA plots.}
 \item{rankMetric.range}{A numeric vector for user-defined range of ranked gene lists showing in the
 bottom part of GSEA plot. Default is the range of actual ranked gene lists of result. However, users are
 also allowed to set by themselves for better comparison with other GSEA plots.}
+
+\item{pheno.title}{A charater vector for user-defined phenotype names. Default is c("Positive", "Negative").}
 
 \item{ESline.col}{The color to be used for enrichment score profile line. Defaults to "FireBrick".}
 

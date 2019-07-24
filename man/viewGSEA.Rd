@@ -8,8 +8,8 @@
 \usage{
 \S4method{viewGSEA}{GSCA}(object, gscName, gsName, ES.range = NULL,
   rankMetric.range = NULL, main.title = NULL,
-  ESline.col = "FireBrick", hits.col = "black",
-  rankMetric.col = "CadetBlue")
+  pheno.title = c("Postive", "Negative"), ESline.col = "FireBrick",
+  hits.col = "black", rankMetric.col = "CadetBlue")
 }
 \arguments{
 \item{object}{A GSCA object.}
@@ -29,6 +29,8 @@ also allowed to set by themselves for better comparison with other GSEA plots.}
 
 \item{main.title}{A single character value specifying the main title of the GSEA plot. Default
 is the name of the gene set.}
+
+\item{pheno.title}{A charater vector for user-defined phenotype names. Default is c("Positive", "Negative").}
 
 \item{ESline.col}{The color to be used for enrichment score profile line. Defaults to "FireBrick".}
 

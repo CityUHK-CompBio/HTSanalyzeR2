@@ -602,7 +602,7 @@ calcGSEA <-
           p <- mean(gScore > perm)
           pVal <- 2 * (ifelse(p > 0.5, 1 - p, p))
 
-          c(gScore, pVal, NA, overlap)
+          c(gScore, pVal, NA)
         })
       }
 
@@ -610,14 +610,10 @@ calcGSEA <-
     colnames(res) <-
       c("Observed.score",
         "Pvalue",
-        "Adjusted.Pvalue",
-        "overlap")
+        "Adjusted.Pvalue")
 
     res[, "Adjusted.Pvalue"] <-
       p.adjust(res[, "Pvalue"], method = pAdjustMethod)
-
-    res <-
-      res[, c("Observed.score", "Pvalue", "Adjusted.Pvalue")]
     ########################################################
     ## add LeadingEdge genelist]
     res <- as.data.frame(res)

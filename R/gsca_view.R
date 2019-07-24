@@ -28,6 +28,7 @@ if(!isGeneric("plotGSEA"))
 #' also allowed to set by themselves for better comparison with other GSEA plots.
 #' @param main.title A single character value specifying the main title of the GSEA plot. Default
 #' is the name of the gene set.
+#' @param pheno.title A charater vector for user-defined phenotype names. Default is c("Positive", "Negative").
 #' @param ESline.col The color to be used for enrichment score profile line. Defaults to "FireBrick".
 #' @param hits.col The color to be used for hits line to show the position of hits. Defaults to "CadetBlue".
 #' @param rankMetric.col The color to be used for ranked metric line. Defaults to "CadetBlue".
@@ -64,6 +65,7 @@ setMethod(
            ES.range = NULL,
            rankMetric.range = NULL,
            main.title = NULL,
+           pheno.title = c("Postive", "Negative"),
            ESline.col = "FireBrick",
            hits.col = "black",
            rankMetric.col = "CadetBlue") {
@@ -95,6 +97,7 @@ setMethod(
               ES.range = ES.range,
               rankMetric.range = rankMetric.range,
               main.title = main.title,
+              pheno.title = pheno.title,
               ESline.col = ESline.col,
               hits.col = hits.col,
               rankMetric.col = rankMetric.col)
@@ -124,6 +127,7 @@ setMethod(
 #' @param rankMetric.range A numeric vector for user-defined range of ranked gene lists showing in the
 #' bottom part of GSEA plot. Default is the range of actual ranked gene lists of result. However, users are
 #' also allowed to set by themselves for better comparison with other GSEA plots.
+#' @param pheno.title A charater vector for user-defined phenotype names. Default is c("Positive", "Negative").
 #' @param ESline.col The color to be used for enrichment score profile line. Defaults to "FireBrick".
 #' @param hits.col The color to be used for hits line to show the position of hits. Defaults to "CadetBlue".
 #' @param rankMetric.col The color to be used for ranked metric line. Defaults to "CadetBlue".
@@ -150,6 +154,7 @@ setMethod(
   function(object, gscs, ntop=NULL, allSig=FALSE, filepath=".", output="pdf",
            ES.range = NULL,
            rankMetric.range = NULL,
+           pheno.title = c("Postive", "Negative"),
            ESline.col = "FireBrick",
            hits.col = "black",
            rankMetric.col = "CadetBlue", ...) {
@@ -174,6 +179,7 @@ setMethod(
                         nPermutations = object@summary$para$gsea[, "nPermutations"],
                         ES.range = ES.range,
                         rankMetric.range = rankMetric.range,
+                        pheno.title = pheno.title,
                         ESline.col = ESline.col,
                         hits.col = hits.col,
                         rankMetric.col = rankMetric.col,
@@ -198,6 +204,7 @@ gseaPlots <- function(runningScore,
                       ES.range = NULL,
                       rankMetric.range = NULL,
                       main.title = NULL,
+                      pheno.title = c("Postive", "Negative"),
                       ESline.col = "FireBrick",
                       hits.col = "black",
                       rankMetric.col = "CadetBlue") {
@@ -227,6 +234,9 @@ gseaPlots <- function(runningScore,
 
   if(is.null(rankMetric.range)){
     rankMetric.range <- c(min(geneList), max(geneList))
+  } else{
+    geneList[geneList < rankMetric.range[1]] <- rankMetric.range[1]
+    geneList[geneList > rankMetric.range[2]] <- rankMetric.range[2]
   }
 
   if(is.null(main.title)){
@@ -284,7 +294,7 @@ gseaPlots <- function(runningScore,
   ##which stores a one for each match position and a zero otherwise
 
   par(mar = c(0, 5, 0, 2))
-  ticks = 1000
+  ticks = 100
   ran <- range(geneList, na.rm = TRUE)
   offset <- ceiling(ticks * ran[1] / (ran[1] - ran[2]))
   offset <- ifelse(offset <= 0, 1, offset)
@@ -297,8 +307,8 @@ gseaPlots <- function(runningScore,
   barplot(matrix(rank.colors$lengths), col = rank.colors$values,
           border = NA, horiz = TRUE,xaxt = "n", xlim = c(1, length(geneList)))
   box()
-  text(length(geneList) * 0.01, 0.7, "Positive", adj = c(0, NA), cex = 1.4)
-  text(length(geneList) * 0.99, 0.7, "Negative", adj = c(1, NA), cex = 1.4)
+  text(length(geneList) * 0.01, 0.7, pheno.title[1], adj = c(0, NA), cex = 1.4)
+  text(length(geneList) * 0.99, 0.7, pheno.title[2], adj = c(1, NA), cex = 1.4)
 
   ## plot rank metric bar
   par(mar = c(5, 5, 0, 2), cex.axis=1.4, cex.lab = 1.6, mgp = c(3,1,0))
@@ -335,6 +345,7 @@ makeGSEAplots <- function(geneList, geneSet, exponent, filepath,
                           nPermutations,
                           ES.range = NULL,
                           rankMetric.range = NULL,
+                          pheno.title = c("Postive", "Negative"),
                           ESline.col,
                           hits.col,
                           rankMetric.col,
@@ -358,6 +369,7 @@ makeGSEAplots <- function(geneList, geneSet, exponent, filepath,
             nPermutations = nPermutations,
             ES.range = ES.range,
             rankMetric.range = rankMetric.range,
+            pheno.title = pheno.title,
             ESline.col = ESline.col,
             hits.col = hits.col,
             rankMetric.col = rankMetric.col)
