@@ -31,6 +31,9 @@ setMethod("extractSubNet", signature = "NWA",
             if(is.null(subnw)) {
               stop("No subnet detected.")
             }
+            if(nrow(igraph::as_data_frame(subnw)) == 0){
+              stop("No valid subnet detected.")
+            }
 
             V(subnw)$label <- unlist(object@result$labels[V(subnw)$name])
             phenotypes <- object@phenotypes
