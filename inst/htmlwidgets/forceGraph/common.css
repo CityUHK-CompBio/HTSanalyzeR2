@@ -1,9 +1,9 @@
 #settingBar {
     width: 300px;
-    position: fixed;
+    position: absolute;
     top: 0;
     right: -300px;
-    height: 100vh;
+    height: auto;
     z-index: 999;
     background: #222d32;
     color: #fff;
@@ -66,10 +66,10 @@
 
 #analysis_info {
     width: 360px;
-    position: fixed;
+    position: absolute;
     top: 0;
     right: -360px;
-    height: 100vh;
+    height: auto;
     z-index: 999;
     background: #eee;
     transition: all 0.2s;
@@ -82,10 +82,10 @@
 
 #network_info {
     width: 360px;
-    position: fixed;
+    position: absolute;
     top: 0;
     right: -360px;
-    height: 100vh;
+    height: auto;
     z-index: 999;
     background: #eee;
     transition: all 0.2s;

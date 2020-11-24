@@ -183,7 +183,7 @@ body <- dashboardBody(
     ),
 
     tabItem(tabName = "dummy", fluidRow(
-      colourInput("dummyColorInput", ""),
+      colourpicker::colourInput("dummyColorInput", ""),
       sliderInput("dummySliderInput", "", 0, 1, 0)))
   ),
 
@@ -303,6 +303,10 @@ server <- function(input, output, session) {
     { input$analysis_map
       input$genesets_map },
     {
+      if(!is.null(input$process_map)){
+        output$series_tick_name <- renderMenu({ menuItem(names(gscaObjs)[input$process_map], icon = icon("time", lib = "glyphicon"))})
+        updateSliderInput(session, 'process_map', value = 1)
+      }
       output$map_output <- HTSanalyzeR2:::renderForceGraph(create_enrich_map(gsca, gscaObjs, input))
     }
   )
