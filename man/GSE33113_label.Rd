@@ -4,7 +4,9 @@
 \name{GSE33113_label}
 \alias{GSE33113_label}
 \title{Concensus molecular subtype label of GSE33113}
-\format{An object of class \code{character} of length 90.}
+\format{
+An object of class \code{character} of length 90.
+}
 \usage{
 GSE33113_label
 }

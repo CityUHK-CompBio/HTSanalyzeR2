@@ -6,7 +6,9 @@
 \alias{d13}
 \alias{d25}
 \title{CRISPR data set}
-\format{An object of class \code{data.frame} with 8000 rows and 14 columns.}
+\format{
+An object of class \code{data.frame} with 8000 rows and 14 columns.
+}
 \usage{
 d7
 }

@@ -4,7 +4,9 @@
 \name{Biogrid_HS_Interactome}
 \alias{Biogrid_HS_Interactome}
 \title{An object of class 'igraph'}
-\format{An object of class \code{igraph} of length 10.}
+\format{
+An object of class \code{igraph} of length 10.
+}
 \usage{
 Biogrid_HS_Interactome
 }

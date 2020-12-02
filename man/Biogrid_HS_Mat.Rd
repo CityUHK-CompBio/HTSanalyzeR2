@@ -4,7 +4,9 @@
 \name{Biogrid_HS_Mat}
 \alias{Biogrid_HS_Mat}
 \title{An interactome matrix for \emph{Homo Sapiens}}
-\format{An object of class \code{matrix} with 260609 rows and 3 columns.}
+\format{
+An object of class \code{matrix} (inherits from \code{array}) with 260609 rows and 3 columns.
+}
 \usage{
 Biogrid_HS_Mat
 }

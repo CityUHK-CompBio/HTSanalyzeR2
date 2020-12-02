@@ -4,7 +4,9 @@
 \name{d7_gsca}
 \alias{d7_gsca}
 \title{An object of class 'GSCA'}
-\format{An object of class \code{GSCA} of length 1.}
+\format{
+An object of class \code{GSCA} of length 1.
+}
 \usage{
 d7_gsca
 }

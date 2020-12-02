@@ -4,7 +4,9 @@
 \name{GSE33113_exp}
 \alias{GSE33113_exp}
 \title{Expression of a demo data: GSE33113}
-\format{An object of class \code{data.frame} with 21656 rows and 90 columns.}
+\format{
+An object of class \code{data.frame} with 21656 rows and 90 columns.
+}
 \usage{
 GSE33113_exp
 }

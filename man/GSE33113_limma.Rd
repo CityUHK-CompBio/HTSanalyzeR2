@@ -4,7 +4,9 @@
 \name{GSE33113_limma}
 \alias{GSE33113_limma}
 \title{limma result of a gene expression data}
-\format{An object of class \code{data.frame} with 21656 rows and 6 columns.}
+\format{
+An object of class \code{data.frame} with 21656 rows and 6 columns.
+}
 \usage{
 GSE33113_limma
 }

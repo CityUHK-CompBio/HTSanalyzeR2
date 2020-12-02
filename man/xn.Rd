@@ -4,7 +4,9 @@
 \name{xn}
 \alias{xn}
 \title{An object of class 'cellHTS2'}
-\format{An object of class \code{cellHTS} with 21888 rows and 2 columns.}
+\format{
+An object of class \code{cellHTS} with 21888 rows and 2 columns.
+}
 \usage{
 xn
 }

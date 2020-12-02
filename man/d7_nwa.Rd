@@ -4,7 +4,9 @@
 \name{d7_nwa}
 \alias{d7_nwa}
 \title{An object of class 'NWA'}
-\format{An object of class \code{NWA} of length 1.}
+\format{
+An object of class \code{NWA} of length 1.
+}
 \usage{
 d7_nwa
 }
