@@ -4,8 +4,16 @@
 \alias{forceGraph}
 \title{Create a force-directed graph widget}
 \usage{
-forceGraph(nodes, links, nMappings, lMappings, options, width = NULL,
-  height = NULL, seriesData = NULL)
+forceGraph(
+  nodes,
+  links,
+  nMappings,
+  lMappings,
+  options,
+  width = NULL,
+  height = NULL,
+  seriesData = NULL
+)
 }
 \arguments{
 \item{nodes}{the node information of force-directed graph}

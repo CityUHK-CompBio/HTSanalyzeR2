@@ -3,7 +3,6 @@
 \docType{package}
 \name{HTSanalyzeR2}
 \alias{HTSanalyzeR2}
-\alias{HTSanalyzeR2-package}
 \title{HTSanalyzeR2 Package Overview}
 \description{
 This package provides classes and methods for gene set over-representation,

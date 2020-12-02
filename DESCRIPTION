@@ -19,7 +19,7 @@ Description: This package provides gene set analysis, enriched subnetwork analys
              part and download results in different formats.
 License: Artistic-2.0
 LazyData: TRUE
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.0
 Encoding: UTF-8
 Imports: 
     GO.db,

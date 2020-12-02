@@ -4,16 +4,35 @@
 \alias{HTSanalyzeR2Pipe}
 \title{An analysis pipeline for common phenotype data}
 \usage{
-HTSanalyzeR2Pipe(data4enrich, hits = character(), doGSOA = FALSE,
-  doGSEA = TRUE, listOfGeneSetCollections, species = "Hs",
-  initialIDs = "SYMBOL", keepMultipleMappings = TRUE,
-  duplicateRemoverMethod = "max", orderAbsValue = FALSE,
-  pValueCutoff = 0.05, pAdjustMethod = "BH", nPermutations = 1000,
-  cores = 1, minGeneSetSize = 15, exponent = 1, verbose = TRUE,
-  GSEA.by = "HTSanalyzeR2", keggGSCs = NULL, goGSCs = NULL,
-  msigdbGSCs = NULL, doNWA = FALSE, nwaPvalues = NULL,
-  interactionMatrix = NULL, reportDir = "HTSanalyzerReport",
-  nwAnalysisGenetic = FALSE, nwAnalysisFdr = 0.001)
+HTSanalyzeR2Pipe(
+  data4enrich,
+  hits = character(),
+  doGSOA = FALSE,
+  doGSEA = TRUE,
+  listOfGeneSetCollections,
+  species = "Hs",
+  initialIDs = "SYMBOL",
+  keepMultipleMappings = TRUE,
+  duplicateRemoverMethod = "max",
+  orderAbsValue = FALSE,
+  pValueCutoff = 0.05,
+  pAdjustMethod = "BH",
+  nPermutations = 1000,
+  cores = 1,
+  minGeneSetSize = 15,
+  exponent = 1,
+  verbose = TRUE,
+  GSEA.by = "HTSanalyzeR2",
+  keggGSCs = NULL,
+  goGSCs = NULL,
+  msigdbGSCs = NULL,
+  doNWA = FALSE,
+  nwaPvalues = NULL,
+  interactionMatrix = NULL,
+  reportDir = "HTSanalyzerReport",
+  nwAnalysisGenetic = FALSE,
+  nwAnalysisFdr = 0.001
+)
 }
 \arguments{
 \item{data4enrich}{A numeric or integer vector of phenotypes named by gene identifiers.}

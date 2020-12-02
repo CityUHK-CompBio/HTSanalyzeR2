@@ -4,9 +4,14 @@
 \alias{preprocessNwaTS}
 \title{A preprocessing method for a GSCABatch object of Time-series data Network Analyses}
 \usage{
-preprocessNwaTS(object, species = "Hs", initialIDs = "SYMBOL",
-  keepMultipleMappings = TRUE, duplicateRemoverMethod = "max",
-  verbose = TRUE)
+preprocessNwaTS(
+  object,
+  species = "Hs",
+  initialIDs = "SYMBOL",
+  keepMultipleMappings = TRUE,
+  duplicateRemoverMethod = "max",
+  verbose = TRUE
+)
 }
 \arguments{
 \item{object}{An NWABatch object.}

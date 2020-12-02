@@ -4,11 +4,17 @@
 \alias{reportAll}
 \title{Write HTML reports for both enrichment and network analyses}
 \usage{
-reportAll(gsca = NULL, nwa = NULL, TSOrder = NULL,
-  specificGeneset = NULL, cutoff = NULL, gseaPlot = FALSE,
-  para = list(output = "pdf", ES.range = NULL, rankMetric.range = NULL,
-  ESline.col = "FireBrick", hits.col = "black", rankMetric.col =
-  "CadetBlue"), reportDir = "AnalysisReport")
+reportAll(
+  gsca = NULL,
+  nwa = NULL,
+  TSOrder = NULL,
+  specificGeneset = NULL,
+  cutoff = NULL,
+  gseaPlot = FALSE,
+  para = list(output = "pdf", ES.range = NULL, rankMetric.range = NULL, ESline.col =
+    "FireBrick", hits.col = "black", rankMetric.col = "CadetBlue"),
+  reportDir = "AnalysisReport"
+)
 }
 \arguments{
 \item{gsca}{An analyzed GSCA object or a list of analyzed GSCA objects.}

@@ -4,9 +4,14 @@
 \alias{cellHTS2OutputStatTests}
 \title{Perform statistical tests on a cellHTS object}
 \usage{
-cellHTS2OutputStatTests(cellHTSobject, annotationColumn = "GeneID",
-  controls = "neg", alternative = "two.sided", logged = FALSE,
-  tests = "T-test")
+cellHTS2OutputStatTests(
+  cellHTSobject,
+  annotationColumn = "GeneID",
+  controls = "neg",
+  alternative = "two.sided",
+  logged = FALSE,
+  tests = "T-test"
+)
 }
 \arguments{
 \item{cellHTSobject}{An object of class cellHTS.}

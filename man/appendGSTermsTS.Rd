@@ -4,8 +4,13 @@
 \alias{appendGSTermsTS}
 \title{Append gene set terms to GSCA results for each GSCA object of Time-series data}
 \usage{
-appendGSTermsTS(gscaList, keggGSCs = NULL, goGSCs = NULL,
-  msigdbGSCs = NULL, species = "Hs")
+appendGSTermsTS(
+  gscaList,
+  keggGSCs = NULL,
+  goGSCs = NULL,
+  msigdbGSCs = NULL,
+  species = "Hs"
+)
 }
 \arguments{
 \item{gscaList}{A named list of GSCA object.}

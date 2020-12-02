@@ -4,9 +4,15 @@
 \alias{preprocessGscaTS}
 \title{A preprocessing method for a GSCABatch object of Time-series data Gene Set Collection Analyses}
 \usage{
-preprocessGscaTS(object, species = "Hs", initialIDs = "SYMBOL",
-  keepMultipleMappings = TRUE, duplicateRemoverMethod = "max",
-  orderAbsValue = FALSE, verbose = TRUE)
+preprocessGscaTS(
+  object,
+  species = "Hs",
+  initialIDs = "SYMBOL",
+  keepMultipleMappings = TRUE,
+  duplicateRemoverMethod = "max",
+  orderAbsValue = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{object}{A GSCABatch object.}
