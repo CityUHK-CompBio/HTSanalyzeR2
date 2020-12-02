@@ -59,3 +59,9 @@ nwaTS <- NWABatch(expInfor = expInfor, pvalueTS = pvalueTS, phenotypeTS = phenot
 ## Example2: create an object of class 'NWABatch' without phenotypes
 nwaTS <- NWABatch(expInfor = expInfor, pvalueTS = pvalueTS)
 }
+\seealso{
+\code{\link[HTSanalyzeR2]{NWA-class}},
+\code{\link[HTSanalyzeR2]{preprocessNwaTS}},
+\code{\link[HTSanalyzeR2]{interactomeNwaTS}},
+\code{\link[HTSanalyzeR2]{analyzeNwaTS}}
+}

@@ -4,7 +4,13 @@
 \alias{analyzeNwaTS}
 \title{Subnetwork analysis for Time-series data}
 \usage{
-analyzeNwaTS(nwaList, fdr = 0.001, species, verbose = TRUE)
+analyzeNwaTS(
+  nwaList,
+  fdr = 0.001,
+  species,
+  plotBumModel = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{nwaList}{A named list of NWA object.}
@@ -13,6 +19,8 @@ analyzeNwaTS(nwaList, fdr = 0.001, species, verbose = TRUE)
 (see BioNet::scoreNodes and Dittrich et al., 2008 for details)}
 
 \item{species}{A single character value specifying the species for which the data should be read.}
+
+\item{plotBumModel}{Boolean value, whether to plot a histogram and qqplot of the p-values with the fitted model.}
 
 \item{verbose}{A single logical value specifying to display detailed messages
 (when verbose=TRUE) or not (when verbose=FALSE), default is TRUE.}

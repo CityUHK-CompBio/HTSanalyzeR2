@@ -67,6 +67,11 @@ setMethod("initialize",
 #'  must match the order of 'expInfor' ID.
 #' @slot listOfGSCA A list of initialized GSCA object for futher GSCA.
 #' @usage GSCABatch(expInfor, listOfGeneSetCollections, phenotypeTS, hitsTS = list())
+#' @seealso \code{\link[HTSanalyzeR2]{GSCA-class}}
+#' \code{\link[HTSanalyzeR2]{preprocessGscaTS}},
+#' \code{\link[HTSanalyzeR2]{analyzeGscaTS}},
+#' \code{\link[HTSanalyzeR2]{appendGSTermsTS}}
+#'
 #' @export
 #' @return This function will create a new object class 'GSCABatch'.
 #' @examples
@@ -244,6 +249,11 @@ setMethod("show", signature = "NWABatch", function(object) {
 #' @slot listOfNWA A list of 'NWA' object.
 #' @usage NWABatch(expInfor, pvalueTS, phenotypeTS = list(), interactome = NA)
 #' @return This function will create a new object class 'NWABatch'.
+#' @seealso \code{\link[HTSanalyzeR2]{NWA-class}},
+#' \code{\link[HTSanalyzeR2]{preprocessNwaTS}},
+#' \code{\link[HTSanalyzeR2]{interactomeNwaTS}},
+#' \code{\link[HTSanalyzeR2]{analyzeNwaTS}}
+#'
 #' @examples
 #' data(d7, d13, d25)
 #'

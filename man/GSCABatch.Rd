@@ -68,3 +68,9 @@ gscaTS <- GSCABatch(expInfor = expInfor, phenotypeTS = phenotypeTS,
                  listOfGeneSetCollections = ListGSC)
 gscaTS
 }
+\seealso{
+\code{\link[HTSanalyzeR2]{GSCA-class}}
+\code{\link[HTSanalyzeR2]{preprocessGscaTS}},
+\code{\link[HTSanalyzeR2]{analyzeGscaTS}},
+\code{\link[HTSanalyzeR2]{appendGSTermsTS}}
+}

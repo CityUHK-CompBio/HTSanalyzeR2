@@ -164,6 +164,7 @@ interactomeNwaTS <- function(nwaList, interactionMatrix = NULL, species,
 #' @param fdr  A single numeric value specifying the false discovery for the scoring of nodes
 #' (see BioNet::scoreNodes and Dittrich et al., 2008 for details)
 #' @param species A single character value specifying the species for which the data should be read.
+#' @param plotBumModel Boolean value, whether to plot a histogram and qqplot of the p-values with the fitted model.
 #' @param verbose A single logical value specifying to display detailed messages
 #'  (when verbose=TRUE) or not (when verbose=FALSE), default is TRUE.
 #' @return In the end, this function will return an updated list of NWA objects.
@@ -205,11 +206,14 @@ interactomeNwaTS <- function(nwaList, interactionMatrix = NULL, species,
 #' }
 analyzeNwaTS <- function(nwaList,  fdr = 0.001,
                          species,
+                         plotBumModel = FALSE,
                          verbose = TRUE){
   paraCheck("nwaTS", "nwaList", nwaList)
   tmpName <- names(nwaList)
   tmp <- lapply(nwaList, function(x){
-    analyze(x, fdr=fdr, species=species, verbose=verbose)
+    analyze(x, fdr=fdr, species=species,
+            plotBumModel=plotBumModel,
+            verbose=verbose)
   })
   names(tmp) <- tmpName
   tmp

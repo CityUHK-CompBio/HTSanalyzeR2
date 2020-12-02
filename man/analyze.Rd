@@ -16,7 +16,7 @@
   GSEA.by = "HTSanalyzeR2"
 )
 
-\S4method{analyze}{NWA}(object, fdr = 0.001, species, verbose = TRUE)
+\S4method{analyze}{NWA}(object, fdr = 0.001, species, plotBumModel = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{object}{A 'GSCA' or 'NWA'object.}
@@ -41,6 +41,8 @@ please refer to \code{\link[fgsea:fgsea]{fgsea}}.}
 (see BioNet::scoreNodes and Dittrich et al., 2008 for details)}
 
 \item{species}{A single character value specifying the species for which the data should be read.}
+
+\item{plotBumModel}{Boolean value, whether to plot a histogram and qqplot of the p-values with the fitted model.}
 
 \item{pValueCutoff}{A single numeric value specifying the cutoff for adjusted p-values considered
 significant.}

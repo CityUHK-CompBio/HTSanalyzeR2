@@ -12,6 +12,8 @@ if (!isGeneric("analyze")) {
 #' @param fdr
 #' A single numeric value specifying the false discovery for the scoring of nodes
 #' (see BioNet::scoreNodes and Dittrich et al., 2008 for details)
+#' @param plotBumModel
+#' Boolean value, whether to plot a histogram and qqplot of the p-values with the fitted model.
 #' @references
 #' Beisser D, Klau GW, Dandekar T, Muller T, Dittrich MT. BioNet: an R-Package
 #' for the functional analysis of biological networks. Bioinformatics.
@@ -59,6 +61,7 @@ setMethod("analyze",
           function(object,
                    fdr = 0.001,
                    species,
+                   plotBumModel = FALSE,
                    verbose = TRUE) {
             ## check input arguments
             paraCheck("Analyze", "fdr", fdr)
@@ -86,6 +89,7 @@ setMethod("analyze",
               pvalues = object@pvalues,
               graph = object@interactome,
               fdr = object@fdr,
+              plotBumModel = plotBumModel,
               verbose = verbose
             )
             ## update module info in summary
@@ -118,6 +122,7 @@ networkAnalysis <-
   function(pvalues,
            graph,
            fdr = 0.001,
+           plotBumModel = FALSE,
            verbose = TRUE) {
     ##check arguments
     paraCheck("NWAClass", "pvalues", pvalues)
@@ -155,7 +160,7 @@ networkAnalysis <-
     #  model will produce a diagnostic plot on the screen, to check the
     #  fitting
     dataForNw <- pvalues[scoredNodes]
-    fb <- fitBumModel(dataForNw)
+    fb <- fitBumModel(dataForNw, plot = plotBumModel)
     ## Score the nodes of the network
     #  The nodes without pvalues will get a NA value instead of a score
     scores <- scoreNodes(graph, fb = fb, fdr = fdr)
