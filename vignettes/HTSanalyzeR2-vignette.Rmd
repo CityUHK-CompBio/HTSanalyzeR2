@@ -108,12 +108,14 @@ Diverse high-throughput technologies such as microarray, RNA-seq, RNAi and CRISP
 In the next parts, two simple case studies will be illustrated to demonstrate the usage of this package. Before starting the demonstration, you need to install and load the following packages:
 ```{r, results='hide', message=FALSE, warning=FALSE}
 library(HTSanalyzeR2)
-library(org.Hs.eg.db)
-library(KEGGREST)
-library(GO.db)
-library(igraph)
-library(limma)
-library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+suppressPackageStartupMessages({
+  library(org.Hs.eg.db)
+  library(KEGGREST)
+  library(GO.db)
+  library(igraph)
+  library(limma)
+  library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+})
 ```
 
 # Case study1: Single dataset analysis of gene expression data
