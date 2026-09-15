@@ -7,6 +7,15 @@
 ## contract: node size, dual positive/negative colour scales with a legend,
 ## label selection, and time-series updates.
 
+## The Shiny application written by reportAll() renders its layout with
+## 'bslib', its tables with 'DT' and its colour pickers with 'colourpicker'.
+## Importing them here keeps the report runtime part of the declared
+## dependencies instead of an undeclared, silently optional extra.
+#' @import bslib
+#' @import colourpicker
+#' @import DT
+NULL
+
 ## ---- value helpers ---------------------------------------------------------
 
 ## Normalize values into [minValue, maxValue]. NA values are preserved; a

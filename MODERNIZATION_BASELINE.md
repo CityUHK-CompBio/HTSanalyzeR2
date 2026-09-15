@@ -81,3 +81,31 @@ The stable classes are `GSCA`, `NWA`, `GSCABatch`, and `NWABatch`. The GSCA resu
 - [ ] Multi-version CI proven.
 - [x] Both vignettes compile locally to PDF. The remaining `inst/doc` warning is a package
   build-policy decision deferred to the documentation/release phase.
+
+## Phase 2 — 2026 stack, licence and report layer
+
+Completed after the baseline, keeping the S4 API and every result field unchanged:
+
+- **Licence**: the package is now Apache License 2.0. The GPLv3 Sigma/linkurious.js
+  payload that made the previous declaration questionable is gone.
+- **Interactive graphs**: `viewEnrichMap()`/`viewSubNet()` render through `visNetwork`;
+  `R/d3plot.R` and `inst/htmlwidgets/forceGraph/` (about 1200 lines of vendored JS and
+  jQuery) were removed in favour of `R/network_widget.R`.
+- **Report**: `inst/templates/app.R` was rewritten for `bslib` (Bootstrap 5) with
+  namespaced Shiny settings panels; `inst/templates/settings.html` was removed.
+  `reportAll()` now delegates to the new `prepareReport()`, which assembles a report
+  directory without launching Shiny and validates the report runtime up front.
+- **Dependencies**: dropped `foreach`, `doParallel`, `stringr`, `htmlwidgets` and
+  `shinydashboard`; added `visNetwork` and `bslib`; `RankProd` became optional.
+- **Real defects fixed**: `igraph` 2.x `as_data_frame(x, "edge")` broke
+  `viewEnrichMap()`/`viewSubNet()` outright; BioGRID links were pinned to 2016/2021
+  releases; the report's network tab relied on an observer driven by a constant
+  expression; duplicate Shiny input ids across graph panels broke the client bindings.
+- **Verification**: the report was launched against a real browser session — table,
+  value boxes, enrichment map, subnetwork, legend, hover tooltips and PNG export all
+  render. Tests cover the widget contract, the time-series columns and the absence of
+  vendored JavaScript.
+
+`R CMD check --as-cran` now reports `1 WARNING` and no NOTEs or ERRORs. The warning is the
+advisory "significant size reductions" note for the two vignette PDFs, which is a
+figure-resolution question rather than a packaging defect.

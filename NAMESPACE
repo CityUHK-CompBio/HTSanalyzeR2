@@ -37,7 +37,10 @@ exportMethods(viewEnrichMap)
 exportMethods(viewGSEA)
 exportMethods(viewSubNet)
 import(BiocParallel)
+import(DT)
 import(GO.db)
+import(bslib)
+import(colourpicker)
 import(graphics)
 importFrom(AnnotationDbi,
   GOID,
