@@ -74,11 +74,8 @@ if (!isGeneric("viewEnrichMap"))
 #' gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
 #'                    duplicateRemoverMethod="max", orderAbsValue=FALSE)
 #'
-#' ## support parallel calculation using doParallel package
-#' if (requireNamespace("doParallel", quietly=TRUE)) {
-#' doParallel::registerDoParallel(cores=2)
-#' } else {
-#' }
+#' ## enable parallel calculation with the Bioconductor backend
+#' BiocParallel::register(BiocParallel::SnowParam(workers = 2))
 #'
 #' ## do hypergeometric tests and GSEA
 #' gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.01, pAdjustMethod ="BH",
@@ -185,11 +182,10 @@ appendGOTerm <- function(df) {
 
 
 #' @importFrom KEGGREST keggList
-#' @importFrom stringr str_sub
 appendKEGGTerm<-function(df) {
   mappings <- KEGGREST::keggList("pathway")
-  names(mappings) <- stringr::str_sub(names(mappings), -5)
-  keggnames <- stringr::str_sub(row.names(df), -5)
+  names(mappings) <- substring(names(mappings), nchar(names(mappings)) - 4)
+  keggnames <- substring(row.names(df), nchar(row.names(df)) - 4)
   keggterms <- mappings[keggnames]
   keggterms[which(is.na(keggterms))] <- "NA"
   names(keggterms)[which(is.na(names(keggterms)))] <-
@@ -550,7 +546,6 @@ setMethod("extractEnrichMap", signature = "GSCA",
 #' A Network-Based Method for Gene-Set Enrichment Visualization and Interpretation.
 #' PLoS ONE5(11): e13984. https://doi.org/10.1371/journal.pone.0013984
 #' @importFrom igraph as_data_frame
-#' @importFrom stringr str_replace
 #' @importFrom utils modifyList
 #' @aliases viewEnrichMap
 setMethod("viewEnrichMap", signature = "GSCA",
@@ -610,7 +605,7 @@ setMethod("viewEnrichMap", signature = "GSCA",
             options$colorScaler = "log10"
             options$nPermutations = object@para$nPermutations
             defaultOptions = list(title = title, legendTitle = "-Log10(Adjusted p-values)",
-                                  type = stringr::str_replace(resultName, ".results", ""))
+                                  type = sub(".results", "", resultName))
             graphOptions <- modifyList(defaultOptions, options)
 
             forceGraph(em_nodes, em_links, nMappings, lMappings, graphOptions, seriesData = series)

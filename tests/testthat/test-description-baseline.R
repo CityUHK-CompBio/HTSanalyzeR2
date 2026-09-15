@@ -5,7 +5,7 @@ test_that("dependency declarations include every direct runtime caller", {
   )
   imports <- unlist(strsplit(desc[1, "Imports"], ",\\s*"))
   suggests <- unlist(strsplit(desc[1, "Suggests"], ",\\s*"))
-  expect_true("doParallel" %in% imports)
+  expect_true("BiocParallel" %in% imports)
   expect_true(all(c("limma", "Biobase") %in% suggests))
   expect_true("TxDb.Hsapiens.UCSC.hg19.knownGene" %in% suggests)
 })

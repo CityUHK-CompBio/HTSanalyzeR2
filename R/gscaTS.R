@@ -134,11 +134,8 @@ preprocessGscaTS <- function(object, species="Hs", initialIDs="SYMBOL",
 #'                            keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
 #'                            orderAbsValue=FALSE)
 #'
-#' ## support parallel calculation using doParallel package
-#' if (requireNamespace("doParallel", quietly=TRUE)) {
-#' doParallel::registerDoParallel(cores=2)
-#' } else {
-#' }
+#' ## enable parallel calculation with the Bioconductor backend
+#' BiocParallel::register(BiocParallel::SnowParam(workers = 2))
 #'
 #' \dontrun{
 #' ## do hypergeometric tests and GSEA
@@ -220,11 +217,8 @@ analyzeGscaTS <- function(gscaList, para=list(pValueCutoff=0.05, pAdjustMethod="
 #'                            keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
 #'                            orderAbsValue=FALSE)
 #'
-#' ## support parallel calculation using doParallel package
-#' if (requireNamespace("doParallel", quietly=TRUE)) {
-#' doParallel::registerDoParallel(cores=2)
-#' } else {
-#' }
+#' ## enable parallel calculation with the Bioconductor backend
+#' BiocParallel::register(BiocParallel::SnowParam(workers = 2))
 #'
 #' \dontrun{
 #' ## do hypergeometric tests and GSEA
@@ -253,4 +247,3 @@ appendGSTermsTS <- function(gscaList, keggGSCs=NULL,
              names(tmp) <- tmpName
              tmp
 }
-

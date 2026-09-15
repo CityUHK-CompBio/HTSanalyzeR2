@@ -30,9 +30,6 @@ devtools::install_github("CityUHK-CompBio/HTSanalyzeR2", dependencies=TRUE)
 
 - GO.db
 - Rcpp 
-- foreach 
-- doParallel
-- stringr 
 - igraph 
 - BioNet 
 - DT 
@@ -43,7 +40,6 @@ devtools::install_github("CityUHK-CompBio/HTSanalyzeR2", dependencies=TRUE)
 - data.table 
 - htmlwidgets 
 - methods 
-- RankProd 
 - AnnotationDbi 
 - graphics 
 - grDevices 
@@ -53,6 +49,10 @@ devtools::install_github("CityUHK-CompBio/HTSanalyzeR2", dependencies=TRUE)
 - fgsea
 - msigdbr
 
+**HTSanalyzeR2** optionally supports the Rank Product test through the
+`RankProd` package, which carries a non-FOSS licence and is therefore not a
+hard dependency.
+
 **HTSanalyzeR2** also suggests the following R/Bioconductor packages for improved user experience:  
 
 - BiocStyle  
@@ -60,7 +60,6 @@ devtools::install_github("CityUHK-CompBio/HTSanalyzeR2", dependencies=TRUE)
 - testthat  
 - knitr  
 - org.Hs.eg.db  
-- doParallel  
 - Biobase  
 
 
@@ -79,7 +78,7 @@ Details about this:
 
 3. `igraph` requires xml library. Please install `libxml2-dev` on Ubuntu or corresponding package on other OS.
 
-4. `RankProd` need package `Rmpfr`, which requires gmp and mpfr library. Please install `libgmp-dev` and `libmpfr-dev` on Ubuntu or corresponding package on other OS.
+4. The optional Rank Product test (`tests = "RankProduct"`) needs the `RankProd` package, which needs `Rmpfr`, which in turn requires the gmp and mpfr libraries. Please install `libgmp-dev` and `libmpfr-dev` on Ubuntu or the corresponding package on other OS.
 
 
 
@@ -117,9 +116,8 @@ gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL",
                     orderAbsValue=FALSE)
 
 ## analysis
-if (requireNamespace("doParallel", quietly=TRUE)) {
-    doParallel::registerDoParallel(cores=4)
-}  ## support parallel calculation using multiple cores
+## support parallel calculation using multiple cores
+BiocParallel::register(BiocParallel::SnowParam(workers = 4))
 gsca2 <- analyze(gsca1, 
                  para=list(pValueCutoff=0.05, pAdjustMethod="BH",
                            nPermutations=100, minGeneSetSize=180,

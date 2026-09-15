@@ -153,7 +153,15 @@ HTSanalyzeR2Pipe <- function(data4enrich,
                      keepMultipleMappings = keepMultipleMappings,
                      duplicateRemoverMethod = duplicateRemoverMethod,
                      orderAbsValue = orderAbsValue)
-  doParallel::registerDoParallel(cores=cores)
+  ## BiocParallel is the single parallel backend used by this package.
+  ## Fork-based parallelism is used where the platform provides it; Windows
+  ## falls back to a socket cluster so 'cores' keeps its meaning there too.
+  bp <- if (.Platform$OS.type == "windows") {
+    BiocParallel::SnowParam(workers = cores, type = "SOCK")
+  } else {
+    BiocParallel::MulticoreParam(workers = cores)
+  }
+  BiocParallel::register(bp)
   ##do analysis
   gsca <- analyze(gsca, para=list(pValueCutoff = pValueCutoff, pAdjustMethod = pAdjustMethod,
                                   nPermutations = nPermutations, minGeneSetSize = minGeneSetSize,

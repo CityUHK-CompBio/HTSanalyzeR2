@@ -31,8 +31,6 @@ Encoding: UTF-8
 Imports:
     GO.db,
     Rcpp,
-    foreach,
-    stringr,
     igraph,
     BioNet,
     DT,
@@ -50,8 +48,7 @@ Imports:
     utils,
     BiocParallel,
     fgsea,
-    msigdbr,
-    doParallel
+    msigdbr
 Collate: 
     'utils.R'
     'class_union.R'

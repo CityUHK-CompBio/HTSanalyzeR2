@@ -86,7 +86,6 @@ MSigDBGeneSets <- function(species = "Hs", collection = "C2", subcategory = NULL
 #' }
 #' @export
 #' @importFrom KEGGREST keggLink keggConv
-#' @importFrom stringr str_replace
 KeggGeneSets <- function(species = "Hs") {
   paraCheck("LoadGeneSets", "species", species)
   species <- switch(
@@ -134,8 +133,8 @@ KeggGeneSets <- function(species = "Hs") {
   pw.sets <- conv[links]
   names(pw.sets) <- NULL
 
-  pw.names <- stringr::str_replace(pw.names, "path:", "")
-  pw.sets <- stringr::str_replace(pw.sets, "ncbi-geneid:", "")
+  pw.names <- sub("^path:", "", pw.names)
+  pw.sets <- sub("^ncbi-geneid:", "", pw.sets)
   pw.kegg <- tapply(pw.sets, pw.names, c)
   pw.kegg <- as.list(pw.kegg)
 

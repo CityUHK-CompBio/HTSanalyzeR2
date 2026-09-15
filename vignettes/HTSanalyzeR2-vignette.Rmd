@@ -220,13 +220,11 @@ gsca2 <- analyze(gsca1,
 
 In this case study, we only use 100 permutations and set a relative large *minGeneSetSize* just for a fast compilation of this vignette. In real applications, you may want a much smaller threshold (e.g. 10) and more permutation times (e.g. 1000) to get a more meaningful GSEA result.
 
-During the enrichment analysis of gene sets, the function evaluates the statistical significance of the gene set scores by performing a large number of permutations. To analyze it more efficiently, our package allows parallel calculation based on the *doParallel* package. To do this, the user simply needs to register and claim to use multiple cores **before** running *analyze*.
+During the enrichment analysis of gene sets, the function evaluates the statistical significance of the gene set scores by performing a large number of permutations. To analyze it more efficiently, our package allows parallel calculation based on the Bioconductor *BiocParallel* backend. To do this, the user simply needs to register a parallel backend **before** running *analyze*.
 
 ```{r, results='hide', message=FALSE, eval=FALSE}
 ## analyze using a bounded number of workers; R CMD check imposes a process limit
-if (requireNamespace("doParallel", quietly=TRUE)) {
-    doParallel::registerDoParallel(cores=2)
-}
+BiocParallel::register(BiocParallel::SnowParam(workers = 2))
 
 gsca2 <- analyze(gsca1,
                  para=list(pValueCutoff=0.05, pAdjustMethod="BH",
@@ -501,14 +499,11 @@ gscaTS1 <- preprocessGscaTS(gscaTS, species="Hs", initialIDs="SYMBOL",
 
 ### Perform analysis
 
-After getting a list of preprocessed 'GSCA' object, you can use *analyzeGscaTS* to perform GSOA as well as GSEA on it. The parameters' function here is the same as in single data set. Similarly, to speed up you can use multiple cores via *doParallel* package. This step would return a list of analyzed 'GSCA' object.
+After getting a list of preprocessed 'GSCA' object, you can use *analyzeGscaTS* to perform GSOA as well as GSEA on it. The parameters' function here is the same as in single data set. Similarly, to speed up you can use multiple cores via the *BiocParallel* package. This step would return a list of analyzed 'GSCA' object.
 
 ```{r, results='hide', message=FALSE, eval=FALSE}
 ## analyze using a bounded number of workers; R CMD check imposes a process limit
-if (requireNamespace("doParallel", quietly=TRUE)) {
-    doParallel::registerDoParallel(cores=2)
-} else {
-}
+BiocParallel::register(BiocParallel::SnowParam(workers = 2))
 
 gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05,
                                             pAdjustMethod="BH",
