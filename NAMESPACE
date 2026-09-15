@@ -60,7 +60,6 @@ importFrom(KEGGREST,
   keggLink,
   keggList
 )
-importFrom(RankProd,RP)
 importFrom(Rcpp,sourceCpp)
 importFrom(data.table,fread)
 importFrom(fgsea,fgsea)

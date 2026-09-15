@@ -8,8 +8,7 @@ interactomeNwaTS(
   nwaList,
   interactionMatrix = NULL,
   species,
-  link =
-    "http://thebiogrid.org/downloads/archives/Release\%20Archive/BIOGRID-3.4.138/BIOGRID-ORGANISM-3.4.138.tab2.zip",
+  link = defaultBioGridLink(),
   reportDir = "HTSanalyzerReport",
   genetic = FALSE,
   force = FALSE,

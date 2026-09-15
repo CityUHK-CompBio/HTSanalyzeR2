@@ -43,7 +43,6 @@ Imports:
     data.table,
     htmlwidgets,
     methods,
-    RankProd,
     AnnotationDbi,
     graphics,
     grDevices,
@@ -84,6 +83,7 @@ Collate:
     'zzz.R'
 LinkingTo: Rcpp
 Suggests:
+    RankProd,
     cellHTS2,
     BiocStyle,
     rmarkdown,

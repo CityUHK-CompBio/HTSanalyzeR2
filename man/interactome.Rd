@@ -9,8 +9,7 @@
   object,
   interactionMatrix = NULL,
   species,
-  link =
-    "https://downloads.thebiogrid.org/Download/BioGRID/Release-Archive/BIOGRID-3.4.162/BIOGRID-ORGANISM-3.4.162.tab2.zip",
+  link = defaultBioGridLink(),
   reportDir = "HTSanalyzerReport",
   genetic = FALSE,
   force = FALSE,
@@ -31,7 +30,8 @@ The current version supports one of the following species: "Dm" ("Drosophila_mel
  "Ce" ("Caenorhabditis_elegans").}
 
 \item{link}{The link (url) where the data should be downloaded (in
-tab2 format). The default link is version 3.4.138 of BioGRID.}
+tab2 format). By default the current BioGRID "Latest-Release" archive is
+used; pass an explicit release url to pin a specific version.}
 
 \item{reportDir}{A single character value specifying the directory
 to store reports. The BioGRID data set will be downloaded and stored

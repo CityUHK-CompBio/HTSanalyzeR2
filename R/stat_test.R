@@ -43,7 +43,6 @@
 #' RNAi screens. Genome Biology 7:7 R66 (2006)."
 #' @export
 #' @importFrom stats median t.test wilcox.test
-#' @importFrom RankProd RP
 #' @examples
 #' data(xn)
 #' test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn, annotationColumn="GeneID",
@@ -75,6 +74,16 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
 
   paraCheck("StatTest", "nwStatsAlternative", alternative)
   paraCheck("StatTest", "nwStatsTests", tests)
+
+  ## RankProd carries a non-FOSS licence, so it is an optional dependency.
+  if ("RankProduct" %in% tests && !requireNamespace("RankProd", quietly = TRUE)) {
+    stop(
+      "The 'RankProduct' test requires the optional 'RankProd' package.\n",
+      "Please install it with BiocManager::install(\"RankProd\"), or run ",
+      "cellHTS2OutputStatTests() without 'RankProduct' in 'tests'.\n",
+      call. = FALSE
+    )
+  }
 
 
   ##make a named data matrix (only samples) rows=features,

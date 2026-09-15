@@ -13,6 +13,14 @@ namesToList <- function(x) {
   res
 }
 
+## Single source of truth for the BioGRID download used when the caller does
+## not provide an explicit 'link'. The "Latest-Release" endpoint always points
+## at the current BioGRID release, so the package no longer pins a stale
+## version (3.4.138/3.4.162 were 2016/2021 releases).
+defaultBioGridLink <- function() {
+  "https://downloads.thebiogrid.org/Download/BioGRID/Latest-Release/BIOGRID-ORGANISM-LATEST.tab2.zip"
+}
+
 ## This is the central function for argument checking
 #' @importFrom methods is
 paraCheck <- function(group, paraName, para) {
