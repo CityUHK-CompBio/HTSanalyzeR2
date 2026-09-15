@@ -324,28 +324,24 @@ setMethod("extractEnrichMap", signature = "GSCA",
               return(g)
             }
 
-            gsInUni <- list()
-            tempList <- list()
-
             uniIDs <- names(object@geneList)
-            sapply(seq_along(topGS), function(i) {
-              if (length(topGS[[i]]) > 0) {
-                gscName <- names(topGS)[i]
-                ## compute overlapped genes between gene sets and universe
-                gsInUni[[i]] <<- list()
-                gsInUni[[i]] <<- sapply(topGS[[i]], function(j)
-                  intersect(object@listOfGeneSetCollections[[gscName]][[j]],
-                            uniIDs), simplify = FALSE)
-
-                names(gsInUni)[i] <<- gscName
-                tempList[[i]] <<-
-                  data.frame(gsID = topGS[[i]],
-                             gscID = gscName,
-                             object@result[[resultName]][[gscName]][topGS[[i]], , drop =
-                                                                      FALSE])
-                names(tempList)[i] <<- gscName
-              }
+            extracted <- lapply(seq_along(topGS), function(i) {
+              if (length(topGS[[i]]) == 0) return(NULL)
+              gscName <- names(topGS)[i]
+              ## compute overlapped genes between gene sets and universe
+              genes <- sapply(topGS[[i]], function(j)
+                intersect(object@listOfGeneSetCollections[[gscName]][[j]],
+                          uniIDs), simplify = FALSE)
+              table <- data.frame(gsID = topGS[[i]],
+                                  gscID = gscName,
+                                  object@result[[resultName]][[gscName]][topGS[[i]], , drop = FALSE])
+              list(name = gscName, genes = genes, table = table)
             })
+            extracted <- extracted[!vapply(extracted, is.null, logical(1))]
+            gsInUni <- stats::setNames(lapply(extracted, `[[`, "genes"),
+                                       vapply(extracted, `[[`, "", "name"))
+            tempList <- stats::setNames(lapply(extracted, `[[`, "table"),
+                                        vapply(extracted, `[[`, "", "name"))
 
             ## collapse to a data frame
             tempdf <-

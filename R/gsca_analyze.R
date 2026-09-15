@@ -387,32 +387,27 @@ analyzeGeneSetCollections <-
         }
       })
 
-      overlap <- list()
-      overlap.adj <- list()
       ## identify gene set collections with significant pvalues and/or
       # adjusted pvalues from both GSEA and hypergeometric testing
-      sapply(1:numGeneSetCollections, function(i) {
+      combined.significant <- lapply(seq_len(numGeneSetCollections), function(i) {
         a1 <- intersect(rownames(sign.gsea[[i]]),
                         rownames(sign.hgt[[i]]))
         a2 <- intersect(rownames(sign.gsea.adj[[i]]),
                         rownames(sign.hgt.adj[[i]]))
-        Hypergeometric.Pvalue <-
-          HGTresults[[i]][a1, "Pvalue", drop = FALSE]
-        Hypergeometric.Adj.Pvalue <-
-          HGTresults[[i]][a2, "Adjusted.Pvalue", drop = FALSE]
-        GSEA.Pvalue <-
+        pval <- cbind(
+          HGTresults[[i]][a1, "Pvalue", drop = FALSE],
           GSEA.results.list[[i]][a1, "Pvalue", drop = FALSE]
-        GSEA.Adj.Pvalue <-
+        )
+        colnames(pval) <- c("HyperGeo.Pvalue", "GSEA.Pvalue")
+        adj <- cbind(
+          HGTresults[[i]][a2, "Adjusted.Pvalue", drop = FALSE],
           GSEA.results.list[[i]][a2, "Adjusted.Pvalue", drop = FALSE]
-
-        overlap[[i]] <<- cbind(Hypergeometric.Pvalue, GSEA.Pvalue)
-        colnames(overlap[[i]]) <<-
-          c("HyperGeo.Pvalue", "GSEA.Pvalue")
-        overlap.adj[[i]] <<-
-          cbind(Hypergeometric.Adj.Pvalue, GSEA.Adj.Pvalue)
-        colnames(overlap.adj[[i]]) <<-
-          c("HyperGeo.Adj.Pvalue", "GSEA.Adj.Pvalue")
+        )
+        colnames(adj) <- c("HyperGeo.Adj.Pvalue", "GSEA.Adj.Pvalue")
+        list(pval = pval, adj = adj)
       })
+      overlap <- lapply(combined.significant, `[[`, "pval")
+      overlap.adj <- lapply(combined.significant, `[[`, "adj")
       names(overlap) <- names(listOfGeneSetCollections)
       names(overlap.adj) <- names(listOfGeneSetCollections)
     } else {
@@ -483,17 +478,13 @@ calcHyperGeo <- function (listOfGeneSetCollections,
   res$Adjusted.Pvalue <-
     p.adjust(res$Pvalue, method = pAdjustMethod)
 
-  results <- list()
   ## Extract results dataframe for each gene set collection and orders them
   # by adjusted p-value
-  sapply(seq_along(listOfGeneSetCollections), function(i) {
+  results <- lapply(seq_along(listOfGeneSetCollections), function(i) {
     extracted <-
       res[rownames(res) %in% names(listOfGeneSetCollections[[i]]), , drop = FALSE]
-    extracted <-
-      extracted[order(extracted[, "Adjusted.Pvalue"]), , drop = FALSE]
-    results[[i]] <<- extracted
+    extracted[order(extracted[, "Adjusted.Pvalue"]), , drop = FALSE]
   })
-
   names(results) <- names(listOfGeneSetCollections)
   return(results)
 }
@@ -620,17 +611,13 @@ calcGSEA <-
     })
     res[, "Leading.Edge"] <- LeadingEdge
 
-    results <- list()
     ## Extract results dataframe for each gene set collection and orders them
     # by adjusted p-value
-    sapply(seq_along(listOfGeneSetCollections), function(i) {
+    results <- lapply(seq_along(listOfGeneSetCollections), function(i) {
       GSEA.res.mat <-
         res[rownames(res) %in% names(listOfGeneSetCollections[[i]]), , drop = FALSE]
-      GSEA.res.mat <-
-        GSEA.res.mat[order(GSEA.res.mat[, "Adjusted.Pvalue"]), , drop = FALSE]
-      results[[i]] <<- GSEA.res.mat
+      GSEA.res.mat[order(GSEA.res.mat[, "Adjusted.Pvalue"]), , drop = FALSE]
     })
-
     names(results) <- names(listOfGeneSetCollections)
     return(results)
   }
@@ -738,15 +725,11 @@ GSEA_fgsea <- function(listOfGeneSetCollections,
 
   ## Extract results dataframe for each gene set collection and orders them
   # by adjusted p-value
-  results <- list()
-  sapply(seq_along(listOfGeneSetCollections), function(i) {
+  results <- lapply(seq_along(listOfGeneSetCollections), function(i) {
     GSEA.res.mat <-
       tmp_res[rownames(tmp_res) %in% names(listOfGeneSetCollections[[i]]), , drop = FALSE]
-    GSEA.res.mat <-
-      GSEA.res.mat[order(GSEA.res.mat[, "Adjusted.Pvalue"]), , drop = FALSE]
-    results[[i]] <<- GSEA.res.mat
+    GSEA.res.mat[order(GSEA.res.mat[, "Adjusted.Pvalue"]), , drop = FALSE]
   })
-
   names(results) <- names(listOfGeneSetCollections)
   return(results)
 }

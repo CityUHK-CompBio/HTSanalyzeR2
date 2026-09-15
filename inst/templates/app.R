@@ -317,11 +317,15 @@ server <- function(input, output, session) {
     renderNWASummary(input, output, obj) # nwaObjs[[input$process_net]]
   })
 
-  ## TODO: undefined behavior
-  observeEvent({42}, {
-    output$network_output <- HTSanalyzeR2:::renderForceGraph(create_network(nwa, nwaObjs))
-    renderNWASummary(input, output, nwa) # nwaObjs[[input$process_net]]
-  })
+  ## Render the network view once at start-up. 'onFlushed(once = TRUE)' is the
+  ## documented one-shot hook; the previous observer on a constant expression
+  ## relied on undocumented behaviour and also fired for GSCA-only reports.
+  if (!is.null(nwa)) {
+    session$onFlushed(function() {
+      output$network_output <- HTSanalyzeR2:::renderForceGraph(create_network(nwa, nwaObjs))
+      renderNWASummary(input, output, nwa)
+    }, once = TRUE)
+  }
 }
 
 ## ============================================ Run application ============================================
