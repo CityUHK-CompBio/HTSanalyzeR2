@@ -303,9 +303,9 @@ paraCheck <- function(group, paraName, para) {
                    || !(para %in% c("two.sided", "less", "greater")))
                stop("'alternative/nwStatsAlternative' should be one in 'two.sided','less' and 'greater'!\n ")
            }
-           if (paraName == "nwStatsTests") {
-             if (!is.character(para) || length(para) == 0 ||
-                 !(para %in% c("T-test","MannWhitney","RankProduct")))
+          if (paraName == "nwStatsTests") {
+            if (!is.character(para) || length(para) == 0 ||
+                !all(para %in% c("T-test","MannWhitney","RankProduct")))
                stop("'tests/nwStatsTests' should be one or more in 'T-test', 'MannWhitney' and 'RankProduct'!\n ")
            }
          },

@@ -98,36 +98,29 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
   ##formatting this as a list allows us to have different number of
   ##replicates for each construct
   replicatesNames <- unique(rownames(dataNw))
-  replicates <- as.list(rep(0, length(replicatesNames)))
-  names(replicates) <- replicatesNames
+  replicates <- unname(split(data.frame(dataNw, stringsAsFactors = FALSE),
+                             rownames(dataNw))[replicatesNames])
+  replicates <- lapply(replicates, unlist, use.names = FALSE)
   nreplicates <- length(replicates)
-  sapply(1:nreplicates, function(i) {
-    replicates[[i]] <<- c(dataNw[
-      which(rownames(dataNw) == names(replicates)[i]), ])
-  })
   if("T-test" %in% tests) {
     ##Compute the one sample t-test (only possible for those entries
     ##of the list that contain more than one replicate measurement
     ##otherwise the pvalue will be left at the default value of 1)
     t.test.pvalues.one.sample<-rep(1,nreplicates)
     names(t.test.pvalues.one.sample)<-names(replicates)
-    sapply(1:nreplicates, function(i) {
-      if(sum(!is.na(replicates[[i]])) >= 2)
-        t.test.pvalues.one.sample[i] <<-
-          t.test(x = replicates[[i]], mu = mu ,
-                 alternative = alternative)$p.value
-    })
+    valid <- vapply(replicates, function(x) sum(!is.na(x)) >= 2, logical(1))
+    t.test.pvalues.one.sample[valid] <- vapply(replicates[valid], function(x) {
+      t.test(x = x, mu = mu, alternative = alternative)$p.value
+    }, numeric(1))
     ##Compute the two samples t-test (only possible for those entries
     ##of the list that contain more than one replicate measurement
     ##otherwise the pvalue will be left at the default value of 1)
     t.test.pvalues.two.samples <- rep(1, nreplicates)
     names(t.test.pvalues.two.samples) <- names(replicates)
-    sapply(1:nreplicates, function(i) {
-      if(sum(!is.na(replicates[[i]])) >= 2)
-        t.test.pvalues.two.samples[i] <<-
-          t.test(x = replicates[[i]], y = controlData,
-                 alternative = alternative)$p.value
-    })
+    valid <- vapply(replicates, function(x) sum(!is.na(x)) >= 2, logical(1))
+    t.test.pvalues.two.samples[valid] <- vapply(replicates[valid], function(x) {
+      t.test(x = x, y = controlData, alternative = alternative)$p.value
+    }, numeric(1))
   }
   if("MannWhitney" %in% tests) {
     ##Compute the one sample mann-whitney test(only possible for
@@ -136,24 +129,20 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
     ##value of 1)
     mannW.test.pvalues.one.sample<-rep(1,nreplicates)
     names(mannW.test.pvalues.one.sample)<-names(replicates)
-    sapply(1:nreplicates, function(i) {
-      if(sum(!is.na(replicates[[i]])) >= 2)
-        mannW.test.pvalues.one.sample[i] <<-
-          wilcox.test(x = replicates[[i]], mu = mu,
-                      alternative = alternative)$p.value
-    })
+    valid <- vapply(replicates, function(x) sum(!is.na(x)) >= 2, logical(1))
+    mannW.test.pvalues.one.sample[valid] <- vapply(replicates[valid], function(x) {
+      wilcox.test(x = x, mu = mu, alternative = alternative)$p.value
+    }, numeric(1))
     ##Compute the two samples mann-whitney test(only possible for
     ##those entries of the list that contain more than one replicate
     ##measurement otherwise the pvalue will be left at the default
     ##value of 1)
     mannW.test.pvalues.two.samples<-rep(1,nreplicates)
     names(mannW.test.pvalues.two.samples)<-names(replicates)
-    sapply(1:nreplicates, function(i) {
-      if(sum(!is.na(replicates[[i]])) >= 2)
-        mannW.test.pvalues.two.samples[i] <<-
-          wilcox.test(x = replicates[[i]], y = controlData,
-                      alternative = alternative)$p.value
-    })
+    valid <- vapply(replicates, function(x) sum(!is.na(x)) >= 2, logical(1))
+    mannW.test.pvalues.two.samples[valid] <- vapply(replicates[valid], function(x) {
+      wilcox.test(x = x, y = controlData, alternative = alternative)$p.value
+    }, numeric(1))
   }
   if("RankProduct" %in% tests) {
     ##Prepare the data for the Rank Product test: the function 'RP'
@@ -166,18 +155,15 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
     ##Since our data might include varying number of replicates, a
     ##matrix of maximal dimensions (number of columns=max number of
     ##replicates) will be built with NAs when necessary
-    lengthreplicates <- sapply(replicates, length)
+    lengthreplicates <- vapply(replicates, length, integer(1))
     maxlength <- max(lengthreplicates)
-    replicatesmatrix <- c(replicates[[1]],
-                          rep(NA, (maxlength-length(replicates[[1]]))))
-    sapply(2:length(replicates), function(i) {
-      if(length(replicates[[i]]) < maxlength)
-        replicatesmatrix <<- rbind(replicatesmatrix,
-                                   c(replicates[[i]], rep(NA,(maxlength-length(replicates[[i]])))))
-      if(length(replicates[[i]]) == maxlength)
-        replicatesmatrix <<- rbind(replicatesmatrix, c(replicates[[i]]))
-      NULL
-    })
+    replicatesmatrix <- do.call(rbind, lapply(replicates, function(x) {
+      if (length(x) < maxlength) {
+        c(x, rep(NA_real_, maxlength - length(x)))
+      } else {
+        x
+      }
+    }))
     rownames(replicatesmatrix) <- names(replicates)
     #Compute the Rank Product test
     rankptest <- RankProd::RP(data = replicatesmatrix,
