@@ -185,6 +185,21 @@ prepareReport <- function(gsca = NULL, nwa = NULL, TSOrder = NULL,
                                       hits.col = "black",
                                       rankMetric.col = "CadetBlue"),
                           reportDir = "AnalysisReport") {
+  ## The generated application needs these packages at run time. Checking here
+  ## turns a missing report dependency into an actionable message instead of a
+  ## failure inside the launched Shiny session.
+  reportPackages <- c("shiny", "bslib", "DT", "colourpicker", "visNetwork")
+  missingPackages <- reportPackages[!vapply(
+    reportPackages, requireNamespace, logical(1), quietly = TRUE)]
+  if (length(missingPackages) > 0) {
+    stop(
+      "The interactive report requires the following packages: ",
+      paste(missingPackages, collapse = ", "), ".\n",
+      "Please install them with BiocManager::install() or install.packages().\n",
+      call. = FALSE
+    )
+  }
+
   if(!is.null(gsca) && !inherits(gsca, "GSCA")) {
     if(!is.list(gsca) || any(!vapply(gsca, inherits, logical(1), what = "GSCA"))) {
       stop("the parameter gsca should be a GSCA object or a list of GSCA objects\n")

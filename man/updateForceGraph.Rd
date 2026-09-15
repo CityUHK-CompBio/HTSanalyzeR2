@@ -4,18 +4,16 @@
 \alias{updateForceGraph}
 \title{Update a rendered network in place}
 \usage{
-updateForceGraph(outputId, nodes, nMappings, options)
+updateForceGraph(outputId, widget, options = list(), tick = NULL)
 }
 \arguments{
 \item{outputId}{the Shiny output id of the rendered widget}
 
-\item{nodes}{the node data frame used for the initial render}
+\item{widget}{the widget returned by \code{\link[HTSanalyzeR2]{forceGraph}}}
 
-\item{nMappings}{node mappings selecting the columns to display; for
-time-series data these point at the tick-specific columns, exactly as
-\code{\link[HTSanalyzeR2]{viewEnrichMap}} does for the first render}
+\item{options}{rendering options overriding the ones used for the render}
 
-\item{options}{rendering options}
+\item{tick}{time point to display; when NULL the current columns are kept}
 }
 \value{
 The proxy object returned by \code{\link[visNetwork]{visNetworkProxy}}.
