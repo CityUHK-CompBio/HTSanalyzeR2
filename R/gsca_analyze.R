@@ -541,7 +541,7 @@ calcHGTScore <- function(geneSet, universe, hits) {
 }
 
 
-#' @import foreach
+#' @import BiocParallel
 #' @importFrom  stats p.adjust
 calcGSEA <-
   function(listOfGeneSetCollections,
@@ -579,32 +579,29 @@ calcGSEA <-
     # combinedGeneSets <- combinedGeneSets[ind]
     # overlaps <- overlaps[ind]
 
-    ## get scores
-    n_sep <- 1000
-    gScores <-
-      foreach(idx = 1:(ceiling(length(combinedGeneSets)/n_sep)), .combine = c, .packages="HTSanalyzeR2") %dopar% {
-        sapply(combinedGeneSets[((idx-1)*n_sep + 1):min(idx*n_sep, length(combinedGeneSets))],
-               function(geneSet) calcGScoreCPP(listNames %in% geneSet, geneList, exponent))
-      }
+    ## get scores with the Bioconductor-native parallel entry point
+    gScores <- bplapply(combinedGeneSets, function(geneSet) {
+      calcGScoreCPP(listNames %in% geneSet, geneList, exponent)
+    })
+    gScores <- unlist(gScores, use.names = TRUE)
     groups <- split(gScores, overlaps)
     overlaps2 <- as.integer(names(groups))
 
-    res <-
-      foreach(idx = seq_along(overlaps2), .combine = cbind, .packages="HTSanalyzeR2") %dopar% {
-        overlap <- overlaps2[idx]
-        hits <-
-          rep(c(TRUE, FALSE), c(overlap, length(geneList) - overlap))
-        perm <- sapply(1:nPermutations, function(x) {
-          calcGScoreCPP(sample(hits), geneList, exponent)
-        })
+    res <- bplapply(overlaps2, function(overlap) {
+      hits <-
+        rep(c(TRUE, FALSE), c(overlap, length(geneList) - overlap))
+      perm <- sapply(1:nPermutations, function(x) {
+        calcGScoreCPP(sample(hits), geneList, exponent)
+      })
 
-        values <- sapply(groups[[idx]], function(gScore) {
-          p <- mean(gScore > perm)
-          pVal <- 2 * (ifelse(p > 0.5, 1 - p, p))
+      sapply(groups[[as.character(overlap)]], function(gScore) {
+        p <- mean(gScore > perm)
+        pVal <- 2 * (ifelse(p > 0.5, 1 - p, p))
 
-          c(gScore, pVal, NA)
-        })
-      }
+        c(gScore, pVal, NA)
+      })
+    })
+    res <- do.call(cbind, res)
 
     res <- t(res)
     colnames(res) <-

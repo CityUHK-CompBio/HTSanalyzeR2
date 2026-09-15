@@ -322,14 +322,8 @@ biogridDataDownload <- function(link, species = "Hs", dataDirectory = ".",
   ## pre-process network: duplication removing(same interactions from different experiment)
   ## and single node edge
   interactions <- unique(interactions)
-  dupRow <- unlist(sapply(1:nrow(interactions), function(x) {
-    if(interactions[x, 1] == interactions[x, 2]){
-      x
-    }
-  }))
-  interactions <- interactions[-dupRow, ]
+  interactions <- interactions[interactions[, 1] != interactions[, 2], ]
   #--------------------------------------------
   interactions
 }
-
 

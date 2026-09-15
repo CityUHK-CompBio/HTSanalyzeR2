@@ -128,41 +128,40 @@ setMethod(
         "Sig.pvals.in.both",
         "Sig.adj.pvals.in.both"
       )) {
-        sapply(names(result[[rs]]),
-         function(gsc) {
-           if (gsc %in% names(object@listOfGeneSetCollections)) {
-             if ("Gene.Set.Term" %in% colnames(result[[rs]][[gsc]])) {
-               warning(paste(
-                 "--Gene Set terms already exsit in gene set collection ", gsc,
-                 " of ", names(result)[rs],
-                 ", and will be overwritten by new gene set terms!\n", sep = ""))
+        for (gsc in names(result[[rs]])) {
+          if (gsc %in% names(object@listOfGeneSetCollections)) {
+            if ("Gene.Set.Term" %in% colnames(result[[rs]][[gsc]])) {
+              warning(paste(
+                "--Gene Set terms already exsit in gene set collection ", gsc,
+                " of ", names(result)[rs],
+                ", and will be overwritten by new gene set terms!\n", sep = ""))
 
-               result[[rs]][[gsc]] <-
-                 result[[rs]][[gsc]][, setdiff(colnames(result[[rs]][[gsc]]),
-                                               "Gene.Set.Term"), drop = FALSE]
-             }
+              result[[rs]][[gsc]] <-
+                result[[rs]][[gsc]][, setdiff(colnames(result[[rs]][[gsc]]),
+                                              "Gene.Set.Term"), drop = FALSE]
+            }
 
-             if (nrow(result[[rs]][[gsc]]) >= 1) {
-               if (gsc %in% keggGSCs)
-                 result[[rs]][[gsc]] <<- appendKEGGTerm(result[[rs]][[gsc]])
-               else if (gsc %in% goGSCs)
-                 result[[rs]][[gsc]] <<- appendGOTerm(result[[rs]][[gsc]])
-               else if (gsc %in% msigdbGSCs)
-                 result[[rs]][[gsc]] <<- appendMSigDBTerm(result[[rs]][[gsc]])
-               else
-                 result[[rs]][[gsc]] <<- data.frame(Gene.Set.Term = "--",
-                                                    result[[rs]][[gsc]],
-                                                    stringsAsFactors = FALSE)
-               if(names(result)[rs] %in% c(
-                 "HyperGeo.results",
-                 "GSEA.results")){
-                 result[[rs]][[gsc]][, ncol(result[[rs]][[gsc]])] <<-
-                   geneListAnno(geneList = result[[rs]][[gsc]][, ncol(result[[rs]][[gsc]])],
-                                species = species)
-               }
-             }
-           } #if
-         }) # sapply function
+            if (nrow(result[[rs]][[gsc]]) >= 1) {
+              if (gsc %in% keggGSCs)
+                result[[rs]][[gsc]] <- appendKEGGTerm(result[[rs]][[gsc]])
+              else if (gsc %in% goGSCs)
+                result[[rs]][[gsc]] <- appendGOTerm(result[[rs]][[gsc]])
+              else if (gsc %in% msigdbGSCs)
+                result[[rs]][[gsc]] <- appendMSigDBTerm(result[[rs]][[gsc]])
+              else
+                result[[rs]][[gsc]] <- data.frame(Gene.Set.Term = "--",
+                                                   result[[rs]][[gsc]],
+                                                   stringsAsFactors = FALSE)
+              if(names(result)[rs] %in% c(
+                "HyperGeo.results",
+                "GSEA.results")){
+                result[[rs]][[gsc]][, ncol(result[[rs]][[gsc]])] <-
+                  geneListAnno(geneList = result[[rs]][[gsc]][, ncol(result[[rs]][[gsc]])],
+                               species = species)
+              }
+            }
+          } #if
+        } # for
       } # if
     } # for
 
