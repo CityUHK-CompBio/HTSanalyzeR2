@@ -81,6 +81,7 @@ Collate:
 LinkingTo: Rcpp
 Suggests:
     RankProd,
+    webshot2,
     cellHTS2,
     BiocStyle,
     rmarkdown,

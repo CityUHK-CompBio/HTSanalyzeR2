@@ -107,8 +107,29 @@ seeded, which is covered by the test suite.
 
 - **Result tables** live in the `result` slot and are reached through
   `getResult()`, `getSummary()` and `getTopGeneSets()`.
-- **Static figures**: `viewGSEA()` and `plotGSEA()` write PDF or PNG files,
-  `viewEnrichMap()` and `viewSubNet()` return interactive HTML widgets.
+- **GSEA figures**: `viewGSEA()` draws to the current device, and `plotGSEA()`
+  writes PDF or PNG files for the top gene sets in one call.
+- **Enrichment maps and subnetworks**: `viewEnrichMap()` and `viewSubNet()`
+  return interactive widgets, which `saveNetwork()` writes to disk from a
+  script:
+
+  ```r
+  map <- viewEnrichMap(gsca, gscs = "PW_KEGG", gsNameType = "term")
+
+  saveNetwork(map, "enrichment-map.html")                            # interactive
+  saveNetwork(map, "enrichment-map.png", width = 1200, height = 900) # publication
+  ```
+
+  PNG output needs the optional [`webshot2`](https://rstudio.github.io/webshot2/)
+  package; the HTML output has no extra requirement.
+- **Result tables as files**: every table in the report can be exported to
+  CSV/TSV/PDF from its toolbar, or written directly:
+
+  ```r
+  d <- getResult(gsca)$GSEA.results$PW_KEGG
+  write.table(data.frame(Gene.Set = rownames(d), d),
+              "top_genesets.tsv", sep = "\t", row.names = FALSE, quote = FALSE)
+  ```
 - **Reports**: `report()` (single objects) and `reportAll()` (single or
   time-series objects) write a self-contained Shiny application to a directory
   and launch it. Every graph offers pan/zoom, hover details and PNG export.
@@ -125,8 +146,13 @@ seeded, which is covered by the test suite.
 **Suggests** — optional paths and tooling:
 
 `cellHTS2` (legacy `cellHTS2OutputStatTests()`), `RankProd` (the optional
-`tests = "RankProduct"` branch), `BiocStyle`, `rmarkdown`, `knitr`, `testthat`,
-`org.Hs.eg.db`, `Bibase`, `limma`, `TxDb.Hsapiens.UCSC.hg19.knownGene`.
+`tests = "RankProduct"` branch), `webshot2` (PNG export through
+`saveNetwork()`), `BiocStyle`, `rmarkdown`, `knitr`, `testthat`, `org.Hs.eg.db`,
+  `Biobase`, `limma`, `TxDb.Hsapiens.UCSC.hg19.knownGene`.
+
+`cellHTS2` has been removed from Bioconductor, so `cellHTS2OutputStatTests()`
+is only available if you install that package from an archive; it is never
+needed to install or use the rest of HTSanalyzeR2.
 
 ## Implementation notes
 

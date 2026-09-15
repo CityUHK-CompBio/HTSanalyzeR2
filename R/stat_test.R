@@ -54,6 +54,22 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
                                     logged = FALSE,
                                     tests = "T-test") {
 
+  ## 'cellHTS2' was removed from Bioconductor, so this legacy path is only
+  ## available when the package is installed from an archive or a local
+  ## source. Fail with an actionable message instead of an obscure
+  ## "there is no package called 'cellHTS2'" error.
+  if (!requireNamespace("cellHTS2", quietly = TRUE)) {
+    stop(
+      "cellHTS2OutputStatTests() needs the optional 'cellHTS2' package, which ",
+      "is no longer part of Bioconductor.\n",
+      "Install it from a source archive (for example with ",
+      "remotes::install_version(\"cellHTS2\")) or use ",
+      "BiocManager::valid() to check what your Bioconductor release provides.\n",
+      "Everything else in HTSanalyzeR2 works without it.\n",
+      call. = FALSE
+    )
+  }
+
   ## check arguments
   paraCheck("StatTest", "normCellHTSobject", cellHTSobject)
   paraCheck("StatTest", "annotationColumn", annotationColumn)

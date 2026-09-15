@@ -19,6 +19,7 @@ export(interactomeNwaTS)
 export(preprocessGscaTS)
 export(preprocessNwaTS)
 export(reportAll)
+export(saveNetwork)
 exportMethods(analyze)
 exportMethods(appendGSTerms)
 exportMethods(extractEnrichMap)
@@ -112,6 +113,7 @@ importFrom(visNetwork,
   visNodes,
   visOptions,
   visPhysics,
+  visSave,
   visUpdateNodes
 )
 useDynLib(HTSanalyzeR2)

@@ -427,5 +427,77 @@ updateForceGraph <- function(outputId, widget, options = list(), tick = NULL) {
   )
 }
 
+#' Save an interactive network graph to HTML or PNG
+#'
+#' Writes a widget produced by \code{\link[HTSanalyzeR2]{forceGraph}} — including
+#' the enrichment maps and subnetworks returned by
+#' \code{\link[HTSanalyzeR2]{viewEnrichMap}} and
+#' \code{\link[HTSanalyzeR2]{viewSubNet}} — to a file. This is the programmatic
+#' counterpart of the "Export as png" button in the interactive report, so the
+#' figures can be produced from a script without opening a browser by hand.
+#'
+#' The format is chosen from the file extension. HTML output is self-contained
+#' and keeps the graph interactive. PNG output is rendered headlessly through
+#' \pkg{webshot2} and therefore also needs that package plus a Chrome-based
+#' browser; interactive controls are omitted from the PNG so the result is
+#' suitable for a manuscript or slide.
+#'
+#' @param widget an object returned by \code{\link[HTSanalyzeR2]{forceGraph}},
+#' typically the value of \code{viewEnrichMap()} or \code{viewSubNet()}.
+#' @param file output file name; must end in \code{.html} or \code{.png}.
+#' @param width,height output size in pixels.
+#' @param delay seconds to wait before the screenshot, giving the force layout
+#' time to settle. Defaults to 2 seconds.
+#' @param ... further arguments passed to \code{\link[webshot2]{webshot}}.
+#' @return The output path, invisibly.
+#' @seealso \code{\link[HTSanalyzeR2]{forceGraph}}
+#' @examples
+#' \dontrun{
+#' data(d7_gsca)
+#' map <- viewEnrichMap(d7_gsca, gscs = "GO_MF", gsNameType = "term")
+#' saveNetwork(map, "enrichment-map.html")
+#' saveNetwork(map, "enrichment-map.png", width = 1200, height = 900)
+#' }
+#' @importFrom visNetwork visSave
+#' @export
+saveNetwork <- function(widget, file, width = 1000, height = 750,
+                        delay = 2, ...) {
+  if (!inherits(widget, "htmlwidget")) {
+    stop("'widget' must be an htmlwidget, such as the value returned by ",
+         "forceGraph(), viewEnrichMap() or viewSubNet().\n", call. = FALSE)
+  }
+
+  if (grepl("\\.html?$", file, ignore.case = TRUE)) {
+    visNetwork::visSave(widget, file = file, selfcontained = TRUE)
+    return(invisible(file))
+  }
+
+  if (!grepl("\\.png$", file, ignore.case = TRUE)) {
+    stop("'file' must end in '.html' or '.png'.\n", call. = FALSE)
+  }
+  if (!requireNamespace("webshot2", quietly = TRUE)) {
+    stop(
+      "Saving a PNG needs the optional 'webshot2' package.\n",
+      "Please install it with install.packages(\"webshot2\"), or save the ",
+      "graph as interactive HTML with saveNetwork(widget, \"graph.html\").\n",
+      call. = FALSE
+    )
+  }
+
+  ## Strip the interactive controls so the bitmap matches a static figure.
+  widget$x$options$interaction$navigationButtons <- FALSE
+  widget$x$export <- NULL
+
+  html <- tempfile(fileext = ".html")
+  on.exit(unlink(html), add = TRUE)
+  visNetwork::visSave(widget, file = html, selfcontained = TRUE)
+  webshot2::webshot(
+    url = html, file = file,
+    vwidth = width, vheight = height,
+    selector = ".visNetwork", delay = delay, ...
+  )
+  invisible(file)
+}
+
 ## Convenience operator used by the widget code.
 `%||%` <- function(x, y) if (is.null(x)) y else x

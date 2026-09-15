@@ -7,6 +7,10 @@
 
 ## Interactive graphs
 
+* New `saveNetwork()` writes an enrichment map or subnetwork to a
+  self-contained interactive HTML file or, with the optional `webshot2`
+  package, to a publication-ready PNG from a script — no manual clicking in
+  the report (issue #4).
 * `viewEnrichMap()` and `viewSubNet()` are rendered with **visNetwork**
   (vis.js) instead of the unmaintained Sigma/linkurious.js and jQuery bundle.
   Node sizes, the dual positive/negative colour scales, the legend, the node
@@ -27,6 +31,10 @@
 
 ## Dependencies
 
+* `cellHTS2OutputStatTests()` reports an actionable message when `cellHTS2` is
+  missing. `cellHTS2` has been removed from Bioconductor, so this legacy path
+  is optional and is never needed to install the package (issue #3).
+* New optional `webshot2` in `Suggests` for PNG export.
 * Removed `foreach`, `doParallel`, `stringr`, `htmlwidgets` and
   `shinydashboard`; added `visNetwork` and `bslib`.
 * `RankProd` moved from `Imports` to `Suggests`: the Rank Product test now
