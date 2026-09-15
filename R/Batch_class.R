@@ -288,7 +288,7 @@ NWABatch <- function(expInfor, pvalueTS , phenotypeTS = list(), interactome = NA
   if (length(phenotypeTS) > 0){
     paraCheck("NWABatch", "phenotypeTS", phenotypeTS)
   }
-  if (!is.na(interactome))
+  if (!all(is.na(interactome)))
     paraCheck("NWABatch", "interactome", interactome)
 
   ## initialize a new object

@@ -67,7 +67,12 @@ paraCheck <- function(group, paraName, para) {
                  stop("'phenotypes' should be a named numeric vector with length > 0!\n")
              }
            if(paraName == "interactome") {
-             if(!is.na(para) && (!is(para,"igraph") || igraph::vcount(para) == 0 || igraph::ecount(para) == 0))
+             hasGraph <- igraph::is_igraph(para)
+             if(any(is.na(para)) && !hasGraph && length(para) != 1)
+               stop("Input 'interactome/graph' should be an igraph object with node and edge No > 0!\n")
+             if(any(is.na(para)) && !hasGraph && length(para) == 1 && !para)
+               stop("Input 'interactome/graph' should be an igraph object with node and edge No > 0!\n")
+             if(hasGraph && (igraph::vcount(para) == 0 || igraph::ecount(para) == 0))
                stop("Input 'interactome/graph' should be an igraph object with node and edge No > 0!\n")
            }
          },
@@ -375,7 +380,12 @@ paraCheck <- function(group, paraName, para) {
            stop("'pvalueTS' should be a list, each element should be a numeric vector named with gene identifier!\n")
          }
          if(paraName == "interactome") {
-           if(!is.na(para) && (!is(para,"igraph") || igraph::vcount(para) == 0 || igraph::ecount(para) == 0))
+           hasGraph <- igraph::is_igraph(para)
+           if(any(is.na(para)) && !hasGraph && length(para) != 1)
+             stop("Input 'interactome/graph' should be a igraph object with node and edge No > 0!\n")
+           if(any(is.na(para)) && !hasGraph && length(para) == 1 && !para)
+             stop("Input 'interactome/graph' should be a igraph object with node and edge No > 0!\n")
+           if(hasGraph && (igraph::vcount(para) == 0 || igraph::ecount(para) == 0))
              stop("Input 'interactome/graph' should be a igraph object with node and edge No > 0!\n")
          }
          if(paraName == "phenotypeTS" &&
@@ -429,4 +439,3 @@ checkGSCAPara <- function(para) {
   }
 
 }
-

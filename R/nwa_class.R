@@ -133,7 +133,7 @@ NWA <- function(pvalues, phenotypes = as.numeric(), interactome = NA) {
   if (length(phenotypes) > 0){
     paraCheck("NWAClass", "phenotypes", phenotypes)
   }
-  if (!is.na(interactome))
+  if (!all(is.na(interactome)))
     paraCheck("NWAClass", "interactome", interactome)
 
   ## initialize a new object
