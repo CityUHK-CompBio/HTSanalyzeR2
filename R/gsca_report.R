@@ -163,6 +163,28 @@ reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL,
                                   hits.col = "black",
                                   rankMetric.col = "CadetBlue"),
                       reportDir = "AnalysisReport") {
+  reportDir <- prepareReport(
+    gsca = gsca, nwa = nwa, TSOrder = TSOrder,
+    specificGeneset = specificGeneset, cutoff = cutoff,
+    gseaPlot = gseaPlot, para = para, reportDir = reportDir
+  )
+  shiny::runApp(reportDir)
+}
+
+## Assemble a report directory (templates, serialized results and optional GSEA
+## plots) without launching the Shiny application. Keeping preparation separate
+## from 'shiny::runApp()' makes the report layer testable in a headless session
+## and reusable by other front ends.
+prepareReport <- function(gsca = NULL, nwa = NULL, TSOrder = NULL,
+                          specificGeneset = NULL, cutoff = NULL,
+                          gseaPlot = FALSE,
+                          para = list(output="pdf",
+                                      ES.range = NULL,
+                                      rankMetric.range = NULL,
+                                      ESline.col = "FireBrick",
+                                      hits.col = "black",
+                                      rankMetric.col = "CadetBlue"),
+                          reportDir = "AnalysisReport") {
   if(!is.null(gsca) && !inherits(gsca, "GSCA")) {
     if(!is.list(gsca) || any(!vapply(gsca, inherits, logical(1), what = "GSCA"))) {
       stop("the parameter gsca should be a GSCA object or a list of GSCA objects\n")
@@ -231,7 +253,7 @@ reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL,
   }  ## end else if
   }  ## end gseaPlot
 
-  shiny::runApp(reportDir)
+  reportDir
 }
 
 
