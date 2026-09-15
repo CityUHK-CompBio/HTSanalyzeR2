@@ -50,14 +50,15 @@ The stable classes are `GSCA`, `NWA`, `GSCABatch`, and `NWABatch`. The GSCA resu
 
 ## Known issues deferred from this milestone
 
-- The check now reads `3 WARNINGs, 3 NOTEs` and no ERROR. Two warnings are the expected
+- A final focused check readback after the baseline documentation and small class-check cleanup
+  still reports `3 WARNINGs, 3 NOTEs` and no ERROR. Two warnings are the expected
   Bioconductor/CRAN packaging observations for this 0.99.x source layout: non-mainstream
   dependencies and missing prebuilt `inst/doc`. A third warning records non-portable
   BioGRID filenames when the legacy generated report directory is included; its long-term
   fix is to stop packaging generated report inputs (later report-layer phase).
-- The check NOTEs are class-vs-string comparisons in legacy report code, two long Rd usage
-  lines, and an environment-local `00_pkg_src` check-directory artifact; none block installation
-  or tests.
+- The check NOTEs are now two long Rd usage lines and an environment-local `00_pkg_src`
+  check-directory artifact; the class-vs-string comparisons have been replaced by `inherits()`
+  checks. None block installation or tests.
 - `BiocParallel` is imported for documentation but the runtime still uses `foreach`; whether to replace or keep it is a later algorithm/parallelism decision.
 - `cellHTS2` remains an optional runtime path in `Suggests`; its missing-package error and alternative path need later validation.
 - `inst/templates/app.R` is a 328-line single-file Shiny application with module globals and mixed preparation, UI, and server logic.

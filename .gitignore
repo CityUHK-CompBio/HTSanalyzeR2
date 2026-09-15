@@ -8,6 +8,7 @@ inst/doc
 _config.yml
 HTSanalyzeR2.Rcheck/
 ..Rcheck/
+*.Rcheck/
 *.tar.gz
 src/*.o
 src/*.so
