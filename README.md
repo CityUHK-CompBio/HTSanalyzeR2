@@ -26,7 +26,7 @@ devtools::install_github("CityUHK-CompBio/HTSanalyzeR2", dependencies=TRUE)
 
 ## Dependency
 
-**HTSanalyzeR2** requires the following R/Bioconductor packages for its full function:    
+**HTSanalyzeR2** requires the following R/Bioconductor packages for its core function:
 
 - GO.db 
 - Rcpp 

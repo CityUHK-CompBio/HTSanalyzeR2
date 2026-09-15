@@ -318,7 +318,7 @@ paraCheck <- function(group, paraName, para) {
              stop("'species' should be a character!\n")
          },
          gscaTS = {
-           if(paraName == "object" && class(para) != "GSCABatch"){
+           if(paraName == "object" && !inherits(para, "GSCABatch")){
              stop("'object' should be an object of class GSCABatch!\n")
            }
            if(paraName == "gscaList" && (!is.list(para) || length(para) < 2 || is.null(names(para)) || any(is.na(names(para)))))
@@ -326,7 +326,7 @@ paraCheck <- function(group, paraName, para) {
 
          },
          nwaTS = {
-           if(paraName == "object" && class(para) != "NWABatch"){
+           if(paraName == "object" && !inherits(para, "NWABatch")){
              stop("'object' should be an object of class NWABatch!\n")
            }
            if(paraName == "nwaList" &&

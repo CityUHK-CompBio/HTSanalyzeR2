@@ -163,8 +163,8 @@ reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL,
                                   hits.col = "black",
                                   rankMetric.col = "CadetBlue"),
                       reportDir = "AnalysisReport") {
-  if(!is.null(gsca) && class(gsca) != "GSCA") {
-    if(class(gsca) != "list" || any(sapply(gsca, class) != "GSCA")) {
+  if(!is.null(gsca) && !inherits(gsca, "GSCA")) {
+    if(!is.list(gsca) || any(!vapply(gsca, inherits, logical(1), what = "GSCA"))) {
       stop("the parameter gsca should be a GSCA object or a list of GSCA objects\n")
     }
     if(!is.null(TSOrder)){
@@ -178,8 +178,8 @@ reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL,
     }
   }
 
-  if(!is.null(nwa) && class(nwa) != "NWA") {
-    if(class(nwa) != "list" || any(sapply(nwa, class) != "NWA")) {
+  if(!is.null(nwa) && !inherits(nwa, "NWA")) {
+    if(!is.list(nwa) || any(!vapply(nwa, inherits, logical(1), what = "NWA"))) {
       stop("the parameter nwa should be a NWA object or a list of NWA objects\n")
     }
     if(!is.null(TSOrder)){
@@ -208,14 +208,14 @@ reportAll <- function(gsca = NULL, nwa = NULL, TSOrder = NULL,
   ## generate GSEA plots in folder gsea_plots for all significant gene sets
   ## undo: take gscaTS into consideration...
   if(gseaPlot){
-  if(!is.null(gsca) && class(gsca) == "GSCA" && !is.null(gsca@result$GSEA.results)){
+  if(!is.null(gsca) && inherits(gsca, "GSCA") && !is.null(gsca@result$GSEA.results)){
     plotGSEA(gsca, gscs = names(gsca@result$GSEA.results),
              allSig = TRUE, filepath = reportDir,
              output = para$output, ES.range = para$ES.range,
              rankMetric.range = para$rankMetric.range,
              ESline.col = para$ESline.col, hits.col = para$hits.col,
              rankMetric.col = para$rankMetric.col)
-  } else if(!is.null(gsca) && class(gsca) == "list" && all(sapply(gsca, class) == "GSCA")){ ## for gscaTS
+  } else if(!is.null(gsca) && is.list(gsca) && all(vapply(gsca, inherits, logical(1), what = "GSCA"))){ ## for gscaTS
     gscaName <- names(gsca)
     lapply(1:length(gsca), function(i){
       dir.create(file.path(".", reportDir, gscaName[i]))
@@ -338,4 +338,3 @@ availableResults <- function(results, byRow = TRUE) {
   }
   res
 }
-
