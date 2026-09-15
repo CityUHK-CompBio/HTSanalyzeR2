@@ -76,7 +76,7 @@ setMethod("viewSubNet", signature = "NWA",
             g <- extractSubNet(object)
 
             em_nodes <- igraph::as_data_frame(g, "vertices")
-            em_links <- igraph::as_data_frame(g, "edge")
+            em_links <- igraph::as_data_frame(g, "edges")
             nMappings <- list(id = "name", color = "diff", label = "label", label_id = "name", label_term = "label", scheme = "colorScheme")
             lMappings <- list(source = "from", target = "to")
 

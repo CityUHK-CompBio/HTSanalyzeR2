@@ -559,7 +559,7 @@ setMethod("viewEnrichMap", signature = "GSCA",
             g <- extractEnrichMap(object, resultName, gscs, ntop, allSig, gsNameType, specificGeneset, cutoff)
 
             em_nodes <- as_data_frame(g, "vertices")
-            em_links <- as_data_frame(g, "edge")
+            em_links <- as_data_frame(g, "edges")
 
             nMappings <- list(id = "name", size = "geneSetSize", color = "adjPvalue", scheme = "colorScheme",
                               label = "label", label_id = "label_id", label_term = "label_term")

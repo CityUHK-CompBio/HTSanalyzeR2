@@ -37,9 +37,7 @@ exportMethods(viewEnrichMap)
 exportMethods(viewGSEA)
 exportMethods(viewSubNet)
 import(BiocParallel)
-import(DT)
 import(GO.db)
-import(colourpicker)
 import(graphics)
 importFrom(AnnotationDbi,
   GOID,
@@ -69,11 +67,6 @@ importFrom(grDevices,
   pdf,
   png
 )
-importFrom(htmlwidgets,
-  createWidget,
-  shinyRenderWidget,
-  shinyWidgetOutput
-)
 importFrom(igraph,
   "E<-",
   "V<-",
@@ -91,7 +84,6 @@ importFrom(igraph,
 importFrom(methods,is)
 importFrom(msigdbr,msigdbr)
 importFrom(shiny,tagList)
-importFrom(shinydashboard,dashboardPage)
 importFrom(stats,
   median,
   p.adjust,
@@ -104,5 +96,19 @@ importFrom(utils,
   installed.packages,
   modifyList,
   unzip
+)
+importFrom(visNetwork,
+  renderVisNetwork,
+  visEdges,
+  visExport,
+  visInteraction,
+  visLegend,
+  visNetwork,
+  visNetworkOutput,
+  visNetworkProxy,
+  visNodes,
+  visOptions,
+  visPhysics,
+  visUpdateNodes
 )
 useDynLib(HTSanalyzeR2)

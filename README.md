@@ -1,158 +1,167 @@
+# HTSanalyzeR2
 
-# HTSanalyzeR2  
+[![R-CMD-check](https://github.com/CityUHK-CompBio/HTSanalyzeR2/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/CityUHK-CompBio/HTSanalyzeR2/actions/workflows/R-CMD-check.yaml)
 
-Welcome to the homepage of **HTSanalyzeR2** package!
+Gene set over-representation, gene set enrichment, network analysis and
+time-series analysis for high-throughput screens — CRISPR, RNA-seq, microarray
+and RNAi — behind one consistent S4 workflow, with an interactive report for
+exploring and exporting the results.
 
-This package provides gene set over-representation, enrichment and network analyses for various preprocessed high-throughput data as well as corresponding time-series data including CRISPR, RNA-seq, micro-array and RNAi. It could also generate a dynamic shiny report encompassing all the results and visualizations, facilitating the users maximally for downloading, modifying the visualization parts with personal preference and sharing with others by publishing the report to [Shinyapps.io](http://shiny.rstudio.com/articles/shinyapps.html).
+## Requirements
 
-## Quick Installation
+| | |
+| --- | --- |
+| R | ≥ 3.5 declared; validated on R 4.6 |
+| Bioconductor | 3.23 (validated) |
+| Platforms | macOS (Apple silicon and Intel), Linux, Windows |
 
-**This package is available under R(>= 3.5).** The current runtime evidence was obtained on R 4.6.0 with Bioconductor 3.23; support platforms follow the Bioconductor package contract rather than a guarantee for every historical R version.
+The package follows the Bioconductor release contract for dependency versions.
 
-If you are a current bioconductor user and have `devtools` package installed, you only need to call `install_github` function in `devtools` to install `HTSanalyzeR2`. If you encountered errors, please refer to the section *Potential Dependency Issues*.  
+## Installation
 
-```
-# Installation requires bioconductor and devtools, please use the following commands if you've not
+```r
+if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
 
-if (!requireNamespace("BiocManager"))
-    install.packages("BiocManager")
-BiocManager::install()
-install.packages("devtools")
+## annotation and pathway resources the analysis functions call directly
+BiocManager::install(c("GO.db", "KEGGREST", "AnnotationDbi"))
 
-# Before installing HTSanalyzeR2, you need also to install the dependent package `GO.db`
-BiocManager::install("GO.db")
-devtools::install_github("CityUHK-CompBio/HTSanalyzeR2", dependencies=TRUE)
-```
-
-## Dependency
-
-**HTSanalyzeR2** requires the following R/Bioconductor packages for its core function:
-
-- GO.db
-- Rcpp 
-- igraph 
-- BioNet 
-- DT 
-- shiny 
-- shinydashboard 
-- colourpicker 
-- KEGGREST 
-- data.table 
-- htmlwidgets 
-- methods 
-- AnnotationDbi 
-- graphics 
-- grDevices 
-- stats 
-- utils 
-- BiocParallel
-- fgsea
-- msigdbr
-
-**HTSanalyzeR2** optionally supports the Rank Product test through the
-`RankProd` package, which carries a non-FOSS licence and is therefore not a
-hard dependency.
-
-**HTSanalyzeR2** also suggests the following R/Bioconductor packages for improved user experience:  
-
-- BiocStyle  
-- rmarkdown  
-- testthat  
-- knitr  
-- org.Hs.eg.db  
-- Biobase  
-
-
-#### Potential Dependency Issues
-
-If you are using ubuntu, common dependency issues should be solved using the following one line command:  
-```
-sudo apt-get install -y libssl-dev libcurl4-openssl-dev libxml2-dev libgmp-dev libmpfr-dev
+## HTSanalyzeR2 itself
+BiocManager::install("CityUHK-CompBio/HTSanalyzeR2")
 ```
 
-Details about this:  
+`remotes::install_github("CityUHK-CompBio/HTSanalyzeR2")` works the same way if
+you prefer `remotes`.
 
-1. `devtools` need package `git2r`, which requires openssl library. Please install `libssl-dev` on Ubuntu or corresponding package on other OS.
+## Quick start
 
-2. `devtools` need package `httr`, which requires curl library. Please install `libcurl4-openssl-dev` on Ubuntu or corresponding package on other OS.
-
-3. `igraph` requires xml library. Please install `libxml2-dev` on Ubuntu or corresponding package on other OS.
-
-4. The optional Rank Product test (`tests = "RankProduct"`) needs the `RankProd` package, which needs `Rmpfr`, which in turn requires the gmp and mpfr libraries. Please install `libgmp-dev` and `libmpfr-dev` on Ubuntu or the corresponding package on other OS.
-
-
-
-## Quick Start
-
-Here is a simple but useful case study to use **HTSanalyzeR2** to perform gene set enrichment analysis and further visualize all the results in an interactive html report.
-
-The only required input for **HTSanalyzeR2** is a list of interested genes with weight under a specific phenotype. For example, in the following case study, we take the output from *limma* by comparing CMS4 with non-CMS4 colon cancer samples. Details please refer to our [vignette](https://github.com/CityUHK-CompBio/HTSanalyzeR2/blob/master/vignettes/HTSanalyzeR2-vignette.pdf).
-
-Before starting the demonstration, you need to load the following packages:
-```
+```r
 library(HTSanalyzeR2)
 library(org.Hs.eg.db)
 library(KEGGREST)
-library(igraph)
-```
-Start analysis:
-```
-## prepare input for analysis
+
 data(GSE33113_limma)
-phenotype <- as.vector(GSE33113_limma$logFC)
+phenotype <- GSE33113_limma$logFC
 names(phenotype) <- rownames(GSE33113_limma)
 
-## specify the gene sets type you want to analyze
-PW_KEGG <- KeggGeneSets(species="Hs")
-ListGSC <- list(PW_KEGG=PW_KEGG)
+## 1. gene set collections
+PW_KEGG <- KeggGeneSets(species = "Hs")
+gsca <- GSCA(listOfGeneSetCollections = list(PW_KEGG = PW_KEGG),
+             geneList = phenotype)
 
-## iniate a *GSCA* object
-gsca <- GSCA(listOfGeneSetCollections=ListGSC, 
-            geneList=phenotype)
-            
-## preprocess
-gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL",
-                    keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
-                    orderAbsValue=FALSE)
+## 2. map identifiers and remove duplicates
+gsca <- preprocess(gsca, species = "Hs", initialIDs = "SYMBOL",
+                   keepMultipleMappings = TRUE, duplicateRemoverMethod = "max",
+                   orderAbsValue = FALSE)
 
-## analysis
-## support parallel calculation using multiple cores
-BiocParallel::register(BiocParallel::SnowParam(workers = 4))
-gsca2 <- analyze(gsca1, 
-                 para=list(pValueCutoff=0.05, pAdjustMethod="BH",
-                           nPermutations=100, minGeneSetSize=180,
-                           exponent=1), 
-                           doGSOA = FALSE)
+## 3. hypergeometric test and GSEA
+gsca <- analyze(gsca,
+                para = list(pValueCutoff = 0.05, pAdjustMethod = "BH",
+                            nPermutations = 1000, minGeneSetSize = 10,
+                            exponent = 1),
+                doGSOA = TRUE, doGSEA = TRUE)
+gsca <- appendGSTerms(gsca, keggGSCs = "PW_KEGG")
 
-## append gene sets terms
-gsca3 <- appendGSTerms(gsca2, 
-                       keggGSCs=c("PW_KEGG"))
+## 4. inspect
+topGS <- getTopGeneSets(gsca, resultName = "GSEA.results", gscs = "PW_KEGG")
+viewGSEA(gsca, gscName = "PW_KEGG", gsName = topGS[["PW_KEGG"]][1])
+viewEnrichMap(gsca, gscs = "PW_KEGG", gsNameType = "term")
 
-## draw GSEA plot for a specific gene set
-topGS <- getTopGeneSets(gsca3, resultName="GSEA.results",
-                        gscs=c("PW_KEGG"), allSig=TRUE)
-viewGSEA(gsca3, gscName="PW_KEGG", gsName=topGS[["PW_KEGG"]][2])
-```
-![GSEA plot](vignettes/figures/readme.example1.png)
-
+## 5. interactive report
+report(gsca)
 ```
 
+### Network analysis
 
-## view enrichment Map
-viewEnrichMap(gsca3, gscs=c("PW_KEGG"),
-              allSig = TRUE, gsNameType = "term")
-```
-![Enrichment map for all significant KEGG pathways](vignettes/figures/readme.example2.png)
+```r
+pvalues <- GSE33113_limma$adj.P.Val
+names(pvalues) <- rownames(GSE33113_limma)
 
+nwa <- NWA(pvalues = pvalues, phenotypes = phenotype)
+nwa <- preprocess(nwa, species = "Hs", initialIDs = "SYMBOL")
+nwa <- interactome(nwa, species = "Hs", genetic = FALSE)  # downloads BioGRID
+nwa <- analyze(nwa, fdr = 0.001, species = "Hs")
+viewSubNet(nwa)
 ```
-## visualize all results in an interactive report
-report(gsca3)
+
+### Time series
+
+`GSCABatch` and `NWABatch` apply the same workflow across several time points;
+`preprocessGscaTS()`, `analyzeGscaTS()`, `preprocessNwaTS()`, `interactomeNwaTS()`
+and `analyzeNwaTS()` operate on the batch objects, and `reportAll()` produces a
+report with a time slider.
+
+## Parallel execution
+
+Permutation-based GSEA runs through [BiocParallel](https://bioconductor.org/packages/BiocParallel).
+Register a backend once and every analysis call uses it:
+
+```r
+BiocParallel::register(BiocParallel::MulticoreParam(workers = 4))  # macOS / Linux
+BiocParallel::register(BiocParallel::SnowParam(workers = 4))       # Windows
 ```
+
+Serial and parallel backends return identical results when the backend is
+seeded, which is covered by the test suite.
+
+## Output and export
+
+- **Result tables** live in the `result` slot and are reached through
+  `getResult()`, `getSummary()` and `getTopGeneSets()`.
+- **Static figures**: `viewGSEA()` and `plotGSEA()` write PDF or PNG files,
+  `viewEnrichMap()` and `viewSubNet()` return interactive HTML widgets.
+- **Reports**: `report()` (single objects) and `reportAll()` (single or
+  time-series objects) write a self-contained Shiny application to a directory
+  and launch it. Every graph offers pan/zoom, hover details and PNG export.
+
+## Dependency layers
+
+**Imports** — required for normal use:
+
+`GO.db`, `Rcpp`, `igraph`, `BioNet`, `DT`, `shiny`, `bslib`, `colourpicker`,
+`visNetwork`, `KEGGREST`, `data.table`, `AnnotationDbi`, `BiocParallel`,
+`fgsea`, `msigdbr`, plus base `methods`, `graphics`, `grDevices`, `stats` and
+`utils`.
+
+**Suggests** — optional paths and tooling:
+
+`cellHTS2` (legacy `cellHTS2OutputStatTests()`), `RankProd` (the optional
+`tests = "RankProduct"` branch), `BiocStyle`, `rmarkdown`, `knitr`, `testthat`,
+`org.Hs.eg.db`, `Bibase`, `limma`, `TxDb.Hsapiens.UCSC.hg19.knownGene`.
+
+## Implementation notes
+
+- Interactive graphs are rendered with **visNetwork** (vis.js). Older releases
+  bundled a hand-maintained copy of Sigma/linkurious.js and jQuery; that bundle
+  is gone, so the package no longer ships a GPLv3 JavaScript payload.
+- The report UI is built with **bslib** (Bootstrap 5) and standard Shiny inputs,
+  with one namespaced settings panel per graph.
+- Rank Product is the only non-FOSS dependency, and it is optional: it is
+  required only when you ask for `tests = "RankProduct"`.
+- BioGRID downloads track the current `Latest-Release` archive instead of a
+  pinned release from 2016.
+
+## Troubleshooting
+
+On Linux, some dependencies need system libraries:
+
+```bash
+sudo apt-get install -y libssl-dev libcurl4-openssl-dev libxml2-dev libgmp-dev libmpfr-dev
+```
+
+- `libssl-dev` for `git2r`/`openssl`, `libcurl4-openssl-dev` for `curl`.
+- `libxml2-dev` for `igraph`.
+- `libgmp-dev` and `libmpfr-dev` only if you install the optional `RankProd`
+  (which depends on `Rmpfr`).
+
+Vignettes additionally need a LaTeX installation and `BiocStyle`; install them
+with `BiocManager::install("BiocStyle")` plus TinyTeX
+(`tinytex::install_tinytex()`).
 
 ## Getting help
 
-Should you have any questions about this package, you can either email to the developers listed in the *DESCRIPTION* part of this package or create an issue in the [issue part](https://github.com/CityUHK-CompBio/HTSanalyzeR2/issues).
+Open an [issue](https://github.com/CityUHK-CompBio/HTSanalyzeR2/issues) for bugs
+and feature requests, or contact the maintainer listed in `DESCRIPTION`.
 
-## Interaction with the maintainer
+## Licence
 
-You're always welcomed to [email](https://github.com/CityUHK-CompBio/HTSanalyzeR2/blob/master/DESCRIPTION) to the maintainer of **HTSanalyzeR2** if you need more reasonable and general requests of this package. 
+Apache License 2.0 — see [LICENSE.md](LICENSE.md).

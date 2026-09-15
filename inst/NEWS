@@ -1,2 +1,42 @@
-# HTSanalyzeR2 0.99.18
+# HTSanalyzeR2 0.99.19
 
+## Licence
+
+* The package is now distributed under the Apache License 2.0. The
+  previously bundled Sigma/linkurious.js copy was GPLv3 and has been removed.
+
+## Interactive graphs
+
+* `viewEnrichMap()` and `viewSubNet()` are rendered with **visNetwork**
+  (vis.js) instead of the unmaintained Sigma/linkurious.js and jQuery bundle.
+  Node sizes, the dual positive/negative colour scales, the legend, the node
+  labels and the time-series updates behave as before; hover details and PNG
+  export are new.
+* Widgets can be saved as standalone interactive HTML with
+  `htmlwidgets::saveWidget()`.
+
+## Report
+
+* The Shiny report is built with **bslib** (Bootstrap 5). The settings panel is
+  now standard Shiny inputs with one namespaced panel per graph, replacing the
+  hand-written HTML/ionRangeSlider sidebar.
+* `reportAll()` stores its results through the new `prepareReport()` helper,
+  which assembles a report directory without launching the application.
+* The one-shot network render no longer relies on an observer driven by a
+  constant expression.
+
+## Dependencies
+
+* Removed `foreach`, `doParallel`, `stringr`, `htmlwidgets` and
+  `shinydashboard`; added `visNetwork` and `bslib`.
+* `RankProd` moved from `Imports` to `Suggests`: the Rank Product test now
+  reports a clear message when the optional package is missing.
+* Parallel execution now uses `BiocParallel` throughout, including the
+  `HTSanalyzeR2Pipe()` entry point.
+* `MSigDBGeneSets()` uses the current `msigdbr(collection=, subcollection=)`
+  interface, and BioGRID downloads follow the current `Latest-Release` archive.
+* Fixed `igraph` 2.x breakage: `as_data_frame(x, "edge")` is now
+  `as_data_frame(x, "edges")`, which had made `viewEnrichMap()` and
+  `viewSubNet()` fail outright.
+
+# HTSanalyzeR2 0.99.18
