@@ -5,6 +5,7 @@
 ^\.gitignore$
 ^MODERNIZATION_BASELINE\.md$
 ^HTSanalyzeR2\.Rcheck$
+^vignettes/HTSanalyzerReport$
 ^\.\.Rcheck$
 ^HTSanalyzeR2_.*\.tar\.gz$
 ^00_pkg_src$
