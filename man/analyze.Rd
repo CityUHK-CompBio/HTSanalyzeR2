@@ -122,6 +122,7 @@ slot summary of class NWA.
 
 }}
 \examples{
+\dontrun{
 # ====================================================
 # Gene Set Collection Analysis Part
 library(org.Hs.eg.db)
@@ -191,6 +192,7 @@ nwa2 <- interactome(nwa1, species="Hs", reportDir="HTSanalyzerReport", genetic=F
 nwa3 <- analyze(nwa2, fdr=0.0001, species="Hs")
 ## summarize nwa3
 summarize(nwa3)
+}
 }
 }
 \references{

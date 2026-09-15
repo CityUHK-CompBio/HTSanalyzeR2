@@ -15,7 +15,9 @@ output:
         BiocStyle::pdf_document:
           fig_width: 10
           fig_height: 10
-          
+          latex_engine: pdflatex
+          includes:
+            in_header: header.tex
         
 abstract: This package provides gene set analysis, enriched subnetwork analyses and 'Time-series' functional analysis for various preprocessed high-throughput data generated either by CRISPR screening, RNA-seq, micro-array or RNAi in a unified workflow. More importantly, it could generate an interactive Shiny report encompassing all the results and visualizations, facilitating the users maximally for downloading, modifying the visualization parts with personal preference and sharing with others by publishing the report to [Shinyapps.io](http://shiny.rstudio.com/articles/shinyapps.html).
 
@@ -67,7 +69,7 @@ Diverse high-throughput technologies such as microarray, RNA-seq, RNAi and CRISP
     - Biological process (BP)
     - Cellular component (CC)
 + Kyoto Encyclopedia of Genes and Genomes pathways: [KEGG](http://www.genome.jp/kegg/)
-+ Molecular Signatures Database: [MSigDB v6.2](http://software.broadinstitute.org/gsea/msigdb/index.jsp)
++ Molecular Signatures Database: [MSigDB v6.2](https://software.broadinstitute.org/gsea/msigdb/index.jsp)
     - H: hallmark gene sets
     - C1: positional gene sets
     - C2: curated gene sets
@@ -167,7 +169,7 @@ hits <- rownames(GSE33113_limma[abs(GSE33113_limma$logFC) > 1 &
 
 Then we must define the gene set collections. A gene set collection is a list of gene sets, each of  which consists of a group of genes with the same known function. **HTSanalyzeR2** provides facilities which greatly simplify the creation of up-to-date gene set collections including three Gene Ontology terms: Molecular Function (MF), Biological Process (BP), Cellular Component (CC) and KEGG pathways. Gene sets in a comprehensive molecular signatures database, [MSigDB](http://software.broadinstitute.org/gsea/msigdb)(@Arthur2011), for 10 species are also provided. Here, to simplify the demonstration, we will only use one GO, KEGG and one MSigDB gene set collection. To work properly, you need to choose the right species for your input genes. Besides, these gene set collections must be provided as a named list as below:
 
-```{r}
+```{r, eval=FALSE}
 ## generate gene set collection
 GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
 PW_KEGG <- KeggGeneSets(species="Hs")
@@ -183,14 +185,14 @@ An S4 class named 'GSCA' is developed to perform GSOA in order to find the gene 
 
 To initialize a new 'GSCA' object, the previous prepared phenotype and a named list of gene sets collections are needed. In addition, as said before, if you also want to do GSOA, 'hits' is needed.
 
-```{r}
+```{r, eval=FALSE}
 gsca <- GSCA(listOfGeneSetCollections=ListGSC,
              geneList=phenotype, hits=hits)
 ```
 
 Then a preprocess step including invalid input data removing, duplication removing by different methods, initial gene identifiers converting to Entrez ID and phenotype ordering needs to be performed to fit for the next analysis. See the help documentation of funciton *preprocess* for more details.
 
-```{r, results='hide', message=FALSE}
+```{r, results='hide', message=FALSE, eval=FALSE}
 gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL",
                     keepMultipleMappings=TRUE, duplicateRemoverMethod="max",
                     orderAbsValue=FALSE)
@@ -218,10 +220,10 @@ In this case study, we only use 100 permutations and set a relative large *minGe
 
 During the enrichment analysis of gene sets, the function evaluates the statistical significance of the gene set scores by performing a large number of permutations. To analyze it more efficiently, our package allows parallel calculation based on the *doParallel* package. To do this, the user simply needs to register and claim to use multiple cores **before** running *analyze*.
 
-```{r, results='hide', message=FALSE}
-## analyze using 4 cores
+```{r, results='hide', message=FALSE, eval=FALSE}
+## analyze using a bounded number of workers; R CMD check imposes a process limit
 if (requireNamespace("doParallel", quietly=TRUE)) {
-    doParallel::registerDoParallel(cores=4)
+    doParallel::registerDoParallel(cores=2)
 }
 
 gsca2 <- analyze(gsca1,
@@ -233,7 +235,7 @@ gsca2 <- analyze(gsca1,
 
 After analyzing, all the results are stored in slot *result* and can be easily accessed using a function named *getResult*. If GSOA and GSEA are both performed, gene sets which are both significant in this two analysis based on either pvalue or adjusted pvalue can be accessed.
 
-```{r}
+```{r, eval=FALSE}
 ## 1. GSOA result of MF gene sets from GO
 head(getResult(gsca2)$HyperGeo.results$GO_MF, 3)
 
@@ -251,7 +253,7 @@ head(getResult(gsca2)$Sig.adj.pvals.in.both$MSig_C2, 3)
 
 In addition, to make the results more understandable, users are highly recommended to annotate the gene sets ID to names by function *appendGSTerms*. As a result, an additional column named 'Gene.Set.Term' would appear.
 
-```{r, message=FALSE}
+```{r, message=FALSE, eval=FALSE}
 gsca3 <- appendGSTerms(gsca2, goGSCs=c("GO_MF"),
                        keggGSCs=c("PW_KEGG"),
                        msigdbGSCs = c("MSig_C2"))
@@ -263,7 +265,7 @@ head(getResult(gsca3)$GSEA.results$PW_KEGG, 3)
 
 A *summarize* method could be performed to get a general summary for an analyzed 'GSCA' object including the gene set collections, genelist, hits, parameters for analysis and the summary of result.
 
-```{r}
+```{r, eval=FALSE}
 summarize(gsca3)
 ```
 
@@ -272,7 +274,7 @@ summarize(gsca3)
 To better view the GSEA result for a single gene set, you can use *viewGSEA* to plot the positions of the genes of the gene set in the ranked phenotypes and the location of the enrichment score. To this end, you must first get the gene set ID by *getTopGeneSets*, which can return all or the top significant gene sets from GSEA results.  Basically, the user needs to specify the type of results – "HyperGeo.results" or "GSEA.results", the name(s) of the gene set collection(s) as well as the type of selection– all (by parameter 'allSig') or top (by parameter 'ntop') significant gene sets.
 
 
-```{r}
+```{r, eval=FALSE}
 topGS <- getTopGeneSets(gsca3, resultName="GSEA.results",
                         gscs=c("GO_MF", "PW_KEGG"), allSig=TRUE)
 topGS
@@ -451,7 +453,7 @@ To perform gene sets analysis for time-course data, one must prepare the followi
 
 To make it easy to compile this vignette, here we only use KEGG pathways to make a demonstration.
 
-```{r}
+```{r, eval=FALSE}
 data(d7, d13, d25)
 expInfor <- matrix(c("d7", "d13", "d25"), nrow = 3, ncol = 2, byrow = FALSE,
                    dimnames = list(NULL, c("ID", "Description")))
@@ -469,7 +471,7 @@ ListGSC <- list(PW_KEGG=PW_KEGG)
 
 Similar as single dataset analysis, if you also want to do GSOA, a list of hits is needed. Here, each element of this list is a hits of that experiment. Also, **the order of each element of this list must match the order of 'ID' in the experiment information matrix**. Here, for each data set, we define genes with *pvalue* less than 0.01 as hits.
 
-```{r}
+```{r, eval=FALSE}
 hitsTS <- lapply(datalist, function(x){
   tmp <- x[x$neg.p.value < 0.01, "id"]
   tmp
@@ -480,7 +482,7 @@ hitsTS <- lapply(datalist, function(x){
 
 To perform GSEA and GSOA for time-course data, an S4 class 'GSCABatch' which can pack the time-course data to do further analysis is developed. First, you need to create a new 'GSCABatch' object using the prepared inputs.
 
-```{r}
+```{r, eval=FALSE}
 gscaTS <- GSCABatch(expInfor = expInfor,
               phenotypeTS = phenotypeTS, listOfGeneSetCollections = ListGSC,
               hitsTS = hitsTS)
@@ -488,7 +490,7 @@ gscaTS <- GSCABatch(expInfor = expInfor,
 
 Then, the 'GSCABatch' object need to be preprocessed using *preprocessGscaTS* method. The preprocess procedure here is the same as single data set. This step would return a list of preprocessed 'GSCA' object.
 
-```{r, results='hide', message=FALSE}
+```{r, results='hide', message=FALSE, eval=FALSE}
 gscaTS1 <- preprocessGscaTS(gscaTS, species="Hs", initialIDs="SYMBOL",
                             keepMultipleMappings=TRUE,
                             duplicateRemoverMethod="max",
@@ -499,10 +501,10 @@ gscaTS1 <- preprocessGscaTS(gscaTS, species="Hs", initialIDs="SYMBOL",
 
 After getting a list of preprocessed 'GSCA' object, you can use *analyzeGscaTS* to perform GSOA as well as GSEA on it. The parameters' function here is the same as in single data set. Similarly, to speed up you can use multiple cores via *doParallel* package. This step would return a list of analyzed 'GSCA' object.
 
-```{r, results='hide', message=FALSE}
-## analyze using 4 cores
+```{r, results='hide', message=FALSE, eval=FALSE}
+## analyze using a bounded number of workers; R CMD check imposes a process limit
 if (requireNamespace("doParallel", quietly=TRUE)) {
-    doParallel::registerDoParallel(cores=4)
+    doParallel::registerDoParallel(cores=2)
 } else {
 }
 
@@ -514,7 +516,7 @@ gscaTS2 <- analyzeGscaTS(gscaTS1, para=list(pValueCutoff=0.05,
                          doGSOA = TRUE, doGSEA = TRUE)
 ```
 
-```{r, message=FALSE}
+```{r, message=FALSE, eval=FALSE}
 ## GSEA result of the first experiment
 head(getResult(gscaTS2[[1]])$GSEA.results$PW_KEGG, 3)
 ```
@@ -523,7 +525,7 @@ To make the result more understandable, users are highly recommended to annotate
 
 'gscaTS3' will return a list of analyzed 'GSOA' objects, you can easily get the results of each 'GSOA' object as in single data set analysis.
 
-```{r, message=FALSE}
+```{r, message=FALSE, eval=FALSE}
 gscaTS3 <- appendGSTermsTS(gscaTS2, keggGSCs=c("PW_KEGG"))
 head(getResult(gscaTS3[[1]])$GSEA.results$PW_KEGG, 3)
 
@@ -538,7 +540,7 @@ You can then use *reportAll* to generate an interactive Shiny report to visualiz
 ### Prepare input, initialize and preprocess
 An S4 class named 'NWABatch' is developed to pack time-course data for further subnetwork analysis. You need first to create a new object of class 'NWABatch'. To this end, a list of pvalues is needed. Each element of this list is a vector of pvalues of that experiment. **Again, an important thing needs to be noted is the order of each element of this list must match the order of 'ID' in the experiment information matrix**. If a list of phenotypes is also available, they can be inputted during the initialization stage and used to highlight nodes with different colors in the identified subnetwork. Also, the order of each element of this phenotypes list must match the order of 'ID' in the experiment information matrix.
 
-```{r}
+```{r, eval=FALSE}
 pvalueTS <- lapply(datalist, function(x){
   tmp <- as.vector(x$neg.p.value)
   names(tmp) <- x$id

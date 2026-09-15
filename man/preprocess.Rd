@@ -89,6 +89,7 @@ See the function annotationConvertor for more details about how to convert
 annotations.
 }
 \examples{
+\dontrun{
 # ===========================================================
 # GSCA class
 library(org.Hs.eg.db)
@@ -136,6 +137,7 @@ nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes)
 ## do preprocessing
 nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
                    duplicateRemoverMethod="max")
+}
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{duplicateRemover}}, \code{\link[HTSanalyzeR2]{annotationConvertor}}

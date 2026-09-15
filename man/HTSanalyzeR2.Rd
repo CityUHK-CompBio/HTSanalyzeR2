@@ -58,3 +58,15 @@ Subramanian, A., Tamayo, P., Mootha, V. K., Mukherjee, S., Ebert,
   networks: an integrated exact approach.} Bioinformatics 2008
   24(13):i223-i231.
 }
+\author{
+\strong{Maintainer}: Lina ZHU \email{zhulina0609@gmail.com}
+
+Authors:
+\itemize{
+  \item Lina ZHU \email{zhulina0609@gmail.com}
+  \item Feng GAO \email{gaofeng21cn@gmail.com}
+  \item Xiupei MEI \email{meixiupei@gmail.com}
+  \item Xin WANG \email{xinwang2hms@gmail.com}
+}
+
+}

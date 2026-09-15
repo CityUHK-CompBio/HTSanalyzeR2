@@ -10,7 +10,7 @@
 #' 'C2'(curated gene sets), 'C3'(motif gene sets), 'C4'(computational gene sets),
 #' 'C5'(GO gene sets), 'C6'(oncogenic signatures), 'C7'(immunologic signatures).
 #' More details please refer to
-#' \href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB}.
+#' \href{https://software.broadinstitute.org/gsea/msigdb}{MSigDB}.
 #' @param species A single character value specifying the species of the gene sets of MSigDB.
 #' Now we support 10 species: 'Bt'(Bos taurus), 'Ce'(Caenorhabditis elegans),
 #' 'Cfa'(Canis lupus familiaris), 'Dm'(Drosophila melanogaster), 'Dr'(Danio rerio),
@@ -20,7 +20,7 @@
 #' the selected MSigDB collection. See \code{\link[msigdbr]{msigdbr}} for details.
 #'
 #' @return Return a list of gene sets of specific collection in
-#' \href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB} of version 6.2.
+#' \href{https://software.broadinstitute.org/gsea/msigdb}{MSigDB} of version 6.2.
 #' @seealso \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{KeggGeneSets}}
 #' @examples
 #' C2_MSig <- MSigDBGeneSets(species = "Hs", collection = "C2", subcategory = NULL)
@@ -46,9 +46,20 @@ MSigDBGeneSets <- function(species = "Hs", collection = "C2", subcategory = NULL
     "Ss" = "Sus scrofa",
     species
   )
-  m_df = msigdbr::msigdbr(species = species, category = collection, subcategory = subcategory)
-  m_df$entrez_gene <- as.character(m_df$entrez_gene)
-  m_list = split(x = m_df$entrez_gene, f = m_df$gs_name)
+  m_df = msigdbr::msigdbr(
+    species = species,
+    collection = collection,
+    subcollection = subcategory
+  )
+  if ("entrez_gene" %in% colnames(m_df)) {
+    m_df$entrez_gene <- as.character(m_df$entrez_gene)
+    m_list = split(x = m_df$entrez_gene, f = m_df$gs_name)
+  } else if ("ncbi_gene" %in% colnames(m_df)) {
+    m_df$ncbi_gene <- as.character(m_df$ncbi_gene)
+    m_list = split(x = m_df$ncbi_gene, f = m_df$gs_name)
+  } else {
+    stop("The msigdbr output does not contain 'entrez_gene' or 'ncbi_gene'!\n")
+  }
   m_list
 }
 

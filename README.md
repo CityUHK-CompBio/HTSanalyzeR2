@@ -7,7 +7,7 @@ This package provides gene set over-representation, enrichment and network analy
 
 ## Quick Installation
 
-**This package is available under R(>= 3.5).**
+**This package is available under R(>= 3.5).** The current runtime evidence was obtained on R 4.6.0 with Bioconductor 3.23; support platforms follow the Bioconductor package contract rather than a guarantee for every historical R version.
 
 If you are a current bioconductor user and have `devtools` package installed, you only need to call `install_github` function in `devtools` to install `HTSanalyzeR2`. If you encountered errors, please refer to the section *Potential Dependency Issues*.  
 
@@ -29,9 +29,9 @@ devtools::install_github("CityUHK-CompBio/HTSanalyzeR2", dependencies=TRUE)
 **HTSanalyzeR2** requires the following R/Bioconductor packages for its full function:    
 
 - GO.db 
-- cellHTS2 
 - Rcpp 
 - foreach 
+- doParallel
 - stringr 
 - igraph 
 - BioNet 
@@ -49,6 +49,9 @@ devtools::install_github("CityUHK-CompBio/HTSanalyzeR2", dependencies=TRUE)
 - grDevices 
 - stats 
 - utils 
+- BiocParallel
+- fgsea
+- msigdbr
 
 **HTSanalyzeR2** also suggests the following R/Bioconductor packages for improved user experience:  
 

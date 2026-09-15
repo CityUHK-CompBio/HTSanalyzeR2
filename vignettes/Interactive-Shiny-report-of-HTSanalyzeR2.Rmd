@@ -11,8 +11,11 @@ author:
   affiliation: Department of Biomedical Sciences, City University of Hong Kong, Hong Kong 
 date: "`r Sys.Date()`"
 package: HTSanalyzeR2
-output: 
-        BiocStyle::pdf_document
+output:
+        BiocStyle::pdf_document:
+          latex_engine: pdflatex
+          includes:
+            in_header: header.tex
 
 vignette: >
   %\VignetteIndexEntry{Interactive Shiny report of HTSanalyzeR2}

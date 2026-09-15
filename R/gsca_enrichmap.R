@@ -276,7 +276,7 @@ geneListAnno <- function(geneList, species){
 #'
 #' @export
 #' @aliases extractEnrichMap
-#' @importFrom igraph graph.adjacency simplify V V<- E E<-
+#' @importFrom igraph graph_from_adjacency_matrix simplify V V<- E E<-
 #' @return An object of igraph with all attributes about the enrichement map.
 #' @examples
 #' ## load a GSCA object(see the examples of 'analyze' GSCA for details)
@@ -389,7 +389,7 @@ setMethod("extractEnrichMap", signature = "GSCA",
 
               ## generate igraph from adjacency matrix
               ### "Node name" controlled by the rownames of tempList
-              g <- graph.adjacency(
+              g <- graph_from_adjacency_matrix(
                 adjmatrix = map.mat,
                 mode = "undirected",
                 weighted = TRUE,
@@ -401,7 +401,7 @@ setMethod("extractEnrichMap", signature = "GSCA",
               ## generate igraph from adjacency matrix
               # "Node name" controlled by the rownames of tempList
               g <-
-                graph.adjacency(
+                graph_from_adjacency_matrix(
                   adjmatrix = map.mat,
                   mode = "undirected",
                   weighted = NULL,

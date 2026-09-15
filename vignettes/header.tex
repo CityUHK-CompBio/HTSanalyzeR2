@@ -1,0 +1,11 @@
+% Compatibility for Pandoc 3.9 LaTeX output with older LaTeX templates.
+\providecommand{\pandocbounded}[1]{#1}
+\providecommand{\citeproc}[2]{#2}
+\providecommand{\citeproctext}{}
+\makeatletter
+\@ifundefined{CSLReferences}{
+  \newenvironment{CSLReferences}[2]{\begin{enumerate}}{\end{enumerate}}
+}{
+  \renewenvironment{CSLReferences}[2]{\begin{enumerate}}{\end{enumerate}}
+}
+\makeatother

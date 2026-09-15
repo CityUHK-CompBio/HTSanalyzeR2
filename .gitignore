@@ -6,3 +6,11 @@ inst/doc
 .DS_Store
 .rstudio
 _config.yml
+HTSanalyzeR2.Rcheck/
+..Rcheck/
+*.tar.gz
+src/*.o
+src/*.so
+src/*.dll
+vignettes/*.log
+vignettes/HTSanalyzerReport/

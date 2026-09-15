@@ -1,11 +1,18 @@
 Package: HTSanalyzeR2
 Type: Package
-Title: HTSanalyzeR2: An R package for functional annotation, network analysis and time series analysis of high-throughput data
+Title: An R Package for Functional Annotation, Network Analysis and Time Series Analysis of High-Throughput Data
 Version: 0.99.19
-Author: Lina ZHU <zhulina0609@gmail.com>, Feng GAO <gaofeng21cn@gmail.com>, 
-        Xiupei MEI <meixiupei@gmail.com>, Xin Wang <xinwang2hms@gmail.com>
-Maintainer: Lina ZHU <zhulina0609@gmail.com>
-Description: This package provides gene set analysis, enriched subnetwork analyses and
+Authors@R: c(
+    person(given = "Lina", family = "ZHU", role = c("aut", "cre"),
+           email = "zhulina0609@gmail.com"),
+    person(given = "Feng", family = "GAO", role = "aut",
+           email = "gaofeng21cn@gmail.com"),
+    person(given = "Xiupei", family = "MEI", role = "aut",
+           email = "meixiupei@gmail.com"),
+    person(given = "Xin", family = "WANG", role = "aut",
+           email = "xinwang2hms@gmail.com")
+  )
+Description: Provides gene set analysis, enriched subnetwork analyses and
              'Time-series' functional analysis for various preprocessed high-throughput 
              data generated either by CRISPR screening, RNA-seq, micro-array or RNAi in a unified workflow.
              The over-representation analysis is based on hypergeometric test and the 
@@ -44,7 +51,8 @@ Imports:
     utils,
     BiocParallel,
     fgsea,
-    msigdbr
+    msigdbr,
+    doParallel
 Collate: 
     'utils.R'
     'class_union.R'
@@ -82,7 +90,6 @@ Suggests:
     testthat,
     knitr,
     org.Hs.eg.db,
-    doParallel,
     Biobase,
     limma,
     TxDb.Hsapiens.UCSC.hg19.knownGene

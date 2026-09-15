@@ -1,0 +1,82 @@
+# HTSanalyzeR2 modernization baseline
+
+This record is the scope and acceptance baseline for the "Modernization Baseline" milestone.
+
+## Scope
+
+The milestone covers only:
+
+- recording the public API and result contracts,
+- adding a minimal regression-test skeleton,
+- auditing and aligning dependency declarations with observed calls,
+- fixing already-observed current-runtime compatibility warnings,
+- adding the build artifacts to `.gitignore`,
+- recording known report-layer issues for a later phase.
+
+It does not change algorithms, public API names, result field semantics, Shiny behavior, or vignettes in this phase.
+
+## Public contract
+
+The package exposes a legacy S4 API. The stable ordinary exports are `GSCA`, `GSCABatch`, `NWA`, `NWABatch`, `HTSanalyzeR2Pipe`, `HTSanalyzeR4MAGeCK`, `GOGeneSets`, `KeggGeneSets`, `MSigDBGeneSets`, `annotationConvertor`, `duplicateRemover`, `reportAll`, `cellHTS2OutputStatTests`, `preprocessGscaTS`, `analyzeGscaTS`, `appendGSTermsTS`, `preprocessNwaTS`, `interactomeNwaTS`, and `analyzeNwaTS`.
+
+The stable S4 method surface is `analyze`, `appendGSTerms`, `extractEnrichMap`, `extractSubNet`, `getInteractome`, `getPara`, `getResult`, `getSummary`, `getTopGeneSets`, `interactome`, `plotGSEA`, `preprocess`, `report`, `summarize`, `viewEnrichMap`, `viewGSEA`, and `viewSubNet`.
+
+The stable classes are `GSCA`, `NWA`, `GSCABatch`, and `NWABatch`. The GSCA result list is keyed by `HyperGeo.results`, `GSEA.results`, `Sig.pvals.in.both`, and `Sig.adj.pvals.in.both`, with one entry per gene-set collection. The GSOA table uses the existing `Universe Size` through `Overlap.Gene` fields. The GSEA table uses `Observed.score`, `Pvalue`, `Adjusted.Pvalue`, and `Leading.Edge`. The NWA result list uses `subnw` and `labels`.
+
+## Runtime evidence
+
+- R 4.6.0, Bioconductor 3.23, and aarch64 macOS were used for this baseline.
+- Observed package versions include `igraph` 2.3.3, `shiny` 1.14.0, `fgsea` 1.38.0, `msigdbr` 26.1.1, `BioNet` 1.72.0, `cellHTS2` 2.68.0, `testthat` 3.3.2, and `BiocParallel` 1.46.0.
+- The prior installation-only check succeeded; it did not establish full functional or release readiness.
+- Before this milestone, `R CMD check --no-manual --no-build-vignettes` had two vignette warnings about missing `inst/doc` and package vignettes without corresponding built output.
+- Example execution exposed the deprecated `msigdbr(category=...)` interface.
+- igraph 2.x reports `graph.adjacency()` as deprecated.
+- `HTSanalyzeR2Pipe()` calls `doParallel::registerDoParallel()` directly.
+- The built-in igraph data objects are serialized with an older igraph version and are converted on load by igraph 2.x.
+
+## Changes in this milestone
+
+- `MSigDBGeneSets()` now calls `msigdbr(collection=..., subcollection=...)` instead of the deprecated `category`/`subcategory` pair.
+- The two enrichment-map igraph constructions now use `graph_from_adjacency_matrix()` instead of deprecated `graph.adjacency()`.
+- `doParallel` moved from `Suggests` to `Imports` because `HTSanalyzeR2Pipe()` calls it directly.
+- README now records the current R/Bioconductor evidence and the actual runtime dependency layer.
+- `HTSanalyzeR2.Rcheck/` and `*.tar.gz` are ignored.
+- Vignette YAML now pins `BiocStyle::pdf_document` with `pdflatex`; `vignettes/header.tex`
+  supplies Pandoc 3.9/LaTeX compatibility shims. Both vignettes compile to PDF locally.
+- KEGG-dependent Rd examples are now wrapped in `\dontrun`; they required a live KEGG
+  connection and previously caused the package examples check to fail in an offline or
+  rate-limited environment.
+- A `tests/testthat` skeleton now exercises the GSCA and NWA object contracts, GSOA/GSEA result fields, NWA/BioNet output, batch packaging, public exports, dependency declarations, built-in object dimensions, and the non-deprecated MSigDB call.
+
+## Known issues deferred from this milestone
+
+- The check now reads `3 WARNINGs, 3 NOTEs` and no ERROR. Two warnings are the expected
+  Bioconductor/CRAN packaging observations for this 0.99.x source layout: non-mainstream
+  dependencies and missing prebuilt `inst/doc`. A third warning records non-portable
+  BioGRID filenames when the legacy generated report directory is included; its long-term
+  fix is to stop packaging generated report inputs (later report-layer phase).
+- The check NOTEs are class-vs-string comparisons in legacy report code, two long Rd usage
+  lines, and an environment-local `00_pkg_src` check-directory artifact; none block installation
+  or tests.
+- `BiocParallel` is imported for documentation but the runtime still uses `foreach`; whether to replace or keep it is a later algorithm/parallelism decision.
+- `cellHTS2` remains an optional runtime path in `Suggests`; its missing-package error and alternative path need later validation.
+- `inst/templates/app.R` is a 328-line single-file Shiny application with module globals and mixed preparation, UI, and server logic.
+- The report template contains an explicit `TODO: undefined behavior` near the NWA first-render observer.
+- Additional unresolved TODO markers exist in `R/gsca_enrichmap.R`, `R/gsca_report.R`, and `R/nwa_view.R`.
+- The bundled Sigma/jQuery report assets need license, provenance, supply-chain, and browser-compatibility review.
+- Report generation currently has no tested headless smoke path or non-Shiny export path.
+- The workflow in `.github/workflows/R-CMD-check.yaml` defines a multi-version matrix, but
+  it has not been proven on GitHub because this milestone has not yet been pushed.
+
+## Acceptance status
+
+- [x] Public API and contract inventory recorded.
+- [x] Minimal test skeleton added.
+- [x] Dependency declaration audit completed for observed direct calls.
+- [x] Observed current-runtime compatibility fixes applied.
+- [x] Build artifact policy recorded.
+- [x] Full clean-environment installation and `R CMD check --as-cran` readback. 48 tests pass,
+  0 fail, and 1 known BioNet/igraph-2.x incompatibility is skipped.
+- [ ] Multi-version CI proven.
+- [x] Both vignettes compile locally to PDF. The remaining `inst/doc` warning is a package
+  build-policy decision deferred to the documentation/release phase.
