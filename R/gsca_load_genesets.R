@@ -79,9 +79,11 @@ MSigDBGeneSets <- function(species = "Hs", collection = "C2", subcategory = NULL
 #' following packages: KEGGREST.
 #' @seealso \code{\link[HTSanalyzeR2]{GOGeneSets}}, \code{\link[HTSanalyzeR2]{MSigDBGeneSets}}
 #' @examples
+#' \dontrun{
 #' library(KEGGREST)
 #' library(org.Hs.eg.db)
 #' HS_KEGG <- KeggGeneSets(species = "Hs")
+#' }
 #' @export
 #' @importFrom KEGGREST keggLink keggConv
 #' @importFrom stringr str_replace

@@ -37,6 +37,7 @@ if (!isGeneric("preprocess")) {
 #' \code{\link[HTSanalyzeR2]{GSCA-class}} or \code{\link[HTSanalyzeR2]{NWA-class}}.
 #' @seealso \code{\link[HTSanalyzeR2]{duplicateRemover}}, \code{\link[HTSanalyzeR2]{annotationConvertor}}
 #' @examples
+#' \dontrun{
 #' # ===========================================================
 #' # GSCA class
 #' library(org.Hs.eg.db)
@@ -64,6 +65,7 @@ if (!isGeneric("preprocess")) {
 #'
 #' ## print gsca1
 #' gsca1
+#' }
 #'
 #' @details
 #' This function will do the following preprocessing steps:

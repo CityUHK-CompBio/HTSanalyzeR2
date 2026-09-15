@@ -36,10 +36,10 @@ exportMethods(summarize)
 exportMethods(viewEnrichMap)
 exportMethods(viewGSEA)
 exportMethods(viewSubNet)
+import(BiocParallel)
 import(DT)
 import(GO.db)
 import(colourpicker)
-import(foreach)
 import(graphics)
 importFrom(AnnotationDbi,
   GOID,

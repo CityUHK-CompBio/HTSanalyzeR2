@@ -117,6 +117,7 @@ gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMapping
 
 ## print gsca1
 gsca1
+}
 
 # ===========================================================
 # NWA class
@@ -137,7 +138,6 @@ nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes)
 ## do preprocessing
 nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
                    duplicateRemoverMethod="max")
-}
 }
 \seealso{
 \code{\link[HTSanalyzeR2]{duplicateRemover}}, \code{\link[HTSanalyzeR2]{annotationConvertor}}

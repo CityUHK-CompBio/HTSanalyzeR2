@@ -14,6 +14,8 @@ xn
 An object of class 'cellHTS2' which has been normalized, configured and annotated.
 }
 \examples{
+\dontrun{
 data(xn)
+}
 }
 \keyword{datasets}

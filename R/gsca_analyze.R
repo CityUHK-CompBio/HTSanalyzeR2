@@ -92,6 +92,7 @@ if (!isGeneric("analyze")) {
 #' Gene set enrichment analysis: A knowledge-based approach for interpreting genome-wide expression profiles
 #' PNAS 2005 102 (43) 15545-15550; published ahead of print September 30, 2005, doi:10.1073/pnas.0506580102
 #' @examples
+#' \dontrun{
 #' # ====================================================
 #' # Gene Set Collection Analysis Part
 #' library(org.Hs.eg.db)
@@ -133,6 +134,7 @@ if (!isGeneric("analyze")) {
 #' head(getResult(gsca2)$GSEA.results$GO_MF)
 #' head(getResult(gsca2)$HyperGeo.results$PW_KEGG)
 #'
+#' }
 
 setMethod("analyze", signature = "GSCA",
           function(object,

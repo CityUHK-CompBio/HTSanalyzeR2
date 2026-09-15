@@ -87,7 +87,9 @@
 #'
 #' An object of class 'cellHTS2' which has been normalized, configured and annotated.
 #' @examples
+#' \dontrun{
 #' data(xn)
+#' }
 "xn"
 
 #' Expression of a demo data: GSE33113

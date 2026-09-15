@@ -50,6 +50,7 @@ if (!isGeneric("viewEnrichMap"))
 #' built-in database in this package.
 #'
 #' @examples
+#' \dontrun{
 #' library(org.Hs.eg.db)
 #' library(GO.db)
 #' library(KEGGREST)
@@ -93,6 +94,7 @@ if (!isGeneric("viewEnrichMap"))
 #'                        keggGSCs=c("PW_KEGG"), msigdbGSCs=NULL,
 #'                        species = "Hs")
 #' head(getResult(gsca3)$GSEA.results$GO_MF)
+#' }
 #' @export
 #'
 setMethod(
