@@ -9,8 +9,8 @@
   object,
   interactionMatrix = NULL,
   species,
- 
-    link = "https://downloads.thebiogrid.org/Download/BioGRID/Release-Archive/BIOGRID-3.4.162/BIOGRID-ORGANISM-3.4.162.tab2.zip",
+  link =
+    "https://downloads.thebiogrid.org/Download/BioGRID/Release-Archive/BIOGRID-3.4.162/BIOGRID-ORGANISM-3.4.162.tab2.zip",
   reportDir = "HTSanalyzerReport",
   genetic = FALSE,
   force = FALSE,

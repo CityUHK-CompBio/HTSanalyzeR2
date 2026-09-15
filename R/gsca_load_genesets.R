@@ -16,6 +16,8 @@
 #' 'Cfa'(Canis lupus familiaris), 'Dm'(Drosophila melanogaster), 'Dr'(Danio rerio),
 #' 'Gg'(Gallus gallus), 'Hs'(Homo sapiens), 'Mm'(Mus musculus), 'Rn'(Rattus norvegicus),
 #' 'Sc'(Saccharomyces cerevisiae) and 'Ss'(Sus scrofa).
+#' @param subcategory A single character value or NULL specifying a subcategory of
+#' the selected MSigDB collection. See \code{\link[msigdbr]{msigdbr}} for details.
 #'
 #' @return Return a list of gene sets of specific collection in
 #' \href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB} of version 6.2.
@@ -206,4 +208,3 @@ GOGeneSets <- function(species = "Hs", ontologies = c("MF")) {
 
   return(this.go.list)
 }
-

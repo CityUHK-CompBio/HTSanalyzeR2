@@ -2,6 +2,7 @@
 % Please edit documentation in R/HTSanalyzeR2.R
 \docType{package}
 \name{HTSanalyzeR2}
+\alias{HTSanalyzeR2-package}
 \alias{HTSanalyzeR2}
 \title{HTSanalyzeR2 Package Overview}
 \description{

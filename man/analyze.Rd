@@ -111,16 +111,16 @@ This is a generic function.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{GSCA}: The function will perform gene set collection analysis
+\item \code{analyze(GSCA)}: The function will perform gene set collection analysis
 on a GSCA object and update information about these results to slot
 \emph{summary} of class GSCA.
 
-\item \code{NWA}: The function will store the subnetwork module identified
+\item \code{analyze(NWA)}: The function will store the subnetwork module identified
 by BioNet (if species is given, labels of nodes will also be mapped from
 Entrez IDs to gene symbols), and update information about these results to
 slot summary of class NWA.
-}}
 
+}}
 \examples{
 # ====================================================
 # Gene Set Collection Analysis Part

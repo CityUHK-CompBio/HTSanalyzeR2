@@ -29,17 +29,17 @@ function prints a summary of information about the slots of these classes.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{GSCA}: For an object of class GSCA, the key words are 'GSC'
+\item \code{summarize(GSCA)}: For an object of class GSCA, the key words are 'GSC'
 (the slot 'listOfGeneSetCollections'), 'GeneList' (the slot 'geneList'),
 'Hits' (the slot 'hits'), 'Para' (the slot 'para'), 'Result' (the slot
 'result') and 'ALL' (all slots).
 
-\item \code{NWA}: For an object of class NWA, the key words include 'Pval'
+\item \code{summarize(NWA)}: For an object of class NWA, the key words include 'Pval'
 (the slot 'pvalues'), 'Phenotype' (the slot 'phenotypes'), 'Interactome' (the
 slot 'interactome'), 'Para' (the slot 'fdr'), 'Result' (the slot 'result')
 and 'ALL' (all slots).
-}}
 
+}}
 \examples{
 # =================================================================
 # GSCA class

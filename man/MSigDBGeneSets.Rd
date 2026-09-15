@@ -19,6 +19,9 @@ Valid values include 'H'(hallmark gene sets), 'C1'(positional gene sets),
 'C5'(GO gene sets), 'C6'(oncogenic signatures), 'C7'(immunologic signatures).
 More details please refer to
 \href{http://software.broadinstitute.org/gsea/msigdb}{MSigDB}.}
+
+\item{subcategory}{A single character value or NULL specifying a subcategory of
+the selected MSigDB collection. See \code{\link[msigdbr]{msigdbr}} for details.}
 }
 \value{
 Return a list of gene sets of specific collection in
