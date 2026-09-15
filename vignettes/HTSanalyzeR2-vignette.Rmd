@@ -414,7 +414,7 @@ Having preprocessed the input data and created the interactome, the subnetwork a
 
 Here, to simplify this vignette, we set a very strict 'fdr' as 1e-06. In practice, you may want to set a less strict one (e.g. 0.01).
 
-```{r, results='hide', message=FALSE, warning=FALSE, eval=TRUE, fig.cap = "Fitting BUM model to p-values by BioNet", fig.width=10, fig.height=6, fig.align="center"}
+```{r, results='hide', message=FALSE, warning=FALSE, eval=FALSE, fig.cap = "Fitting BUM model to p-values by BioNet", fig.width=10, fig.height=6, fig.align="center"}
 nwa3 <- analyze(nwa2, fdr=1e-06, species="Hs")  ## [Figure 9]
 ```
 
@@ -433,7 +433,7 @@ From the above subnetwrok, we can see under a relative strict cutoff with fdr=1e
 
 Like 'GSCA', the method *summarize* could also be used to get a general summary of an analyzed 'NWA' object including inputs, interactome, parameters for analysis and the size of identified subnetwork.
 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 summarize(nwa3)
 ```
 
