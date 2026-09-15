@@ -21,9 +21,8 @@ License: Artistic-2.0
 LazyData: TRUE
 RoxygenNote: 7.1.1
 Encoding: UTF-8
-Imports: 
+Imports:
     GO.db,
-    cellHTS2,
     Rcpp,
     foreach,
     stringr,
@@ -77,6 +76,7 @@ Collate:
     'zzz.R'
 LinkingTo: Rcpp
 Suggests:
+    cellHTS2,
     BiocStyle,
     rmarkdown,
     testthat,

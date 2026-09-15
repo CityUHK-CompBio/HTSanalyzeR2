@@ -42,7 +42,6 @@
 #' Michael Boutros, Ligia P. Bras L and Wolfgang Huber. Analysis of cell-based
 #' RNAi screens. Genome Biology 7:7 R66 (2006)."
 #' @export
-#' @importFrom cellHTS2 Data
 #' @importFrom stats median t.test wilcox.test
 #' @importFrom RankProd RP
 #' @examples
@@ -81,15 +80,15 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
   ##make a named data matrix (only samples) rows=features,
   ##columns=replicates, with row names = identifiers in the
   ##"annotationColumn" of the fData() data frame
-  dataNw <- Data(cellHTSobject)[, 1:ncol(Data(cellHTSobject)), 1]
+  dataNw <- cellHTS2::Data(cellHTSobject)[, 1:ncol(cellHTS2::Data(cellHTSobject)), 1]
   rownames(dataNw) <- Biobase::fData(cellHTSobject)[, annotationColumn]
   dataNw <- dataNw[which(Biobase::fData(cellHTSobject)[, "controlStatus"] ==
                            "sample"), ]
   dataNw <- dataNw[which(!is.na(rownames(dataNw))), ]
   ##make a vector of data for the control population
-  controlData <- Data(cellHTSobject)[
+  controlData <- cellHTS2::Data(cellHTSobject)[
     which(Biobase::fData(cellHTSobject)[, "controlStatus"] == controls),
-    1:ncol(Data(cellHTSobject)), 1]
+    1:ncol(cellHTS2::Data(cellHTSobject)), 1]
   controlData <- as.vector(controlData)
   ##compute the median of all samples, for the one sample tests
   mu = median(as.vector(dataNw), na.rm = TRUE)
@@ -327,4 +326,3 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
   }
   return(stats)
 }
-
