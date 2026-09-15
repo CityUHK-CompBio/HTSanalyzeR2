@@ -31,10 +31,11 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
       - uses: r-lib/actions/setup-pandoc@v2
+      - uses: r-lib/actions/setup-tinytex@v2
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           dependencies: '"hard"'
-          extra-packages: any::rcmdcheck, any::testthat, any::BiocStyle, any::org.Hs.eg.db, any::TxDb.Hsapiens.UCSC.hg19.knownGene
+          extra-packages: any::rcmdcheck, any::testthat, any::BiocStyle, any::limma, any::org.Hs.eg.db, any::TxDb.Hsapiens.UCSC.hg19.knownGene
           needs: check
       - uses: r-lib/actions/check-r-package@v2
         with:
