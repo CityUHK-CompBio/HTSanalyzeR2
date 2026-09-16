@@ -35,7 +35,12 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           dependencies: '"hard"'
-          extra-packages: any::rcmdcheck, any::testthat, any::BiocStyle, any::limma, any::org.Hs.eg.db, any::TxDb.Hsapiens.UCSC.hg19.knownGene, any::RankProd, any::webshot2
+          # 'webshot2' is deliberately not installed here: it pulls in a
+          # Chromium system package, which made every run slow and dependent on
+          # apt availability. PNG export needs a browser by definition, so the
+          # test for it skips when no renderer is present, and CI covers the
+          # HTML export path instead.
+          extra-packages: any::rcmdcheck, any::testthat, any::BiocStyle, any::limma, any::org.Hs.eg.db, any::TxDb.Hsapiens.UCSC.hg19.knownGene, any::RankProd
           needs: check
       - uses: r-lib/actions/check-r-package@v2
         with:
