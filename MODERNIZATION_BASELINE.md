@@ -109,3 +109,26 @@ Completed after the baseline, keeping the S4 API and every result field unchange
 `R CMD check --as-cran` now reports `1 WARNING` and no NOTEs or ERRORs. The warning is the
 advisory "significant size reductions" note for the two vignette PDFs, which is a
 figure-resolution question rather than a packaging defect.
+
+## Phase 3 — solver, reproducibility and legacy decoupling
+
+- **`analyze()` on `NWA` no longer aborts.** BioNet's FastHeinz solver takes the minimum
+  spanning tree of an edgeless internal subgraph and igraph 2.x rejects the zero-length
+  weight vector, so small or sparse networks failed outright. `identifySubnetwork()` keeps
+  calling the exact solver and falls back to a greedy maximum-scoring connected subgraph
+  only for that specific error, with a warning. BioNet is GPL-2, so the fallback is written
+  against the igraph API rather than copied from BioNet.
+- **Network analysis is reproducible.** `BioNet::fitBumModel()` draws starting values with
+  `runif()` and keeps the last successful fit instead of the best one, so one fixed input
+  produced subnetwork sizes of 118, 119 and 121 across runs. `fitBumModelStable()` searches
+  a fixed set of seeds, keeps the best fit by negative log-likelihood, and restores the
+  caller's RNG stream. The `d7_nwa` example is now 119 nodes / 464 edges on every run.
+- **Screen statistics no longer need `cellHTS2`.** `screenStatTests()` works on a matrix,
+  an annotation vector and a sample/control labelling; `cellHTS2OutputStatTests()` is a thin
+  adapter. Verified identical to the pre-modernization implementation across 3 alternatives
+  × 7 test combinations.
+- **Regression fixed.** The earlier internal rewrite had dropped the construct identifiers
+  from the row names of the statistics result. It was caught by comparing against the
+  pristine implementation, not against an already-modified one.
+
+Test count is 116 with no failures and no skips; the previously skipped BioNet test now runs.
