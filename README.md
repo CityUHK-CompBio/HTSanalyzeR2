@@ -203,6 +203,12 @@ source archive; the statistics themselves are available without it through
 - Network analysis is reproducible: the beta-uniform mixture fit is seeded
   deterministically and the best fit is kept, instead of letting BioNet's
   random multi-start change the subnetwork between runs.
+- When BioNet's FastHeinz solver cannot run under igraph 2.x (it takes the
+  minimum spanning tree of an edgeless subgraph internally), `analyze()` solves
+  the same maximum-weight connected subgraph problem exactly with the `lpSolve`
+  mixed-integer solver instead of failing. The fallback is exact, so it never
+  reports a lower-scoring module; on instances too large for it, the error names
+  `options(HTSanalyzeR2.mwcs.timeout=)` and `options(HTSanalyzeR2.mwcs.max.nodes=)`.
 - BioGRID downloads track the current `Latest-Release` archive instead of a
   pinned release from 2016.
 

@@ -116,7 +116,7 @@ setMethod("analyze",
 
 
 #' @importFrom BioNet fitBumModel scoreNodes runFastHeinz
-#' @importFrom igraph vertex_attr vcount induced_subgraph components neighbors
+#' @importFrom igraph vertex_attr vcount induced_subgraph components
 #'
 networkAnalysis <-
   function(pvalues,

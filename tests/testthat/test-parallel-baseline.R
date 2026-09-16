@@ -18,9 +18,17 @@ test_that("serial and parallel BiocParallel backends give identical GSEA results
     geneSets, geneList, nPermutations = 50, minGeneSetSize = 5
   )
 
-  snow <- BiocParallel::SnowParam(workers = 2, RNGseed = 1)
-  on.exit(BiocParallel::bpstop(snow), add = TRUE)
-  BiocParallel::register(snow)
+  ## forking where the platform provides it; socket clusters are unreliable
+  ## inside the R CMD check harness
+  workers <- if (.Platform$OS.type == "windows") {
+    BiocParallel::SnowParam(workers = 2, RNGseed = 1)
+  } else {
+    BiocParallel::MulticoreParam(workers = 2, RNGseed = 1)
+  }
+  if (inherits(workers, "SnowParam")) {
+    on.exit(BiocParallel::bpstop(workers), add = TRUE)
+  }
+  BiocParallel::register(workers)
   parallel <- HTSanalyzeR2:::calcGSEA(
     geneSets, geneList, nPermutations = 50, minGeneSetSize = 5
   )

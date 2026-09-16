@@ -5,9 +5,12 @@
 * `analyze()` on an `NWA` object no longer aborts on networks where the
   profitable negative nodes are pairwise non-adjacent. BioNet's FastHeinz
   solver takes the minimum spanning tree of an edgeless subgraph internally and
-  aborts there under igraph 2.x; `identifySubnetwork()` keeps using the exact
-  solver and falls back to a greedy maximum-scoring connected subgraph only for
-  that case, with a warning, instead of failing.
+  aborts there under igraph 2.x; `identifySubnetwork()` keeps using FastHeinz by
+  default and, only for that failure, solves the same problem exactly with a
+  mixed-integer linear program (`lpSolve`). The fallback is exact rather than a
+  heuristic, so it never returns a lower-scoring module than FastHeinz would.
+  Instances that are too large to solve within the configured limits stop with a
+  message naming the option to raise, instead of failing inside igraph.
 * Network analysis is now reproducible. BioNet draws the starting values of the
   beta-uniform mixture fit with `runif()` and keeps the last successful fit
   rather than the best one, so the identified subnetwork changed between runs

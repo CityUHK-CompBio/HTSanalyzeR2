@@ -132,3 +132,27 @@ figure-resolution question rather than a packaging defect.
   pristine implementation, not against an already-modified one.
 
 Test count is 116 with no failures and no skips; the previously skipped BioNet test now runs.
+
+## Phase 4 — exact fallback solver
+
+The Phase 3 fallback for the igraph 2.x failure was a greedy search written in this package. That
+put the correctness of a scientifically meaningful step in local hands, so it was replaced by an
+exact mixed-integer formulation of the same maximum-weight connected subgraph problem, solved by
+`lpSolve`.
+
+- **Model**: one binary variable per node, one root marker, one continuous flow per arc, and the
+  constraint that the root supplies one unit of flow to every other selected node. Flow may only
+  use arcs whose endpoints are both selected, so feasible solutions are connected and maximising
+  the node score makes them optimal. The formulation is standard; correctness rests on the solver.
+- **Verified**: against exhaustive enumeration on 132 random graphs (0 mismatches) and against
+  BioNet's FastHeinz. On 4 of 26 larger graphs the exact solver returned a strictly better module
+  than FastHeinz, which pre-filters negative nodes with a greedy test. FastHeinz therefore stays the
+  default so existing results do not move, and the exact solver runs only where FastHeinz aborts.
+- **Reductions**: components without a positively scored node are dropped, and non-positive leaves
+  are stripped iteratively. Both preserve the optimum.
+- **Limits**: the solver is exact when it returns; above the configured size or time budget it stops
+  with an actionable message. Practically it solves instances up to roughly 200-300 nodes within
+  the default 60 second budget.
+- **Note on the tooling**: `lpSolveAPI` was tried first and produced different models on repeated
+  calls in one session. The `lpSolve` interface to the same solver has no handle pool and is stable,
+  which is why the package uses it.

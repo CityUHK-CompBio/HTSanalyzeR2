@@ -42,6 +42,7 @@ Imports:
     data.table,
     methods,
     Matrix,
+    lpSolve,
     AnnotationDbi,
     graphics,
     grDevices,

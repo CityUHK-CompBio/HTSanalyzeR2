@@ -47,9 +47,17 @@ test_that("the fgsea path is reproducible and seed-stable under a parallel backe
   serialB <- getResult(runFgsea(object, BiocParallel::SerialParam(), seed = 99))
   expect_identical(serialA, serialB)
 
-  snow <- BiocParallel::SnowParam(workers = 2)
-  on.exit(BiocParallel::bpstop(snow), add = TRUE)
-  parallel <- getResult(runFgsea(object, snow, seed = 99))
+  ## forking where the platform provides it; socket clusters are unreliable
+  ## inside the R CMD check harness
+  parallelParam <- if (.Platform$OS.type == "windows") {
+    BiocParallel::SnowParam(workers = 2)
+  } else {
+    BiocParallel::MulticoreParam(workers = 2)
+  }
+  if (inherits(parallelParam, "SnowParam")) {
+    on.exit(BiocParallel::bpstop(parallelParam), add = TRUE)
+  }
+  parallel <- getResult(runFgsea(object, parallelParam, seed = 99))
   expect_identical(serialA, parallel)
 })
 
