@@ -3,17 +3,21 @@
 ## and the construct identity lives in the annotation vector, exactly like a
 ## cellHTS plate: rows sharing an annotation are replicates of one construct.
 make_screen_fixture <- function() {
+  ## Every value is distinct. The Mann-Whitney test warns about exact p-values
+  ## when the two samples contain ties, and whether that warning is raised has
+  ## differed between R versions; a tie-free fixture keeps the test measuring
+  ## the statistics rather than the warning behaviour of wilcox.test().
   data <- matrix(
-    c(0.10, 0.11,   ## geneA well 1
-      0.12, 0.13,   ## geneA well 2
-      0.40, 0.41,   ## geneB well 1
-      0.42, 0.43,   ## geneB well 2
-      0.20, 0.21,   ## geneC well 1
-      0.22, 0.23,   ## geneC well 2
-      0.30, 0.31,   ## geneD well 1
-      0.32, 0.33,   ## geneD well 2
-      0.31, 0.32,   ## negative control well 1
-      0.29, 0.30),  ## negative control well 2
+    c(0.101, 0.112,   ## geneA well 1
+      0.123, 0.134,   ## geneA well 2
+      0.401, 0.412,   ## geneB well 1
+      0.423, 0.434,   ## geneB well 2
+      0.201, 0.212,   ## geneC well 1
+      0.223, 0.234,   ## geneC well 2
+      0.301, 0.312,   ## geneD well 1
+      0.323, 0.334,   ## geneD well 2
+      0.291, 0.293,   ## negative control well 1
+      0.295, 0.297),  ## negative control well 2
     ncol = 2, byrow = TRUE,
     dimnames = list(paste0("well", 1:10), c("plate1", "plate2"))
   )
@@ -23,6 +27,17 @@ make_screen_fixture <- function() {
     controlStatus = c(rep("sample", 8), "neg", "neg")
   )
 }
+
+test_that("the screen fixture is free of ties", {
+  fixture <- make_screen_fixture()
+  sampleRows <- which(fixture$controlStatus == "sample")
+  control <- as.vector(fixture$data[fixture$controlStatus == "neg", ])
+  for (construct in unique(fixture$annotation[sampleRows])) {
+    rows <- sampleRows[fixture$annotation[sampleRows] == construct]
+    pooled <- c(as.vector(fixture$data[rows, ]), control)
+    expect_false(anyDuplicated(pooled) > 0)
+  }
+})
 
 test_that("screenStatTests needs no cellHTS2 object", {
   fixture <- make_screen_fixture()

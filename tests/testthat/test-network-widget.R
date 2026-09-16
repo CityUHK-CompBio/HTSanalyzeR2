@@ -111,12 +111,11 @@ test_that("saveNetwork validates its inputs", {
 
 test_that("saveNetwork writes a PNG when a headless browser is available", {
   skip_if_not_installed("webshot2")
-  ## PNG rendering goes through a real headless Chrome; that is not available in
-  ## every environment (CI runners without a browser, locked-down sandboxes), so
-  ## the capability is asserted when present and skipped when absent.
-  skip_if_not_installed("chromote")
-  skip_if(is.null(chromote::find_chrome()),
-          "no Chrome/Chromium available for headless rendering")
+  ## PNG rendering goes through a real headless Chrome, which is not available
+  ## in every environment (CI runners without a browser, locked-down
+  ## sandboxes). Rather than probing for a browser through an undeclared
+  ## dependency, the render is attempted and a browser failure turns into a
+  ## skip below.
 
   nodes <- data.frame(
     name = c("a", "b", "c"),
