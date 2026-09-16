@@ -16,3 +16,4 @@ src/*.dll
 vignettes/*.log
 vignettes/HTSanalyzerReport/
 Rplots.pdf
+.playwright-cli/

@@ -40,5 +40,8 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         with:
           args: 'c("--no-manual", "--as-cran")'
+          # The vignette PDFs embed figures; without compacting them at build
+          # time the check reports that 'gs+qpdf' could still shrink them.
+          build_args: 'c("--no-manual", "--compact-vignettes=both")'
         env:
           _R_CHECK_CRAN_INCOMING_: false

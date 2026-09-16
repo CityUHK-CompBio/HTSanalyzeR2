@@ -229,6 +229,10 @@ Vignettes additionally need a LaTeX installation and `BiocStyle`; install them
 with `BiocManager::install("BiocStyle")` plus TinyTeX
 (`tinytex::install_tinytex()`).
 
+When building the source package, use `R CMD build --compact-vignettes=both .`.
+The vignettes embed figures, and compacting them at build time keeps
+`R CMD check` free of the "significant size reductions" report.
+
 ## Getting help
 
 Open an [issue](https://github.com/CityUHK-CompBio/HTSanalyzeR2/issues) for bugs

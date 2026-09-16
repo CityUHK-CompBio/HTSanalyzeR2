@@ -237,6 +237,11 @@ graphStyling <- function(input, prefix) {
 }
 
 ## ============================================ Define ui ==================================================
+## The graphs are sized in viewport units so that the card, its floating
+## visNetwork controls and the summary boxes below all fit the window; a fixed
+## pixel height clipped the container on shorter screens.
+graphHeight <- "68vh"
+
 panels <- list()
 
 if (!is.null(gsca)) {
@@ -264,10 +269,11 @@ if (!is.null(gsca)) {
   panels <- c(panels, list(bslib::nav_panel(
     "Enrichment Map",
     bslib::layout_sidebar(
+      fillable = FALSE,
       sidebar = bslib::sidebar(settingsPanel("map")),
       bslib::card(
         bslib::card_header("Enrichment map"),
-        HTSanalyzeR2:::forceGraphOutput("map_output")
+        HTSanalyzeR2:::forceGraphOutput("map_output", height = graphHeight)
       ),
       if (gscaTS) {
         sliderInput("process_map", "Experiment",
@@ -285,10 +291,11 @@ if (!is.null(nwa)) {
   panels <- c(panels, list(bslib::nav_panel(
     "Network Analysis",
     bslib::layout_sidebar(
+      fillable = FALSE,
       sidebar = bslib::sidebar(settingsPanel("net")),
       bslib::card(
         bslib::card_header("Enriched subnetwork"),
-        HTSanalyzeR2:::forceGraphOutput("network_output")
+        HTSanalyzeR2:::forceGraphOutput("network_output", height = graphHeight)
       ),
       if (nwaTS) {
         sliderInput("process_net", "Experiment",
@@ -315,7 +322,10 @@ ui <- do.call(
     title = "HTSanalyzeR2",
     id = "main_tab",
     theme = bslib::bs_theme(version = 5, bootswatch = "flatly"),
-    fillable = TRUE
+    ## The graph cards are not fillable: with 'fillable = TRUE' the card is
+    ## sized to the viewport, which clipped the graph container and made
+    ## visNetwork's floating controls overlap the summary boxes below.
+    fillable = FALSE
   ), panels)
 )
 

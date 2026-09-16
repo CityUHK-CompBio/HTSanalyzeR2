@@ -156,3 +156,24 @@ exact mixed-integer formulation of the same maximum-weight connected subgraph pr
 - **Note on the tooling**: `lpSolveAPI` was tried first and produced different models on repeated
   calls in one session. The `lpSolve` interface to the same solver has no handle pool and is stable,
   which is why the package uses it.
+
+## Phase 5 — figures, report layout and a clean check
+
+- **All report screenshots were regenerated.** The seven screenshots of the Shiny report and the
+  three time-series figures showed the previous shinydashboard interface, which no longer matched
+  the code. They were recaptured from a running report, the time-series figures are now three-panel
+  comparisons driven by the *Experiment* slider, and the workflow diagram's embedded UI strip was
+  replaced.
+- **Two report layout defects were found while capturing them.** With `fillable = TRUE` the graph
+  card was sized to the viewport and clipped visNetwork's floating controls, so the "Export as png"
+  button overlapped the summary boxes; the graphs now use a viewport-relative height and the
+  sidebar layouts are non-fillable.
+- **The vignette figure assets are ~55% smaller** (3.5 MB to 1.6 MB) through palette quantization
+  with no visible difference.
+- **`R CMD check --as-cran` now reports `Status: OK`** — no errors, warnings or notes. The last
+  outstanding warning was about the built vignette PDFs; it is resolved by building the tarball
+  with `--compact-vignettes=both`, which is now what the CI workflow uses. The reduction is real:
+  2195 Kb to 1307 Kb for the main vignette and 1083 Kb to 497 Kb for the report vignette.
+- The stale `cellHTS2` data documentation was rewritten to explain that the class comes from a
+  package that has left Bioconductor, and to point at `screenStatTests()` as the path that does not
+  need it.

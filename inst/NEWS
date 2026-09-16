@@ -32,6 +32,20 @@
   implementation and is about an order of magnitude faster; it is documented in
   the README and covered by tests.
 
+## Documentation and packaging
+
+* All screenshots of the Shiny report were regenerated: they still showed the
+  previous shinydashboard interface. The time-series figures are now three-panel
+  comparisons produced by moving the *Experiment* slider, and the workflow
+  diagram no longer embeds the old UI.
+* Report layout fixes found while capturing the new screenshots: the graph card
+  is no longer viewport-fillable, which had clipped visNetwork's floating
+  controls so that "Export as png" overlapped the summary boxes.
+* The bundled figures are about 55% smaller through palette quantization.
+* `R CMD check --as-cran` reports `Status: OK`; build the source package with
+  `--compact-vignettes=both` so the vignette PDFs are not reported as
+  unnecessarily large.
+
 ## Performance
 
 * `extractEnrichMap()` builds the Jaccard similarity between all pairs of gene

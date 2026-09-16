@@ -51,20 +51,20 @@ The above screenshot shows the GSOA result table where users can either get a ge
 
 ### Parameters for modifying the figure [Figure2]
 
-There are five main parts for users to modify their figure by interactive operations including:**Layout**, **Label**, **Node**, **Edge** and **Color Scheme**. Following is a detailed explanation for each part.
+The settings live in a collapsible panel beside every graph. It has five sections: **Label**, **Nodes**, **Edges**, **Colour scheme** and **Layout**. Every change is applied to the rendered graph in place, without recomputing the analysis or resetting the layout.
 
-+ **Layout**: A widge to control the whole pattern
-     + Mode: There are two layout modes inside this Shiny report, users can choose any of them to get better visualization based on their data.
-     + Parameters: Two more parameters *Egde Repel* and *Adjust Sizes* could be used to make the figure looser.
-     + Gravity: Ranging from -50 to 50, users can adjust it step by step. The larger it is, the looser the pattern would be.
-+ **Label**: A widge to modify the label of nodes with three easy-to-understand parameters: *Text*, *Label Scale* and *Label color*.
-+ **Node**: A widge to modify the nodes with four parameters: *Scale*, *Opacity*, *Border Width* and *Border Color*.
-+ **Edge**: A widge to modify the edges with two parameters: *Edge Scale* and *Edge Color*.
-+ **Color Scheme**: A widge to change the default color.
++ **Label**: how nodes are labelled, with three parameters: *Text* (gene set ID, term, or none), *Label scale* and *Label colour*.
++ **Nodes**: *Scale*, *Opacity*, *Border width*, *Border colour* and the colour used for nodes without a phenotype value.
++ **Edges**: *Scale* and *Colour*.
++ **Colour scheme**: the two ends of the positive and of the negative colour scale. The sign of the enrichment score or phenotype decides which scale a node uses.
++ **Layout**: the node-repulsion parameters of the force-directed layout.
+     + Mode: *Lin-Log mode* and *Strong gravity mode* change how the layout treats distance.
+     + Parameters: *Edge repel* and *Adjust sizes* make the figure looser.
+     + Gravity: ranging from -50 to 50. The larger it is, the looser the pattern.
 
 ![The enrichment map of GSOA result](figures/2.PNG)
 
-The above screenshot shows the enrichment map of GSOA result. Users can click the topright button to modify the figure based on their data and preference. 
+The above screenshot shows the enrichment map of a GSOA result together with the settings panel. Hovering a node shows its identifier, term and value; the buttons in the lower right pan, zoom, fit the view and export the graph as PNG.
 
 ## Visualize single *NWA* object for individual data set
 
@@ -79,7 +79,7 @@ report(d7_nwa)
 ![The identified subnetwork](figures/3.PNG)
 
 The below screenshot shows the identified subnetwork where users can either get a general
-summary of the subnetwork attributes, modify the subnetwork based on their data and preference or download the subnetwork in svg format for further use.
+summary of the subnetwork attributes, modify the subnetwork based on their data and preference or download the subnetwork as PNG for further use.
 
 ## Visualize a list of *GSCA* objects for "Time-course" data
 ```{r, eval=FALSE}
@@ -97,7 +97,7 @@ The above screenshot shows the GSOA result tables for Time-course data with thre
 ### Union enrichment map for "Time-course" data [Figure5]
 ![Union enrichment map for "Time-course" data](figures/5.PNG)
 
-The below screenshot shows the union enrichment maps of GSEA result for "Time-course" data with filtered edges by setting a cutoff on the edges. Users can click the topright button to modify the figure based on their data and preference. Here, we can clearly see a gradual change among three union enrichment maps with the same layout.
+The below screenshot shows the union enrichment maps of GSEA result for "Time-course" data with filtered edges by setting a cutoff on the edges. The *Experiment* slider moves through the time points while the layout is kept fixed, so the three maps can be compared directly. Here, we can clearly see a gradual change among them.
 
 ## Visualize a list of *NWA* objects for "Time-course" data
 ```{r, eval=FALSE}
@@ -114,7 +114,7 @@ reportAll(nwa = nwaTS)
 reportAll(gsca = gscaTS, nwa = nwaTS)
 ```
 
-The above screenshot shows the union subnetworks for "Time-course" data. Users can click the topright button to modify the figure based on their data and preference. We can clearly see a gradual change among three union subnetworks with the same layout.
+The above screenshot shows the union subnetworks for "Time-course" data. As with the enrichment maps, the *Experiment* slider moves through the time points while the layout stays fixed, so a gradual change among the three union subnetworks can be seen clearly.
 
 ### Visualize both GSEA and network result in the same report [Figure7]
 ![Visualize both GSEA and network result in the same report](figures/7.PNG)

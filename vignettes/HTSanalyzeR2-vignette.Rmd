@@ -605,7 +605,7 @@ reportAll(gsca=gsca3, nwa=nwa3, cutoff = 0.05)  ## [Figure 11-13]
 
 ![A screenshot of Shiny report on subnetwork of 'gsca3' and 'nwa3'](figures/shinyReport3.png)
 
-In the interactive report, for GSOA and GSEA results of single data set, you can download the table of different gene set collection in different format such as 'csv' or 'pdf'. On the right of this interface, there is the summary information about this analysis. For the dynamic enrichment map, you can change the layout, set node size and color, label types, edge thickness and download it as 'svg' format. For subnetwork analysis result, you can also change the above mentioned items to fit your requirements.
+In the interactive report, the result tables of every gene set collection can be downloaded as 'csv' or 'pdf', or copied to the clipboard, and the summary of the analysis parameters is shown as a row of value boxes below the table. For the dynamic enrichment map, the settings panel lets you change the layout, node size and color, label type and edge thickness, and the graph can be exported as a PNG. The same controls apply to a subnetwork result. The graphs can also be written to a file from a script with `saveNetwork()`.
 
 ## Shiny report for time-course data sets
 

@@ -11,3 +11,4 @@
 ^00_pkg_src$
 ^LICENSE\.md$
 ^Rplots\.pdf$
+^\.playwright-cli$
