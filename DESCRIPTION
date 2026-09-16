@@ -74,6 +74,7 @@ Collate:
     'nwa_analyze.R'
     'nwa_preprocess.R'
     'nwa_report.R'
+    'nwa_solver.R'
     'nwa_summarize.R'
     'nwa_view.R'
     'stat_test.R'
@@ -82,15 +83,15 @@ LinkingTo: Rcpp
 Suggests:
     RankProd,
     webshot2,
-    cellHTS2,
     BiocStyle,
     rmarkdown,
-    testthat,
     knitr,
+    testthat,
     org.Hs.eg.db,
     Biobase,
     limma,
-    TxDb.Hsapiens.UCSC.hg19.knownGene
+    TxDb.Hsapiens.UCSC.hg19.knownGene,
+    cellHTS2
 VignetteBuilder: knitr
 Depends: R(>= 3.5)
 biocViews: GeneSetEnrichment, NetworkEnrichment, TimeCourse, 

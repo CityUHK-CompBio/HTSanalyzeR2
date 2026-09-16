@@ -90,6 +90,20 @@ viewSubNet(nwa)
 and `analyzeNwaTS()` operate on the batch objects, and `reportAll()` produces a
 report with a time slider.
 
+### Screen statistics
+
+One-sample and two-sample tests for plate-based screens work on plain matrices,
+without a `cellHTS` object:
+
+```r
+stats <- screenStatTests(data, annotation, controlStatus,
+                         tests = c("T-test", "MannWhitney"))
+```
+
+`data` is a feature x replicate matrix, `annotation` holds the construct
+identifier of every row and `controlStatus` labels each row as `"sample"` or as
+a control group.
+
 ## Parallel execution
 
 Permutation-based GSEA runs through [BiocParallel](https://bioconductor.org/packages/BiocParallel).
@@ -145,14 +159,15 @@ seeded, which is covered by the test suite.
 
 **Suggests** — optional paths and tooling:
 
-`cellHTS2` (legacy `cellHTS2OutputStatTests()`), `RankProd` (the optional
-`tests = "RankProduct"` branch), `webshot2` (PNG export through
-`saveNetwork()`), `BiocStyle`, `rmarkdown`, `knitr`, `testthat`, `org.Hs.eg.db`,
-  `Biobase`, `limma`, `TxDb.Hsapiens.UCSC.hg19.knownGene`.
+`RankProd` (the optional `tests = "RankProduct"` branch), `webshot2` (PNG export
+through `saveNetwork()`), `BiocStyle`, `rmarkdown`, `knitr`, `testthat`,
+`org.Hs.eg.db`, `limma`, `TxDb.Hsapiens.UCSC.hg19.knownGene`.
 
-`cellHTS2` has been removed from Bioconductor, so `cellHTS2OutputStatTests()`
-is only available if you install that package from an archive; it is never
-needed to install or use the rest of HTSanalyzeR2.
+`cellHTS2` and `Biobase` are only needed by `cellHTS2OutputStatTests()`, the
+adapter for legacy `cellHTS` objects. `cellHTS2` has been removed from
+Bioconductor, so that adapter only works when the package is installed from a
+source archive; the statistics themselves are available without it through
+`screenStatTests()`.
 
 ## Implementation notes
 
@@ -163,6 +178,9 @@ needed to install or use the rest of HTSanalyzeR2.
   with one namespaced settings panel per graph.
 - Rank Product is the only non-FOSS dependency, and it is optional: it is
   required only when you ask for `tests = "RankProduct"`.
+- Network analysis is reproducible: the beta-uniform mixture fit is seeded
+  deterministically and the best fit is kept, instead of letting BioNet's
+  random multi-start change the subnetwork between runs.
 - BioGRID downloads track the current `Latest-Release` archive instead of a
   pinned release from 2016.
 

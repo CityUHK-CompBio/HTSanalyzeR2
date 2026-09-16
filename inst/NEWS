@@ -1,5 +1,29 @@
 # HTSanalyzeR2 0.99.19
 
+## Algorithms, reproducibility and legacy removals
+
+* `analyze()` on an `NWA` object no longer aborts on networks where the
+  profitable negative nodes are pairwise non-adjacent. BioNet's FastHeinz
+  solver takes the minimum spanning tree of an edgeless subgraph internally and
+  aborts there under igraph 2.x; `identifySubnetwork()` keeps using the exact
+  solver and falls back to a greedy maximum-scoring connected subgraph only for
+  that case, with a warning, instead of failing.
+* Network analysis is now reproducible. BioNet draws the starting values of the
+  beta-uniform mixture fit with `runif()` and keeps the last successful fit
+  rather than the best one, so the identified subnetwork changed between runs
+  (118, 119 and 121 nodes were observed for one fixed input). `fitBumModelStable()`
+  searches a fixed set of seeds, keeps the best fit by negative log-likelihood,
+  and leaves the caller's random number stream untouched.
+* The screen statistics no longer need `cellHTS2`, which has been removed from
+  Bioconductor. `screenStatTests()` performs the one-sample and two-sample
+  t-test, Mann-Whitney and Rank Product tests on a plain matrix, an annotation
+  vector and a sample/control labelling; `cellHTS2OutputStatTests()` is now a
+  thin adapter over it for users who still have cellHTS objects. Results were
+  verified to be identical to the previous implementation across all test and
+  alternative combinations.
+* Fixed a regression introduced during the modernization work: the construct
+  identifiers were lost from the row names of the screen statistics result.
+
 ## Licence
 
 * The package is now distributed under the Apache License 2.0. The

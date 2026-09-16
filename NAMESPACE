@@ -20,6 +20,7 @@ export(preprocessGscaTS)
 export(preprocessNwaTS)
 export(reportAll)
 export(saveNetwork)
+export(screenStatTests)
 exportMethods(analyze)
 exportMethods(appendGSTerms)
 exportMethods(extractEnrichMap)
@@ -71,15 +72,22 @@ importFrom(grDevices,
   pdf,
   png
 )
+importFrom(graphics,
+  hist,
+  par
+)
 importFrom(igraph,
   "E<-",
   "V<-",
   E,
   V,
   as_data_frame,
+  components,
   ecount,
   graph_from_adjacency_matrix,
+  induced_subgraph,
   make_empty_graph,
+  neighbors,
   set_vertex_attr,
   simplify,
   vcount,

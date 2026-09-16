@@ -116,7 +116,7 @@ setMethod("analyze",
 
 
 #' @importFrom BioNet fitBumModel scoreNodes runFastHeinz
-#' @importFrom igraph vertex_attr vcount
+#' @importFrom igraph vertex_attr vcount induced_subgraph components neighbors
 #'
 networkAnalysis <-
   function(pvalues,
@@ -160,7 +160,7 @@ networkAnalysis <-
     #  model will produce a diagnostic plot on the screen, to check the
     #  fitting
     dataForNw <- pvalues[scoredNodes]
-    fb <- fitBumModel(dataForNw, plot = plotBumModel)
+    fb <- fitBumModelStable(dataForNw, plot = plotBumModel)
     ## Score the nodes of the network
     #  The nodes without pvalues will get a NA value instead of a score
     scores <- scoreNodes(graph, fb = fb, fdr = fdr)
@@ -172,7 +172,11 @@ networkAnalysis <-
     ## Find the optimal subnetwork
     if (verbose)
       cat("--Computing the optimal subnetwork", "\n")
-    module <- runFastHeinz(network = graph, scores = scoreswMean)
+    module <- identifySubnetwork(graph, scoreswMean, verbose = verbose)
+    if (vcount(module) == 0) {
+      warning("No enriched subnetwork was found for this network and FDR.\n",
+              call. = FALSE)
+    }
     cat("-Network analysis complete \n")
     cat("==============================================\n\n")
     ## Return a igraph object consisting of the enriched sub-network

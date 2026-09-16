@@ -20,10 +20,8 @@ cellHTS2OutputStatTests(
 column in the fData(cellHTSobject) data frame from which the feature
 identifiers will be extracted.}
 
-\item{controls}{A single character value specifying the name of the controls
-to be used as a control population in the two-sample tests (this HAS to be
-corresponding to how these control wells have been annotated in the column
-"controlStatus" of the fData(cellHTSobject) data frame). If nothing is
+\item{controls}{A single character value giving the name of the control group
+used as the control population in the two-sample tests. If nothing is
 specified, the function will look for negative controls labelled "neg".}
 
 \item{alternative}{A single character value specifying the alternative
@@ -39,35 +37,26 @@ the other two, and returns a percent false discovery (equivalent to a FDR,
 not a p-value).}
 }
 \value{
-A matrix with two columns, one for each type of test (two-sample and
-one-sample test) except the Rank Product (no alternative), and a row for each
-construct (row names corresponding to the identifiers given by the
-"annotationcolumn" entry).
+See \code{\link[HTSanalyzeR2]{screenStatTests}}.
 }
 \description{
-This function takes a normalized, configured and annotated cellHTS object and
-performs statistical tests on it for the significance of a set of observations
-for each condition tested in a high-throughput screen.
+Adapter that extracts the measurements, the feature annotation and the
+sample/control labelling from a normalized, configured and annotated
+`cellHTS` object and passes them to
+\code{\link[HTSanalyzeR2]{screenStatTests}}, which performs the tests.
 }
 \details{
-The tests are computed taking into account only the wells labelled "sample"
-in the column "controlStatus" of the fData(cellHTSobject).
-The two sample tests compare the set of observations for one construct to the
-values obtained for a population considered as "control". The one-sample tests
-compare the set of observations for one construct to the median of all values
-obtained across all constructs labelled as "sample". This type of test assumes
-that most constructs are expected to show a negligible effect. It is therefore
-not advised to use this type of tests when the constructs tested have been
-pre-screened for being associated with a phenotype.
-Please be aware that both types of tests are less reliable when the number
-of replicates for each construct is low.
+`cellHTS2` has been removed from Bioconductor. This function therefore only
+works when that package is installed from a source archive; the tests
+themselves are available without it through
+\code{\link[HTSanalyzeR2]{screenStatTests}}.
 }
 \examples{
+\dontrun{
 data(xn)
-test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn, annotationColumn="GeneID",
-                                      alternative="two.sided", tests=c("T-test"))
+test.stats <- cellHTS2OutputStatTests(cellHTSobject = xn,
+                                      annotationColumn = "GeneID",
+                                      alternative = "two.sided",
+                                      tests = c("T-test"))
 }
-\references{
-Michael Boutros, Ligia P. Bras L and Wolfgang Huber. Analysis of cell-based
-RNAi screens. Genome Biology 7:7 R66 (2006)."
 }

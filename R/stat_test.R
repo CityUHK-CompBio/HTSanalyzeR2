@@ -1,17 +1,23 @@
-#' Perform statistical tests on a cellHTS object
+#' Statistical tests for high-throughput screen data
 #'
-#' This function takes a normalized, configured and annotated cellHTS object and
-#' performs statistical tests on it for the significance of a set of observations
-#' for each condition tested in a high-throughput screen.
+#' Performs one-sample and two-sample tests on the observations of every
+#' construct of a high-throughput screen, for each condition tested.
 #'
-#' @param cellHTSobject An object of class cellHTS.
-#' @param annotationColumn A single character value specifying the name of the
-#' column in the fData(cellHTSobject) data frame from which the feature
-#' identifiers will be extracted.
-#' @param controls A single character value specifying the name of the controls
-#' to be used as a control population in the two-sample tests (this HAS to be
-#' corresponding to how these control wells have been annotated in the column
-#' "controlStatus" of the fData(cellHTSobject) data frame). If nothing is
+#' These tests only need a matrix of measurements, a feature annotation and a
+#' sample/control labelling, so they work on plain R objects. They used to be
+#' reachable only through a `cellHTS2` object; `cellHTS2` has since been removed
+#' from Bioconductor, so the tests are now available without it.
+#' \code{\link[HTSanalyzeR2]{cellHTS2OutputStatTests}} remains as an adapter for
+#' users who still have cellHTS objects.
+#'
+#' @param data A numeric matrix with one row per feature (well) and one column
+#' per replicate.
+#' @param annotation A vector of feature identifiers, one per row of `data`.
+#' Replicates of the same construct must share an identifier.
+#' @param controlStatus A character vector, one per row of `data`, labelling
+#' each row as `"sample"` or as a control group.
+#' @param controls A single character value giving the name of the control group
+#' used as the control population in the two-sample tests. If nothing is
 #' specified, the function will look for negative controls labelled "neg".
 #' @param alternative A single character value specifying the alternative
 #' hypothesis: "two.sided", "less" or "greater".
@@ -23,8 +29,8 @@
 #' the other two, and returns a percent false discovery (equivalent to a FDR,
 #' not a p-value).
 #' @details
-#' The tests are computed taking into account only the wells labelled "sample"
-#' in the column "controlStatus" of the fData(cellHTSobject).
+#' The tests are computed taking into account only the rows labelled "sample" in
+#' `controlStatus`.
 #' The two sample tests compare the set of observations for one construct to the
 #' values obtained for a population considered as "control". The one-sample tests
 #' compare the set of observations for one construct to the median of all values
@@ -36,58 +42,40 @@
 #' of replicates for each construct is low.
 #' @return A matrix with two columns, one for each type of test (two-sample and
 #' one-sample test) except the Rank Product (no alternative), and a row for each
-#' construct (row names corresponding to the identifiers given by the
-#' "annotationcolumn" entry).
+#' construct (row names corresponding to `annotation`).
 #' @references
 #' Michael Boutros, Ligia P. Bras L and Wolfgang Huber. Analysis of cell-based
 #' RNAi screens. Genome Biology 7:7 R66 (2006)."
 #' @export
 #' @importFrom stats median t.test wilcox.test
 #' @examples
-#' data(xn)
-#' test.stats <- cellHTS2OutputStatTests(cellHTSobject=xn, annotationColumn="GeneID",
-#'                                       alternative="two.sided", tests=c("T-test"))
-cellHTS2OutputStatTests <- function(cellHTSobject,
-                                    annotationColumn = "GeneID",
-                                    controls = "neg",
-                                    alternative = "two.sided",
-                                    logged = FALSE,
-                                    tests = "T-test") {
-
-  ## 'cellHTS2' was removed from Bioconductor, so this legacy path is only
-  ## available when the package is installed from an archive or a local
-  ## source. Fail with an actionable message instead of an obscure
-  ## "there is no package called 'cellHTS2'" error.
-  if (!requireNamespace("cellHTS2", quietly = TRUE)) {
-    stop(
-      "cellHTS2OutputStatTests() needs the optional 'cellHTS2' package, which ",
-      "is no longer part of Bioconductor.\n",
-      "Install it from a source archive (for example with ",
-      "remotes::install_version(\"cellHTS2\")) or use ",
-      "BiocManager::valid() to check what your Bioconductor release provides.\n",
-      "Everything else in HTSanalyzeR2 works without it.\n",
-      call. = FALSE
-    )
-  }
+#' data <- matrix(rnorm(24), nrow = 6,
+#'                dimnames = list(paste0("well", 1:6), paste0("rep", 1:4)))
+#' annotation <- c("geneA", "geneA", "geneB", "geneB", "geneC", "geneC")
+#' status <- c(rep("sample", 4), "neg", "neg")
+#' screenStatTests(data, annotation, status, tests = c("T-test", "MannWhitney"))
+screenStatTests <- function(data,
+                            annotation,
+                            controlStatus,
+                            controls = "neg",
+                            alternative = "two.sided",
+                            logged = FALSE,
+                            tests = "T-test") {
 
   ## check arguments
-  paraCheck("StatTest", "normCellHTSobject", cellHTSobject)
-  paraCheck("StatTest", "annotationColumn", annotationColumn)
-
-  ## check that the annotationColumn is one column in the
-  #  fData(cellHTSobject) dataframe
-  if(!(annotationColumn %in% colnames(Biobase::fData(cellHTSobject))))
-    stop(paste("The 'annotationColumn' parameter does not match ",
-               "any column in your cellHTS object", sep=""))
-
-  ##check that 'controls' matches a status in the 'controlStatus'
-  # column of the cellHTS cellHTSobject
+  if (!is.matrix(data) || !is.numeric(data))
+    stop("'data' must be a numeric matrix with one row per feature.\n",
+         call. = FALSE)
+  if (length(annotation) != nrow(data))
+    stop("'annotation' must provide one identifier per row of 'data'.\n",
+         call. = FALSE)
+  if (length(controlStatus) != nrow(data))
+    stop("'controlStatus' must provide one label per row of 'data'.\n",
+         call. = FALSE)
   paraCheck("StatTest", "nwStatsControls", controls)
-  if(!(controls %in% Biobase::fData(cellHTSobject)[, "controlStatus"]))
-    stop(paste("The 'controls' parameter does not match to any ",
-               "status in the 'controlStatus' column of your cellHTS object",
-               sep=""))
-
+  if (!(controls %in% controlStatus))
+    stop("The 'controls' parameter does not match any value in 'controlStatus'.\n",
+         call. = FALSE)
   paraCheck("StatTest", "nwStatsAlternative", alternative)
   paraCheck("StatTest", "nwStatsTests", tests)
 
@@ -95,26 +83,19 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
   if ("RankProduct" %in% tests && !requireNamespace("RankProd", quietly = TRUE)) {
     stop(
       "The 'RankProduct' test requires the optional 'RankProd' package.\n",
-      "Please install it with BiocManager::install(\"RankProd\"), or run ",
-      "cellHTS2OutputStatTests() without 'RankProduct' in 'tests'.\n",
+      "Please install it with BiocManager::install(\"RankProd\"), or run the ",
+      "tests without 'RankProduct'.\n",
       call. = FALSE
     )
   }
 
-
-  ##make a named data matrix (only samples) rows=features,
-  ##columns=replicates, with row names = identifiers in the
-  ##"annotationColumn" of the fData() data frame
-  dataNw <- cellHTS2::Data(cellHTSobject)[, 1:ncol(cellHTS2::Data(cellHTSobject)), 1]
-  rownames(dataNw) <- Biobase::fData(cellHTSobject)[, annotationColumn]
-  dataNw <- dataNw[which(Biobase::fData(cellHTSobject)[, "controlStatus"] ==
-                           "sample"), ]
-  dataNw <- dataNw[which(!is.na(rownames(dataNw))), ]
-  ##make a vector of data for the control population
-  controlData <- cellHTS2::Data(cellHTSobject)[
-    which(Biobase::fData(cellHTSobject)[, "controlStatus"] == controls),
-    1:ncol(cellHTS2::Data(cellHTSobject)), 1]
-  controlData <- as.vector(controlData)
+  ## make a named data matrix (only samples) rows = features, columns =
+  ## replicates, with row names = the feature identifiers
+  dataNw <- data[controlStatus == "sample", , drop = FALSE]
+  rownames(dataNw) <- annotation[controlStatus == "sample"]
+  dataNw <- dataNw[!is.na(rownames(dataNw)), , drop = FALSE]
+  ## make a vector of data for the control population
+  controlData <- as.vector(data[controlStatus == controls, , drop = FALSE])
   ##compute the median of all samples, for the one sample tests
   mu = median(as.vector(dataNw), na.rm = TRUE)
   ##make a list of the data (one entry per unique ID): each entry in
@@ -123,9 +104,14 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
   ##formatting this as a list allows us to have different number of
   ##replicates for each construct
   replicatesNames <- unique(rownames(dataNw))
-  replicates <- unname(split(data.frame(dataNw, stringsAsFactors = FALSE),
-                             rownames(dataNw))[replicatesNames])
-  replicates <- lapply(replicates, unlist, use.names = FALSE)
+  ## one entry per construct, holding its replicate measurements. The names are
+  ## the construct identifiers and they end up as the row names of the result,
+  ## so they must be kept (and kept in the original order).
+  replicates <- split(seq_len(nrow(dataNw)), rownames(dataNw))[replicatesNames]
+  replicates <- lapply(replicates, function(rows) {
+    as.vector(dataNw[rows, , drop = FALSE])
+  })
+  names(replicates) <- replicatesNames
   nreplicates <- length(replicates)
   if("T-test" %in% tests) {
     ##Compute the one sample t-test (only possible for those entries
@@ -336,4 +322,77 @@ cellHTS2OutputStatTests <- function(cellHTSobject,
     }
   }
   return(stats)
+}
+
+
+#' Perform statistical tests on a cellHTS object
+#'
+#' Adapter that extracts the measurements, the feature annotation and the
+#' sample/control labelling from a normalized, configured and annotated
+#' `cellHTS` object and passes them to
+#' \code{\link[HTSanalyzeR2]{screenStatTests}}, which performs the tests.
+#'
+#' `cellHTS2` has been removed from Bioconductor. This function therefore only
+#' works when that package is installed from a source archive; the tests
+#' themselves are available without it through
+#' \code{\link[HTSanalyzeR2]{screenStatTests}}.
+#'
+#' @param cellHTSobject An object of class cellHTS.
+#' @param annotationColumn A single character value specifying the name of the
+#' column in the fData(cellHTSobject) data frame from which the feature
+#' identifiers will be extracted.
+#' @inheritParams screenStatTests
+#' @return See \code{\link[HTSanalyzeR2]{screenStatTests}}.
+#' @export
+#' @examples
+#' \dontrun{
+#' data(xn)
+#' test.stats <- cellHTS2OutputStatTests(cellHTSobject = xn,
+#'                                       annotationColumn = "GeneID",
+#'                                       alternative = "two.sided",
+#'                                       tests = c("T-test"))
+#' }
+cellHTS2OutputStatTests <- function(cellHTSobject,
+                                    annotationColumn = "GeneID",
+                                    controls = "neg",
+                                    alternative = "two.sided",
+                                    logged = FALSE,
+                                    tests = "T-test") {
+  if (!requireNamespace("cellHTS2", quietly = TRUE)) {
+    stop(
+      "cellHTS2OutputStatTests() needs the optional 'cellHTS2' package, which ",
+      "is no longer part of Bioconductor.\n",
+      "Install it from a source archive (for example with ",
+      "remotes::install_version(\"cellHTS2\")), or call ",
+      "screenStatTests() directly with a data matrix, an annotation vector ",
+      "and a sample/control labelling.\n",
+      call. = FALSE
+    )
+  }
+
+  ## check arguments
+  paraCheck("StatTest", "normCellHTSobject", cellHTSobject)
+  paraCheck("StatTest", "annotationColumn", annotationColumn)
+
+  fData <- Biobase::fData(cellHTSobject)
+  if (!(annotationColumn %in% colnames(fData)))
+    stop("The 'annotationColumn' parameter does not match ",
+         "any column in your cellHTS object", call. = FALSE)
+  if (!("controlStatus" %in% colnames(fData)))
+    stop("The cellHTS object has no 'controlStatus' column in fData().\n",
+         call. = FALSE)
+
+  measurements <- cellHTS2::Data(cellHTSobject)
+  ## dropping the single channel dimension yields the feature x replicate matrix
+  data <- measurements[, seq_len(dim(measurements)[2]), 1]
+
+  screenStatTests(
+    data = data,
+    annotation = fData[[annotationColumn]],
+    controlStatus = fData[["controlStatus"]],
+    controls = controls,
+    alternative = alternative,
+    logged = logged,
+    tests = tests
+  )
 }
