@@ -401,12 +401,14 @@ nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL",
 
 Then, you need to create an interactome for the network analysis using method *interactome* if you have not inputted your own interactome in the initial step. To this end, you can either specify the species and fetch the corresponding network from BioGRID database, or input an interaction matrix if it is in right format: a matrix with a row for each interaction, and at least contains the three columns “InteractorA”, “InteractorB” and “InteractionType”, where the interactors are specified by Entrez ID. For more details please see *help(interactome)*.
 
-Here, we just use *interactome* to download an interactome from BioGRID, which would meet user's requirements in most cases.
+Here, we just use *interactome* to download an interactome from BioGRID, which would meet user's requirements in most cases. The call is shown but not evaluated here: it downloads the full BioGRID archive (several hundred megabytes) into the working directory, which would make building this vignette depend on network access.
 
-```{r, message=FALSE}
+```{r, message=FALSE, eval=FALSE}
 nwa2 <- interactome(nwa1, species="Hs", genetic=FALSE)
 getInteractome(nwa2)
 ```
+
+If you prefer to avoid the download, build the interactome from an interaction matrix instead, or supply an `igraph` object through the `interactome` argument of `NWA()`.
 
 ### Perform analysis and view the identified subnetwork
 
