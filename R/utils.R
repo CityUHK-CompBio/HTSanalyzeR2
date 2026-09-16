@@ -21,6 +21,28 @@ defaultBioGridLink <- function() {
   "https://downloads.thebiogrid.org/Download/BioGRID/Latest-Release/BIOGRID-ORGANISM-LATEST.tab2.zip"
 }
 
+## Build a sparse incidence matrix (rows = sets, columns = elements) from a
+## list of character vectors. Used to compute every pairwise overlap between
+## gene sets with one matrix product instead of a loop over the pairs.
+#' @importFrom Matrix sparseMatrix
+sparseIncidence <- function(sets) {
+  if (length(sets) == 0) {
+    return(Matrix::sparseMatrix(i = integer(0), j = integer(0),
+                                dims = c(0L, 0L)))
+  }
+  elements <- unique(unlist(sets, use.names = FALSE))
+  if (length(elements) == 0) {
+    return(Matrix::sparseMatrix(i = integer(0), j = integer(0),
+                                dims = c(length(sets), 0L)))
+  }
+
+  sizes <- vapply(sets, length, integer(1))
+  rowIndex <- rep.int(seq_along(sets), sizes)
+  colIndex <- match(unlist(sets, use.names = FALSE), elements)
+  Matrix::sparseMatrix(i = rowIndex, j = colIndex, x = 1,
+                       dims = c(length(sets), length(elements)))
+}
+
 ## This is the central function for argument checking
 #' @importFrom methods is
 paraCheck <- function(group, paraName, para) {
@@ -88,9 +110,9 @@ paraCheck <- function(group, paraName, para) {
          PreProcess = {
            if (paraName == "duplicateRemoverMethod" &&
                (!is.character(para) || length(para) != 1 ||
-                !(para %in% c("max","min","average","fold.change.average")))) {
+                !(para %in% c("max","min","average","fc.avg","fold.change.average")))) {
              stop(paste("'duplicateRemoverMethod' should be only one of the following character strings:",
-                        "'max', 'min', 'average', 'fc.avg(fold change average)'"))
+                        "'max', 'min', 'average', 'fc.avg' (fold change average)"))
            }
            if (paraName == "orderAbsValue" &&
               (!is.logical(para) || length(para) != 1)) {

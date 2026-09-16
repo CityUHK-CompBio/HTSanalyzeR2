@@ -41,6 +41,7 @@ Imports:
     KEGGREST,
     data.table,
     methods,
+    Matrix,
     AnnotationDbi,
     graphics,
     grDevices,

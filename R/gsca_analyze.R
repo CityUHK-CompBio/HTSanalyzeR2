@@ -318,8 +318,10 @@ analyzeGeneSetCollections <-
           pAdjustMethod,
           verbose
         )
-      cat("-Gene set enrichment analysis using HTSanalyzeR2 complete \n")
-      cat("==============================================\n\n")
+      if (verbose) {
+        cat("-Gene set enrichment analysis using HTSanalyzeR2 complete \n")
+        cat("==============================================\n\n")
+      }
       } else {
         ## using fgsea to do GSEA
         geneList <- sort(geneList)
@@ -332,8 +334,10 @@ analyzeGeneSetCollections <-
           pAdjustMethod,
           verbose
         )
-        cat("-Gene set enrichment analysis using fgsea complete \n")
-        cat("==============================================\n\n")
+        if (verbose) {
+          cat("-Gene set enrichment analysis using fgsea complete \n")
+          cat("==============================================\n\n")
+        }
     }} else {
       GSEA.results.list = NULL
     }
@@ -684,7 +688,7 @@ getLeadingEdge <- function(geneList, geneSet, exponent=1) {
 
 
 
-##' @importFrom fgsea fgsea
+##' @importFrom fgsea fgseaSimple
 GSEA_fgsea <- function(listOfGeneSetCollections,
                        geneList,
                        nPermutations,
@@ -702,14 +706,20 @@ GSEA_fgsea <- function(listOfGeneSetCollections,
     cat("-Performing gene set enrichment analysis using fgsea...", "\n")
     cat("--Calculating the permutations ...", "\n")
   }
-  ## use fgsea to do gsea
-  tmp_res <- fgsea(pathways=combinedGeneSets,
-                   stats=geneList,
-                   nperm=nPermutations,
-                   minSize=minGeneSetSize,
-                   maxSize=Inf,
-                   gseaParam=exponent,
-                   nproc = 0)
+  ## Use fgsea's permutation implementation directly. Calling the generic
+  ## fgsea() with 'nperm' routes through a deprecated branch that warns on every
+  ## run, and the number of permutations the caller asked for is exactly what
+  ## fgseaSimple() provides. The package's registered BiocParallel backend is
+  ## handed over so that this path is parallelised by the same mechanism as the
+  ## built-in GSEA.
+  tmp_res <- fgsea::fgseaSimple(pathways = combinedGeneSets,
+                                stats = geneList,
+                                nperm = nPermutations,
+                                minSize = minGeneSetSize,
+                                maxSize = Inf,
+                                gseaParam = exponent,
+                                nproc = 0,
+                                BPPARAM = BiocParallel::bpparam())
   tmp_res <- as.data.frame(tmp_res)
   tmp_res$padj <- p.adjust(tmp_res$pval, method=pAdjustMethod)
   rownames(tmp_res) <- tmp_res$pathway

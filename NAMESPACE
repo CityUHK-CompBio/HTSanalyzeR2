@@ -63,9 +63,10 @@ importFrom(KEGGREST,
   keggLink,
   keggList
 )
+importFrom(Matrix,sparseMatrix)
 importFrom(Rcpp,sourceCpp)
 importFrom(data.table,fread)
-importFrom(fgsea,fgsea)
+importFrom(fgsea,fgseaSimple)
 importFrom(grDevices,
   colorRampPalette,
   dev.off,

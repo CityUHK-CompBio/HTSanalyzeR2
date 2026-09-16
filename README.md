@@ -117,6 +117,28 @@ BiocParallel::register(BiocParallel::SnowParam(workers = 4))       # Windows
 Serial and parallel backends return identical results when the backend is
 seeded, which is covered by the test suite.
 
+### Choosing a GSEA engine
+
+`analyze()` ships two engines. `GSEA.by = "HTSanalyzeR2"` (the default) is the
+package's own permutation engine. `GSEA.by = "fgsea"` delegates to
+[fgsea](https://bioconductor.org/packages/fgsea), which is the maintained
+implementation of the same method and is roughly an order of magnitude faster
+on gene-set collections of a few hundred sets:
+
+```r
+gsca <- analyze(gsca, GSEA.by = "fgsea", doGSOA = TRUE, doGSEA = TRUE,
+                para = list(pValueCutoff = 0.05, pAdjustMethod = "BH",
+                            nPermutations = 1000, minGeneSetSize = 10,
+                            exponent = 1))
+```
+
+The fgsea engine also reports `NES`, `nMoreExtreme` and `size`, and it honours
+the registered BiocParallel backend. The default is unchanged, because the two
+engines do not return identical p-values; switch explicitly when you want the
+faster engine.
+
+Set the seed before `analyze()` if you need reproducible permutation p-values.
+
 ## Output and export
 
 - **Result tables** live in the `result` slot and are reached through

@@ -354,31 +354,30 @@ setMethod("extractEnrichMap", signature = "GSCA",
                 "No gene set terms found in results!\n Please use the method 'appendGSTerms' or add a column named 'Gene.Set.Term' to the results!\n"
               )
 
-            ## function to compute overlapped genes
-            map.mat <- diag(1, nrow(tempdf), nrow(tempdf))
-            map.diag <- sapply(1:nrow(tempdf),
-                               function(i)
-                                 length(gsInUni[[as.character(tempdf[i, "gscID"])]][[as.character(tempdf[i, "gsID"])]]))
-            rownames(map.mat) <- rownames(tempdf)
-            colnames(map.mat) <- rownames(tempdf)
-
             if (nrow(tempdf) >= 2) {
               gsID <- as.character(tempdf[["gsID"]])
               gscID <- as.character(tempdf[["gscID"]])
-              sapply(1:(nrow(tempdf) - 1), function(i) {
-                a <- gsInUni[[gscID[i]]][[gsID[i]]]
-                map.mat[i, (i + 1):nrow(tempdf)] <<-
-                  sapply((i + 1):nrow(tempdf),
-                         function(j) {
-                           b <- gsInUni[[gscID[j]]][[gsID[j]]]
-                           tmp <- length(intersect(a, b)) / length(union(a,b))
-                           ## set cutoff to show edge
-                           if(is.null(cutoff)) {tmp} else if(tmp < cutoff){tmp <- 0}
-                           tmp
-                         }
-                  )
-                map.mat[(i + 1):nrow(tempdf), i] <<- map.mat[i, (i + 1):nrow(tempdf)]
+              ## Jaccard similarity between every pair of gene sets. Instead of
+              ## looping over the upper triangle and calling intersect()/
+              ## union() per pair, the gene sets are turned into a sparse
+              ## incidence matrix: the matrix product of the incidence with its
+              ## transpose gives every pairwise intersection count in one
+              ## operation, and the union size follows from the row sizes.
+              geneSets <- lapply(seq_len(nrow(tempdf)), function(i) {
+                gsInUni[[gscID[i]]][[gsID[i]]]
               })
+              map.diag <- vapply(geneSets, length, integer(1))
+              incidence <- sparseIncidence(geneSets)
+
+              intersections <- as.matrix(Matrix::tcrossprod(incidence))
+              unions <- outer(map.diag, map.diag, "+") - intersections
+              map.mat <- intersections / unions
+
+              ## set cutoff to show edge
+              if (!is.null(cutoff)) map.mat[map.mat < cutoff] <- 0
+              diag(map.mat) <- 1
+              rownames(map.mat) <- rownames(tempdf)
+              colnames(map.mat) <- rownames(tempdf)
 
               ## generate igraph from adjacency matrix
               ### "Node name" controlled by the rownames of tempList
@@ -390,7 +389,10 @@ setMethod("extractEnrichMap", signature = "GSCA",
               )
               g <- simplify(g, remove.loops = TRUE)
             } else if (nrow(tempdf) == 1) {
-              diag(map.mat) <- 0
+              map.diag <- length(gsInUni[[as.character(tempdf[1, "gscID"])]][[as.character(tempdf[1, "gsID"])]])
+              map.mat <- matrix(0, 1, 1)
+              rownames(map.mat) <- rownames(tempdf)
+              colnames(map.mat) <- rownames(tempdf)
               ## generate igraph from adjacency matrix
               # "Node name" controlled by the rownames of tempList
               g <-

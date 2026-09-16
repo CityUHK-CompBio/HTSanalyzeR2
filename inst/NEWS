@@ -23,6 +23,25 @@
   alternative combinations.
 * Fixed a regression introduced during the modernization work: the construct
   identifiers were lost from the row names of the screen statistics result.
+* The GSEA permutation engine is unchanged, but the profile is now dominated by
+  the permutations themselves (69% of the time in `sample.int`), which is
+  inherent to the method. `GSEA.by = "fgsea"` delegates to the maintained
+  implementation and is about an order of magnitude faster; it is documented in
+  the README and covered by tests.
+
+## Performance
+
+* `extractEnrichMap()` builds the Jaccard similarity between all pairs of gene
+  sets from a sparse incidence matrix (`Matrix::tcrossprod`) instead of a
+  double loop calling `intersect()`/`union()` per pair. On 367 gene sets this
+  reduced the step from 1.98s to 0.04s — about 50x — with bit-identical output.
+* `duplicateRemover()` groups positions once instead of rescanning the name
+  vector for every gene, which removes a quadratic scan. On a 20000-element
+  gene list this is 12-16x faster with identical output.
+* `analyze(GSEA.by = "fgsea")` calls `fgsea::fgseaSimple()` directly instead of
+  the deprecated `fgsea(nperm=)` branch, so it no longer warns on every run, and
+  it hands the registered BiocParallel backend to fgsea.
+* The completion messages of `analyze()` now honour `verbose = FALSE`.
 
 ## Licence
 

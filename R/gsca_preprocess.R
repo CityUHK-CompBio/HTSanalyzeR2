@@ -228,40 +228,41 @@ setMethod("preprocess", signature = "GSCA",
 duplicateRemover <- function(geneList, method = "max") {
   paraCheck("GSCAClass", "genelist", geneList)
   paraCheck("PreProcess", "duplicateRemoverMethod", method)
+  ## 'fold.change.average' was the only spelling the argument check accepted,
+  ## while the body and the documentation used 'fc.avg'; accept both so neither
+  ## spelling silently does nothing.
+  if (identical(method, "fold.change.average")) method <- "fc.avg"
 
   ## Get the unique names and create a vector that will store the
   ## processed values corresponding to those names
   geneList.names <- names(geneList)
   datanames <- unique(geneList.names)
 
+  ## Group the positions once. Scanning the whole name vector for every group
+  ## made the previous implementation quadratic in the number of genes.
+  rows <- split(seq_along(geneList), geneList.names)[datanames]
+
   ## If the absolute value of the min is bigger than the absolute
   ## value of the max, then it is the min that is kept
   if (method == "max") {
-    data.processed <- sapply(datanames,
-                             function(name) {
-                               this.range <- range(geneList[geneList.names == name])
-                               this.range[which.max(abs(this.range))]
-                             })
+    data.processed <- vapply(rows, function(idx) {
+      this.range <- range(geneList[idx])
+      this.range[which.max(abs(this.range))]
+    }, numeric(1))
   } else if (method == "min") {
-    data.processed <- sapply(datanames,
-                             function(name) {
-                               this.range <- range(geneList[which(geneList.names == name)])
-                               this.range[which.min(abs(this.range))]
-                             })
+    data.processed <- vapply(rows, function(idx) {
+      this.range <- range(geneList[idx])
+      this.range[which.min(abs(this.range))]
+    }, numeric(1))
   } else if (method == "average") {
-    data.processed <- sapply(datanames,
-                             function(name) {
-                               mean(geneList[geneList.names == name])
-                             })
+    data.processed <- vapply(rows, function(idx) mean(geneList[idx]), numeric(1))
   } else if (method == "fc.avg") {
     neg.fcs <- which(geneList < 1)
     geneListRatios <- geneList
     #convert from fold change to ratio
     geneListRatios[neg.fcs] <- abs(1 / geneList[neg.fcs])
     #average the values across replicates
-    data.processed <- sapply(datanames, function(name) {
-      mean(geneListRatios[geneList.names == name])
-    })
+    data.processed <- vapply(rows, function(idx) mean(geneListRatios[idx]), numeric(1))
     #convert back to fold change
     neg.fcs <- which(data.processed < 1)
     data.processed[neg.fcs] <- (-1 / data.processed[neg.fcs])

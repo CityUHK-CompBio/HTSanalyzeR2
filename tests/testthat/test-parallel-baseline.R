@@ -18,7 +18,9 @@ test_that("serial and parallel BiocParallel backends give identical GSEA results
     geneSets, geneList, nPermutations = 50, minGeneSetSize = 5
   )
 
-  BiocParallel::register(BiocParallel::SnowParam(workers = 2, RNGseed = 1))
+  snow <- BiocParallel::SnowParam(workers = 2, RNGseed = 1)
+  on.exit(BiocParallel::bpstop(snow), add = TRUE)
+  BiocParallel::register(snow)
   parallel <- HTSanalyzeR2:::calcGSEA(
     geneSets, geneList, nPermutations = 50, minGeneSetSize = 5
   )
