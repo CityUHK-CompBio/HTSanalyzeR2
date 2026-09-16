@@ -109,8 +109,14 @@ test_that("saveNetwork validates its inputs", {
                "must end in")
 })
 
-test_that("saveNetwork writes a PNG when webshot2 is available", {
+test_that("saveNetwork writes a PNG when a headless browser is available", {
   skip_if_not_installed("webshot2")
+  ## PNG rendering goes through a real headless Chrome; that is not available in
+  ## every environment (CI runners without a browser, locked-down sandboxes), so
+  ## the capability is asserted when present and skipped when absent.
+  skip_if_not_installed("chromote")
+  skip_if(is.null(chromote::find_chrome()),
+          "no Chrome/Chromium available for headless rendering")
 
   nodes <- data.frame(
     name = c("a", "b", "c"),
@@ -136,11 +142,18 @@ test_that("saveNetwork writes a PNG when webshot2 is available", {
   png <- tempfile(fileext = ".png")
   on.exit(unlink(png), add = TRUE)
 
-  ## a graph with three nodes needs no long stabilization; webshot2 reports
-  ## its progress, so only hard output is suppressed here
-  expect_silent(
+  ## a graph with three nodes needs no long stabilization; webshot2 reports its
+  ## progress, so only hard output is suppressed here
+  outcome <- tryCatch({
     suppressMessages(saveNetwork(widget, png, width = 600, height = 400, delay = 1))
-  )
+    "rendered"
+  }, error = function(e) conditionMessage(e))
+
+  skip_if(grepl("Chrome debugging port|Failed to start|cannot find|no such file",
+                outcome, ignore.case = TRUE),
+          paste("headless browser could not be started:", outcome))
+
+  expect_equal(outcome, "rendered")
   expect_true(file.exists(png))
   expect_gt(file.size(png), 1000)
 })

@@ -157,7 +157,9 @@ Set the seed before `analyze()` if you need reproducible permutation p-values.
   ```
 
   PNG output needs the optional [`webshot2`](https://rstudio.github.io/webshot2/)
-  package; the HTML output has no extra requirement.
+  package plus a Chrome/Chromium browser for the headless rendering; the HTML
+  output has no extra requirement. Without a browser, `saveNetwork()` reports
+  that PNG export is unavailable and the HTML path still works.
 - **Result tables as files**: every table in the report can be exported to
   CSV/TSV/PDF from its toolbar, or written directly:
 

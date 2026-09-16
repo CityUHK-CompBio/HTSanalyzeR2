@@ -45,6 +45,18 @@
   `inst/extdata/xn.rda` for anyone who has `cellHTS2` installed and wants to
   rebuild a `cellHTS` object from it.
 
+## Build reproducibility
+
+* The vignette no longer downloads the BioGRID archive. The chunk that called
+  `interactome(..., species = "Hs")` was evaluated during every build, which
+  pulled several hundred megabytes into the working directory and made building
+  the vignette depend on network access; the call is still shown, with the
+  alternative of supplying an interaction matrix. Building the source package
+  went from minutes to under a minute, and the tarball stays at ~33 MB instead of
+  carrying the downloaded data.
+* The PNG-export test now skips when no Chrome/Chromium is available, instead of
+  failing in environments that cannot start a headless browser.
+
 ## Documentation and packaging
 
 * All screenshots of the Shiny report were regenerated: they still showed the
