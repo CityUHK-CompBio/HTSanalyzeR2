@@ -52,10 +52,9 @@ construct of a high-throughput screen, for each condition tested.
 \details{
 These tests only need a matrix of measurements, a feature annotation and a
 sample/control labelling, so they work on plain R objects. They used to be
-reachable only through a `cellHTS2` object; `cellHTS2` has since been removed
-from Bioconductor, so the tests are now available without it.
-\code{\link[HTSanalyzeR2]{cellHTS2OutputStatTests}} remains as an adapter for
-users who still have cellHTS objects.
+reachable only through a `cellHTS2` object. That package has left
+Bioconductor, so the tests now take the measurements, the annotation and the
+sample/control labelling directly.
 
 
 The tests are computed taking into account only the rows labelled "sample" in

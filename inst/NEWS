@@ -32,6 +32,19 @@
   implementation and is about an order of magnitude faster; it is documented in
   the README and covered by tests.
 
+## Removed
+
+* `cellHTS2OutputStatTests()` and the `xn` example dataset were removed, together
+  with the `cellHTS2` and `Biobase` suggestions. `cellHTS2` has left
+  Bioconductor: any reference to it, including a suggested dependency, makes a
+  clean `R CMD check` report the package as unavailable, and the `xn` dataset
+  (an S4 object of a class defined by that package) could not be loaded without
+  it. The statistics are unchanged and remain available through
+  `screenStatTests()`, which was verified to return identical results across all
+  test and alternative combinations. The `xn` object is still shipped under
+  `inst/extdata/xn.rda` for anyone who has `cellHTS2` installed and wants to
+  rebuild a `cellHTS` object from it.
+
 ## Documentation and packaging
 
 * All screenshots of the Shiny report were regenerated: they still showed the

@@ -83,35 +83,6 @@
 "Biogrid_HS_Interactome"
 
 
-#' Example of a normalized, configured and annotated cellHTS object
-#'
-#' A `cellHTS` object produced by \pkg{cellHTS2}, carrying the measurements, the
-#' feature annotation and the sample/control labelling of a small RNAi screen.
-#'
-#' `cellHTS2` has been removed from Bioconductor. The class of this object comes
-#' from that package, so loading `xn` requires it to be installed (for example
-#' from a source archive). The statistics that used to be reachable only through
-#' such an object are available without it:
-#' \code{\link[HTSanalyzeR2]{screenStatTests}} takes the measurements, the
-#' annotation and the sample/control labels as plain R objects.
-#'
-#' @format An object of class \code{cellHTS} with 21888 rows and 2 columns.
-#' @seealso \code{\link[HTSanalyzeR2]{screenStatTests}},
-#' \code{\link[HTSanalyzeR2]{cellHTS2OutputStatTests}}
-#' @examples
-#' \dontrun{
-#' ## needs cellHTS2, which is no longer part of Bioconductor
-#' data(xn)
-#' cellHTS2OutputStatTests(xn, annotationColumn = "GeneID", tests = "T-test")
-#'
-#' ## the same statistics without cellHTS2
-#' measurements <- cellHTS2::Data(xn)[, , 1]
-#' annotation <- Biobase::fData(xn)$GeneID
-#' status <- Biobase::fData(xn)$controlStatus
-#' screenStatTests(measurements, annotation, status, tests = "T-test")
-#' }
-"xn"
-
 #' Expression of a demo data: GSE33113
 #'
 #' Expression of normalized data GSE33113 in vignette, which contains 21656 genes

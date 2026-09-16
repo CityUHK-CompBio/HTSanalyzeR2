@@ -307,38 +307,6 @@ paraCheck <- function(group, paraName, para) {
              }
            }
          },
-         StatTest = {
-           if (paraName == "normCellHTSobject") {
-             if (!is(para,"cellHTS"))
-               stop("The argument 'cellHTSobject/normCellHTSobject' should be a cellHTS object")
-             if (!cellHTS2::state(para)["configured"])
-               stop("The cellHTS object should be configured to perform the statistical tests")
-             if (!cellHTS2::state(para)["normalized"])
-               warning("Your cellHTS object has not been normalized, this could impact the results of these tests", immediate.=TRUE)
-             if (cellHTS2::state(para)["scored"])
-               stop("This cellHTS object has been scored; the statistical analysis should be performed on the normalized signal intensities", immediate.=TRUE)
-             if (!cellHTS2::state(para)["annotated"])
-               stop("This cellHTS object has not been annotated",immediate.=TRUE)
-           }
-           if (paraName == "annotationColumn") {
-             if (!is.character(para) || length(para) != 1 )
-               stop("'annotationColumn' should be a character value!\n")
-           }
-           if (paraName == "nwStatsControls") {
-             if (!is.character(para) || length(para) != 1)
-               stop("'controls/nwStatsControls' should be a character value!\n ")
-           }
-           if (paraName == "nwStatsAlternative") {
-             if (!is.character(para) || length(para) != 1
-                   || !(para %in% c("two.sided", "less", "greater")))
-               stop("'alternative/nwStatsAlternative' should be one in 'two.sided','less' and 'greater'!\n ")
-           }
-          if (paraName == "nwStatsTests") {
-            if (!is.character(para) || length(para) == 0 ||
-                !all(para %in% c("T-test","MannWhitney","RankProduct")))
-               stop("'tests/nwStatsTests' should be one or more in 'T-test', 'MannWhitney' and 'RankProduct'!\n ")
-           }
-         },
          General = {
            if (paraName == "verbose" &&
                (!is.logical(para) || length(para) != 1))

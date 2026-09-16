@@ -8,6 +8,6 @@ test_that("dependency declarations include every direct runtime caller", {
   expect_true("BiocParallel" %in% imports)
   expect_true("visNetwork" %in% imports)
   expect_true("bslib" %in% imports)
-  expect_true(all(c("limma", "Biobase") %in% suggests))
+  expect_true("limma" %in% suggests)
   expect_true("TxDb.Hsapiens.UCSC.hg19.knownGene" %in% suggests)
 })

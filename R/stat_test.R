@@ -5,10 +5,9 @@
 #'
 #' These tests only need a matrix of measurements, a feature annotation and a
 #' sample/control labelling, so they work on plain R objects. They used to be
-#' reachable only through a `cellHTS2` object; `cellHTS2` has since been removed
-#' from Bioconductor, so the tests are now available without it.
-#' \code{\link[HTSanalyzeR2]{cellHTS2OutputStatTests}} remains as an adapter for
-#' users who still have cellHTS objects.
+#' reachable only through a `cellHTS2` object. That package has left
+#' Bioconductor, so the tests now take the measurements, the annotation and the
+#' sample/control labelling directly.
 #'
 #' @param data A numeric matrix with one row per feature (well) and one column
 #' per replicate.
@@ -322,77 +321,4 @@ screenStatTests <- function(data,
     }
   }
   return(stats)
-}
-
-
-#' Perform statistical tests on a cellHTS object
-#'
-#' Adapter that extracts the measurements, the feature annotation and the
-#' sample/control labelling from a normalized, configured and annotated
-#' `cellHTS` object and passes them to
-#' \code{\link[HTSanalyzeR2]{screenStatTests}}, which performs the tests.
-#'
-#' `cellHTS2` has been removed from Bioconductor. This function therefore only
-#' works when that package is installed from a source archive; the tests
-#' themselves are available without it through
-#' \code{\link[HTSanalyzeR2]{screenStatTests}}.
-#'
-#' @param cellHTSobject An object of class cellHTS.
-#' @param annotationColumn A single character value specifying the name of the
-#' column in the fData(cellHTSobject) data frame from which the feature
-#' identifiers will be extracted.
-#' @inheritParams screenStatTests
-#' @return See \code{\link[HTSanalyzeR2]{screenStatTests}}.
-#' @export
-#' @examples
-#' \dontrun{
-#' data(xn)
-#' test.stats <- cellHTS2OutputStatTests(cellHTSobject = xn,
-#'                                       annotationColumn = "GeneID",
-#'                                       alternative = "two.sided",
-#'                                       tests = c("T-test"))
-#' }
-cellHTS2OutputStatTests <- function(cellHTSobject,
-                                    annotationColumn = "GeneID",
-                                    controls = "neg",
-                                    alternative = "two.sided",
-                                    logged = FALSE,
-                                    tests = "T-test") {
-  if (!requireNamespace("cellHTS2", quietly = TRUE)) {
-    stop(
-      "cellHTS2OutputStatTests() needs the optional 'cellHTS2' package, which ",
-      "is no longer part of Bioconductor.\n",
-      "Install it from a source archive (for example with ",
-      "remotes::install_version(\"cellHTS2\")), or call ",
-      "screenStatTests() directly with a data matrix, an annotation vector ",
-      "and a sample/control labelling.\n",
-      call. = FALSE
-    )
-  }
-
-  ## check arguments
-  paraCheck("StatTest", "normCellHTSobject", cellHTSobject)
-  paraCheck("StatTest", "annotationColumn", annotationColumn)
-
-  fData <- Biobase::fData(cellHTSobject)
-  if (!(annotationColumn %in% colnames(fData)))
-    stop("The 'annotationColumn' parameter does not match ",
-         "any column in your cellHTS object", call. = FALSE)
-  if (!("controlStatus" %in% colnames(fData)))
-    stop("The cellHTS object has no 'controlStatus' column in fData().\n",
-         call. = FALSE)
-
-  measurements <- cellHTS2::Data(cellHTSobject)
-  ## dropping the single channel dimension yields the feature x replicate matrix
-  data <- measurements[, seq_len(dim(measurements)[2]), 1]
-
-  screenStatTests(
-    data = data,
-    annotation = fData[[annotationColumn]],
-    controlStatus = fData[["controlStatus"]],
-    controls = controls,
-    alternative = alternative,
-    logged = logged,
-    tests = tests
-  )
 }

@@ -2,7 +2,7 @@ test_that("exported GSCA and NWA method surface remains intact", {
   exported <- getNamespaceExports("HTSanalyzeR2")
   functions <- c(
     "GSCA", "GSCABatch", "NWA", "NWABatch", "analyzeGscaTS", "analyzeNwaTS",
-    "annotationConvertor", "appendGSTermsTS", "cellHTS2OutputStatTests",
+    "annotationConvertor", "appendGSTermsTS", "screenStatTests",
     "duplicateRemover", "interactomeNwaTS", "preprocessGscaTS", "preprocessNwaTS",
     "reportAll", "GOGeneSets", "KeggGeneSets", "MSigDBGeneSets", "HTSanalyzeR2Pipe",
     "HTSanalyzeR4MAGeCK"

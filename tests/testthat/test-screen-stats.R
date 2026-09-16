@@ -108,18 +108,15 @@ test_that("screenStatTests is deterministic", {
   expect_identical(first, second)
 })
 
-test_that("the cellHTS2 adapter is optional and explains itself", {
+test_that("no dependency is declared for the removed cellHTS2 path", {
   desc <- read.dcf(
     system.file("DESCRIPTION", package = "HTSanalyzeR2"),
     fields = c("Imports", "Suggests")
   )
-  imports <- unlist(strsplit(desc[1, "Imports"], ",\\s*"))
-  suggests <- unlist(strsplit(desc[1, "Suggests"], ",\\s*"))
+  declared <- unlist(strsplit(paste(desc[1, ], collapse = ","), ",\\s*"))
 
-  expect_false("cellHTS2" %in% imports)
-  expect_false("Biobase" %in% imports)
-
-  if (!requireNamespace("cellHTS2", quietly = TRUE)) {
-    expect_error(cellHTS2OutputStatTests(NULL), "no longer part of Bioconductor")
-  }
+  ## cellHTS2 has left Bioconductor; declaring it, even as a suggestion, makes
+  ## every clean R CMD check report it as unavailable
+  expect_false("cellHTS2" %in% declared)
+  expect_false("Biobase" %in% declared)
 })

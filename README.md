@@ -185,11 +185,11 @@ Set the seed before `analyze()` if you need reproducible permutation p-values.
 through `saveNetwork()`), `BiocStyle`, `rmarkdown`, `knitr`, `testthat`,
 `org.Hs.eg.db`, `limma`, `TxDb.Hsapiens.UCSC.hg19.knownGene`.
 
-`cellHTS2` and `Biobase` are only needed by `cellHTS2OutputStatTests()`, the
-adapter for legacy `cellHTS` objects. `cellHTS2` has been removed from
-Bioconductor, so that adapter only works when the package is installed from a
-source archive; the statistics themselves are available without it through
-`screenStatTests()`.
+`cellHTS2` is not a dependency. It left Bioconductor, and declaring it — even as
+a suggestion — makes every clean `R CMD check` report it as unavailable, so the
+screen statistics no longer go through it at all. `screenStatTests()` takes a
+matrix, an annotation vector and a sample/control labelling directly; results
+were verified identical to the previous `cellHTS`-based implementation.
 
 ## Implementation notes
 
