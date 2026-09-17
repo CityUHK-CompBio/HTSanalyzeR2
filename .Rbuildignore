@@ -1,10 +1,7 @@
-^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.git$
 ^\.github$
 ^\.gitignore$
-^MODERNIZATION_BASELINE\.md$
-^HTSanalyzeR2\.Rcheck$
 ^vignettes/HTSanalyzerReport$
 ^\.\.Rcheck$
 ^HTSanalyzeR2_.*\.tar\.gz$
