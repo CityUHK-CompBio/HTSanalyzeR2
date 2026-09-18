@@ -1,0 +1,119 @@
+# Append gene set terms to GSCA results and gene names annotation
+
+This is a generic function. When implemented as the S4 method for
+objects of class GSCA, this function finds corresponding annotation
+terms for GO, KEGG and MSigDB gene sets and inserts a column named
+"Gene.Set.Term" to each data frame in the GSCA results. In the same
+time, to make results more understandable, it will annotate the gene
+list with EntrezID to gene symbol under specific species.
+
+## Usage
+
+``` r
+# S4 method for class 'GSCA'
+appendGSTerms(
+  object,
+  keggGSCs = NULL,
+  goGSCs = NULL,
+  msigdbGSCs = NULL,
+  species = "Hs"
+)
+```
+
+## Arguments
+
+- object:
+
+  A GSCA object.
+
+- keggGSCs:
+
+  A character vector of names of all KEGG gene set collections.
+
+- goGSCs:
+
+  A character vector of names of all GO gene set collections.
+
+- msigdbGSCs:
+
+  A character vector of names of all MSigDB gene set collections.
+
+- species:
+
+  A single character value specifying the species of the analyzed data.
+  It supports all the species of OrgDb objects in AnnotationDbi. The
+  format should be an abbreviation of the organism as setted by
+  AnnotationDbi. For example, the commonly used ones are "Dm"
+  ("Drosophila_melanogaster"), "Hs" ("Homo_sapiens"), "Rn"
+  ("Rattus_norvegicus"), "Mm" ("Mus_musculus"), "Ce"
+  ("Caenorhabditis_elegans"), and etc.
+
+## Value
+
+In the end, this function will return an updated object of class GSCA.
+
+## Details
+
+This function makes the GSCA results more readable by appending a column
+of terms for KEGG and GO gene sets. To do this, the user needs to
+specify the names of the gene set collections based on GO, KEGG and
+MSigDB respectively. In the same time, to make results more
+understandable, it will annotate the gene list with EntrezID to gene
+symbol under specific species.
+
+For each GO gene set, the GO id will be mapped to corresponding GO term
+by the function mapIds of the package AnnotationDbi.
+
+For each KEGG gene set, the species code in the KEGG id will be trimmed
+off, and then mapped to its corresponding annotation term using the
+package KEGGREST.
+
+For each MSigDB gene set, the corresponding annotation terms are based
+on the built-in database in this package.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+library(org.Hs.eg.db)
+library(GO.db)
+library(KEGGREST)
+## load data for enrichment analyses
+data(d7)
+phenotype <- as.vector(d7$neg.lfc)
+names(phenotype) <- d7$id
+
+## select hits if you also want to do GSOA, otherwise ignore it
+hits <-  names(phenotype[which(abs(phenotype) > 2)])
+
+## set up a list of gene set collections
+GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+PW_KEGG <- KeggGeneSets(species="Hs")
+ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
+
+## create an object of class 'GSCA'
+gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
+
+## do preprocessing
+gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+                   duplicateRemoverMethod="max", orderAbsValue=FALSE)
+
+## enable parallel calculation with the Bioconductor backend
+BiocParallel::register(BiocParallel::SnowParam(workers = 2))
+
+## do hypergeometric tests and GSEA
+gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.01, pAdjustMethod ="BH",
+                                nPermutations=100, minGeneSetSize=10, exponent=1),
+                                doGSOA = TRUE, doGSEA = TRUE)
+
+## summarize gsca2
+summarize(gsca2)
+head(getResult(gsca2)$GSEA.results$GO_MF)
+
+## append gene set terms to results and annotate gene list
+gsca3 <- appendGSTerms(gsca2, goGSCs=c("GO_MF"),
+                       keggGSCs=c("PW_KEGG"), msigdbGSCs=NULL,
+                       species = "Hs")
+head(getResult(gsca3)$GSEA.results$GO_MF)
+} # }
+```

@@ -1,6 +1,7 @@
 # HTSanalyzeR2
 
 [![R-CMD-check](https://github.com/CityUHK-CompBio/HTSanalyzeR2/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/CityUHK-CompBio/HTSanalyzeR2/actions/workflows/R-CMD-check.yaml)
+[![pkgdown](https://img.shields.io/badge/docs-pkgdown-blue)](https://cityuhk-compbio.github.io/HTSanalyzeR2/)
 
 Gene set over-representation, gene set enrichment, network analysis and
 time-series analysis for high-throughput screens — CRISPR, RNA-seq, microarray

@@ -1,0 +1,107 @@
+# Statistical tests for high-throughput screen data
+
+Performs one-sample and two-sample tests on the observations of every
+construct of a high-throughput screen, for each condition tested.
+
+## Usage
+
+``` r
+screenStatTests(
+  data,
+  annotation,
+  controlStatus,
+  controls = "neg",
+  alternative = "two.sided",
+  logged = FALSE,
+  tests = "T-test"
+)
+```
+
+## Arguments
+
+- data:
+
+  A numeric matrix with one row per feature (well) and one column per
+  replicate.
+
+- annotation:
+
+  A vector of feature identifiers, one per row of \`data\`. Replicates
+  of the same construct must share an identifier.
+
+- controlStatus:
+
+  A character vector, one per row of \`data\`, labelling each row as
+  \`"sample"\` or as a control group.
+
+- controls:
+
+  A single character value giving the name of the control group used as
+  the control population in the two-sample tests. If nothing is
+  specified, the function will look for negative controls labelled
+  "neg".
+
+- alternative:
+
+  A single character value specifying the alternative hypothesis:
+  "two.sided", "less" or "greater".
+
+- logged:
+
+  A single logical value specifying whether or not the data has been
+  logged during the normalization process.
+
+- tests:
+
+  A single character value specifying the tests to be performed:
+  "T-test", "MannWhitney" or "RankProduct". If nothing is specified, all
+  three tests will be performed. Be aware that the Rank Product test is
+  slower than the other two, and returns a percent false discovery
+  (equivalent to a FDR, not a p-value).
+
+## Value
+
+A matrix with two columns, one for each type of test (two-sample and
+one-sample test) except the Rank Product (no alternative), and a row for
+each construct (row names corresponding to \`annotation\`).
+
+## Details
+
+These tests only need a matrix of measurements, a feature annotation and
+a sample/control labelling, so they work on plain R objects. They used
+to be reachable only through a \`cellHTS2\` object. That package has
+left Bioconductor, so the tests now take the measurements, the
+annotation and the sample/control labelling directly.
+
+The tests are computed taking into account only the rows labelled
+"sample" in \`controlStatus\`. The two sample tests compare the set of
+observations for one construct to the values obtained for a population
+considered as "control". The one-sample tests compare the set of
+observations for one construct to the median of all values obtained
+across all constructs labelled as "sample". This type of test assumes
+that most constructs are expected to show a negligible effect. It is
+therefore not advised to use this type of tests when the constructs
+tested have been pre-screened for being associated with a phenotype.
+Please be aware that both types of tests are less reliable when the
+number of replicates for each construct is low.
+
+## References
+
+Michael Boutros, Ligia P. Bras L and Wolfgang Huber. Analysis of
+cell-based RNAi screens. Genome Biology 7:7 R66 (2006)."
+
+## Examples
+
+``` r
+data <- matrix(rnorm(24), nrow = 6,
+               dimnames = list(paste0("well", 1:6), paste0("rep", 1:4)))
+annotation <- c("geneA", "geneA", "geneB", "geneB", "geneC", "geneC")
+status <- c(rep("sample", 4), "neg", "neg")
+screenStatTests(data, annotation, status, tests = c("T-test", "MannWhitney"))
+#>       t.test.pvalues.one.sample t.test.pvalues.two.samples
+#> geneA                 0.5025387                  0.8220042
+#> geneB                 0.8358259                  0.5916771
+#>       mannW.test.pvalues.one.sample mannW.test.pvalues.two.samples
+#> geneA                      0.546875                      0.7984460
+#> geneB                      0.843750                      0.3822844
+```

@@ -1,0 +1,10 @@
+pandoc: 3.9.0.2
+pkgdown: 2.2.1
+pkgdown_sha: ~
+articles:
+  HTSanalyzeR2-vignette: HTSanalyzeR2-vignette.html
+  Interactive-Shiny-report-of-HTSanalyzeR2: Interactive-Shiny-report-of-HTSanalyzeR2.html
+last_built: 2026-09-18T12:15Z
+urls:
+  reference: https://cityuhk-compbio.github.io/HTSanalyzeR2/reference
+  article: https://cityuhk-compbio.github.io/HTSanalyzeR2/articles

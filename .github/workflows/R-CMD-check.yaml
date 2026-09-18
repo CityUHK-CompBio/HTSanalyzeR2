@@ -2,9 +2,9 @@ name: R-CMD-check
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
   schedule:
     - cron: '0 4 * * 1'
 

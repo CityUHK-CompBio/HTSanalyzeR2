@@ -1,0 +1,90 @@
+url: https://cityuhk-compbio.github.io/HTSanalyzeR2/
+
+template:
+  bootstrap: 5
+  params:
+    bootswatch: cosmo
+
+development:
+  mode: auto
+
+reference:
+- title: Gene set collections
+  contents:
+  - KeggGeneSets
+  - GOGeneSets
+  - MSigDBGeneSets
+
+- title: Analysis classes
+  contents:
+  - GSCA
+  - NWA
+  - GSCABatch
+  - NWABatch
+  - gscaTS
+  - nwaTS
+
+- title: Core workflow
+  contents:
+  - preprocess
+  - analyze
+  - summarize
+  - report
+  - getPara
+  - getResult
+  - getSummary
+
+- title: Enrichment analysis
+  contents:
+  - appendGSTerms
+  - extractEnrichMap
+  - getTopGeneSets
+  - plotGSEA
+  - viewEnrichMap
+  - viewGSEA
+
+- title: Network analysis
+  contents:
+  - getInteractome
+  - interactome
+  - extractSubNet
+  - viewSubNet
+  - forceGraph
+  - updateForceGraph
+  - saveNetwork
+  - screenStatTests
+
+- title: Time series analysis
+  contents:
+  - preprocessGscaTS
+  - analyzeGscaTS
+  - preprocessNwaTS
+  - analyzeNwaTS
+  - appendGSTermsTS
+  - interactomeNwaTS
+  - reportAll
+
+- title: MAGeCK integration
+  contents:
+  - HTSanalyzeR2Pipe
+  - HTSanalyzeR4MAGeCK
+
+- title: Utilities
+  contents:
+  - annotationConvertor
+  - duplicateRemover
+
+- title: Data
+  contents:
+  - d7
+  - d7_gsca
+  - d7_nwa
+  - GSE33113_exp
+  - GSE33113_label
+  - GSE33113_limma
+  - Biogrid_HS_Interactome
+  - Biogrid_HS_Mat
+
+- title: Package
+  contents:
+  - HTSanalyzeR2

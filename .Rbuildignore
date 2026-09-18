@@ -9,3 +9,5 @@
 ^LICENSE\.md$
 ^Rplots\.pdf$
 ^\.playwright-cli$
+^_pkgdown\.yml$
+^docs$

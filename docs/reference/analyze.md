@@ -1,0 +1,248 @@
+# Gene Set Collection Analysis or NetWork Analysis
+
+This is a generic function.
+
+## Usage
+
+``` r
+# S4 method for class 'GSCA'
+analyze(
+  object,
+  para = list(pValueCutoff = 0.05, pAdjustMethod = "BH", nPermutations = 1000,
+    minGeneSetSize = 15, exponent = 1),
+  verbose = TRUE,
+  doGSOA = FALSE,
+  doGSEA = TRUE,
+  GSEA.by = "HTSanalyzeR2"
+)
+
+# S4 method for class 'NWA'
+analyze(object, fdr = 0.001, species, plotBumModel = FALSE, verbose = TRUE)
+```
+
+## Arguments
+
+- object:
+
+  A 'GSCA' or 'NWA'object.
+
+- para:
+
+  A list of parameters for GSEA and hypergeometric tests. This argument
+  is only for class GSCA.
+
+- verbose:
+
+  A single logical value specifying to display detailed messages (when
+  verbose=TRUE) or not (when verbose=FALSE).
+
+- doGSOA:
+
+  A single logical value specifying to perform gene set
+  overrepresentation analysis(hypergeometric test) (when doGSOA=TRUE) or
+  not (when doGSOA=FALSE).
+
+- doGSEA:
+
+  A single logical value specifying to perform gene set enrichment
+  analysis (when doGSEA=TRUE) or not (when doGSEA=FALSE).
+
+- GSEA.by:
+
+  A single character value to choose which algorithm to do GSEA. Valid
+  value could either be "HTSanalyzeR2"(default) or "fgsea". If performed
+  by "fgsea", the result explanation please refer to
+  [`fgsea`](https://rdrr.io/pkg/fgsea/man/fgsea.html).
+
+- fdr:
+
+  A single numeric value specifying the false discovery for the scoring
+  of nodes (see BioNet::scoreNodes and Dittrich et al., 2008 for
+  details)
+
+- species:
+
+  A single character value specifying the species for which the data
+  should be read.
+
+- plotBumModel:
+
+  Boolean value, whether to plot a histogram and qqplot of the p-values
+  with the fitted model.
+
+- pValueCutoff:
+
+  A single numeric value specifying the cutoff for adjusted p-values
+  considered significant.
+
+- pAdjustMethod:
+
+  A single character value specifying the p-value adjustment method to
+  be used (see 'p.adjust' for details), default is "BH".
+
+- nPermutations:
+
+  A single integer or numeric value specifying the number of
+  permutations for deriving p-values in GSEA.
+
+- minGeneSetSize:
+
+  A single integer or numeric value specifying the minimum number of
+  elements shared by a gene set and the input total genes. Gene sets
+  with fewer than this number are removed from both hypergeometric
+  analysis and GSEA.
+
+- exponent:
+
+  A single integer or numeric value used in weighting phenotypes in
+  GSEA.
+
+## Value
+
+In the end, this function will return an updated object of class GSCA or
+NWA. All the analyzed results could be found in slot *result*.
+
+————————————————————
+
+For GSOA result of class GSCA:
+
+Universe Size: total number of genes as background in GSOA analysis;
+
+Gene Set Size: number of genes in the gene set;
+
+Total Hits: number of genes in hits (interested genes);
+
+Expected Hits: expected number of hits genes in the gene set;
+
+Observed Hits: observed/actual number of hits genes in the gene set;
+
+Pvalue: pvalue of the gene set in GSOA analysis;
+
+Adjusted.Pvalue: adjusted pvalue of the gene set in GSOA analysis using
+user-defined p-value adjustment method;
+
+Overlap.Gene: overlapped genes between hits and the gene set.
+
+————————————————————
+
+For GSEA result of class GSCA:
+
+Observed.score: Enrichment score of the gene set in GSEA analysis;
+
+Pvalue: pvalue of the gene set in GSEA analysis;
+
+Adjusted.Pvalue: adjusted pvalue of the gene set in GSEA analysis using
+user-defined p-value adjustment method;
+
+Leading.Edge: the subset of the gene set that contribute most to the
+enrichment score.
+
+————————————————————
+
+For NWA result of class NWA:
+
+subnw: an igraph object of the enriched subnetwork;
+
+labels: gene labels of the nodes in the enriched subnetwork.
+
+## Methods (by class)
+
+- `analyze(GSCA)`: The function will perform gene set collection
+  analysis on a GSCA object and update information about these results
+  to slot *summary* of class GSCA.
+
+- `analyze(NWA)`: The function will store the subnetwork module
+  identified by BioNet (if species is given, labels of nodes will also
+  be mapped from Entrez IDs to gene symbols), and update information
+  about these results to slot summary of class NWA.
+
+## References
+
+Aravind Subramanian, Pablo Tamayo, Vamsi K. Mootha, Sayan Mukherjee,
+Benjamin L. Ebert, Michael A. Gillette, Amanda Paulovich, Scott L.
+Pomeroy, Todd R. Golub, Eric S. Lander, and Jill P. Mesirov Gene set
+enrichment analysis: A knowledge-based approach for interpreting
+genome-wide expression profiles PNAS 2005 102 (43) 15545-15550;
+published ahead of print September 30, 2005, doi:10.1073/pnas.0506580102
+
+Beisser D, Klau GW, Dandekar T, Muller T, Dittrich MT. BioNet: an
+R-Package for the functional analysis of biological networks.
+Bioinformatics. 2010 Apr 15;26(8):1129-30.
+
+Dittrich MT, Klau GW, Rosenwald A., Dandekar T and Muller T. Identifying
+functional modules in protein-protein interaction networks: an
+integrated exact approach. Bioinformatics 2008 24(13):i223-i231.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# ====================================================
+# Gene Set Collection Analysis Part
+library(org.Hs.eg.db)
+library(GO.db)
+library(KEGGREST)
+## load data for enrichment analyse
+data(d7)
+phenotype <- as.vector(d7$neg.lfc)
+names(phenotype) <- d7$id
+
+## select hits if you also want to do GSOA, otherwise ignore it
+hits <-  names(phenotype[which(abs(phenotype) > 2)])
+
+## set up a list of gene set collections
+GO_MF <- GOGeneSets(species="Hs", ontologies=c("MF"))
+PW_KEGG <- KeggGeneSets(species="Hs")
+ListGSC <- list(GO_MF=GO_MF, PW_KEGG=PW_KEGG)
+
+## create an object of class 'GSCA'
+gsca <- GSCA(listOfGeneSetCollections = ListGSC, geneList = phenotype, hits = hits)
+
+## do preprocessing
+gsca1 <- preprocess(gsca, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+                    duplicateRemoverMethod="max", orderAbsValue=FALSE)
+
+## enable parallel calculation with the Bioconductor backend
+BiocParallel::register(BiocParallel::SnowParam(workers = 2))
+
+## do hypergeometric tests and GSEA
+gsca2 <- analyze(gsca1, para=list(pValueCutoff=0.01, pAdjustMethod ="BH",
+                                  nPermutations=100, minGeneSetSize=10, exponent=1),
+                                  doGSOA = TRUE, doGSEA = TRUE)
+
+## summarize gsca2 and get results
+summarize(gsca2)
+head(getResult(gsca2)$GSEA.results$GO_MF)
+head(getResult(gsca2)$HyperGeo.results$PW_KEGG)
+
+} # }
+# ===========================================================
+if (FALSE) { # \dontrun{
+# Network Analysis
+library(org.Hs.eg.db)
+library(GO.db)
+## load data for network analyse
+data(d7)
+pvalues <- d7$neg.p.value
+names(pvalues) <- d7$id
+
+## input phenotypes if you want to color nodes by it
+phenotypes <- as.vector(d7$neg.lfc)
+names(phenotypes) <- d7$id
+
+## create an object of class 'NWA' with phenotypes
+nwa <- NWA(pvalues=pvalues, phenotypes=phenotypes)
+
+## do preprocessing
+nwa1 <- preprocess(nwa, species="Hs", initialIDs="SYMBOL", keepMultipleMappings=TRUE,
+                   duplicateRemoverMethod="max")
+
+## create an interactome for nwa1 by downloading from BioGRID database
+nwa2 <- interactome(nwa1, species="Hs", reportDir="HTSanalyzerReport", genetic=FALSE)
+
+## analyze
+nwa3 <- analyze(nwa2, fdr=0.0001, species="Hs")
+## summarize nwa3
+summarize(nwa3)
+} # }
+```

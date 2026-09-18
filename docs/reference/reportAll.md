@@ -1,0 +1,115 @@
+# Write HTML reports for both enrichment and network analyses
+
+This function can create shiny reports for both gene sets enrichment
+analysis and network analysis.
+
+## Usage
+
+``` r
+reportAll(
+  gsca = NULL,
+  nwa = NULL,
+  TSOrder = NULL,
+  specificGeneset = NULL,
+  cutoff = NULL,
+  gseaPlot = FALSE,
+  para = list(output = "pdf", ES.range = NULL, rankMetric.range = NULL, ESline.col =
+    "FireBrick", hits.col = "black", rankMetric.col = "CadetBlue"),
+  reportDir = "AnalysisReport"
+)
+```
+
+## Arguments
+
+- gsca:
+
+  An analyzed GSCA object or a list of analyzed GSCA objects.
+
+- nwa:
+
+  An NWA object or a list of NWA objects.
+
+- TSOrder:
+
+  A character specifying the visulization order of 'Time Series' data in
+  shiny report. Only works when reporting for 'Time Series' data,
+  default is the ID order in 'expInfor'.
+
+- specificGeneset:
+
+  A named list of specific gene sets. See
+  [`viewEnrichMap,GSCA-method`](https://cityuhk-compbio.github.io/HTSanalyzeR2/reference/viewEnrichMap-GSCA-method.md)
+  for details.
+
+- cutoff:
+
+  A numeric value between 0 and 1. This parameter is setted as a cutoff
+  of edge weight in the enrichment map for better visualization. When
+  the edge weight, namely the Jaccard coefficient between two gene sets,
+  is less than this cutoff, this edge would not be showed in the
+  enrichment map.
+
+- gseaPlot:
+
+  A logical value to choose whether make gsea plot for significant gene
+  sets, default is FALSE.
+
+- para:
+
+  A list of parameters for gsea plot. See
+  [`plotGSEA`](https://cityuhk-compbio.github.io/HTSanalyzeR2/reference/plotGSEA.md)
+  for details.
+
+- reportDir:
+
+  A single character value specifying the path to store reports. By
+  default, the enrichment analysis reports will be stored in the
+  directory called "GSCAReport". Once launching, the directory will be
+  generated automatically containing an R code file named app.R, an
+  RDdata object named results.RData storing all basic results which can
+  be loaded into R with readRDS() function and a folder named gsea_plots
+  containing gsea plots for all significant gene sets.
+
+## Value
+
+In the end, this function would generate a html report.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+## load data
+data(d7_gsca, d7_nwa, gscaTS, nwaTS)
+
+## Example1: report both gsca and nwa
+reportAll(gsca=d7_gsca, nwa=d7_nwa)
+
+## Example2: report gscaTS
+reportAll(gsca=gscaTS)
+
+## Example3: report nwaTS
+reportAll(nwa=nwaTS)
+
+## Example4: report both gscaTS and nwaTS
+reportAll(gsca=gscaTS, nwa=nwaTS)
+
+## Example5: change order for time series data
+reportAll(gsca=gscaTS, TSOrder=names(gscaTS)[c(3, 1, 2)])
+reportAll(nwa=nwaTS, TSOrder=names(nwaTS)[c(3, 2, 1)])
+
+## Example6: view specificGeneset enrichment map for gscaTS using reportAll
+library(igraph)
+## As told previously, specificGeneset needs to be a subset of all analyzed gene sets
+## which can be roughly gotten by:
+tmp <- getTopGeneSets(gscaTS[[1]], resultName = "GSEA.results",
+                      gscs=c("GO_BP"), ntop = 20000, allSig = FALSE)
+## In that case, we can define specificGeneset as below:
+GO_BP_geneset <- tmp$GO_BP[c(4:10, 20:30)]
+## the name of specificGenesets also needs to match with the names of tmp
+specificGeneset <- list("GO_BP"=GO_BP_geneset)
+reportAll(gsca=gscaTS, specificGeneset=specificGeneset)
+
+## Example7: report gscaTS using a cutoff to filter away edges with small weight
+reportAll(gsca=gscaTS, cutoff = 0.03)
+} # }
+```

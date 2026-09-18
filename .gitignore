@@ -5,7 +5,6 @@
 inst/doc
 .DS_Store
 .rstudio
-_config.yml
 HTSanalyzeR2.Rcheck/
 ..Rcheck/
 *.Rcheck/

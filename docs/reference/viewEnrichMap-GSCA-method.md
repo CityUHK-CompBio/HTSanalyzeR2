@@ -1,0 +1,171 @@
+# Plot the enrichment map for GSEA or GSOA result
+
+This is a generic function. When implemented as the S4 method for
+objects of class GSCA, this function will plot an enrichment map for
+GSEA or Hypergeometric test results.
+
+## Usage
+
+``` r
+# S4 method for class 'GSCA'
+viewEnrichMap(
+  object,
+  resultName = "GSEA.results",
+  gscs,
+  ntop = NULL,
+  allSig = TRUE,
+  gsNameType = "id",
+  specificGeneset = NULL,
+  cutoff = NULL,
+  options = list(),
+  seriesObjs = NULL
+)
+```
+
+## Arguments
+
+- object:
+
+  A GSCA object.
+
+- resultName:
+
+  A single character value specifying draw an enrichment map based on
+  which result. Could only be 'HyperGeo.results' or 'GSEA.results'.
+
+- gscs:
+
+  A character vector specifying the names of gene set collections of
+  which the top significant gene sets will be plotted.
+
+- ntop:
+
+  A single integer or numeric value specifying how many gene sets of top
+  significance will be plotted.
+
+- allSig:
+
+  A single logical value. If 'TRUE', all significant gene sets (GSEA
+  adjusted p-value \< 'pValueCutoff' of slot 'para') will be used;
+  otherwise, only top 'ntop' gene sets will be used.
+
+- gsNameType:
+
+  A single character value specifying the type of the gene set names
+  that will be displayed as the names of nodes in the enrichment map.
+  The type of the gene set names should be one of the following: "id",
+  "term" or "none".
+
+- specificGeneset:
+
+  A named list of specific gene sets. Specifically, this term needs to
+  be a subset of all analyzed gene sets which can be roughly gotten by
+  **getTopGeneSets(object, resultName, gscs, ntop = 20000, allSig =
+  FALSE)**.
+
+- cutoff:
+
+  A numeric value between 0 and 1. This parameter is setted as a cutoff
+  of edge weight in the enrichment map for better visualization. When
+  the edge weight, namely the Jaccard coefficient between two gene sets,
+  is less than this cutoff, this edge would not be showed in the
+  enrichment map. The order of the list must match the order of results
+  gotten by aboved function **getTopGeneSets**.
+
+- options:
+
+  A list of options to modify the enrichmentmap. Details are not showed
+  here due to too many options. Users are highly recommended to modify
+  the enrichment map in a shiny report by
+  [`report`](https://cityuhk-compbio.github.io/HTSanalyzeR2/reference/report.md).
+
+- seriesObjs:
+
+  A list of GSCA object. Internally used in the shiny report for
+  visualizing the enrichment map of time series data. No need to
+  explicitly set it!
+
+## Details
+
+The idea of this function is similar to the PLoS one paper by Merico et
+al.
+
+An enrichment map is a network to help better visualize and interpret
+the GSEA or Hypergeometric test results. In an enrichment map, the nodes
+represent gene sets and the edges denote the Jaccard similarity
+coefficient between two gene sets. Node colors are scaled according to
+the adjusted p-values (the darker the more significant). For GSEA, nodes
+are colored by the sign of the enrichment scores (red:+, blue: -). The
+size of nodes illustrates the size of gene sets, while the width of
+edges denotes the Jaccard coefficient.
+
+A useful application of this function is that user can define
+specificGeneset to plot an enrichment map with their interested gene
+sets instead of the top significant ones or all the significant ones.
+Especially when the number of the significant gene sets are huge, which
+would make the enrichment map a mess as well as of no information. To
+this end, user can set the parameter **specificGeneset**.
+
+## References
+
+Merico D, Isserlin R, Stueker O, Emili A, Bader GD (2010) Enrichment
+Map: A Network-Based Method for Gene-Set Enrichment Visualization and
+Interpretation. PLoS ONE5(11): e13984.
+https://doi.org/10.1371/journal.pone.0013984
+
+## Examples
+
+``` r
+## load a GSCA object(see the examples of 'analyze' GSCA for details)
+library(igraph)
+data(d7_gsca)
+
+## Example1: view an enrichment map for top 30 significant 'GO_MF' gene sets of GSEA results
+if (FALSE) { # \dontrun{
+viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
+              allSig = FALSE, ntop = 30, gsNameType = "term")
+} # }
+
+## Example2: view an enrichment map for top 15 significant 'GO_MF'
+## and 'PW_KEGG' gene sets of GSEA results
+if (FALSE) { # \dontrun{
+viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
+              allSig = FALSE, ntop = 15, gsNameType = "term")
+} # }
+
+## Example3: view an enrichment map for top 15 significant 'GO_MF'
+## and 'PW_KEGG' gene sets of GSEA results, edge Jaccard coefficient less than 0.05
+## would not be showed in the enrichment map.
+if (FALSE) { # \dontrun{
+viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
+              allSig = FALSE, ntop = 15, gsNameType = "term", cutoff = 0.05)
+} # }
+
+## Example4: view an enrichment map with specificGenesets in 'GO_MF' gene sets of GSEA results
+## As told previously, specificGeneset needs to be a subset of all analyzed gene sets
+## which can be roughly gotten by:
+tmp <- getTopGeneSets(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
+                      ntop = 20000, allSig = FALSE)
+## In that case, we can define specificGeneset as below:
+GO_MF_geneset <- tmp$GO_MF[c(4,2,6,9,12)]
+## the name of specificGenesets also needs to match with the names of tmp
+specificGeneset <- list("GO_MF"=GO_MF_geneset)
+if (FALSE) { # \dontrun{
+viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF"),
+              allSig = FALSE, gsNameType = "term",
+              ntop = NULL, specificGeneset = specificGeneset)
+} # }
+
+## Example5: view an enrichment map with specificGenesets in 'GO_MF'
+## and 'PW_KEGG' gene sets of GSEA results
+tmp <- getTopGeneSets(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
+                      ntop = 20000, allSig = FALSE)
+GO_MF_geneset <- tmp$GO_MF[c(6,3,5,9,12)]
+PW_KEGG_geneset <- tmp$PW_KEGG[c(7,2,5,1,9)]
+specificGeneset <- list("GO_MF"=GO_MF_geneset, "PW_KEGG"=PW_KEGG_geneset)
+if (FALSE) { # \dontrun{
+viewEnrichMap(d7_gsca, resultName = "GSEA.results", gscs=c("GO_MF", "PW_KEGG"),
+              allSig = FALSE, gsNameType = "term",
+              ntop = NULL, specificGeneset = specificGeneset)
+} # }
+```
